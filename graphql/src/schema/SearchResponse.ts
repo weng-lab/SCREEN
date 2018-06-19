@@ -35,7 +35,7 @@ const resolveSearchToken = d => {
         return SNPToken;
     }
     if (celltype) {
-        return CellTypeToken;
+        return BiosampleToken;
     }
     if (range) {
         return RangeToken;
@@ -50,6 +50,14 @@ export const SearchToken = new GraphQLInterfaceType({
         input: {
             description: 'The input string that was interpreted',
             type: new GraphQLNonNull(GraphQLString),
+        },
+        assembly: {
+            description: 'The assembly this token matches',
+            type: new GraphQLNonNull(CommonTypes.Assembly),
+        },
+        sm: {
+            description: 'The simlarity of the token to the input',
+            type: new GraphQLNonNull(GraphQLFloat),
         },
     }),
     resolveType: resolveSearchToken,
@@ -75,6 +83,10 @@ export const Gene = new GraphQLObjectType({
             description: 'The range of this gene',
             type: new GraphQLNonNull(CommonTypes.ChromRange),
         },
+        tssrange: {
+            description: 'The range of this gene from the tss',
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
     }),
 });
 
@@ -88,6 +100,8 @@ export const SingleGeneToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         gene: { type: new GraphQLNonNull(Gene) },
     }),
 });
@@ -102,6 +116,8 @@ export const MultiGeneToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         genes: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Gene))) },
     }),
 });
@@ -114,6 +130,8 @@ export const AccessionToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         accession: { type: new GraphQLNonNull(GraphQLString) },
     }),
 });
@@ -141,19 +159,28 @@ export const SNPToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         snp: { type: new GraphQLNonNull(SNP) },
     }),
 });
 
-export const CellTypeToken = new GraphQLObjectType({
-    name: 'CellTypeToken',
+export const BiosampleToken = new GraphQLObjectType({
+    name: 'BiosampleToken',
     interfaces: [SearchToken],
-    description: 'Will be returned when the token matches a celltype',
+    description: 'Will be returned when the token matches a biosample',
     fields: () => ({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         celltype: { type: new GraphQLNonNull(GraphQLString) },
+        celltypevalue: { type: new GraphQLNonNull(GraphQLString) },
+        is_ninestate: { type: new GraphQLNonNull(GraphQLBoolean) },
+        is_intersection_cistrome: { type: new GraphQLNonNull(GraphQLBoolean) },
+        is_intersection_peak: { type: new GraphQLNonNull(GraphQLBoolean) },
+        is_rnaseq: { type: new GraphQLNonNull(GraphQLBoolean) },
     }),
 });
 
@@ -165,6 +192,8 @@ export const RangeToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         range: { type: new GraphQLNonNull(CommonTypes.ChromRange) },
     }),
 });
@@ -177,6 +206,8 @@ export const UnknownToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
         failed: { type: new GraphQLNonNull(GraphQLBoolean) },
     }),
 });

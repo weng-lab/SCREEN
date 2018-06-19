@@ -2,7 +2,7 @@ import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
-import { cache } from './db_cache';
+import { loadCache, Biosample, Assembly } from './db_cache';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -130,46 +130,45 @@ export async function rankMethodToCellTypes(assembly) {
     return ret;
 }
 
-export async function rankMethodToIDxToCellType(assembly) {
+export type RankMethod = 'CTCF' | 'DNase' | 'Enhancer' | 'H3K4me3' | 'H3K27ac' | 'Insulator' | 'Promoter';
+export type celltype = string;
+export type ctindex = number;
+export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMethod, Record<celltype, ctindex>>> {
     const table = assembly + '_rankcelltypeindexex';
     const q = `
             SELECT idx, celltype, rankmethod
             FROM ${table}
         `;
 
-    const res = await db.many(q);
-    const ret = {};
+    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod }> = await db.many(q);
+    const ret = {} as Record<RankMethod, Record<celltype, ctindex>>;
     for (const r of res) {
-        const rank_method = r['rankmethod'];
-        if (!(rank_method in ret)) {
-            ret[rank_method] = {};
-        }
-        ret[rank_method][r['idx']] = r['celltype'];
-        ret[rank_method][r['celltype']] = r['idx'];
+        const rank_method = r.rankmethod;
+        ret[rank_method] = ret[rank_method] || {};
+        ret[rank_method][r.celltype] = r.idx;
     }
     return ret;
 }
 
-export async function makeCtMap(assembly) {
-    const amap = {
+export type assaytype = 'dnase' | 'h3k4me3' | 'h3k27ac' | 'ctcf';
+export async function makeCtMap(assembly): Promise<Record<assaytype, Record<celltype, ctindex>>> {
+    const amap: Partial<Record<RankMethod, assaytype>> = {
         DNase: 'dnase',
-        H3K4me3: 'promoter', // FIXME: this could be misleading
-        H3K27ac: 'enhancer', // FIXME: this too
+        H3K4me3: 'h3k4me3',
+        H3K27ac: 'h3k27ac',
         CTCF: 'ctcf',
-        Enhancer: 'Enhancer',
-        Promoter: 'Promoter',
-        Insulator: 'Insulator',
     };
     const rmInfo = await rankMethodToIDxToCellType(assembly);
-    return Object.keys(rmInfo)
+    const ret = Object.keys(rmInfo)
         .filter(k => k in amap)
         .reduce(
-            (obj, k) => ({
-                ...obj,
-                [amap[k]]: rmInfo[k],
-            }),
-            {}
+            (obj, k) => {
+                obj[amap[k]] = rmInfo[k];
+                return obj;
+            },
+            {} as Record<assaytype, Record<celltype, ctindex>>
         );
+    return ret;
 }
 
 export async function makeCTStable(assembly) {
@@ -180,6 +179,90 @@ export async function makeCTStable(assembly) {
     `;
     const res = await db.many(q);
     return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx'] }), {});
+}
+// TODO: add de
+// Need to resolve cistrome metadata problems
+// Example: GSM1003744; Labeled as K562, but mouse
+/*
+export const biosamplesQuery = (assembly: Assembly, where?: string, fields?: string[], orderby?: string, limit?: number): string => {
+    const q = `
+        SELECT DISTINCT biosample_term_name, value, count(*), array_agg(t) as type, array_agg(id) as id, jsonb_agg(synonyms) as synonyms${fields ? ', ' + fields.join(', ') : ''}
+        FROM (
+            SELECT biosample_term_name, biosample_term_name as value, 'peak' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_peakintersectionsmetadata
+            UNION ALL
+            SELECT biosample_term_name, biosample_term_name as value, 'cistrome' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_cistromeintersectionsmetadata
+            UNION ALL
+            SELECT celltypedesc as biosample_term_name, celltypename as value, 'ninestate' as t, fileid as id, synonyms as synonyms
+            FROM ${assembly}_datasets
+            UNION ALL
+            SELECT biosample_term_name, biosample_term_name as value, 'rnaseq' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_rnaseq_metadata
+        ) cts
+        ${where || ''}
+        GROUP BY biosample_term_name
+        ${orderby || ''}
+        ${limit ? 'LIMIT ' + limit : ''}
+    `;
+    return q;
+};
+*/
+export const biosamplesQuery = (
+    assembly: Assembly,
+    where?: string,
+    fields?: string[],
+    orderby?: string,
+    limit?: number
+): string => {
+    const q = `
+        SELECT DISTINCT biosample_term_name, array_agg(value) as values, count(*), array_agg(t) as type, array_agg(id) as id, jsonb_agg(synonyms) as synonyms${
+            fields ? ', ' + fields.join(', ') : ''
+        }
+        FROM (
+            SELECT biosample_term_name, biosample_term_name as value, 'peak' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_peakintersectionsmetadata
+            UNION ALL
+            SELECT celltypedesc as biosample_term_name, celltypename as value, 'ninestate' as t, fileid as id, synonyms as synonyms
+            FROM ${assembly}_datasets
+            UNION ALL
+            SELECT biosample_term_name, biosample_term_name as value, 'rnaseq' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_rnaseq_metadata
+        ) cts
+        ${where || ''}
+        GROUP BY biosample_term_name
+        ${orderby || ''}
+        ${limit ? 'LIMIT ' + limit : ''}
+    `;
+    return q;
+};
+
+export async function makeBiosamplesMap(assembly): Promise<Record<string, Biosample>> {
+    const q = biosamplesQuery(assembly);
+    const res = await db.any<{
+        biosample_term_name: string;
+        values: string[];
+        count: number;
+        type: string[];
+        id: string[];
+        synonyms: string[][];
+    }>(q);
+    const ret = res.reduce(
+        (prev, curr) => {
+            prev[curr.biosample_term_name] = {
+                name: curr.biosample_term_name,
+                celltypevalue: curr.values.filter(v => !!v)[0] || curr.biosample_term_name,
+                count: curr.count,
+                is_ninestate: curr.type.includes('ninestate'),
+                is_intersection_peak: curr.type.includes('peak'),
+                is_intersection_cistrome: curr.type.includes('cistrome'),
+                is_rnaseq: curr.type.includes('rnaseq'),
+            };
+            return prev;
+        },
+        {} as Record<string, Biosample>
+    );
+    return ret;
 }
 
 export async function genePos(assembly, gene) {
@@ -207,81 +290,19 @@ export async function genePos(assembly, gene) {
     };
 }
 
-async function allDatasets(assembly) {
-    // TODO: fixme!!
-    const dects = `
-C57BL/6_embryonic_facial_prominence_embryo_11.5_days
-C57BL/6_embryonic_facial_prominence_embryo_12.5_days
-C57BL/6_embryonic_facial_prominence_embryo_13.5_days
-C57BL/6_embryonic_facial_prominence_embryo_14.5_days
-C57BL/6_embryonic_facial_prominence_embryo_15.5_days
-C57BL/6_forebrain_embryo_11.5_days
-C57BL/6_forebrain_embryo_12.5_days
-C57BL/6_forebrain_embryo_13.5_days
-C57BL/6_forebrain_embryo_14.5_days
-C57BL/6_forebrain_embryo_15.5_days
-C57BL/6_forebrain_embryo_16.5_days
-C57BL/6_forebrain_postnatal_0_days
-C57BL/6_heart_embryo_11.5_days
-C57BL/6_heart_embryo_12.5_days
-C57BL/6_heart_embryo_13.5_days
-C57BL/6_heart_embryo_14.5_days
-C57BL/6_heart_embryo_15.5_days
-C57BL/6_heart_embryo_16.5_days
-C57BL/6_heart_postnatal_0_days
-C57BL/6_hindbrain_embryo_11.5_days
-C57BL/6_hindbrain_embryo_12.5_days
-C57BL/6_hindbrain_embryo_13.5_days
-C57BL/6_hindbrain_embryo_14.5_days
-C57BL/6_hindbrain_embryo_15.5_days
-C57BL/6_hindbrain_embryo_16.5_days
-C57BL/6_hindbrain_postnatal_0_days
-C57BL/6_intestine_embryo_14.5_days
-C57BL/6_intestine_embryo_15.5_days
-C57BL/6_intestine_embryo_16.5_days
-C57BL/6_intestine_postnatal_0_days
-C57BL/6_kidney_embryo_14.5_days
-C57BL/6_kidney_embryo_15.5_days
-C57BL/6_kidney_embryo_16.5_days
-C57BL/6_kidney_postnatal_0_days
-C57BL/6_limb_embryo_11.5_days
-C57BL/6_limb_embryo_12.5_days
-C57BL/6_limb_embryo_13.5_days
-C57BL/6_limb_embryo_14.5_days
-C57BL/6_limb_embryo_15.5_days
-C57BL/6_liver_embryo_11.5_days
-C57BL/6_liver_embryo_12.5_days
-C57BL/6_liver_embryo_13.5_days
-C57BL/6_liver_embryo_14.5_days
-C57BL/6_liver_embryo_15.5_days
-C57BL/6_liver_embryo_16.5_days
-C57BL/6_liver_postnatal_0_days
-C57BL/6_lung_embryo_14.5_days
-C57BL/6_lung_embryo_15.5_days
-C57BL/6_lung_embryo_16.5_days
-C57BL/6_lung_postnatal_0_days
-C57BL/6_midbrain_embryo_11.5_days
-C57BL/6_midbrain_embryo_12.5_days
-C57BL/6_midbrain_embryo_13.5_days
-C57BL/6_midbrain_embryo_14.5_days
-C57BL/6_midbrain_embryo_15.5_days
-C57BL/6_midbrain_embryo_16.5_days
-C57BL/6_midbrain_postnatal_0_days
-C57BL/6_neural_tube_embryo_11.5_days
-C57BL/6_neural_tube_embryo_12.5_days
-C57BL/6_neural_tube_embryo_13.5_days
-C57BL/6_neural_tube_embryo_14.5_days
-C57BL/6_neural_tube_embryo_15.5_days
-C57BL/6_stomach_embryo_14.5_days
-C57BL/6_stomach_embryo_15.5_days
-C57BL/6_stomach_embryo_16.5_days
-C57BL/6_stomach_postnatal_0_days`.split('\n');
+async function allDatasets(assembly, dectmap) {
+    const todect = s =>
+        s
+            .replace('C57BL/6_', '')
+            .replace('embryo_', '')
+            .replace('_days', '')
+            .replace('postnatal_', '');
 
     const makeDataset = r => {
         return {
             ...r,
             synonyms: r.synonyms || [],
-            isde: (dects as any).includes(r['value']),
+            isde: !!dectmap[todect(r.value)],
         };
     };
 
@@ -305,7 +326,8 @@ C57BL/6_stomach_postnatal_0_days`.split('\n');
 }
 
 export async function datasets(assembly) {
-    const rows = await allDatasets(assembly);
+    const de_ctidmap = assembly === 'mm10' ? await loadCache(assembly).de_ctidmap() : {};
+    const rows = await allDatasets(assembly, de_ctidmap);
     const ret: any = {};
 
     const byCellType = {};
@@ -465,27 +487,12 @@ async function getColsForAccession(assembly, accession, cols) {
     return db.oneOrNone(q, [accession]);
 }
 
-export async function creRanksPromoter(assembly, accession) {
-    const cols = ['promoter_zscores'];
-    const r = await getColsForAccession(assembly, accession, cols);
-    return { zscores: { Promoter: r['promoter_zscores'] } };
-}
-
-export async function creRanksEnhancer(assembly, accession) {
-    const cols = ['enhancer_zscores'];
-    const r = await getColsForAccession(assembly, accession, cols);
-    return { zscores: { Enhancer: r['enhancer_zscores'] } };
-}
-
 export async function creRanks(assembly, accession) {
     const cols = `
 dnase_zscores
 ctcf_zscores
-enhancer_zscores
 h3k27ac_zscores
-h3k4me3_zscores
-insulator_zscores
-promoter_zscores`
+h3k4me3_zscores`
         .trim()
         .split('\n');
 
@@ -496,14 +503,17 @@ promoter_zscores`
 async function getGenes(assembly, accession, allOrPc) {
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
+    const tableTss = assembly + '_tss_info';
     const q = `
-        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop
+        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
         FROM
         (SELECT UNNEST(gene_${allOrPc}_id) geneid,
         UNNEST(gene_${allOrPc}_distance) distance
         FROM ${tableall} WHERE accession = $1) AS g
         INNER JOIN ${tableinfo} AS gi
         ON g.geneid = gi.geneid
+        INNER JOIN ${tableTss} as tss
+        ON gi.ensemblid_ver = tss.ensemblid_ver
     `;
     return db.any(q, [accession]);
 }
@@ -530,8 +540,8 @@ export async function getTadOfCRE(assembly, accession) {
 }
 
 export async function cresInTad(assembly, accession, chrom, start, end, tadInfo) {
-    const c = await cache(assembly);
-    const cres = await getCreTable(assembly, c, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
+    const ctmap = loadCache(assembly).ctmap();
+    const cres = await getCreTable(assembly, ctmap, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
     return cres.cres
         .map(cre => ({
             distance: Math.min(Math.abs(end - cre.end), Math.abs(start - cre.start)),
@@ -555,10 +565,10 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
 
 export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
     const expanded = CoordUtils.expanded(coord, halfWindow);
-    const c = await cache(assembly);
+    const ctmap = await loadCache(assembly).ctmap();
     const cres = await getCreTable(
         assembly,
-        c,
+        ctmap,
         { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
         {}
     );

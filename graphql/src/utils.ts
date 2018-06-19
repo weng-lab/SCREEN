@@ -1,5 +1,10 @@
 import { chroms } from './constants';
 
+const starts = {
+    mm10: 'em10e',
+    hg19: 'eh37e',
+    hg38: 'eh38e',
+};
 export const isaccession = (s: string) => {
     if (s.length != 12) {
         return false;
@@ -30,14 +35,7 @@ export const checkAssembly = j => {
     return assembly;
 };
 
-export const checkCreAssembly = (assembly, accession) => {
-    const starts = {
-        mm10: 'em10e',
-        hg19: 'eh37e',
-        hg38: 'eh38e',
-    };
-    return accession.startsWith(starts[assembly]);
-};
+export const checkCreAssembly = (assembly, accession) => accession.startsWith(starts[assembly]);
 
 export const getAssemblyFromCre = accession => {
     const cre = accession.toLowerCase();
@@ -74,3 +72,5 @@ export const deepFreeze = o => {
     });
     return o;
 };
+
+export const escapeRegExp = str => str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');

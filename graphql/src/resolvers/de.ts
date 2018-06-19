@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
 import * as DbDe from '../db/db_de';
-import { cache } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 import * as CoordUtils from '../coord_utils';
 import { dbcre } from '../db/db_cre_table';
 
@@ -54,9 +54,11 @@ class DE {
             .replace('postnatal_', '');
 
         const cd = await this.coord();
-        const c = await cache(this.assembly);
+        const c = loadCache(this.assembly);
+        const de_ctidmap = await c.de_ctidmap();
+        const ensemblToGene = await c.ensemblToGene();
 
-        const nearbyDEs = await DbDe.nearbyDEs(this.assembly, this.range, ct1, ct2, 0.05, c.de_ctidmap);
+        const nearbyDEs = await DbDe.nearbyDEs(this.assembly, this.range, ct1, ct2, 0.05, de_ctidmap);
         if (nearbyDEs.length === 0) {
             return undefined;
         }
@@ -69,7 +71,7 @@ class DE {
         return genes.map(g => {
             const ensemblid = g.ensemblid;
             const fc = degenes[ensemblid];
-            const gene = c.ensemblToGene[ensemblid];
+            const gene = ensemblToGene[ensemblid];
             return {
                 isde: !!fc,
                 fc,
@@ -89,8 +91,8 @@ class DE {
     }
 
     async nearbyPromoters() {
-        const c = await cache(this.assembly);
-        const rmLookup = c.rankMethodToIDxToCellType['H3K4me3'];
+        const rankMethodToIDxToCellType = await loadCache(this.assembly).rankMethodToIDxToCellType();
+        const rmLookup = rankMethodToIDxToCellType['H3K4me3'];
         if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
             return [];
         }
@@ -108,8 +110,8 @@ class DE {
     }
 
     async nearbyEnhancers() {
-        const c = await cache(this.assembly);
-        const rmLookup = c.rankMethodToIDxToCellType['H3K27ac'];
+        const rankMethodToIDxToCellType = await loadCache(this.assembly).rankMethodToIDxToCellType();
+        const rmLookup = rankMethodToIDxToCellType['H3K27ac'];
         if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
             return [];
         }

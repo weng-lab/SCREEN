@@ -3,15 +3,28 @@ import * as Common from './db_common';
 import * as De from './db_de';
 import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
+import * as DataLoader from 'dataloader';
+import { TypeMap } from 'mime';
 
 const Raven = require('raven');
 
-function indexFilesTab(datasets, rows, assembly) {
-    const ret: any = {
-        agnostic: [],
-        specific: [],
+export type Assembly = 'hg19' | 'mm10';
+const assemblies: Assembly[] = ['hg19', 'mm10'];
+
+const cacheLoader = (cacheMap: loadablecache) =>
+    new DataLoader<keyof cache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
+
+const globalcacheLoader = (cacheMap: loadableglobalcache) =>
+    new DataLoader<keyof globalcache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
+
+async function indexFilesTab(assembly) {
+    const datasets = await Common.datasets(assembly);
+    const creBeds = await Common.creBeds(assembly);
+    const ret = {
+        agnostic: [] as any[],
+        specific: [] as any[],
     };
-    for (const [biosample, typAcc] of Object.entries(rows)) {
+    for (const [biosample, typAcc] of Object.entries(creBeds)) {
         let celltypedesc = '';
         let tissue = '';
         if ('_agnostic' != biosample) {
@@ -41,6 +54,21 @@ function indexFilesTab(datasets, rows, assembly) {
     return ret;
 }
 
+export type Promisify<T> = { [P in keyof T]: Promise<T[P]> };
+export type ByFunction<T> = { [P in keyof T]: () => T[P] };
+
+export type loadablecache = ByFunction<Promisify<cache>>;
+export type loadableglobalcache = ByFunction<Promisify<globalcache>>;
+
+export type Biosample = {
+    name: string;
+    celltypevalue: string;
+    count: number;
+    is_ninestate: boolean;
+    is_intersection_peak: boolean;
+    is_intersection_cistrome: boolean;
+    is_rnaseq: boolean;
+};
 export type cache = {
     chromCounts: Record<string, number>;
     creHist: any;
@@ -48,8 +76,6 @@ export type cache = {
     datasets: any;
     rankMethodToCellTypes: any;
     rankMethodToIDxToCellType: any;
-    biosampleTypes: undefined;
-    assaymap: undefined;
     ensemblToGene: Record<
         string,
         {
@@ -67,168 +93,160 @@ export type cache = {
     nineState: any;
     filesList: any;
     inputData: any;
-    moreTracks: undefined;
     geBiosampleTypes: string[];
     geBiosamples: any;
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
     creBigBeds: any;
-    ctmap: any;
+    ctmap: Record<string, any>;
     ctsTable: any;
+    biosamples: Record<string, Biosample>;
     de_ctidmap: any;
     gwas_studies: any;
 };
 
-async function load(assembly) {
-    const chromCounts = await Common.chromCounts(assembly);
-    const creHist = await Common.creHist(assembly);
-    const tf_list = await Common.tfHistoneDnaseList(assembly, 'encode');
-    const datasets = await Common.datasets(assembly);
-    const rankMethodToCellTypes = await Common.rankMethodToCellTypes(assembly);
-    const rankMethodToIDxToCellType = await Common.rankMethodToIDxToCellType(assembly);
-    const ensemblToGene = await Common.genemap(assembly);
-    const nineState = await Common.loadNineStateGenomeBrowser(assembly);
-    const creBeds = await Common.creBeds(assembly);
-    const filesList = indexFilesTab(datasets, creBeds, assembly);
-    const inputData = await Common.inputData(assembly);
-    const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
-    const geBiosamples = await Common.geBiosamples(assembly);
-    const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
-    const peak_tfHistCounts = await Common.tfHistCounts(assembly, 'peak');
-    const tfHistCounts = {
-        peak: peak_tfHistCounts,
-        cistrome: {},
+function getCacheMap(assembly): loadablecache {
+    return {
+        chromCounts: () => Common.chromCounts(assembly),
+        creHist: () => Common.creHist(assembly),
+
+        tf_list: () => Common.tfHistoneDnaseList(assembly, 'encode'),
+
+        datasets: () => Common.datasets(assembly),
+
+        rankMethodToCellTypes: () => Common.rankMethodToCellTypes(assembly),
+        rankMethodToIDxToCellType: () => Common.rankMethodToIDxToCellType(assembly),
+
+        ensemblToGene: () => Common.genemap(assembly),
+
+        nineState: () => Common.loadNineStateGenomeBrowser(assembly),
+        filesList: () => indexFilesTab(assembly),
+        inputData: () => Common.inputData(assembly),
+
+        geBiosampleTypes: () => Common.geBiosampleTypes(assembly),
+        geBiosamples: () => Common.geBiosamples(assembly),
+
+        geneIDsToApprovedSymbol: () => Common.geneIDsToApprovedSymbol(assembly),
+
+        tfHistCounts: () =>
+            new Promise(async resolve => {
+                resolve({
+                    peak: await Common.tfHistCounts(assembly, 'peak'),
+                    cistrome: await Common.tfHistCounts(assembly, 'cistrome'),
+                });
+            }),
+
+        creBigBeds: () => Common.creBigBeds(assembly),
+
+        ctmap: () => Common.makeCtMap(assembly),
+        ctsTable: () => Common.makeCTStable(assembly),
+
+        biosamples: () => Common.makeBiosamplesMap(assembly),
+
+        de_ctidmap: assembly === 'mm10' ? () => De.getCtMap(assembly) : () => Promise.resolve(undefined),
+
+        gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve(undefined),
     };
-    const creBigBeds = await Common.creBigBeds(assembly);
-    const ctmap = await Common.makeCtMap(assembly);
-    const ctsTable = await Common.makeCTStable(assembly);
-
-    let de_ctidmap;
-    if (assembly === 'mm10') {
-        de_ctidmap = await De.getCtMap(assembly);
-    }
-
-    let gwas_studies;
-    if (assembly === 'hg19') {
-        gwas_studies = await Gwas.gwasStudies(assembly);
-    }
-
-    const cache: cache = {
-        chromCounts: chromCounts,
-        creHist: creHist,
-
-        tf_list: tf_list,
-
-        datasets: datasets,
-
-        rankMethodToCellTypes: rankMethodToCellTypes,
-        rankMethodToIDxToCellType: rankMethodToIDxToCellType,
-
-        biosampleTypes: undefined,
-        assaymap: undefined,
-        ensemblToGene: ensemblToGene,
-
-        nineState: nineState,
-        filesList: filesList,
-        inputData: inputData,
-
-        moreTracks: undefined,
-
-        geBiosampleTypes: geBiosampleTypes,
-        geBiosamples: geBiosamples,
-
-        geneIDsToApprovedSymbol: geneIDsToApprovedSymbol,
-
-        tfHistCounts: tfHistCounts,
-
-        creBigBeds: creBigBeds,
-
-        ctmap: ctmap,
-        ctsTable: ctsTable,
-
-        de_ctidmap: de_ctidmap,
-
-        gwas_studies: gwas_studies,
-    };
-    return cache;
 }
 
-async function loadGlobal(hg19, mm10) {
-    const colors = require('./colors');
-    const helpKeys = await Common.getHelpKeys();
-    const files = {
-        agnostic: [].concat(hg19.filesList.agnostic).concat(mm10.filesList.agnostic),
-        specific: [].concat(hg19.filesList.specific).concat(mm10.filesList.specific),
-    };
-    const inputData = [].concat(hg19.inputData).concat(mm10.inputData);
+export type globalcache = {
+    colors: any;
+    helpKeys: { all: any };
+    files: any;
+    inputData: any;
+};
 
-    const global_cache = {
-        colors: colors,
-        helpKeys: { all: helpKeys },
-        files: files,
-        inputData: inputData,
+function getGlobalCacheMap(): loadableglobalcache {
+    return {
+        colors: () => require('./colors'),
+        helpKeys: () =>
+            new Promise(async resolve => {
+                resolve({
+                    all: await Common.getHelpKeys(),
+                });
+            }),
+        files: () =>
+            new Promise(async resolve => {
+                const hg19cache = loadCache('hg19');
+                const mm10cache = loadCache('mm10');
+                const hg19filelist = await hg19cache.filesList();
+                const mm10filelist = await mm10cache.filesList();
+                resolve({
+                    agnostic: [].concat(hg19filelist.agnostic).concat(mm10filelist.agnostic),
+                    specific: [].concat(hg19filelist.specific).concat(mm10filelist.specific),
+                });
+            }),
+        inputData: () =>
+            new Promise(async resolve => {
+                const hg19cache = loadCache('hg19');
+                const mm10cache = loadCache('mm10');
+                const hg19inputData = await hg19cache.inputData();
+                const mm10inputData = await mm10cache.inputData();
+                resolve([].concat(hg19inputData).concat(mm10inputData));
+            }),
     };
-    return global_cache;
 }
 
-let caches: any = undefined;
-let globalcache: any = undefined;
-export async function loadCaches() {
+function getCache<C>(
+    cacheKeys: Array<keyof C>,
+    cacheLoader: DataLoader<keyof C, any>
+): ByFunction<Promisify<Record<keyof C, any>>> {
+    return cacheKeys.reduce(
+        (prev, key) => {
+            prev[key] = () => cacheLoader.load(key);
+            return prev;
+        },
+        {} as ByFunction<Promisify<Record<keyof C, any>>>
+    );
+}
+
+let caches: Record<Assembly, loadablecache> = undefined as any;
+let globalcache: loadableglobalcache = undefined as any;
+export function prepareCache() {
     if (caches) {
         return;
     }
     try {
-        const hg19 = load('hg19');
-        const mm10 = load('mm10');
+        const hg19map = getCacheMap('hg19');
+        const mm10map = getCacheMap('mm10');
+        const hg19 = getCache<loadablecache>(Object.keys(hg19map) as (keyof cache)[], cacheLoader(hg19map));
+        const mm10 = getCache<loadablecache>(Object.keys(mm10map) as (keyof cache)[], cacheLoader(mm10map));
         caches = {
             hg19: hg19,
             mm10: mm10,
         };
-        const hg19cache = await hg19;
-        const mm10cache = await mm10;
-        globalcache = await loadGlobal(hg19cache, mm10cache);
+        const globalmap = getGlobalCacheMap();
+        globalcache = getCache<loadableglobalcache>(
+            Object.keys(globalmap) as (keyof globalcache)[],
+            globalcacheLoader(globalmap)
+        );
 
-        console.log('Cache loaded: ', Object.keys(caches));
+        console.log('Cache functions loaded: ', Object.keys(caches));
     } catch (e) {
-        caches = undefined;
-        globalcache = undefined;
+        caches = undefined as any;
+        globalcache = undefined as any;
         console.error('Error when loading cache.', e);
         Raven.captureException(e);
         throw new Error(e);
     }
 }
 
-export async function cache(assembly): Promise<cache> {
-    await loadCaches();
+export function loadCache(assembly: Assembly): loadablecache {
     return caches[assembly];
 }
 
-export const Compartments = ['cell', 'nucleoplasm', 'cytosol', 'nucleus', 'membrane', 'chromatin', 'nucleolus'];
-
-const chrom_lengths = require('../constants').chrom_lengths;
-export async function global_data(assembly) {
-    const c = await cache(assembly);
-    const datasets = c.datasets;
-    return {
-        tfs: c.tf_list,
-        cellCompartments: Compartments,
-        cellTypeInfoArr: datasets.globalCellTypeInfoArr,
-        chromCounts: c.chromCounts,
-        chromLens: chrom_lengths[assembly],
-        creHistBins: c.creHist,
-        geBiosampleTypes: c.geBiosampleTypes,
-        geBiosamples: c.geBiosamples,
-        creBigBedsByCellType: c.creBigBeds,
-        creFiles: c.filesList,
-        inputData: c.inputData,
-    };
+export function loadGlobalCache(): loadableglobalcache {
+    return globalcache;
 }
 
-export async function global_data_global() {
-    await loadCaches();
-    return { ...globalcache };
-}
+export const Compartments = Promise.resolve([
+    'cell',
+    'nucleoplasm',
+    'cytosol',
+    'nucleus',
+    'membrane',
+    'chromatin',
+    'nucleolus',
+]);
 
-loadCaches().catch(e => {
-    console.log('Cache load error on start.', e);
-});
+prepareCache();

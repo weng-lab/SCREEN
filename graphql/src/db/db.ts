@@ -33,5 +33,3 @@ pgp.pg.types.setTypeParser(1007, 'text', val => val.split(/,/).map(n => parseInt
 pgp.pg.types.setTypeParser(1021, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
 pgp.pg.types.setTypeParser(1022, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
 export const db: IDatabase<any> = pgp({ ...config.DB, application_name: 'graphqlapi' });
-
-require('./db_cache');

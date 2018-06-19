@@ -1,12 +1,12 @@
 import { getCreTable } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
-import { cache } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
 
 async function cre_table(data, assembly, pagination) {
-    const c = await cache(assembly);
-    const results = await getCreTable(assembly, c, data, pagination);
+    const ctmap = await loadCache(assembly).ctmap();
+    const results = await getCreTable(assembly, ctmap, data, pagination);
     return results;
 }
 
@@ -30,8 +30,7 @@ export async function resolve_data(source, inargs, context, info) {
 
 export async function resolve_data_nearbygenes(source, args, context) {
     const assembly = source.assembly;
-    const c = await cache(assembly);
-    const geneIDsToApprovedSymbol = c.geneIDsToApprovedSymbol;
+    const geneIDsToApprovedSymbol = await loadCache(assembly).geneIDsToApprovedSymbol();
     const all = source['gene_all_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
     const pc = source['gene_pc_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
     return {
@@ -50,16 +49,16 @@ export function resolve_data_range(source) {
 }
 
 export function resolve_data_ctspecific(source) {
-    const { ct, dnase_zscore, promoter_zscore, enhancer_zscore, ctcf_zscore } = source;
+    const { ct, dnase_zscore, h3k4me3_zscore, h3k27ac_zscore, ctcf_zscore } = source;
     if (!ct) {
         return undefined;
     }
-    const maxz = Math.max(dnase_zscore || -11, promoter_zscore || -11, enhancer_zscore || -11, ctcf_zscore || -11);
+    const maxz = Math.max(dnase_zscore || -11, h3k4me3_zscore || -11, h3k27ac_zscore || -11, ctcf_zscore || -11);
     return {
         ct,
         dnase_zscore,
-        promoter_zscore,
-        enhancer_zscore,
+        h3k4me3_zscore,
+        h3k27ac_zscore,
         ctcf_zscore,
         maxz,
     };

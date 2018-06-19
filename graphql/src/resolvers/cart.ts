@@ -1,16 +1,16 @@
 import * as Cart from '../db/db_cart';
 import * as Utils from '../utils';
-import { cache } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 import { getCreTable } from '../db/db_cre_table';
 
 const { UserError } = require('graphql-errors');
 
 const getCresForAssembly = async (assembly, accessions) => {
-    const c = await cache(assembly);
     if (accessions.length === 0) {
         return [];
     }
-    return getCreTable(assembly, c, { accessions }, {});
+    const ctmap = await loadCache(assembly).ctmap();
+    return getCreTable(assembly, ctmap, { accessions }, {});
 };
 
 const getCres = async cres => {

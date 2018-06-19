@@ -2,14 +2,14 @@ import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
 import * as DbGene from '../db/db_geneexp';
 
-import { cache, Compartments } from '../db/db_cache';
+import { loadCache, Compartments } from '../db/db_cache';
 
 const { UserError } = require('graphql-errors');
 
 async function geneexp(assembly, gene, biosample_types, compartments, normalized) {
-    const c = await cache(assembly);
+    const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
 
-    const available_biosamples = c.geBiosampleTypes;
+    const available_biosamples = geBiosampleTypes;
     if (!biosample_types) {
         biosample_types = available_biosamples;
     } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
@@ -18,7 +18,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
         );
     }
 
-    const available_compartments = Compartments;
+    const available_compartments = await Compartments;
     if (!compartments) {
         compartments = available_compartments;
     } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {

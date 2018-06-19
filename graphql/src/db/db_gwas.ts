@@ -93,10 +93,10 @@ export type gwascre = dbcre & {
     geneid: string;
 };
 
-export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, cache): Promise<gwascre[]> {
+export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, ctmap): Promise<gwascre[]> {
     const { fields, groupBy, where, params } = buildWhereStatement(
         assembly,
-        cache.ctmap,
+        ctmap,
         { ctspecific: ct },
         undefined,
         undefined,

@@ -1,5 +1,7 @@
-import { isclose } from '../utils';
+import { isclose, escapeRegExp } from '../utils';
 import { db } from './db';
+import { Assembly, Biosample, loadCache } from './db_cache';
+import { biosamplesQuery } from './db_common';
 
 export async function get_snpcoord(assembly, s) {
     const tableName = assembly + '_snps';
@@ -41,31 +43,27 @@ export class GeneParse {
     oname;
     strand;
     coord;
+    tsscoord;
     approved_symbol;
     sm;
 
-    constructor(assembly, r, s, useTss, tssDist) {
+    constructor(assembly, r, s) {
         this.assembly = assembly;
         this.s = s;
-        this.useTss = useTss;
-        this.tssDist = tssDist;
 
         this.oname = r['oname'];
         this.strand = r['strand'];
 
-        if (useTss) {
-            if ('+' == this.strand) {
-                this.coord = {
-                    chrom: r['altchrom'],
-                    start: Math.max(0, parseInt(r['altstart']) - tssDist),
-                    end: r['altstop'],
-                };
-            } else {
-                this.coord = { chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) + tssDist };
-            }
+        if ('+' == this.strand) {
+            this.tsscoord = {
+                chrom: r['altchrom'],
+                start: Math.max(0, parseInt(r['altstart'])),
+                end: r['altstop'],
+            };
         } else {
-            this.coord = { chrom: r['chrom'], start: r['start'], end: r['stop'] };
+            this.tsscoord = { chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) };
         }
+        this.coord = { chrom: r['chrom'], start: r['start'], end: r['stop'] };
 
         this.approved_symbol = r['approved_symbol'];
         this.sm = r['sm'];
@@ -81,6 +79,12 @@ export class GeneParse {
                 end: this.coord.end,
                 strand: this.strand,
             },
+            tssrange: {
+                chrom: this.tsscoord.chrom,
+                start: this.tsscoord.start,
+                end: this.tsscoord.end,
+                strand: this.strand,
+            },
             sm: this.sm,
         };
     }
@@ -90,14 +94,12 @@ export class GeneParse {
 
         return {
             gene: gene,
-            useTss: this.useTss,
-            tssDist: this.tssDist,
             assembly: this.assembly,
         };
     }
 }
 
-async function exactGeneMatch(assembly, s, usetss, tssDist) {
+async function exactGeneMatch(assembly, s) {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
     const infoTableName = assembly + '_gene_info';
@@ -116,12 +118,12 @@ async function exactGeneMatch(assembly, s, usetss, tssDist) {
     `;
     const rows = await db.any(q, [slo, s]);
     if (rows.length > 0 && isclose(1, rows[0]['sm'])) {
-        return [new GeneParse(assembly, rows[0], s, usetss, tssDist)];
+        return [new GeneParse(assembly, rows[0], s)];
     }
-    return rows.map(r => new GeneParse(assembly, r, s, usetss, tssDist));
+    return rows.map(r => new GeneParse(assembly, r, s));
 }
 
-async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
+async function fuzzyGeneMatch(assembly, s) {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
     const infoTableName = assembly + '_gene_info';
@@ -139,28 +141,30 @@ async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
         LIMIT 50
     `;
     const rows = await db.any(q, [slo, slo]);
-    return rows.map(r => new GeneParse(assembly, r, s, usetss, tssDist));
+    return rows.map(r => new GeneParse(assembly, r, s));
 }
 
-export async function try_find_gene(assembly, s, usetss, tssDist) {
-    let genes = await exactGeneMatch(assembly, s, usetss, tssDist);
+export async function try_find_gene(assembly, s) {
+    let genes = await exactGeneMatch(assembly, s);
     if (genes.length === 0) {
-        genes = await fuzzyGeneMatch(assembly, s, usetss, tssDist);
+        genes = await fuzzyGeneMatch(assembly, s);
     }
     return genes;
 }
 
-async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible) {
+async function do_find_celltype(
+    query: string,
+    p: string[],
+    q: string,
+    unused_toks: string[],
+    ret_celltypes: celltypeResult[],
+    possible: queryResult[],
+    assembly: Assembly,
+    allbiosamples: Record<string, Biosample>
+) {
     for (const i of Array(p.length).keys()) {
         const s = p.slice(-1 * (i + 1)).join(' ');
-        const query = `
-            SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
-            FROM ${tableName}
-            WHERE LOWER(cellType) % $1
-            ORDER BY sm DESC
-            LIMIT 10
-        `;
-        const r = await db.any(query, [s]);
+        const r = await db.any<queryResult>(query, [escapeRegExp(s)]);
         if (r.length === 0) {
             if (possible.length === 0) {
                 console.assert(i === 0);
@@ -170,8 +174,16 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
                     .join(' ')
                     .trim();
             } else {
-                ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
-                possible.length = 0;
+                for (const po of possible) {
+                    ret_celltypes.push({
+                        input: p.slice(-1 * i).join(' '),
+                        assembly,
+                        sm: po.sm,
+                        celltype: po.biosample_term_name,
+                        ...allbiosamples[po.biosample_term_name],
+                    });
+                }
+                possible.length = 0; // Reset possible
                 q = p
                     .slice(0, -1 * i)
                     .join(' ')
@@ -180,15 +192,14 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
             return q;
         }
         if (possible.length === 0) {
-            // Remove duplicates
-            r.forEach(
-                res => ((possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res))
-            );
+            // If we didn't have any before, short-circuit just adding all
+            console.assert(new Set(r.map(res => res.biosample_term_name)).size === r.length); // No duplicates
+            possible.push(...r);
         } else {
-            const newcelltypes = r.map(c => c.celltype);
+            const newcelltypes = r.map(c => c.biosample_term_name);
             // Only keep results in which the celltype was not previously there, or was there and similarity increased
             const moresimilar = r.filter(res => {
-                const oldres = possible.filter(old => res.celltype == old.celltype);
+                const oldres = possible.filter(old => res.biosample_term_name == old.biosample_term_name);
                 if (oldres.length !== 0) {
                     // The old results contained this celltype, must make sure prob increased
                     return res.sm >= oldres[0].sm;
@@ -199,7 +210,15 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
             });
             if (moresimilar.length === 0) {
                 // If all existing cell types reduced in similiarity and no new celltypes emerged, then adding this token does nothing helpful
-                ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
+                for (const po of possible) {
+                    ret_celltypes.push({
+                        input: p.slice(-1 * i).join(' '),
+                        assembly,
+                        sm: po.sm,
+                        celltype: po.biosample_term_name,
+                        ...allbiosamples[po.biosample_term_name],
+                    });
+                }
                 q = p
                     .slice(0, -1 * i)
                     .join(' ')
@@ -209,7 +228,10 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
             } else {
                 possible.length = 0;
                 moresimilar.forEach(
-                    res => ((possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res))
+                    res =>
+                        possible.map(c => c.biosample_term_name).includes(res.biosample_term_name)
+                            ? true
+                            : possible.push(res)
                 );
             }
         }
@@ -217,31 +239,52 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
     return false;
 }
 
-export async function find_celltype(assembly, q, rev = false) {
+type queryResult = {
+    biosample_term_name: string;
+    count: number;
+    id: string[];
+    type: string[];
+    synonyms: string[][];
+} & { sm: number };
+type celltypeResult = { input: string; assembly: Assembly; sm: number; celltype: string } & Biosample;
+export async function find_celltype(assembly, q, partial = false): Promise<{ s: string; celltypes: celltypeResult[] }> {
     q = q.trim();
+    const s_in = q;
     if (q.length === 0) {
-        return { s: q, celltypes: {} };
+        return { s: q, celltypes: [] };
     }
-    const tableName = assembly + '_rankCellTypeIndexex';
+    const query = biosamplesQuery(
+        assembly,
+        'WHERE LOWER(biosample_term_name) % $1 OR LOWER(biosample_term_name) ~* $1',
+        [`similarity(LOWER(biosample_term_name), $1) AS sm`],
+        'ORDER BY sm DESC',
+        10
+    );
+    const rettokens: celltypeResult[] = [];
+    const allbiosamples = await loadCache(assembly).biosamples();
 
-    const unused_toks: Array<any> = [];
-    const ret_celltypes = {};
-    const possible: Array<any> = [];
+    const unused_toks: string[] = [];
+    const possible: queryResult[] = [];
     while (true) {
         if (q.length == 0) {
             break;
         }
         const p = q.trim().split(' ');
-        q = await do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible);
+        q = await do_find_celltype(query, p, q, unused_toks, rettokens, possible, assembly, allbiosamples);
 
         if (!q) {
-            if (possible[0]) {
-                // We fell off the end, but know we have possibles
-                ret_celltypes[p.join(' ')] = possible[0];
+            for (const po of possible) {
+                rettokens.push({
+                    input: p.join(' '),
+                    assembly,
+                    sm: po.sm,
+                    celltype: po.biosample_term_name,
+                    ...allbiosamples[po.biosample_term_name],
+                });
             }
             break;
         }
     }
 
-    return { s: unused_toks.join(' '), celltypes: ret_celltypes };
+    return { s: !partial ? unused_toks.join(' ') : s_in, celltypes: rettokens };
 }

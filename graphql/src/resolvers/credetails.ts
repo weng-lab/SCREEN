@@ -1,10 +1,10 @@
 import * as DbCommon from '../db/db_common';
-import * as DbCreTable from '../db/db_cre_table';
-import * as DbCreDetails from '../db/db_credetails';
+import { getCreTable } from '../db/db_cre_table';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { getByGene } from './rampage';
-import { cache } from '../db/db_cache';
+import { loadCache, Assembly } from '../db/db_cache';
+import { select_cre_intersections, orthologs } from '../db/db_credetails';
 
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
@@ -28,19 +28,21 @@ class CREDetails {
         return await this._coord;
     }
 
-    static getCtData = (ctvalue, ctmap, rankkey, ranks, ctmapkey) =>
-        ctvalue in ctmap[ctmapkey] ? ranks[rankkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
+    static getCtData = (ctvalue, ctmap, key, ranks) =>
+        ctvalue in ctmap[key] ? ranks[key][ctmap[key][ctvalue] - 1] : undefined;
 
     async topTissues() {
-        const c = await cache(this.assembly);
+        const c = loadCache(this.assembly);
+        const ctmap = await c.ctmap();
+        const datasets = await c.datasets();
         const coord = await this.coord();
-        // ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
+        // ['h3k4me3', 'h3k27ac', 'dnase', 'ctcf']
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
-        const data = c.datasets.globalCellTypeInfoArr.map(ct => {
-            const dnase = CREDetails.getCtData(ct.value, c.ctmap, 'dnase', ranks, 'dnase');
-            const h3k4me3 = CREDetails.getCtData(ct.value, c.ctmap, 'h3k4me3', ranks, 'promoter');
-            const h3k27ac = CREDetails.getCtData(ct.value, c.ctmap, 'h3k27ac', ranks, 'enhancer');
-            const ctcf = CREDetails.getCtData(ct.value, c.ctmap, 'ctcf', ranks, 'ctcf');
+        const data = datasets.globalCellTypeInfoArr.map(ct => {
+            const dnase = CREDetails.getCtData(ct.value, ctmap, 'dnase', ranks);
+            const h3k4me3 = CREDetails.getCtData(ct.value, ctmap, 'h3k4me3', ranks);
+            const h3k27ac = CREDetails.getCtData(ct.value, ctmap, 'h3k27ac', ranks);
+            const ctcf = CREDetails.getCtData(ct.value, ctmap, 'ctcf', ranks);
             return {
                 ct,
                 dnase,
@@ -73,6 +75,13 @@ class CREDetails {
                         chrom: g.chrom,
                         start: g.start,
                         end: g.stop,
+                        strand: g.strand,
+                    },
+                    tsscoords: {
+                        chrom: g.tss_chrom,
+                        start: g.tss_start,
+                        end: g.tss_stop,
+                        strand: g.strand,
                     },
                 },
                 distance: g.distance,
@@ -92,6 +101,13 @@ class CREDetails {
                         chrom: g.chrom,
                         start: g.start,
                         end: g.stop,
+                        strand: g.strand,
+                    },
+                    tsscoords: {
+                        chrom: g.tss_chrom,
+                        start: g.tss_start,
+                        end: g.tss_stop,
+                        strand: g.strand,
                     },
                 },
                 distance: g.distance,
@@ -133,8 +149,8 @@ class CREDetails {
     }
 
     async peakIntersectCount(eset) {
-        const c = await cache(this.assembly);
-        return DbCommon.peakIntersectCount(this.assembly, this.accession, c.tfHistCounts[eset], eset);
+        const tfHistCounts = await loadCache(this.assembly).tfHistCounts();
+        return DbCommon.peakIntersectCount(this.assembly, this.accession, tfHistCounts[eset], eset);
     }
 
     async getTadInfo() {
@@ -149,8 +165,8 @@ export async function resolve_credetails(source, args, context, info) {
         throw new UserError('Invalid accession: ' + accession);
     }
 
-    const c = await cache(assembly);
-    const res = await DbCreTable.getCreTable(assembly, c, { accessions: [accession] }, {});
+    const ctmap = await loadCache(assembly as Assembly).ctmap();
+    const res = await getCreTable(assembly, ctmap, { accessions: [accession] }, {});
     if (res.total === 0) {
         throw new UserError('Invalid accession: ' + accession);
     }
@@ -220,7 +236,7 @@ export async function resolve_cre_nearbyGenomic_re_tads(source, args) {
 export async function resolve_cre_fantomCat(source, args, context, info) {
     const cre: CREDetails = source.details;
     const process = async key => {
-        const results = await DbCreDetails.select_cre_intersections(cre.assembly, cre.accession, key);
+        const results = await select_cre_intersections(cre.assembly, cre.accession, key);
         for (const result of results) {
             result['other_names'] = result['genename'] != result['geneid'] ? result['genename'] : '';
             if (result['aliases'] != '') {
@@ -243,7 +259,7 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
 
 export async function resolve_cre_ortholog(source, args, context, info) {
     const cre: CREDetails = source.details;
-    const ortholog = await DbCreDetails.orthologs(cre.assembly, cre.accession);
+    const ortholog = await orthologs(cre.assembly, cre.accession);
     return ortholog;
 }
 

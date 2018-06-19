@@ -1,6 +1,7 @@
 import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
 import { db, pgp } from './db';
+import { loadablecache } from './db_cache';
 
 const { UserError } = require('graphql-errors');
 
@@ -28,7 +29,7 @@ const notCtSpecificRanks = (wheres, params, j) => {
         const exp = map[name];
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
-            const maxDefault = 10.0; // must match slider default
+            const maxDefault = name === 'dnase' ? 15.0 : 10.0; // must match slider default
             const start = j[`rank_${name}_start`] || minDefault;
             const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
@@ -42,7 +43,7 @@ const notCtSpecificRanks = (wheres, params, j) => {
                 params[`rank_${name}_end`] = end;
             }
             if (startWhere && endWhere) {
-                wheres.push(`(${startWhere} and ${endWhere}`);
+                wheres.push(`(${startWhere} and ${endWhere})`);
             } else if (startWhere) {
                 wheres.push(`(${startWhere})`);
             } else if (endWhere) {
@@ -52,47 +53,33 @@ const notCtSpecificRanks = (wheres, params, j) => {
     }
 };
 
-const getCtSpecificOrderBy = (exp, ctindex) =>
-    ({
-        dnase: `cre.${exp}_zscores[${ctindex}] as dnase_zscore`,
-        h3k4me3: `cre.${exp}_zscores[${ctindex}] as promoter_zscore`,
-        h3k27ac: `cre.${exp}_zscores[${ctindex}] as enhancer_zscore`,
-        ctcf: `cre.${exp}_zscores[${ctindex}] as ctcf_zscore`,
-    }[exp]);
-const ctexps = {
-    dnase: 'dnase',
-    promoter: 'h3k4me3',
-    enhancer: 'h3k27ac',
-    ctcf: 'ctcf',
-};
+const ctexps = ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf'];
 const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
     j = j.ctexps || {};
-    for (const name of Object.keys(ctexps)) {
-        const exp = ctexps[name];
+    for (const name of ctexps) {
         if (!(ct in ctmap[name])) {
             console.log(ct, 'not in ctmap ', name);
             continue;
         }
         const ctindex = ctmap[name][ct];
-        // fields.push(getCtSpecificOrderBy(exp, ctindex));
 
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
-            const maxDefault = 10.0; // must match slider default
+            const maxDefault = name === 'dnase' ? 15.0 : 10.0; // must match slider default
             const start = j[`rank_${name}_start`] || minDefault;
             const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
             let endWhere;
             if (!isclose(start, minDefault)) {
-                startWhere = `cre.${exp}_zscores[${ctindex}] >= $<${exp}_zscores_${ctindex}_start>`;
-                params[`${exp}_zscores_${ctindex}_start`] = start;
+                startWhere = `cre.${name}_zscores[${ctindex}] >= $<${name}_zscores_${ctindex}_start>`;
+                params[`${name}_zscores_${ctindex}_start`] = start;
             }
             if (!isclose(end, maxDefault)) {
-                endWhere = `cre.${exp}_zscores[${ctindex}] <= $<${exp}_zscores_${ctindex}_end>`;
-                params[`${exp}_zscores_${ctindex}_end`] = end;
+                endWhere = `cre.${name}_zscores[${ctindex}] <= $<${name}_zscores_${ctindex}_end>`;
+                params[`${name}_zscores_${ctindex}_end`] = end;
             }
             if (startWhere && endWhere) {
-                wheres.push(`(${startWhere} and ${endWhere}`);
+                wheres.push(`(${startWhere} and ${endWhere})`);
             } else if (startWhere) {
                 wheres.push(`(${startWhere})`);
             } else if (endWhere) {
@@ -116,7 +103,7 @@ const where = (wheres, params, chrom, start, stop) => {
 
 export const buildWhereStatement = (
     assembly,
-    ctmap,
+    ctmap: Record<string, any>,
     j: any,
     chrom: string | undefined,
     start: number | undefined,
@@ -148,6 +135,7 @@ export const buildWhereStatement = (
             case 'promoter_zscore':
             case 'enhancer_zscore':
             case 'ctcf_zscore':
+            case 'maxz_ct':
                 orderBy = 'maxz';
                 break;
             default:
@@ -163,16 +151,20 @@ export const buildWhereStatement = (
                 col = 'dnase_zscores';
                 break;
             case 'promoter_zscore':
-                name = 'promoter';
+                name = 'h3k4me3';
                 col = 'h3k4me3_zscores';
                 break;
             case 'enhancer_zscore':
-                name = 'enhancer';
+                name = 'h3k27ac';
                 col = 'h3k27ac_zscores';
                 break;
             case 'ctcf_zscore':
                 name = 'ctcf';
                 col = 'ctcf_zscores';
+                break;
+            case 'maxz_ct':
+                name = 'maxz_ct';
+                col = undefined;
                 break;
             default:
                 name = undefined;
@@ -180,11 +172,17 @@ export const buildWhereStatement = (
                 break;
         }
         if (name) {
-            if (!(ctexp in ctmap[name])) {
+            if (name === 'maxz_ct') {
+                // const index = ctmap['maxz_ct'][ctexp];
+                // orderBy = `maxz_ct[${index}]`;
                 orderBy = 'maxz';
             } else {
-                const index = ctmap[name][ctexp];
-                orderBy = `${col}[${index}]`;
+                if (!(ctexp in ctmap[name])) {
+                    orderBy = 'maxz';
+                } else {
+                    const index = ctmap[name][ctexp];
+                    orderBy = `${col}[${index}]`;
+                }
             }
         }
         ctSpecificRanks(wheres, fields, params, ctexp, j, ctmap);
@@ -196,15 +194,14 @@ export const buildWhereStatement = (
     // Ctspecific data
     if (ct) {
         const ctspecificfields: any[] = [];
-        for (const name of Object.keys(ctexps)) {
+        for (const name of ctexps) {
             if (!(ct in ctmap[name])) {
                 continue;
             }
             const ctindex = ctmap[name][ct];
-            const exp = ctexps[name];
-            fields.push(`cre.${exp}_zscores[${ctindex}] as ${name + '_zscore'}`);
-            ctspecificfields.push(`cre.${exp}_zscores[${ctindex}]`);
-            groupBy.push(`cre.${exp}_zscores[${ctindex}]`);
+            fields.push(`cre.${name}_zscores[${ctindex}] as ${name + '_zscore'}`);
+            ctspecificfields.push(`cre.${name}_zscores[${ctindex}]`);
+            groupBy.push(`cre.${name}_zscores[${ctindex}]`);
         }
         fields.push(`'${ct}' as ct`);
     }
@@ -254,8 +251,8 @@ export type dbcre = {
     gene_pc_id: number[];
     ct: string;
     dnase_zscore?: number;
-    promoter_zscore?: number;
-    enhancer_zscore?: number;
+    h3k4me3_zscore?: number;
+    h3k27ac_zscore?: number;
     ctcf_zscore?: number;
     accession: string;
     isproximal: boolean;
@@ -268,7 +265,7 @@ export type dbcre = {
 
 export async function getCreTable(
     assembly: string,
-    cache,
+    ctmap: Record<string, any>,
     j,
     pagination,
     extra?: { wheres: string[]; fields: string[] }
@@ -279,7 +276,7 @@ export async function getCreTable(
     const table = assembly + '_cre_all';
     const { fields, where, params, orderBy } = buildWhereStatement(
         assembly,
-        cache.ctmap,
+        ctmap,
         j,
         chrom,
         start,

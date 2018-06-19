@@ -1,6 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
-import { cache } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 
 const { UserError } = require('graphql-errors');
 
@@ -13,9 +13,9 @@ class Gwas {
     }
 
     async awaitStudies() {
-        const c = await cache(this.assembly);
+        const gwas_studies = await loadCache(this.assembly).gwas_studies();
         if (!this.studies) {
-            this.studies = c.gwas_studies;
+            this.studies = gwas_studies;
             this.byStudy = this.studies.reduce((obj, r) => {
                 obj[r.value] = r;
                 return obj;
@@ -29,9 +29,9 @@ class Gwas {
     numLdBlocksOverlap = gwas_study => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
     numCresOverlap = gwas_study => DbGwas.numCresOverlap(this.assembly, gwas_study);
     allCellTypes = async gwas_study => {
-        const c = await cache(this.assembly);
+        const datasets = await loadCache(this.assembly).datasets();
         const cts = await DbGwas.gwasEnrichment(this.assembly, gwas_study);
-        const ret = cts ? cts.map(ct => ({ ...ct, ct: c.datasets.byCellTypeValue[ct.ct] })) : undefined;
+        const ret = cts ? cts.map(ct => ({ ...ct, ct: datasets.byCellTypeValue[ct.ct] })) : undefined;
         return ret;
     };
 
@@ -58,17 +58,13 @@ class Gwas {
     }
 
     async cres(gwas_study: string, ct: string | undefined) {
-        const acache = await cache(this.assembly);
-        const ctmap = acache.ctmap;
-        const ctsTable = acache.ctsTable;
-        const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct !== 'none' ? ct : undefined, acache);
+        const acache = loadCache(this.assembly);
+        const ctmap = await acache.ctmap();
+        const ctsTable = await acache.ctsTable();
+        const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct !== 'none' ? ct : undefined, ctmap);
 
         const activeCres = cres.filter(
-            a =>
-                !ct ||
-                (a.promoter_zscore || 0) > 1.64 ||
-                (a.enhancer_zscore || 0) > 1.64 ||
-                (a.dnase_zscore || 0) > 1.64
+            a => !ct || (a.h3k4me3_zscore || 0) > 1.64 || (a.h3k27ac_zscore || 0) > 1.64 || (a.dnase_zscore || 0) > 1.64
         );
 
         // accession, snp, geneid, zscores
