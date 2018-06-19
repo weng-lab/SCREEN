@@ -27,5 +27,8 @@
 	"staticServer": "http://screen.encodeproject.org/assets",
 	"bed_intersect": "http://api.wenglab.org/screenv10_python/postws/lines",
 	"overrides": {}
-    }
+    },
+	"graphql": {
+		"host": "http://api.wenglab.org/screenv10_graphql/graphql"
+	}
 }

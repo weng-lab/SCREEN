@@ -27,5 +27,8 @@
 	"bed_intersect": "http://api.wenglab.org/screenv10_python_beta/postws/lines",
 	"staticServer": "/assets",
 	"overrides": {}
-    }
+    },
+	"graphql": {
+		"host": "http://api.wenglab.org/screenv10_graphql/graphql"
+	}
 }
