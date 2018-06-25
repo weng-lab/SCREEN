@@ -33,5 +33,8 @@
      "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
      "staticServer": "http://screen.encodeproject.org/assets",
      "overrides": {}
-    }
+    },
+	"graphql": {
+		"host": "http://api.wenglab.org/screenv10_graphql/graphql"
+	}
 }

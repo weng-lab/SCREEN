@@ -61,9 +61,12 @@ const cors = function(req, res, next) {
 
 useRaven && app.use(Raven.requestHandler());
 
+const config = require('./config.json');
+// Unsure how to get base url when we are served from non-root / - like /screenv10_graphql/
 app.get(
     '/graphql',
-    graphiqlExpress(req => ({ endpointURL: req && req.originalUrl ? req.originalUrl.split('?')[0] : '/graphql' }))
+    // graphiqlExpress(req => ({ endpointURL: req && req.originalUrl ? console.log(req) || req.originalUrl.split('?')[0] : '/graphql' }))
+    graphiqlExpress({ endpointURL: config.graphql.host })
 );
 
 app.use('/graphql', cors);
