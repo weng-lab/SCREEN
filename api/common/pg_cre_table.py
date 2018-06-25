@@ -144,7 +144,7 @@ class PGcreTable(object):
                     'values': v,
                 })
         return result
-
+    
     def creTable(self, j, chrom, start, stop):
 
         """

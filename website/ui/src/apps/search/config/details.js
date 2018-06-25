@@ -200,11 +200,8 @@ class OrthologTab extends ReTabBase {
 	super(props, "ortholog");
 	this.doRender = (globals, assembly, data) => {
             let d = data.ortholog;
-	    if(d.length > 0) {
-	        return tabEles(globals, data, OrthologTable(globals, assembly,
-							    this.props.uuid), 1);
-	    }
-            return <div><br />{"No orthologous ccRE identified."}</div>;
+	    return tabEles(globals, data, OrthologTable(globals, assembly,
+							this.props.uuid), 1);
 	}
     }
 }

@@ -203,12 +203,14 @@ class DataWebService():
         genesInTad = cre.genesInTad()
         # with Timer("re_cres") as t:
         re_tads = cre.cresInTad()
+        vista = cre.vista()
 
         return {accession: {"nearby_genes": nearbyGenes,
                             "tads": genesInTad,
                             "re_tads": re_tads,
                             "nearby_res": nearbyCREs,
-                            "overlapping_snps": snps}}
+                            "overlapping_snps": snps,
+                            "vistaids": vista}}
 
     def _re_detail_tfIntersection(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)

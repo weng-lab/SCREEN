@@ -44,6 +44,11 @@ class PGsearch(object):
         self.ctmap = self.pgc.makeCtMap()
         self.ctsTable = self.pgc.makeCTStable()
 
+    def vista(self, accession):
+        with getcursor(self.pg.DBCONN, "vista") as curs:
+            curs.execute("SELECT * from {vtn} WHERE accession = %(acc)s".format(vtn = self.assembly + "_vista"), {"acc": accession})
+        return [{ "vid": x[2] } for x in curs.fetchall()]
+        
     def gwasJson(self, j, json):
         self.pgg.gwasPercentActive(j["gwas_study"], j["cellType"], json)
         

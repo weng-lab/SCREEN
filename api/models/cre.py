@@ -31,6 +31,9 @@ class CRE:
         return self.pgSearch.distToNearbyCREs(self.accession, self.coord(),
                                               halfWindow)
 
+    def vista(self):
+        return self.pgSearch.vista(self.accession)
+    
     def nearbyGenes(self):
         coord = self.coord()
         if not self.genesAll or not self.genesPC:

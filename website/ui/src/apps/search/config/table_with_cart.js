@@ -72,7 +72,7 @@ const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
             render: ZRender.numWithCommas
 	}, {
 	    title: <span>experimental<br/>evidence</span>, data: "vistaids",
-	    render: vistalinks, className: "experimental"
+	    render: vistalinks, className: "experimental", visible: false
 	}, {
             title: geneHelp, data: "genesallpc",
 	    className: "geneexp", render: ZRender.geneDeLinks(assembly, uuid),

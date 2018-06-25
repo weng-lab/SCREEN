@@ -34,7 +34,7 @@ class Footer extends React.Component {
 	    return false;
 	}
 
-	return <HelpBlock>Total: {this.props.ds.rowIDs.length}</HelpBlock>;
+	return (this.props.ds.rowIDs.length ? <HelpBlock>Total: {this.props.ds.rowIDs.length}</HelpBlock> : <HelpBlock>{this.props.emptyText}</HelpBlock>);
     }
 }
 
@@ -221,7 +221,7 @@ class Ztable extends React.Component {
 		{ds.numPages > 1 && <PageBox pages={ds.numPages}
 					     curPage={this.state.pageNum}
 					     onSelect={pageClick} />}
-		<Footer ds={ds} noTotal={this.props.noTotal} />
+		<Footer ds={ds} noTotal={this.props.noTotal} emptyText={this.props.emptyText} />
 	    </div>);
     }
 }

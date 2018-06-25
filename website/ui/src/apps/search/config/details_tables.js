@@ -14,6 +14,11 @@ const geneLink_list = (d) => (
     commajoin(d.split(", ").map(Render.geneLink))
 )
 
+const _vistalink = id => (
+    <a href={'https://enhancer.lbl.gov/cgi-bin/imagedb3.pl?form=presentation&show=1&experiment_id=' + id.substring(2) + '&organism_id=' + (id[0] === 'm' ? '2' : '1')}
+      target="_blank">{id}</a>
+);
+
 export const TopTissuesTables = (globals, assembly) => ({
     promoter: {
 	title: "H3K4me3 Z-scores",
@@ -96,7 +101,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No orthologous ccRE identified",
+	emptyText: "No orthologous ccREs have been identified for this ccRE.",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
              render: Render.relink(assembly === "mm10" ? "hg19" : "mm10", uuid)},
@@ -112,6 +117,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 export const FantomCatTable = (globals, assembly, actions) => ({
     fantom_cat_twokb: {
 	title: "Intersecting FANTOM CAT RNAs (ccRE within 2kb of RNA TSS)",
+	emptyText: "This ccRE is not proximal to any FANTOM CAT RNA TSSs",
 	cols: [
 	    {title: "FANTOM CAT RNA accession", data: "geneid", 
 	     render: fantomcat_link},
@@ -147,6 +153,7 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     },
     fantom_cat: {
 	title: "Intersecting FANTOM CAT RNAs (ccRE within entire RNA body)",
+	emptyText: "This ccRE does not intersect any FANTOM CAT RNAs",
 	cols: [
 	    {title: "FANTOM CAT RNA accession", data: "geneid", 
 	     render: fantomcat_link},
@@ -180,6 +187,7 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     },
     enhancers: {
 	"title": "Intersecting FANTOM enhancers (permissive, FANTOM5 Phases 1 and 2)",
+	emptyText: "This ccRE does not intersect any FANTOM enhancers",
 	cols: [
 	    {title: "chr", data: "chr", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
@@ -208,6 +216,7 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     },
     cage: {
 	"title": "Intersecting FANTOM CAGE peaks (robust, FANTOM5 Phases 1 and 2)",
+	emptyText: "This ccRE does not intersect any FANTOM CAGE peaks",
 	cols: [
 	    {title: "chr", data: "chr", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
@@ -289,7 +298,21 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    ],
             pageLength: 5,
 	    sortCol: ["distance", true]
-        }
+        },
+	vistaids: {
+	    title: "Intersecting VISTA enhancers",
+	    paging: true,
+	    info: false,
+	    bFilter: true,
+	    bLengthChange: true,
+	    csv: false,
+	    emptyText: "No VISTA enhancers intersect this ccRE",
+	    cols: [
+		{title: "VISTA ID", data: "vid", render: _vistalink}
+	    ],
+	    pageLength: 5,
+	    sortCol: ["vid", true]
+	}
     };
     if("hg19" === assembly){
         ret = {...ret,
@@ -395,7 +418,7 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
 export const LinkedGenesTable = (globals, assembly) => ({
     "linked_genes": {
 	title: "Linked Genes",
-	emptyText: "No linked genes predicted",
+	emptyText: "No linked genes have been identified for this ccRE using ChIA-PET or eQTL data",
 	cols: [{ title: "gene", data: "gene",
 		 render: Render.geneLink
 	       },{ title: "biosample", data: "celltype",
