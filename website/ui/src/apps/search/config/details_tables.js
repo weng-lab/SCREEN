@@ -358,6 +358,7 @@ export const TfIntersectionTable = (globals, assembly) => ({
 	title: "TFs that bind this ccRE",
         typ: IntersectingAssayTf,
 	helpkey: "Intersecting_transcription_factors",
+	emptyText: "No ENCODE TF ChIP-seq peaks intersect this ccRE",
 	cols: [
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf(assembly) },
@@ -372,6 +373,7 @@ export const TfIntersectionTable = (globals, assembly) => ({
 	title: "Histone Marks at this ccRE",
 	helpkey: "IntersectingHistoneMarks",
         typ: IntersectingAssayHistone,
+	emptyText: "No ENCODE histone mark ChIP-seq peaks intersect this ccRE",
 	cols: [
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
