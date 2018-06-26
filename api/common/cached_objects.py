@@ -61,6 +61,11 @@ class CachedObjects:
                          "h3k27ac": self.pgSearch.datasets("H3K27ac"),
                          "h3k4me3": self.pgSearch.datasets("H3K4me3"),
                          "ctcf": self.pgSearch.datasets("CTCF")}
+        self.accmap = {}
+        for _, v in self.assaymap.iteritems():
+            for ct, vv in v.iteritems():
+                self.accmap[vv[0]] = ct
+                self.accmap[vv[1]] = ct
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()

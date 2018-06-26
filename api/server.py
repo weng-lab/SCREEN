@@ -16,6 +16,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from templates import Templates
 from utils import Utils, AddPath
+from files_and_paths import Dirs
 
 AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
@@ -93,6 +94,7 @@ def main():
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(ps)
 
+    args.basedir = Dirs.data_base
     wsconfig = WebServerConfig("main", args.production)
     main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
