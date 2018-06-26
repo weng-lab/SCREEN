@@ -9,14 +9,14 @@ import { select_cre_intersections, orthologs } from '../db/db_credetails';
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
 
-class CREDetails {
+export class CREDetails {
     assembly;
     accession;
     _coord: Promise<{ chrom: string; start: number; end: number }>;
     genesAll;
     genesPC;
 
-    constructor(assembly, accession) {
+    constructor(assembly: Assembly, accession: string) {
         this.assembly = assembly;
         this.accession = accession;
     }
@@ -63,7 +63,7 @@ class CREDetails {
         }
     }
 
-    async nearbyGenes() {
+    async nearbyGenes(): Promise<{ gene: any; distance: number; pc: boolean }[]> {
         await this.awaitGenes();
         const pcGenes = this.genesPC.map(g => g['approved_symbol']);
         return this.genesAll
@@ -271,13 +271,6 @@ export async function resolve_cre_tfIntersection(source, args, context, info) {
 export async function resolve_cre_cistromeIntersection(source, args, context, info) {
     const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('cistrome');
-}
-
-export async function resolve_cre_rampage(source, args, context, info) {
-    const cre: CREDetails = source.details;
-    const nearbyGenes = await cre.nearbyPcGenes(); // Sorted by distance
-    const nearest = nearbyGenes[0];
-    return getByGene(cre.assembly, nearest);
 }
 
 export async function resolve_cre_linkedGenes(source, args, context, info) {
