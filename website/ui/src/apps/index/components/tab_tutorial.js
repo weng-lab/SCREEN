@@ -5,11 +5,6 @@ import {tabPanelize} from '../../../common/utility'
 import ASHG from './tab_ashg_2017'
 
 class UTabUCSC extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-    
     render() {
 	return tabPanelize(
 		<div>

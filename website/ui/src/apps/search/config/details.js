@@ -199,7 +199,6 @@ class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
 	this.doRender = (globals, assembly, data) => {
-            let d = data.ortholog;
 	    return tabEles(globals, data, OrthologTable(globals, assembly,
 							this.props.uuid), 1);
 	}
