@@ -80,13 +80,13 @@ app.use(
     }))
 );
 
-app.use('/graphqlschema', cors);
+app.use('/graphqlschemajson', cors);
 app.use('/graphqlschema', function(req, res, next) {
     res.write(printSchema(schema));
     res.end();
 });
 
-app.use('/graphqlschemajson', cors);
+app.use('/graphqlschema', cors);
 app.use('/graphqlschemajson', function(req, res, next) {
     res.write(schemajson);
     res.end();
