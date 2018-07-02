@@ -1,5 +1,5 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { snptable } from '../db/db_snp';
+import { snptable, nearbygenes } from '../db/db_snp';
 import { SNP, Assembly } from '../types';
 import { gwasLDBlockSNPBySNP, SNPsInLDBlock } from '../db/db_gwas';
 import { Gwas } from './gwas';
@@ -65,4 +65,10 @@ export const resolve_snps_overlapping_ccRE: GraphQLFieldResolver<SNP, {}> = asyn
     const ctmap = await loadCache(assembly).ctmap();
     const ctable = await getCreTable(assembly, ctmap, { range: source.range }, {});
     return ctable.cres[0];
+};
+
+export const resolve_snps_nearbygenes: GraphQLFieldResolver<SNP, {}> = async source => {
+    const assembly: Assembly = source.assembly;
+    const snp: string = source.id;
+    return nearbygenes(assembly, snp);
 };

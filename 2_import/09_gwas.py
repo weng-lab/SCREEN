@@ -81,7 +81,7 @@ class ImportGwas:
         importedNumRows(self.curs)
 
         makeIndex(self.curs, self.tableNameGwas,
-                  ["chrom", "authorPubmedTrait", "ldblock"])
+                  ["chrom", "authorPubmedTrait", "ldblock", "snp"])
         makeIndexIntRange(self.curs, self.tableNameGwas, ["start", "stop"])
 
     def _setupEnrichment(self, fields, tableName):

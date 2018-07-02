@@ -226,7 +226,6 @@ export async function activeBiosamples(assembly: Assembly, snp: string, study: s
     if (!enrichedbiosamples) {
         return undefined;
     }
-    const ctmap = await loadCache(assembly).ctmap();
     const intersectq = `
 SELECT DISTINCT accession
 FROM ${assembly}_gwas_overlap

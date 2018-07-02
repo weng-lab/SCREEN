@@ -1,9 +1,9 @@
-import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
 import { Assembly, assaytype } from '../types';
+import { UserError } from 'graphql-errors';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -498,7 +498,7 @@ h3k4me3_zscores`
 
     const r = await getColsForAccession(assembly, accession, cols);
     if (!r) {
-        throw new Error('Invalid accession.');
+        throw new UserError(`Invalid accession (${accession})`);
     }
     return cols.reduce(
         (obj, k) => {
@@ -778,4 +778,26 @@ export async function activeCts(
         });
     }
     return Array.from(active);
+}
+
+export async function exons(assembly: Assembly, ensemblid_ver: string) {
+    const tableName = assembly + '_gene_details';
+    const q = `
+SELECT seqname as chrom, startpos as start, endpos as end, strand
+FROM ${tableName}
+WHERE feature = 'exon'
+AND transcript_id = (
+    SELECT transcript_id
+    FROM hg19_gene_details
+    WHERE gene_id = $1
+    AND feature = 'exon'
+    LIMIT 1
+)
+    `;
+    const res = await db.map<{ chrom: string; start: number; end: number; strand: string }>(
+        q,
+        [ensemblid_ver],
+        row => ({ ...row, chrom: row.chrom.trim(), strand: row.strand.trim() })
+    );
+    return res;
 }
