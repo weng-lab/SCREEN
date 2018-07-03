@@ -12,7 +12,7 @@ import {
     GraphQLEnumType,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { CreDetailsResponse } from './CreDetailsResponse';
+import { CreDetailsResponse, NearbyGene } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
 import {
@@ -287,11 +287,11 @@ export const genes = new GraphQLObjectType({
     fields: {
         pc: {
             description: 'Nearby protein-coding genes',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbyGene))),
         },
         all: {
             description: 'All nearby genes, including protein-coding and non-protein-coding',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbyGene))),
         },
     },
 });

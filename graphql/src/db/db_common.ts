@@ -684,13 +684,25 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export async function rampageEnsemblID(assembly, gene) {
+export async function rampageEnsemblID(
+    assembly: Assembly,
+    gene: string
+): Promise<{ gene: string; ensemblid_ver: string; coords: { chrom: string; start: number; end: number } }> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid_ver FROM ${tableName}
+        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop
+        FROM ${tableName}
         WHERE approved_symbol = $1
     `;
-    return await db.oneOrNone(q, [gene], r => r && r.ensemblid_ver);
+    return await db.one(q, [gene], r => ({
+        gene: r.gene,
+        ensemblid_ver: r.ensemblid_ver,
+        coords: {
+            chrom: r.chrom,
+            start: r.start,
+            end: r.stop,
+        },
+    }));
 }
 
 export async function linkedGenes(assembly, accession) {

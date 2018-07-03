@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbCommon from '../db/db_common';
-import HelperGrouper from '../helpergrouper';
-import { natsort, getAssemblyFromCre, natsorter } from '../utils';
+import { natsorter } from '../utils';
+import { Assembly } from '../types';
 
 const sortTranscripts = (a, b) => natsorter(a.transcript, b.transcript);
 
@@ -21,8 +21,8 @@ const _process = (transcript, ri) => {
     };
 };
 
-export async function getByGene(assembly, gene) {
-    const ensemblid_ver = gene.gene.ensemblid_ver;
+export async function getByGene(assembly: Assembly, gene: { ensemblid_ver: string; gene: string }) {
+    const ensemblid_ver = gene.ensemblid_ver;
     const transcripts = await DbCommon.rampageByGene(assembly, ensemblid_ver);
 
     const ri = await DbCommon.rampage_info(assembly);
@@ -33,18 +33,9 @@ export async function getByGene(assembly, gene) {
     };
 }
 
-async function rampage(assembly, gene) {
-    const egene = await DbCommon.rampageEnsemblID(assembly, gene);
-    const r = {
-        ensemblid_ver: egene,
-        name: gene,
-    };
+export const resolve_rampage: GraphQLFieldResolver<any, any> = async (source, args, context) => {
+    const assembly: Assembly = args.assembly;
+    const gene: string = args.gene;
+    const r = await DbCommon.rampageEnsemblID(assembly, gene);
     return getByGene(assembly, r);
-}
-
-const global_data_global = require('../db/db_cache').global_data_global;
-export const resolve_rampage: GraphQLFieldResolver<any, any> = (source, args, context) => {
-    const assembly = args.assembly;
-    const gene = args.gene;
-    return rampage(assembly, gene);
 };

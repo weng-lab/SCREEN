@@ -2,7 +2,6 @@ import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLE
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
-import { Gene } from './SearchResponse';
 import { GeneExpGene } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
 
@@ -44,7 +43,7 @@ export const CTAssayData = new GraphQLObjectType({
     }),
 });
 
-const NearbyGene = new GraphQLObjectType({
+export const NearbyGene = new GraphQLObjectType({
     name: 'NearbyGene',
     description: 'Distance and gene info for a nearby gene',
     fields: () => ({
@@ -201,21 +200,6 @@ export const FantomCat = new GraphQLObjectType({
     }),
 });
 
-const RampageGene = new GraphQLObjectType({
-    name: 'RampageGene',
-    description: 'Distance and gene info for a nearby gene',
-    fields: () => ({
-        distance: {
-            type: new GraphQLNonNull(GraphQLInt),
-            description: 'The distance to the ccRE',
-        },
-        gene: {
-            type: new GraphQLNonNull(GeneExpGene),
-            description: 'The gene',
-        },
-    }),
-});
-
 export const RampageGeneData = new GraphQLObjectType({
     name: 'RampageGeneData',
     fields: () => ({
@@ -223,7 +207,7 @@ export const RampageGeneData = new GraphQLObjectType({
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscript))),
         },
         gene: {
-            type: new GraphQLNonNull(RampageGene),
+            type: new GraphQLNonNull(GeneExpGene),
         },
     }),
 });
@@ -379,11 +363,6 @@ export const CreDetailsResponse = new GraphQLObjectType({
                 'Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data',
             type: new GraphQLNonNull(ChIPSeqIntersections),
             resolve: CreDetailsResolver.resolve_cre_cistromeIntersection,
-        },
-        rampage: {
-            description: 'Returns RAMPAGE data of closest gene',
-            type: new GraphQLNonNull(RampageGeneData),
-            resolve: CreDetailsResolver.resolve_cre_rampage,
         },
         linkedGenes: {
             description: 'Returns linked genes',
