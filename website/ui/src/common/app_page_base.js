@@ -29,7 +29,11 @@ class AppPageBase extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-	const jq = JSON.stringify({...nextProps.location.query,
+	const query = Object.keys(nextProps.location.query).reduce((curr, key) => {
+		curr[key] = decodeURIComponent(nextProps.location.query[key]);
+		return curr;
+	}, {});
+	const jq = JSON.stringify({...query,
 				   ...this.extraProps});
 	ApiClient.appPageBaseInit(jq, this.url,
 				  (r) => {
