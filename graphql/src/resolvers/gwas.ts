@@ -38,7 +38,7 @@ class Gwas {
     async mainTableInfo(gwas_study) {
         const total = await this.totalLDblocks(gwas_study);
         const overlap = await this.numLdBlocksOverlap(gwas_study);
-        const overlapStr = `${overlap} (${Math.round(overlap / total * 100.0)}%)`;
+        const overlapStr = `${overlap} (${Math.round((overlap / total) * 100.0)}%)`;
         return [
             {
                 totalLDblocks: total,

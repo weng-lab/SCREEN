@@ -22,9 +22,7 @@ import CartResponse from './CartResponse';
 import GbResponse from './GbResponse';
 import UCSCTrackhubResponse from './UCSCTrackhubSchema';
 import * as SearchResponseTypes from './SearchResponse';
-import UCSCTrackhubSchema, * as UCSCTrackhub from './UCSCTrackhubSchema';
-import CreDetailsResponse from './CreDetailsResponse';
-import RampageResponse from './RampageResponse';
+import * as UCSCTrackhub from './UCSCTrackhubSchema';
 import BedUploadResponse from './BedUploadResponse';
 import { TopGenesReplicateData } from './GeneTopResponse';
 import { SNP } from './SearchResponse';
@@ -43,6 +41,7 @@ import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps } from '../resolvers/snp';
+import { RampageGeneData } from './CreDetailsResponse';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -161,7 +160,7 @@ const BaseType = new GraphQLObjectType({
         },
         rampage: {
             description: 'Get RAMPAGE data for a gene',
-            type: RampageResponse,
+            type: RampageGeneData,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) },
