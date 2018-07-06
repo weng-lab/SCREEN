@@ -3,19 +3,39 @@ import { getCreTable } from '../db/db_cre_table';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { getByGene } from './rampage';
-import { loadCache } from '../db/db_cache';
+import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';
 
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
 
+export type nearbyGene = {
+    gene: {
+        gene: string;
+        ensemblid_ver: string;
+        coords: {
+            chrom: string;
+            start: number;
+            end: number;
+            strand: string;
+        },
+        tsscoords: {
+            chrom: string;
+            start: number;
+            end: number;
+            strand: string;
+        },
+    },
+    distance: number;
+};
+
 export class CREDetails {
-    assembly;
+    assembly: Assembly;
     accession;
     _coord: Promise<{ chrom: string; start: number; end: number }>;
-    genesAll;
-    genesPC;
+    genesAll: nearbyGene[] | null;
+    genesPC: nearbyGene[] | null;
 
     constructor(assembly: Assembly, accession: string) {
         this.assembly = assembly;
@@ -56,63 +76,27 @@ export class CREDetails {
     }
 
     private async awaitGenes() {
-        const coord = await this.coord();
         if (!this.genesAll || !this.genesPC) {
-            const { genesAll, genesPC } = await DbCommon.creGenes(this.assembly, this.accession, coord.chrom);
+            const genesAll = await nearbyAllGenesLoaders[this.assembly].load(this.accession);
+            const genesPC = await nearbyPcGenesLoaders[this.assembly].load(this.accession);
             this.genesAll = genesAll;
             this.genesPC = genesPC;
         }
+        return { genesAll: this.genesAll, genesPC: this.genesPC };
     }
 
     async nearbyGenes(): Promise<{ gene: any; distance: number; pc: boolean }[]> {
-        await this.awaitGenes();
-        const pcGenes = this.genesPC.map(g => g['approved_symbol']);
-        return this.genesAll
-            .map(g => ({
-                gene: {
-                    gene: g.approved_symbol,
-                    ensemblid_ver: g.ensemblid_ver,
-                    coords: {
-                        chrom: g.chrom,
-                        start: g.start,
-                        end: g.stop,
-                        strand: g.strand,
-                    },
-                    tsscoords: {
-                        chrom: g.tss_chrom,
-                        start: g.tss_start,
-                        end: g.tss_stop,
-                        strand: g.strand,
-                    },
-                },
-                distance: g.distance,
-                pc: pcGenes.includes(g.approved_symbol),
-            }))
-            .sort((a, b) => a.distance - b.distance);
+        const { genesAll, genesPC } = await this.awaitGenes();
+        const pcGenes = genesPC.map(g => g.gene.gene);
+        for (const g of genesAll) {
+            g['pc'] = pcGenes.includes(g.gene.gene);
+        }
+        return genesAll.sort((a, b) => a.distance - b.distance) as (nearbyGene & { pc: boolean })[];
     }
 
     async nearbyPcGenes() {
-        await this.awaitGenes();
-        return this.genesPC
-            .map(g => ({
-                gene: {
-                    gene: g.approved_symbol,
-                    ensemblid_ver: g.ensemblid_ver,
-                    coords: {
-                        chrom: g.chrom,
-                        start: g.start,
-                        end: g.stop,
-                        strand: g.strand,
-                    },
-                    tsscoords: {
-                        chrom: g.tss_chrom,
-                        start: g.tss_start,
-                        end: g.tss_stop,
-                        strand: g.strand,
-                    },
-                },
-                distance: g.distance,
-            }))
+        const { genesPC } = await this.awaitGenes();
+        return genesPC
             .sort((a, b) => a.distance - b.distance);
     }
 

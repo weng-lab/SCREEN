@@ -3,6 +3,7 @@ import { db } from './db';
 import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
 import { Assembly, assaytype } from '../types';
+import { nearbyGene } from '../resolvers/credetails';
 import { UserError } from 'graphql-errors';
 
 export async function chromCounts(assembly) {
@@ -528,11 +529,64 @@ async function getGenes(assembly, accession, allOrPc) {
     return db.any(q, [accession]);
 }
 
-export async function creGenes(assembly, accession, chrom) {
-    return {
-        genesAll: await getGenes(assembly, accession, 'all'),
-        genesPC: await getGenes(assembly, accession, 'pc'),
-    };
+export async function getGenesMany(assembly, accessions: string[], allOrPc): Promise<nearbyGene[][]> {
+    const tableall = assembly + '_cre_all';
+    const tableinfo = assembly + '_gene_info';
+    const tableTss = assembly + '_tss_info';
+    // accession => index
+    // Need to ensure that we return data in the same order that we were asked
+    const requests = accessions.reduce(
+        (prev, accession, index) => {
+            prev[accession] = index;
+            return prev;
+        },
+        {} as Record<string, number>
+    );
+    const q = `
+SELECT g.accession, gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
+FROM (
+    SELECT UNNEST(gene_${allOrPc}_id) geneid, UNNEST(gene_${allOrPc}_distance) distance, accession
+    FROM ${tableall}
+    WHERE accession = ANY($1)
+) AS g
+INNER JOIN ${tableinfo} AS gi
+ON g.geneid = gi.geneid
+INNER JOIN ${tableTss} as tss
+ON gi.ensemblid_ver = tss.ensemblid_ver
+    `;
+    const res = await db.any(q, [accessions]);
+    const map: Record<string, nearbyGene[]> = res.reduce((prev, row) => {
+        prev[row.accession] = prev[row.accession] || [];
+
+        prev[row.accession].push({
+            gene: {
+                gene: row.approved_symbol,
+                ensemblid_ver: row.ensemblid_ver,
+                coords: {
+                    chrom: row.chrom,
+                    start: row.start,
+                    end: row.stop,
+                    strand: row.strand,
+                },
+                tsscoords: {
+                    chrom: row.tss_chrom,
+                    start: row.tss_start,
+                    end: row.tss_stop,
+                    strand: row.strand,
+                },
+            },
+            distance: row.distance,
+        });
+        return prev;
+    }, {} as Record<string, nearbyGene[]>);
+    return Object.keys(map).reduce(
+        (prev, accession) => {
+            const index = requests[accession];
+            prev[index] = map[accession];
+            return prev;
+        },
+        Array.from(Array(requests.length)) as nearbyGene[][]
+    );
 }
 
 export async function getTadOfCRE(assembly, accession) {
