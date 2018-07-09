@@ -1,8 +1,9 @@
 import { getCreTable } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
-import { loadCache, Assembly } from '../db/db_cache';
+import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
+import { Assembly } from '../types';
 import { CREDetails } from './credetails';
 
 async function cre_table(data, assembly, pagination) {
@@ -51,18 +52,9 @@ export function resolve_data_range(source) {
     };
 }
 
-export function resolve_data_ctspecific(source) {
-    const { ct, dnase_zscore, h3k4me3_zscore, h3k27ac_zscore, ctcf_zscore } = source;
-    if (!ct) {
-        return undefined;
-    }
-    const maxz = Math.max(dnase_zscore || -11, h3k4me3_zscore || -11, h3k27ac_zscore || -11, ctcf_zscore || -11);
-    return {
-        ct,
-        dnase_zscore,
-        h3k4me3_zscore,
-        h3k27ac_zscore,
-        ctcf_zscore,
-        maxz,
-    };
+export function resolve_data_ctspecific(source, args) {
+    const assembly: Assembly = source.assembly;
+    const accession: string = source.accession;
+    const ct: string = args.ct;
+    return ccRECtspecificLoaders[assembly].load(`${accession}::${ct}`);
 }

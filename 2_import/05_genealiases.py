@@ -224,7 +224,7 @@ info jsonb);
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
         print("updated", tableName, self.curs.rowcount)
 
-        makeIndex(self.curs, tableName, ["geneid", "ensemblid_ver", "ensemblid", "approved_symbol"])
+        makeIndex(self.curs, tableName, ["geneid", "ensemblid_ver", "ensemblid", "approved_symbol", "chrom"])
 
 
 def makeMV(curs, assembly):

@@ -33,7 +33,7 @@ class Genes:
         self._doIndex()
 
     def _doIndex(self):
-        makeIndex(self.curs, self.tableName, ["startpos", "endpos", "feature", "transcript_id"])
+        makeIndex(self.curs, self.tableName, ["startpos", "endpos", "feature", "transcript_id", "gene_id"])
 
     def _import(self):
         fnp, ftype = paths.gene_files_path[self.assembly]

@@ -1,7 +1,8 @@
 import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
 import { db, pgp } from './db';
-import { loadablecache } from './db_cache';
+import { loadablecache, loadCache } from './db_cache';
+import { ChromRange, Assembly, ctspecificdata } from '../types';
 
 const { UserError } = require('graphql-errors');
 
@@ -16,7 +17,7 @@ const accessions = (wheres, params, j: { accessions?: string[] }) => {
     return true;
 };
 
-const notCtSpecificRanks = (wheres, params, j) => {
+const notCtSpecificRanks = (wheres, params, j: { ctexps?: any }) => {
     j = j.ctexps || {};
     // use max zscores
     const map = {
@@ -54,7 +55,7 @@ const notCtSpecificRanks = (wheres, params, j) => {
 };
 
 const ctexps = ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf'];
-const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
+const ctSpecificRanks = (wheres, fields, params, ct, j: { ctexps?: any }, ctmap) => {
     j = j.ctexps || {};
     for (const name of ctexps) {
         if (!(ct in ctmap[name])) {
@@ -104,7 +105,7 @@ const where = (wheres, params, chrom, start, stop) => {
 export const buildWhereStatement = (
     assembly,
     ctmap: Record<string, any>,
-    j: any,
+    j: { ctexps?: any; accessions?: string[] },
     chrom: string | undefined,
     start: number | undefined,
     stop: number | undefined,
@@ -190,22 +191,6 @@ export const buildWhereStatement = (
 
     where(wheres, params, chrom, start, stop);
 
-    const ct = j.ctspecific;
-    // Ctspecific data
-    if (ct) {
-        const ctspecificfields: any[] = [];
-        for (const name of ctexps) {
-            if (!(ct in ctmap[name])) {
-                continue;
-            }
-            const ctindex = ctmap[name][ct];
-            fields.push(`cre.${name}_zscores[${ctindex}] as ${name + '_zscore'}`);
-            ctspecificfields.push(`cre.${name}_zscores[${ctindex}]`);
-            groupBy.push(`cre.${name}_zscores[${ctindex}]`);
-        }
-        fields.push(`'${ct}' as ct`);
-    }
-
     const infoFields = {
         accession: 'cre.accession',
         isproximal: 'cre.isproximal',
@@ -266,7 +251,7 @@ export type dbcre = {
 export async function getCreTable(
     assembly: string,
     ctmap: Record<string, any>,
-    j,
+    j: { ctexps?: any; accessions?: string[]; range?: Partial<ChromRange> },
     pagination,
     extra?: { wheres: string[]; fields: string[] }
 ): Promise<{ total: number; cres: dbcre[] }> {
@@ -302,4 +287,74 @@ export async function getCreTable(
         total = await creTableEstimate(table, where, params);
     }
     return { cres: res, total: total };
+}
+
+export async function getCtSpecificData(assembly: Assembly, requested: string[]): Promise<ctspecificdata[]> {
+    const table = assembly + '_cre_all';
+    // ct => { ccres, indices }
+    // Need to ensure that we return data in the same order that we were asked
+    const ctrequests = requested.reduce(
+        (prev, curr, index) => {
+            const [ccre, ct] = curr.split('::');
+            const obj = (prev[ct] = prev[ct] || {
+                ccres: [],
+                indices: {},
+            });
+            obj.ccres.push(ccre);
+            obj.indices[ccre] = index;
+            return prev;
+        },
+        {} as Record<string, { ccres: string[]; indices: Record<string, number> }>
+    );
+
+    const ctresults: Record<string, (ctspecificdata & { accession: string })[]> = {};
+    for (const [ct, { ccres, indices }] of Object.entries(ctrequests)) {
+        const fields: string[] = [];
+        const ctmap = await loadCache(assembly).ctmap();
+        const ctspecificfields: any[] = [];
+        for (const name of ctexps) {
+            if (!(ct in ctmap[name])) {
+                continue;
+            }
+            const ctindex = ctmap[name][ct];
+            fields.push(`cre.${name}_zscores[${ctindex}] as ${name + '_zscore'}`);
+        }
+        fields.push(`'${ct}' as ct`);
+        fields.push('accession');
+        const query = `
+            SELECT ${fields}
+            FROM ${table} AS cre
+            WHERE accession = ANY($1)
+        `;
+        const res = await db.map(query, [ccres], result => {
+            const { ct, accession, dnase_zscore, h3k4me3_zscore, h3k27ac_zscore, ctcf_zscore } = result;
+            const maxz = Math.max(
+                dnase_zscore || -11,
+                h3k4me3_zscore || -11,
+                h3k27ac_zscore || -11,
+                ctcf_zscore || -11
+            );
+            return {
+                ct,
+                accession,
+                dnase_zscore,
+                h3k4me3_zscore,
+                h3k27ac_zscore,
+                ctcf_zscore,
+                maxz,
+            };
+        });
+        ctresults[ct] = res;
+    }
+    return Object.keys(ctresults).reduce(
+        (prev, ct) => {
+            const indices = ctrequests[ct].indices;
+            const results = ctresults[ct];
+            results.forEach((result, index) => {
+                prev[indices[result.accession]] = result;
+            });
+            return prev;
+        },
+        Array.from(Array(requested.length)) as ctspecificdata[]
+    );
 }

@@ -1,8 +1,9 @@
-import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
-import { loadCache, Biosample, Assembly } from './db_cache';
+import { loadCache, Biosample } from './db_cache';
+import { Assembly, assaytype } from '../types';
+import { UserError } from 'graphql-errors';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -150,7 +151,6 @@ export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMe
     return ret;
 }
 
-export type assaytype = 'dnase' | 'h3k4me3' | 'h3k27ac' | 'ctcf';
 export async function makeCtMap(assembly): Promise<Record<assaytype, Record<celltype, ctindex>>> {
     const amap: Partial<Record<RankMethod, assaytype>> = {
         DNase: 'dnase',
@@ -487,7 +487,7 @@ async function getColsForAccession(assembly, accession, cols) {
     return db.oneOrNone(q, [accession]);
 }
 
-export async function creRanks(assembly, accession) {
+export async function creRanks(assembly, accession): Promise<Record<assaytype, number[]>> {
     const cols = `
 dnase_zscores
 ctcf_zscores
@@ -497,7 +497,17 @@ h3k4me3_zscores`
         .split('\n');
 
     const r = await getColsForAccession(assembly, accession, cols);
-    return cols.reduce((obj, k) => ({ ...obj, [k.split('_')[0]]: r[k] }), {});
+    if (!r) {
+        throw new UserError(`Invalid accession (${accession})`);
+    }
+    return cols.reduce(
+        (obj, k) => {
+            const assay = k.split('_')[0];
+            obj[assay] = r[k];
+            return obj;
+        },
+        {} as Record<assaytype, number[]>
+    );
 }
 
 async function getGenes(assembly, accession, allOrPc) {
@@ -595,6 +605,7 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
         .map(snp => ({
             distance: Math.min(Math.abs(coord.end - snp.stop), Math.abs(coord.start - snp.start)),
             snp: {
+                assembly,
                 id: snp.snp,
                 range: {
                     chrom: coord.chrom,
@@ -754,4 +765,51 @@ export async function inputData(assembly) {
         ORDER BY biosample_term_name
     `;
     return await db.any(q, [assembly]);
+}
+
+// Almost like topTissues except filter by a threshold
+// TODO: add a threshold param to topTissues
+export async function activeCts(
+    assembly: Assembly,
+    accession: string,
+    assays: assaytype[],
+    threshold: number = 1.64
+): Promise<string[]> {
+    const ranks = await creRanks(assembly, accession);
+    const ctmap = await loadCache(assembly).ctmap();
+    const active = new Set<string>();
+    for (const assay of assays) {
+        const cts = ctmap[assay];
+        const ctranks = ranks[assay];
+        Object.keys(cts).forEach(ct => {
+            const index = cts[ct];
+            const value = ctranks[index];
+            if (value >= threshold) {
+                active.add(ct);
+            }
+        });
+    }
+    return Array.from(active);
+}
+
+export async function exons(assembly: Assembly, ensemblid_ver: string) {
+    const tableName = assembly + '_gene_details';
+    const q = `
+SELECT seqname as chrom, startpos as start, endpos as end, strand
+FROM ${tableName}
+WHERE feature = 'exon'
+AND transcript_id = (
+    SELECT transcript_id
+    FROM hg19_gene_details
+    WHERE gene_id = $1
+    AND feature = 'exon'
+    LIMIT 1
+)
+    `;
+    const res = await db.map<{ chrom: string; start: number; end: number; strand: string }>(
+        q,
+        [ensemblid_ver],
+        row => ({ ...row, chrom: row.chrom.trim(), strand: row.strand.trim() })
+    );
+    return res;
 }

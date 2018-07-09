@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbCommon from '../db/db_common';
 import { natsorter } from '../utils';
-import { Assembly } from '../db/db_cache';
+import { Assembly } from '../types';
 
 const sortTranscripts = (a, b) => natsorter(a.transcript, b.transcript);
 

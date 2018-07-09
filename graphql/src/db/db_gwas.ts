@@ -1,17 +1,21 @@
 import * as Common from './db_common';
 import { db } from './db';
-import { buildWhereStatement, dbcre } from './db_cre_table';
+import { buildWhereStatement, dbcre, getCreTable } from './db_cre_table';
+import { Assembly, SNP, LDBlockSNP } from '../types';
+import { LDBlock } from '../schema/GwasResponse';
+import { Gwas } from '../resolvers/gwas';
+import { loadCache, ccRECtspecificLoaders } from './db_cache';
+import { snptable } from './db_snp';
 
-export async function gwasStudies(assembly) {
+export type DBGwasStudy = { name: string; author: string; pubmed: string; trait: string; totalLDblocks: number };
+export async function gwasStudies(assembly): Promise<DBGwasStudy[]> {
     const tableName = assembly + '_gwas_studies';
     const q = `
-        SELECT authorpubmedtrait as value, author, pubmed, trait, numLDblocks as total_ldblocks
+        SELECT authorpubmedtrait as name, author, pubmed, trait, numLDblocks as totalLDblocks
         FROM ${tableName}
         ORDER BY trait
     `;
-    const res = await db.any(q);
-    const keys = ['value', 'author', 'pubmed', 'trait', 'total_ldblocks'];
-    return res.map(r => keys.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    return db.map<DBGwasStudy>(q, [], row => ({ ...row, totalLDblocks: row.totalldblocks }));
 }
 
 export async function numLdBlocksOverlap(assembly, gwas_study) {
@@ -41,7 +45,10 @@ export async function numCresOverlap(assembly, gwas_study) {
     return await db.oneOrNone(q, [gwas_study], r => (r ? +r.count : 0));
 }
 
-export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: string]: any } | undefined> {
+export async function gwasEnrichment(
+    assembly,
+    gwas_study
+): Promise<{ expID: string; ct: string; biosample_summary: string; fdr: number; pval: number }[] | undefined> {
     const tableNamefdr = assembly + '_gwas_enrichment_fdr';
     const tableNamepval = assembly + '_gwas_enrichment_pval';
     const column_check = `
@@ -65,11 +72,11 @@ export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: stri
         FROM ${tableNamefdr} fdr
         INNER JOIN ${tableNamepval} pval
         ON fdr.expid = pval.expid
-        ORDER BY fdr DESC, pval
+        ORDER BY fdr ASC, pval
     `;
     const res = await db.any(q);
     const cols = ['expID', 'ct', 'biosample_summary', 'fdr', 'pval'];
-    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {}));
+    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {} as any));
 }
 
 const infoFields = {
@@ -97,7 +104,7 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     const { fields, groupBy, where, params } = buildWhereStatement(
         assembly,
         ctmap,
-        { ctspecific: ct },
+        {},
         undefined,
         undefined,
         undefined,
@@ -115,4 +122,125 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     `;
 
     return db.any(q, [gwas_study]);
+}
+
+export type DBLDBlockSNP = {
+    authorpubmedtrait: string;
+    snp: string;
+    chrom: string;
+    start: number;
+    stop: number;
+    taggedsnp: string;
+    r2: number[];
+    ldblock: string;
+};
+export async function gwasLDBlockSNPBySNP(assembly: Assembly, snp_id: string, gwas_obj: Gwas): Promise<LDBlockSNP[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT authorpubmedtrait, snp, chrom, start, stop, taggedsnp, r2, ldblock
+FROM ${tableName}
+WHERE snp = $1
+    `;
+
+    const res = await db.any(q, [snp_id]);
+    return mapldblocksnps(assembly, gwas_obj)(res);
+}
+
+const mapldblocksnps = (assembly: Assembly, gwas_obj: Gwas) => (rows: DBLDBlockSNP[]): LDBlockSNP[] => {
+    const map = (row, tagged, r2): LDBlockSNP => ({
+        r2: r2,
+        snp: {
+            assembly,
+            id: row.snp,
+            range: {
+                chrom: row.chrom,
+                start: row.start,
+                end: row.stop,
+            },
+        },
+        ldblock: {
+            assembly,
+            name: row.ldblock,
+            study: {
+                study_name: row.authorpubmedtrait,
+                gwas_obj,
+                ...gwas_obj.byStudy[row.authorpubmedtrait],
+            },
+            taggedsnp: tagged,
+        },
+    });
+    const snps: LDBlockSNP[] = [];
+    rows.forEach(row => {
+        row.taggedsnp.split(',').forEach((tagged, index) => {
+            const mapped = map(row, tagged, row.r2[index]);
+            snps.push(mapped);
+        });
+    });
+    return snps;
+};
+
+export async function SNPsInLDBlock(assembly: Assembly, ldblock_name: string, gwas_obj: Gwas): Promise<LDBlockSNP[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT DISTINCT snp, authorpubmedtrait, chrom, start, stop, taggedsnp, r2, ldblock
+FROM ${tableName}
+WHERE ldblock = $1
+    `;
+    const res = await db.any(q, [ldblock_name]);
+    return mapldblocksnps(assembly, gwas_obj)(res);
+}
+
+export async function allSNPsInStudy(assembly: Assembly, study_name: string, gwas_obj: Gwas): Promise<LDBlockSNP[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT DISTINCT snp, authorpubmedtrait, chrom, start, stop, taggedsnp, r2, ldblock
+FROM ${tableName}
+WHERE authorPubmedTrait = $1
+    `;
+    const res = await db.any(q, [study_name]);
+    return mapldblocksnps(assembly, gwas_obj)(res);
+}
+
+export async function searchSNPs(assembly: Assembly, snpPartial: string): Promise<SNP[]> {
+    const tableName = assembly + '_gwas';
+    const q = `
+SELECT DISTINCT snp, chrom, start, stop, similarity(snp, '${snpPartial}') as sm
+FROM ${tableName}
+WHERE snp LIKE '${snpPartial}%'
+ORDER BY sm DESC
+LIMIT 10
+    `;
+    return db.map<SNP>(q, [], snp => ({
+        assembly,
+        id: snp.snp,
+        range: {
+            chrom: snp.chrom,
+            start: snp.start,
+            end: snp.stop,
+        },
+    }));
+}
+
+export async function activeBiosamples(assembly: Assembly, snp: string, study: string) {
+    const enrichedbiosamples = await gwasEnrichment(assembly, study);
+    if (!enrichedbiosamples) {
+        return undefined;
+    }
+    const intersectq = `
+SELECT DISTINCT accession
+FROM ${assembly}_gwas_overlap
+WHERE snp = $1
+    `;
+    const intersectingccres = await db.map<string>(intersectq, [snp], row => row.accession);
+    const allactivects = new Set<string>();
+    for (const ccre of intersectingccres) {
+        const cts = await Common.activeCts(assembly, ccre, ['dnase', 'h3k4me3', 'h3k27ac']);
+        for (const ct of cts) {
+            allactivects.add(ct);
+        }
+    }
+
+    const enrichedandactive = enrichedbiosamples.filter(biosample => allactivects.has(biosample.ct));
+    const datasets = await loadCache(assembly).datasets();
+    return enrichedandactive.map(ct => ({ ...ct, ct: datasets.byCellTypeValue[ct.ct] }));
 }

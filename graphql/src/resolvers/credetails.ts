@@ -3,8 +3,9 @@ import { getCreTable } from '../db/db_cre_table';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { getByGene } from './rampage';
-import { loadCache, Assembly } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
+import { Assembly } from '../types';
 
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');

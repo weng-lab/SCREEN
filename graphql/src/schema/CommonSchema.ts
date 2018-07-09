@@ -15,6 +15,14 @@ import * as CommonTypes from './CommonSchema';
 import { CreDetailsResponse, NearbyGene } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
+import {
+    resolve_snps_relatedstudies,
+    resolve_snps_ldblocks,
+    resolve_snps_overlapping_ccRE,
+    resolve_snps_nearbygenes,
+} from '../resolvers/snp';
+import { GwasStudy, LDBlock, LDBlockSNP } from './GwasResponse';
+import { resolve_gene_exons } from '../resolvers/common';
 
 export const Assembly = new GraphQLEnumType({
     name: 'Assembly',
@@ -195,10 +203,6 @@ export const DataParameters = new GraphQLInputObjectType({
                 'Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type',
             type: InputCtExps,
         },
-        ctspecific: {
-            description: 'Cell type to get celltype-specific info for',
-            type: GraphQLString,
-        },
     }),
 });
 
@@ -371,6 +375,11 @@ export const cRE = new GraphQLObjectType({
         ctspecific: {
             description: 'celltype-specific zscores',
             type: ctSpecific,
+            args: {
+                ct: {
+                    type: new GraphQLNonNull(GraphQLString),
+                },
+            },
             resolve: resolve_data_ctspecific,
         },
         nearbygenes: {
@@ -411,5 +420,85 @@ export const CellTypeInfo = new GraphQLObjectType({
         isde: { type: new GraphQLNonNull(GraphQLBoolean) },
         synonyms: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
         assays: { type: new GraphQLList(new GraphQLNonNull(CellTypeAssay)) },
+    }),
+});
+
+export const SNP = new GraphQLObjectType({
+    name: 'SNP',
+    description: 'A SNP',
+    fields: () => ({
+        assembly: {
+            description: 'The SNP assembly',
+            type: new GraphQLNonNull(Assembly),
+        },
+        id: {
+            description: 'The SNP id',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        range: {
+            description: 'The range of this SNP',
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
+        ldblocks: {
+            description:
+                'Data related to LD blocks that this SNP belongs to. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array.',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LDBlockSNP))),
+            resolve: resolve_snps_ldblocks,
+        },
+        related_studies: {
+            description:
+                'GWAS studies containing this SNP. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array.',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudy))),
+            resolve: resolve_snps_relatedstudies,
+        },
+        overlapping_ccRE: {
+            description: 'Returns the ccRE that overlaps this SNP, if one exists',
+            type: cRE,
+            resolve: resolve_snps_overlapping_ccRE,
+        },
+        nearbygenes: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GeneAndDistance))),
+            resolve: resolve_snps_nearbygenes,
+        },
+    }),
+});
+
+const GeneAndDistance = new GraphQLObjectType({
+    name: 'GeneAndDistance',
+    description: 'Distance and gene info for a nearby gene',
+    fields: () => ({
+        distance: {
+            type: new GraphQLNonNull(GraphQLInt),
+            description: 'The distance',
+        },
+        gene: {
+            type: new GraphQLNonNull(CommonGene),
+            description: 'The gene',
+        },
+    }),
+});
+export const CommonGene = new GraphQLObjectType({
+    name: 'CommonGene',
+    description: 'Gene info for gene expression',
+    fields: () => ({
+        assembly: {
+            type: new GraphQLNonNull(Assembly),
+        },
+        gene: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The gene name',
+        },
+        ensemblid_ver: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The ensembl id and ver of the gene',
+        },
+        coords: {
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+            description: 'The coordinates of this gene',
+        },
+        exons: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChromRange))),
+            resolve: resolve_gene_exons,
+        },
     }),
 });

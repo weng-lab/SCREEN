@@ -1,7 +1,8 @@
 import * as util from 'util';
 import * as fs from 'fs';
-import { loadCache, Assembly } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 import { getCreTable } from '../db/db_cre_table';
+import { Assembly } from '../types';
 
 const uuidv4 = require('uuid/v4');
 

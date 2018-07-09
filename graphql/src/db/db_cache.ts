@@ -5,10 +5,12 @@ import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
 import * as DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
+import { Assembly, assaytype, ctspecificdata } from '../types';
+import { getCtSpecificData } from './db_cre_table';
+import { reduceAsKeys } from '../utils';
 
 const Raven = require('raven');
 
-export type Assembly = 'hg19' | 'mm10';
 const assemblies: Assembly[] = ['hg19', 'mm10'];
 
 const cacheLoader = (cacheMap: loadablecache) =>
@@ -16,6 +18,10 @@ const cacheLoader = (cacheMap: loadablecache) =>
 
 const globalcacheLoader = (cacheMap: loadableglobalcache) =>
     new DataLoader<keyof globalcache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
+
+const ccRECtspecificLoader = (assembly: Assembly) =>
+    new DataLoader<string, ctspecificdata>(keys => getCtSpecificData(assembly, keys));
+export const ccRECtspecificLoaders = reduceAsKeys(assemblies, ccRECtspecificLoader);
 
 async function indexFilesTab(assembly) {
     const datasets = await Common.datasets(assembly);
@@ -98,11 +104,11 @@ export type cache = {
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
     creBigBeds: any;
-    ctmap: Record<string, any>;
+    ctmap: Record<assaytype, Record<Common.celltype, Common.ctindex>>;
     ctsTable: any;
     biosamples: Record<string, Biosample>;
     de_ctidmap: any;
-    gwas_studies: any;
+    gwas_studies: Gwas.DBGwasStudy[];
 };
 
 function getCacheMap(assembly): loadablecache {
@@ -145,7 +151,7 @@ function getCacheMap(assembly): loadablecache {
 
         de_ctidmap: assembly === 'mm10' ? () => De.getCtMap(assembly) : () => Promise.resolve(undefined),
 
-        gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve(undefined),
+        gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve([]),
     };
 }
 

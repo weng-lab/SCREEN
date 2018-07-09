@@ -1,7 +1,8 @@
 import { isclose, escapeRegExp } from '../utils';
 import { db } from './db';
-import { Assembly, Biosample, loadCache } from './db_cache';
+import { Biosample, loadCache } from './db_cache';
 import { biosamplesQuery } from './db_common';
+import { Assembly } from '../types';
 
 export async function get_snpcoord(assembly, s) {
     const tableName = assembly + '_snps';
@@ -10,15 +11,16 @@ export async function get_snpcoord(assembly, s) {
         FROM ${tableName}
         WHERE snp = $1
     `;
-    return await db.oneOrNone(
-        q,
-        [s],
-        r =>
-            r && {
-                chrom: r['chrom'],
-                start: r['start'],
-                end: r['stop'],
-            }
+    const res = await db.any(q, [s]);
+    if (!res[0]) {
+        return undefined;
+    }
+    return (
+        res[0] && {
+            chrom: res[0]['chrom'],
+            start: res[0]['start'],
+            end: res[0]['stop'],
+        }
     );
 }
 

@@ -136,21 +136,6 @@ export const AccessionToken = new GraphQLObjectType({
     }),
 });
 
-export const SNP = new GraphQLObjectType({
-    name: 'SNP',
-    description: 'A SNP',
-    fields: () => ({
-        id: {
-            description: 'The SNP id',
-            type: new GraphQLNonNull(GraphQLString),
-        },
-        range: {
-            description: 'The range of this SNP',
-            type: new GraphQLNonNull(CommonTypes.ChromRange),
-        },
-    }),
-});
-
 export const SNPToken = new GraphQLObjectType({
     name: 'SNPToken',
     interfaces: [SearchToken],
@@ -161,7 +146,7 @@ export const SNPToken = new GraphQLObjectType({
         },
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
-        snp: { type: new GraphQLNonNull(SNP) },
+        snp: { type: new GraphQLNonNull(CommonTypes.SNP) },
     }),
 });
 

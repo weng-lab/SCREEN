@@ -25,7 +25,6 @@ import * as SearchResponseTypes from './SearchResponse';
 import * as UCSCTrackhub from './UCSCTrackhubSchema';
 import BedUploadResponse from './BedUploadResponse';
 import { TopGenesReplicateData } from './GeneTopResponse';
-import { SNP } from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_globals } from '../resolvers/globals';
@@ -195,9 +194,9 @@ const BaseType = new GraphQLObjectType({
             resolve: resolve_genetop,
         },
         snps: {
-            type: new GraphQLList(new GraphQLNonNull(SNP)),
+            type: new GraphQLList(new GraphQLNonNull(CommonTypes.SNP)),
             args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                assembly: { type: CommonTypes.Assembly },
                 id: { type: GraphQLString },
                 range: { type: CommonTypes.InputChromRange },
             },
