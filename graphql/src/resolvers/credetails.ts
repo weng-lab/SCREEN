@@ -19,14 +19,14 @@ export type nearbyGene = {
             start: number;
             end: number;
             strand: string;
-        },
+        };
         tsscoords: {
             chrom: string;
             start: number;
             end: number;
             strand: string;
-        },
-    },
+        };
+    };
     distance: number;
 };
 
@@ -96,8 +96,7 @@ export class CREDetails {
 
     async nearbyPcGenes() {
         const { genesPC } = await this.awaitGenes();
-        return genesPC
-            .sort((a, b) => a.distance - b.distance);
+        return genesPC.sort((a, b) => a.distance - b.distance);
     }
 
     async genesInTad(tadInfo) {

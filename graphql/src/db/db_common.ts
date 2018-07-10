@@ -555,30 +555,33 @@ INNER JOIN ${tableTss} as tss
 ON gi.ensemblid_ver = tss.ensemblid_ver
     `;
     const res = await db.any(q, [accessions]);
-    const map: Record<string, nearbyGene[]> = res.reduce((prev, row) => {
-        prev[row.accession] = prev[row.accession] || [];
+    const map: Record<string, nearbyGene[]> = res.reduce(
+        (prev, row) => {
+            prev[row.accession] = prev[row.accession] || [];
 
-        prev[row.accession].push({
-            gene: {
-                gene: row.approved_symbol,
-                ensemblid_ver: row.ensemblid_ver,
-                coords: {
-                    chrom: row.chrom,
-                    start: row.start,
-                    end: row.stop,
-                    strand: row.strand,
+            prev[row.accession].push({
+                gene: {
+                    gene: row.approved_symbol,
+                    ensemblid_ver: row.ensemblid_ver,
+                    coords: {
+                        chrom: row.chrom,
+                        start: row.start,
+                        end: row.stop,
+                        strand: row.strand,
+                    },
+                    tsscoords: {
+                        chrom: row.tss_chrom,
+                        start: row.tss_start,
+                        end: row.tss_stop,
+                        strand: row.strand,
+                    },
                 },
-                tsscoords: {
-                    chrom: row.tss_chrom,
-                    start: row.tss_start,
-                    end: row.tss_stop,
-                    strand: row.strand,
-                },
-            },
-            distance: row.distance,
-        });
-        return prev;
-    }, {} as Record<string, nearbyGene[]>);
+                distance: row.distance,
+            });
+            return prev;
+        },
+        {} as Record<string, nearbyGene[]>
+    );
     return Object.keys(map).reduce(
         (prev, accession) => {
             const index = requests[accession];
