@@ -7,6 +7,7 @@ import * as DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
 import { Assembly, assaytype, ctspecificdata } from '../types';
 import { getCtSpecificData } from './db_cre_table';
+import { nearbyGene } from '../resolvers/credetails';
 import { reduceAsKeys } from '../utils';
 
 const Raven = require('raven');
@@ -22,6 +23,12 @@ const globalcacheLoader = (cacheMap: loadableglobalcache) =>
 const ccRECtspecificLoader = (assembly: Assembly) =>
     new DataLoader<string, ctspecificdata>(keys => getCtSpecificData(assembly, keys));
 export const ccRECtspecificLoaders = reduceAsKeys(assemblies, ccRECtspecificLoader);
+const nearbyPcGenesLoader = (assembly: Assembly) =>
+    new DataLoader<string, nearbyGene[]>(keys => Common.getGenesMany(assembly, keys, 'pc'));
+const nearbyAllGenesLoader = (assembly: Assembly) =>
+    new DataLoader<string, nearbyGene[]>(keys => Common.getGenesMany(assembly, keys, 'all'));
+export const nearbyPcGenesLoaders = reduceAsKeys(assemblies, nearbyPcGenesLoader);
+export const nearbyAllGenesLoaders = reduceAsKeys(assemblies, nearbyAllGenesLoader);
 
 async function indexFilesTab(assembly) {
     const datasets = await Common.datasets(assembly);
