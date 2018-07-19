@@ -748,7 +748,8 @@ FROM {tn}
 FROM {tn}
 WHERE cre = %s
             """.format(tn=tableName), (accession, ))
-            rows = curs.fetchall()
+            rows = [{"gene": x[0], "celltype": x[1], "method": x[2], "dccaccession": x[3]}
+                    for x in curs.fetchall()]
         return rows
 
     def creBigBeds(self):
