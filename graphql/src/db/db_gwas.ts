@@ -220,27 +220,3 @@ LIMIT 10
         },
     }));
 }
-
-export async function activeBiosamples(assembly: Assembly, snp: string, study: string) {
-    const enrichedbiosamples = await gwasEnrichment(assembly, study);
-    if (!enrichedbiosamples) {
-        return undefined;
-    }
-    const intersectq = `
-SELECT DISTINCT accession
-FROM ${assembly}_gwas_overlap
-WHERE snp = $1
-    `;
-    const intersectingccres = await db.map<string>(intersectq, [snp], row => row.accession);
-    const allactivects = new Set<string>();
-    for (const ccre of intersectingccres) {
-        const cts = await Common.activeCts(assembly, ccre, ['dnase', 'h3k4me3', 'h3k27ac']);
-        for (const ct of cts) {
-            allactivects.add(ct);
-        }
-    }
-
-    const enrichedandactive = enrichedbiosamples.filter(biosample => allactivects.has(biosample.ct));
-    const datasets = await loadCache(assembly).datasets();
-    return enrichedandactive.map(ct => ({ ...ct, ct: datasets.byCellTypeValue[ct.ct] }));
-}
