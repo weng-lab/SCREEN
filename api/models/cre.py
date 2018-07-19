@@ -101,6 +101,7 @@ class CRE:
 
     def topTissues(self):
         # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
+        proximal = self.nearbyGenes()[0]["distance"] < 2000
         rmToCts = self.cache.rankMethodToCellTypes
 
         # ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
@@ -123,28 +124,43 @@ class CRE:
             return ret
 
         def makeArrRanks(rm1):
-            ret = []
+            ret = {}
             oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
             for ct, v in oneAssay.iteritems():
-                r = {"tissue": self._ctToTissue(ct), "ct": ct, "one": v}
-                ret.append(r)
+                ret[ct] = {"tissue": self._ctToTissue(ct), rm1.lower(): v}
             return ret
 
-        def makeArrMulti(rm1, rm2):
-            ret = []
-            oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
-            multiAssay = arrToCtDict(ranks[rm2.lower()], rmToCts[rm2])
-            for ct, v in oneAssay.iteritems():
-                r = {"tissue": self._ctToTissue(ct), "ct": ct,
-                     "one": v, "two": get_rank(ct, multiAssay)}
-                ret.append(r)
-            return ret
+        ranks = {"dnase": makeArrRanks("DNase"),
+                 "h3k4me3": makeArrRanks("H3K4me3"),
+                 "h3k27ac": makeArrRanks("H3K27ac"),
+                 "ctcf": makeArrRanks("CTCF")}
+        ret = {}; rret = []
+        for _, v in ranks.iteritems():
+            for ct, item in v.iteritems():
+                if ct not in ret:
+                    ret[ct] = item
+                else:
+                    ret[ct].update(item)
+        for ct, v in ret.iteritems():
+            for k, _ in ranks.iteritems():
+                if k not in v: v[k] = -11.0
+            v["ct"] = ct
+            v["group"] = self._group(v, proximal)
+            rret.append(v)
+        return {"dnase": rret, "ranks": ranks}
 
-        return {"dnase": makeArrRanks("DNase"),
-                "promoter": makeArrMulti("H3K4me3", "Promoter"),
-                "enhancer": makeArrMulti("H3K27ac", "Enhancer"),
-                "ctcf": makeArrMulti("CTCF", "Insulator")}
-
+    def _group(self, v, p):
+        if v["dnase"] <= 1.64 and v["dnase"] != -11.0:
+            return "inactive"
+        if p:
+            if v["h3k4me3"] > 1.64: return "promoter"
+            if v["h3k27ac"] > 1.64: return "enhancer"
+        else:
+            if v["h3k27ac"] > 1.64: return "enhancer"
+            if v["h3k4me3"] > 1.64: return "promoter"
+        if v["ctcf"] > 1.64: return "ctcf"
+        return "dnase" if v["dnase"] > 1.64 else "inactive"
+    
     def peakIntersectCount(self, eset=None):
         coord = self.coord()
         if eset is None:
