@@ -25,7 +25,7 @@
 	"apiServer": "http://screen.encodeproject.org/api",
 	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
 	"staticServer": "http://screen.encodeproject.org/assets",
-	"bed_intersect": "http://api.wenglab.org/screenv10_python/postws/lines",
+	"bed_intersect": "https://api.wenglab.org/screenv10_python/postws/lines",
 	"overrides": {}
     }
 }

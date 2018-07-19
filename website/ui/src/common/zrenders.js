@@ -11,6 +11,14 @@ export const relink = (assembly, uuid) => (v) => (
     </a>
 );
 
+export const ctgroup = group => {
+    if (group === "inactive") return <span style={{color: "#888"}}><strong>inactive</strong></span>;
+    if (group === "promoter") return <span style={{color: "#f00"}}><strong>promoter-like</strong></span>;
+    if (group === "enhancer") return <span style={{color: "#ffcd00"}}><strong>enhancer-like</strong></span>;
+    if (group === "ctcf") return <span style={{color: "#00b0f0"}}><strong>CTCF bound</strong></span>;
+    return <span style={{color: "#06da93"}}><strong>DNase only</strong></span>;
+};
+
 export const snp_link = (assembly) => (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
     if("mm10" === assembly){
@@ -41,7 +49,7 @@ export const numWithCommas = (x) => {
 
 export const integer = (d) => (d === 1e12 ? "" : numWithCommas(d.toFixed(0)))
 export const real = (d) => (d.toFixed(2))
-export const z_score = (d) => (d === -11.0 ? "--" : d.toFixed(2));
+export const z_score = (d) => (d === -11.0 || d === '--' ? "--" : d.toFixed(2));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
@@ -145,6 +153,7 @@ export const dccLinkFile = (fileID) => {
 }
 
 export const gwasLink = (ref) => {
+    if (!ref) { return ''; }
     if(ref.startsWith("ENCFF")){
 	return dccLink(ref);
     }

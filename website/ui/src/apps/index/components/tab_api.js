@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Grid, Row, Panel, Button } from 'react-bootstrap';
 
-const hostbase = 'http://api.wenglab.org/screenv10_graphql';
+const hostbase = 'https://api.wenglab.org/screenv10_graphql';
 const host = hostbase + '/graphql';
 const schemaurl = hostbase + '/graphqlschema';
 

@@ -20,77 +20,35 @@ const _vistalink = id => (
 );
 
 export const TopTissuesTables = (globals, assembly) => ({
-    promoter: {
-	title: "H3K4me3 Z-scores",
-	helpkey: "H3K4me3Z-scores",
-	cols: [
-	    {title: "cell type", data: "ct", className: "dt-right",
-	     render: Render.cell_type(globals)},
-	    {title: "H3K4me3 and DNase", data: "two",
-	     render: Render.z_score},
-	    {title: "H3K4me3 only", data: "one",
-	     render: Render.z_score}
-	],
-	sortCol: ["one", false],
-	pageLength: 5,
-	paging: true,
-        bLengthChange: false,
-	bFilter: true,
-	rank_f: (d) => (Math.log(d["one"]))
-    },
-    enhancer: {
-	title: "H3K27ac Z-scores",
-	helpkey: "H3K27acZ-scores",
-	cols: [
-	    {title: "cell type", data: "ct", className: "dt-right",
-	     render: Render.cell_type(globals)},
-	    {title: "H3K27ac and DNase", data: "two",
-	     render: Render.z_score},
-	    {title: "H3K27ac only", data: "one",
-	     render: Render.z_score}
-	],
-	sortCol: ["one", false],
-	pageLength: 5,
-	paging: true,
-        bLengthChange: true,
-	bFilter: true,
-	rank_f: (d) => (Math.log(d["one"]))
-    },
-    ctcf: {
-	title: "CTCF Z-scores",
-	helpkey: "CTCFZ-scores",
-	cols: [
-	    {title: "cell type", data: "ct", className: "dt-right",
-	     render: Render.cell_type(globals)},
-	    {title: "CTCF and DNase", data: "two",
-             render: Render.z_score},
-	    {title: "CTCF only", data: "one",
-	     render: Render.z_score
-	    }
-	],
-	sortCol: ["one", false],
-	pageLength: 5,
-	paging: true,
-        bLengthChange: true,
-	bFilter: true,
-	rank_f: (d) => (Math.log(d["one"]))
-    },
     dnase: {
-	title: "DNase Z-scores",
-	helpkey: "DNaseZ-scores",
+	title: "",
+	helpkey: "",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: Render.cell_type(globals)},
-	    {title: "Z-score", data: "one",
+	    {title: "DNase Z-score", data: "dnase",
 	     render: Render.z_score
+	    },
+	    {title: "H3K4me3 Z-score", data: "h3k4me3",
+	     render: Render.z_score
+	    },
+	    {title: "H3K27ac Z-score", data: "h3k27ac",
+	     render: Render.z_score
+	    },
+	    {title: "CTCF Z-score", data: "ctcf",
+	     render: Render.z_score
+	    },
+	    {
+		title: "Group", data: "group",
+		render: Render.ctgroup
 	    }
 	],
-	sortCol: ["one", false],
-	pageLength: 5,
+	sortCol: ["dnase", false],
+	pageLength: 10,
 	paging: true,
         bLengthChange: true,
 	bFilter: true,
-	rank_f: (d) => (Math.log(d["one"]))
+	rank_f: (d) => (Math.log(d["dnase"]))
     }
 });
 
