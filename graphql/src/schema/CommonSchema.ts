@@ -423,7 +423,7 @@ export const CellTypeInfo = new GraphQLObjectType({
         ccREActivity: {
             args: {
                 ccre: {
-                    type: new GraphQLNonNull(GraphQLString)
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
             type: ctSpecific,
