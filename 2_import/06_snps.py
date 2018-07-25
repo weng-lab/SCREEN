@@ -41,7 +41,9 @@ stop integer
 """.format(tableName=tableName))
 
         fns = {"mm10": "snps142common.mm10.bed.gz",
-               "hg19": "snps144common.hg19.bed.gz"}
+               "hg19": "dbsnps.144.hg19.ucsc_table_browser.tsv.gz",
+        #       "hg38": "dbsnps.144.hg38.ucsc_table_browser.tsv.gz"
+        }
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
 
         printt("importing", fnp)
@@ -51,7 +53,7 @@ stop integer
         printt("imported", self.curs.rowcount)
 
         makeIndex(self.curs, tableName, ["snp", "chrom"])
-
+        makeIndexIntRange(self.curs, tableName, ["start", "stop"])
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
