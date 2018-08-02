@@ -4,6 +4,7 @@ import * as DbDe from '../db/db_de';
 import { loadCache } from '../db/db_cache';
 import * as CoordUtils from '../coord_utils';
 import { dbcre } from '../db/db_cre_table';
+import { ChromRange } from '../types';
 
 class DE {
     assembly;
@@ -15,7 +16,6 @@ class DE {
     halfWindow;
     thres;
     radiusScale;
-    range;
 
     constructor(assembly, gene, ct1, ct2) {
         this.assembly = assembly;
@@ -24,7 +24,7 @@ class DE {
         this.ct2 = ct2;
 
         this.halfWindow = 250 * 1000 * 2;
-        this.thres = 0;
+        this.thres = 1.64;
         this.radiusScale = 10;
     }
 
@@ -40,7 +40,7 @@ class DE {
         return this.pos;
     }
 
-    async nearbyDEs() {
+    async nearbyDEs(range: ChromRange) {
         // limb_14.5 from C57BL-6_limb_embryo_14.5_days
         const ct1 = this.ct1
             .replace('C57BL/6_', '')
@@ -58,16 +58,20 @@ class DE {
         const de_ctidmap = await c.de_ctidmap();
         const ensemblToGene = await c.ensemblToGene();
 
-        const nearbyDEs = await DbDe.nearbyDEs(this.assembly, this.range, ct1, ct2, 0.05, de_ctidmap);
+        const nearbyDEs = await DbDe.nearbyDEs(this.assembly, range, ct1, ct2, 0.05, de_ctidmap);
         if (nearbyDEs.length === 0) {
-            return undefined;
+            return [];
         }
+        let range_min = Number.MAX_SAFE_INTEGER;
+        let range_max = Number.MIN_SAFE_INTEGER;
         const degenes = nearbyDEs.reduce((prev, d) => {
             prev[d.ensembl] = +(Math.round(+(d['log2foldchange'] + 'e+3')) + 'e-3');
+            range_min = Math.min(range_min, d.start);
+            range_max = Math.max(range_max, d.stop);
             return prev;
         }, {});
 
-        const genes = await DbDe.genesInRegion(this.assembly, this.range.chrom, this.range.start, this.range.end);
+        const genes = await DbDe.genesInRegion(this.assembly, range.chrom, range_min, range_max);
         return genes.map(g => {
             const ensemblid = g.ensemblid;
             const fc = degenes[ensemblid];
@@ -90,7 +94,7 @@ class DE {
         };
     }
 
-    async nearbyPromoters() {
+    async nearbyPromoters(range: ChromRange) {
         const rankMethodToIDxToCellType = await loadCache(this.assembly).rankMethodToIDxToCellType();
         const rmLookup = rankMethodToIDxToCellType['H3K4me3'];
         if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
@@ -103,13 +107,13 @@ class DE {
             `h3k4me3_zscores[${ct1PromoterIdx}] as zscore_1`,
             `h3k4me3_zscores[${ct2PromoterIdx}] as zscore_2`,
         ];
-        const cres = await DbDe.nearbyCREs(this.assembly, this.range, cols, true);
+        const cres = await DbDe.nearbyCREs(this.assembly, range, cols, true);
         return cres
             .filter(c => c['zscore_1'] > this.thres || c['zscore_2'] > this.thres)
             .map(c => this.parseCE('promoter-like signature', c));
     }
 
-    async nearbyEnhancers() {
+    async nearbyEnhancers(range: ChromRange) {
         const rankMethodToIDxToCellType = await loadCache(this.assembly).rankMethodToIDxToCellType();
         const rmLookup = rankMethodToIDxToCellType['H3K27ac'];
         if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
@@ -122,14 +126,14 @@ class DE {
             `h3k27ac_zscores[${ct1EnhancerIdx}] as zscore_1`,
             `h3k27ac_zscores[${ct2EnhancerIdx}] as zscore_2`,
         ];
-        const cres = await DbDe.nearbyCREs(this.assembly, this.range, cols, false);
+        const cres = await DbDe.nearbyCREs(this.assembly, range, cols, false);
         return cres
             .filter(c => c['zscore_1'] > this.thres || c['zscore_2'] > this.thres)
             .map(c => this.parseCE('enhancer-like signature', c));
     }
 
-    async diffCREs() {
-        return ([] as Array<any>).concat(await this.nearbyPromoters()).concat(await this.nearbyEnhancers());
+    async diffCREs(range: ChromRange) {
+        return ([] as Array<any>).concat(await this.nearbyPromoters(range)).concat(await this.nearbyEnhancers(range));
     }
 }
 
@@ -137,11 +141,22 @@ async function de(assembly, gene, ct1, ct2) {
     const de = new DE(assembly, gene, ct1, ct2);
 
     const genecoord = await de.coord();
-    const c = CoordUtils.expanded(genecoord, de.halfWindow);
-    de.range = c;
+    const expandedgenecoord = CoordUtils.expanded(genecoord, de.halfWindow);
 
-    const nearbyDEs = await de.nearbyDEs();
-    const diffCREs = await de.diffCREs();
+    const nearbyDEs = await de.nearbyDEs(expandedgenecoord);
+
+    const nearbyDEsmin = nearbyDEs
+        .map(d => d.gene.coords.start)
+        .reduce((min, curr) => Math.min(min, curr), Number.MAX_SAFE_INTEGER);
+    const nearbyDEsmax = nearbyDEs
+        .map(d => d.gene.coords.end)
+        .reduce((max, curr) => Math.max(max, curr), Number.MIN_SAFE_INTEGER);
+
+    const range = CoordUtils.expanded(
+        { chrom: genecoord.chrom, start: nearbyDEsmin, end: nearbyDEsmax },
+        de.halfWindow / 2
+    );
+    const diffCREs = await de.diffCREs(range);
 
     return {
         gene: {
@@ -151,8 +166,8 @@ async function de(assembly, gene, ct1, ct2) {
         },
         diffCREs: diffCREs,
         nearbyGenes: nearbyDEs,
-        min: c.start,
-        max: c.end,
+        min: range.start,
+        max: range.end,
     };
 }
 

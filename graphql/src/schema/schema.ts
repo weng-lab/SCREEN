@@ -84,12 +84,20 @@ const BaseType = new GraphQLObjectType({
             },
             resolve: resolve_de,
         },
-        geneexp_search: {
+        geneexp: {
             description: 'Get gene expression data',
             type: GeneExpResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-                gene: { type: new GraphQLNonNull(GraphQLString) },
+                gene: {
+                    type: GraphQLString,
+                    description: 'The gene to limit gene expression data to',
+                },
+                biosample: {
+                    type: GraphQLString,
+                    description:
+                        'The biosample to limit gene expression data to. If no gene is specified, then only data for genes that are within the top 1000 for all experiments will be shown. This typically is around 100-200 non-duplicate genes.',
+                },
                 biosample_types: {
                     type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
                     description:
@@ -100,9 +108,23 @@ const BaseType = new GraphQLObjectType({
                     description:
                         'A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}',
                 },
+                experimentaccession: {
+                    type: GraphQLString,
+                    description: 'The experiment to show the top genes for',
+                },
                 normalized: {
                     type: GraphQLBoolean,
                     description: 'Whether or not to return normalized RNA-seq data. Defaults to true.',
+                },
+                pconly: {
+                    type: GraphQLBoolean,
+                    description:
+                        'If true, will only return protein-coding genes. If false or null, will return all genes',
+                },
+                nomitochondrial: {
+                    type: GraphQLBoolean,
+                    description:
+                        'If true, will not return any mitochondrial genes. If false or null, will return all genes.',
                 },
             },
             resolve: resolve_geneexp,
@@ -179,19 +201,6 @@ const BaseType = new GraphQLObjectType({
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
             },
             resolve: resolve_bedupload,
-        },
-        genetop: {
-            description: 'Get gene expression by biosample',
-            type: new GraphQLList(new GraphQLNonNull(TopGenesReplicateData)),
-            args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-                biosample: { type: new GraphQLNonNull(GraphQLString) },
-                normalized: {
-                    type: GraphQLBoolean,
-                    description: 'Whether or not to return normalized RNA-seq data. Defaults to true.',
-                },
-            },
-            resolve: resolve_genetop,
         },
         snps: {
             type: new GraphQLList(new GraphQLNonNull(CommonTypes.SNP)),

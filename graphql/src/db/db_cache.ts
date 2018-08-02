@@ -108,6 +108,7 @@ export type cache = {
     inputData: any;
     geBiosampleTypes: string[];
     geBiosamples: any;
+    geExperiments: string[];
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
     creBigBeds: any;
@@ -138,6 +139,8 @@ function getCacheMap(assembly): loadablecache {
 
         geBiosampleTypes: () => Common.geBiosampleTypes(assembly),
         geBiosamples: () => Common.geBiosamples(assembly),
+
+        geExperiments: () => Common.geBiosamples(assembly),
 
         geneIDsToApprovedSymbol: () => Common.geneIDsToApprovedSymbol(assembly),
 

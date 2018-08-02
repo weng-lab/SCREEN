@@ -44,10 +44,6 @@ const ReplicateData = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLFloat),
             description: 'The log2 FPKM value of the current gene for this replicate',
         },
-        rID: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: 'The internal id to identify this replicate',
-        },
     }),
 });
 
@@ -70,6 +66,14 @@ const ExperimentData = new GraphQLObjectType({
         ageTitle: {
             type: new GraphQLNonNull(GraphQLString),
             description: 'The age title for this experiment',
+        },
+        ensemblid_ver: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The ensemblid with version for this gene',
+        },
+        gene_name: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The gene for this expression',
         },
         reps: {
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReplicateData))),

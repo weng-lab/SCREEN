@@ -22,7 +22,7 @@ AddPath(__file__, '../../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
-from table_names import GeData, GeExperimentList
+from table_names import GeData, GeExperimentList, GeMv, GeMetadata
 
 class ImportRNAseq(object):
     def __init__(self, curs, assembly):
@@ -35,58 +35,46 @@ class ImportRNAseq(object):
     def _tableNameExperimentList(self):
         return GeExperimentList(self.assembly)
 
+    def _tableNameGeneInfo(self):
+        return self.assembly + "_gene_info"
+
     def run(self):
         for isNormalized in [True, False]:
             tableNameData = self._tableNameData(isNormalized)
-            fnp = paths.geFnp(self.assembly, isNormalized)
-            self._setupAndCopy(tableNameData, fnp)
-            self._doIndexData(tableNameData)
+            mvTable = GeMv(self.assembly, isNormalized, False)
+            ranksMvTable = GeMv(self.assembly, isNormalized, True)
+            self._materialize(tableNameData,
+                GeMetadata(self.assembly),
+                self._tableNameGeneInfo(),
+                mvTable,
+                ranksMvTable)
+            self._indexmaterialized(isNormalized)
 
-        # normalized and unnormalizaed tables should have same experiments!!
-        self._extractExpIDs(tableNameData, self._tableNameExperimentList())
-
-    def _setupAndCopy(self, tableNameData, fnp):
-        printt("dropping and creating", tableNameData)
+    def _materialize(self, tableNameData, tableNameMetadata, tableNameGeneInfo, mvTable, ranksMvTable):
+        printt("creating mv", mvTable)
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableNameData};
+DROP MATERIALIZED VIEW IF EXISTS {mvTable} CASCADE;
 
-    CREATE TABLE {tableNameData} (
-    id serial PRIMARY KEY,
-    ensembl_id VARCHAR(256) NOT NULL,
-    gene_name VARCHAR(256) NOT NULL,
-    expID VARCHAR(256) NOT NULL,
-    fileID VARCHAR(256) NOT NULL,
-    replicate INT NOT NULL,
-    fpkm NUMERIC NOT NULL,
-    tpm NUMERIC NOT NULL);
-        """.format(tableNameData=tableNameData))
+CREATE MATERIALIZED VIEW {mvTable} AS
+SELECT r.ensembl_id, r.gene_name, r.tpm, r.fpkm, meta.organ, meta.celltype, meta.agetitle, meta.expid, meta.replicate, meta.cellcompartment, meta.biosample_type,
+	i.gene_type,
+	CASE WHEN r.gene_name LIKE 'MT-%' THEN True
+		ELSE False
+	END as mitochondrial
+FROM {tableNameData} r
+JOIN {tableNameMetadata} meta ON meta.expid = r.expid AND meta.replicate = r.replicate
+LEFT JOIN {tableNameGeneInfo} i ON r.ensembl_id = i.ensemblid_ver
+ORDER BY r.tpm DESC;
+        """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
+               mvTable = mvTable, ranksMvTable = ranksMvTable))
 
-        printt("importing", fnp)
-        with gzip.open(fnp) as f:
-            self.curs.copy_from(f, tableNameData, '\t',
-                                columns=("expID", "replicate", "ensembl_id", "gene_name",
-                                         "fileID", "tpm", "fpkm"))
-        importedNumRows(self.curs)
-
-    def _extractExpIDs(self, tableNameData, tableNameExperimentList):
-        printt("dropping and creating", tableNameExperimentList)
-        self.curs.execute("""
-    DROP TABLE IF EXISTS {tableNameExperimentList};
-
-    CREATE TABLE {tableNameExperimentList} AS
-    SELECT DISTINCT expID, fileID, replicate
-    FROM {tableNameData}
-    """.format(tableNameData = tableNameData,
-               tableNameExperimentList = tableNameExperimentList))
-        importedNumRows(self.curs)
-
-    def _doIndexData(self, tableNameData):
-        printt("creating indices in", tableNameData, "...")
-        makeIndex(self.curs, tableNameData, ["gene_name", "tpm", "expid"])
-
+    def _indexmaterialized(self, isNormalized):
+        printt("creating indices in", GeMv(self.assembly, isNormalized, False), "...")
+        makeIndex(self.curs, GeMv(self.assembly, isNormalized, False), ["ensembl_id", "tpm", "celltype", "gene_type", "mitochondrial", "expid"])
+    
     def doIndex(self):
         for isNormalized in [True, False]:
-            self._doIndexData(self._tableNameData(isNormalized))
+            self._indexmaterialized(isNormalized)
 
 def run(args, DBCONN):
     assemblies = Config.assemblies

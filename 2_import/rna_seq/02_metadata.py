@@ -44,8 +44,8 @@ class LoadRNAseq:
 
     CREATE TABLE {tn}
     (id serial PRIMARY KEY,
-    expID text,
-    fileID text,
+    expID VARCHAR(256),
+    fileID VARCHAR(256),
     replicate INT NOT NULL,
     cellType text,
     organ text,

@@ -22,7 +22,7 @@ AddPath(__file__, '../../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
-from table_names import GeData, GeExperimentList
+from table_names import GeData, GeExperimentList, GeMv, GeMetadata
 
 class ImportRNAseq(object):
     def __init__(self, curs, assembly):
@@ -35,58 +35,50 @@ class ImportRNAseq(object):
     def _tableNameExperimentList(self):
         return GeExperimentList(self.assembly)
 
+    def _tableNameGeneInfo(self):
+        return self.assembly + "_gene_info"
+
     def run(self):
         for isNormalized in [True, False]:
-            tableNameData = self._tableNameData(isNormalized)
-            fnp = paths.geFnp(self.assembly, isNormalized)
-            self._setupAndCopy(tableNameData, fnp)
-            self._doIndexData(tableNameData)
+            mvTable = GeMv(self.assembly, isNormalized, False)
+            ranksMvTable = GeMv(self.assembly, isNormalized, True)
+            self._materializeranks(
+                mvTable,
+                ranksMvTable)
+            self._indexmaterializedranks(isNormalized)
 
-        # normalized and unnormalizaed tables should have same experiments!!
-        self._extractExpIDs(tableNameData, self._tableNameExperimentList())
-
-    def _setupAndCopy(self, tableNameData, fnp):
-        printt("dropping and creating", tableNameData)
+    def _materializeranks(self, mvTable, ranksMvTable):
+        printt("creating ranks mv", ranksMvTable)
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableNameData};
+DROP MATERIALIZED VIEW IF EXISTS {ranksMvTable};
 
-    CREATE TABLE {tableNameData} (
-    id serial PRIMARY KEY,
-    ensembl_id VARCHAR(256) NOT NULL,
-    gene_name VARCHAR(256) NOT NULL,
-    expID VARCHAR(256) NOT NULL,
-    fileID VARCHAR(256) NOT NULL,
-    replicate INT NOT NULL,
-    fpkm NUMERIC NOT NULL,
-    tpm NUMERIC NOT NULL);
-        """.format(tableNameData=tableNameData))
+CREATE MATERIALIZED VIEW {ranksMvTable} AS
+SELECT *
+FROM (
+	SELECT
+		r.*, 
+		rank() OVER (
+			PARTITION BY celltype, cellcompartment, gene_type, mitochondrial
+			ORDER BY maxtpm DESC
+		)
+	FROM (
+		SELECT r.ensembl_id, r.gene_name, MAX(r.tpm) as maxtpm, r.organ, r.celltype, r.agetitle, r.cellcompartment, r.biosample_type, r.gene_type, r.mitochondrial
+		FROM {mvTable} r
+		GROUP BY r.ensembl_id, r.gene_name, r.organ, r.celltype, r.agetitle, r.cellcompartment, r.biosample_type, r.gene_type, r.mitochondrial
+	) r
+	WHERE maxtpm > 0
+) r
+WHERE rank < 150;
+        """.format(mvTable = mvTable, ranksMvTable = ranksMvTable))
 
-        printt("importing", fnp)
-        with gzip.open(fnp) as f:
-            self.curs.copy_from(f, tableNameData, '\t',
-                                columns=("expID", "replicate", "ensembl_id", "gene_name",
-                                         "fileID", "tpm", "fpkm"))
-        importedNumRows(self.curs)
-
-    def _extractExpIDs(self, tableNameData, tableNameExperimentList):
-        printt("dropping and creating", tableNameExperimentList)
-        self.curs.execute("""
-    DROP TABLE IF EXISTS {tableNameExperimentList};
-
-    CREATE TABLE {tableNameExperimentList} AS
-    SELECT DISTINCT expID, fileID, replicate
-    FROM {tableNameData}
-    """.format(tableNameData = tableNameData,
-               tableNameExperimentList = tableNameExperimentList))
-        importedNumRows(self.curs)
-
-    def _doIndexData(self, tableNameData):
-        printt("creating indices in", tableNameData, "...")
-        makeIndex(self.curs, tableNameData, ["gene_name", "tpm", "expid"])
+    def _indexmaterializedranks(self, isNormalized):
+        printt("creating indices in", GeMv(self.assembly, isNormalized, True), "...")
+        makeIndex(self.curs, GeMv(self.assembly, isNormalized, True), ["ensembl_id", "maxtpm", "celltype", "gene_type", "mitochondrial"])
+    
 
     def doIndex(self):
         for isNormalized in [True, False]:
-            self._doIndexData(self._tableNameData(isNormalized))
+            self._indexmaterializedranks(isNormalized)
 
 def run(args, DBCONN):
     assemblies = Config.assemblies

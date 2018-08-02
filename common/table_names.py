@@ -11,3 +11,16 @@ def GeExperimentList(assembly):
 
 def GeMetadata(assembly):
     return assembly + "_rnaseq_metadata"
+
+def GeMv(assembly, isNormalized, ranks):
+    tableNameMv = assembly + "_rnaseq"
+    if isNormalized:
+        tableNameMv += "_norm"
+    else:
+        tableNameMv += "_unnorm"
+
+    if ranks:
+        tableNameMv += "_ranks"
+
+    tableNameMv += "_mv"
+    return tableNameMv

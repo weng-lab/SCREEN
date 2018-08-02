@@ -79,6 +79,16 @@ export async function geBiosamples(assembly) {
     return res.map(r => r['biosample']);
 }
 
+export async function geExperiments(assembly: Assembly, biosample: string | null): Promise<string[]> {
+    const tableName = assembly + '_rnaseq_metadata';
+    const q = `
+SELECT DISTINCT(expid) as expid
+FROM ${tableName}
+${biosample ? `WHERE celltype = $1` : ''}
+    `;
+    return db.map<string>(q, biosample ? [biosample] : [], r => r.expid);
+}
+
 export async function geneIDsToApprovedSymbol(assembly) {
     const tableName = assembly + '_gene_info';
     const q = `

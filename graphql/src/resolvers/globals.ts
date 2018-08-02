@@ -2,6 +2,8 @@ import { GraphQLFieldResolver } from 'graphql';
 import { loadCache, Compartments, loadGlobalCache } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
 import { chrom_lengths } from '../constants';
+import { geExperiments } from '../db/db_common';
+import { Assembly } from '../types';
 
 export const resolve_globals = () => ({});
 export const resolve_globals_helpKeys = () => loadGlobalCache().helpKeys();
@@ -37,6 +39,12 @@ export const resolve_globals_assembly_creHistBins = source => loadCache(source.a
 export const resolve_globals_assembly_geBiosampleTypes = source => loadCache(source.assembly).geBiosampleTypes();
 
 export const resolve_globals_assembly_geBiosamples = source => loadCache(source.assembly).geBiosamples();
+
+export const resolve_globals_assembly_geExperiments: GraphQLFieldResolver<
+    { assembly: Assembly },
+    any,
+    { biosample: string | null }
+> = (source, args) => geExperiments(source.assembly, args.biosample);
 
 export const resolve_globals_assembly_creBigBedsByCellType = source => loadCache(source.assembly).creBigBeds();
 

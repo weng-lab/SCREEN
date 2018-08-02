@@ -19,6 +19,7 @@ import {
     resolve_globals_colors,
     resolve_globals_files,
     resolve_globals_inputData,
+    resolve_globals_assembly_geExperiments,
 } from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
 
@@ -76,6 +77,16 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
             description: 'Returns biosamples available in gene expression',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
             resolve: resolve_globals_assembly_geBiosamples,
+        },
+        geExperiments: {
+            description: 'Returns experiments available in gene expression. Can be filtered for a specific biosample.',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+            args: {
+                biosample: {
+                    type: GraphQLString,
+                },
+            },
+            resolve: resolve_globals_assembly_geExperiments,
         },
         creBigBedsByCellType: {
             description: 'Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE',
