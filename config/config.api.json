@@ -12,7 +12,9 @@
 	"googleAnalytics": false,
 	"memcache": false,
 	"cassandra": ["localhost"],
-	"redisHost": "127.0.0.1"
+	"redisHost": "127.0.0.1",
+	"downloadDir": "/tmp/intersect/",
+	"rnaSeqIsNorm": false
     },
     "DB": {
 	"database": "screenv10",
