@@ -207,7 +207,9 @@ cellTypeName text);""".format(tableName=tableName))
         self.importRankIndexes()
 
 def get9stateInfo(assembly, r):
-    mc = MemCacheWrapper(Config.memcache)
+    mc = None
+    if Config.memcache:
+        mc = MemCacheWrapper(Config.memcache)
     qd = QueryDCC(auth=False, cache=mc)
 
     fileIDs = filter(lambda x: x.startswith("EN"),
@@ -375,7 +377,9 @@ info jsonb
         makeIndex(self.curs, self.tableName, ["oid"])
 
 def ontologyToCellTypes(line):
-    mc = MemCacheWrapper("localhost")
+    mc = None
+    if Config.memcache:
+        mc = MemCacheWrapper(Config.memcache)
     qd = QueryDCC(auth=False, cache=mc)
 
     toks = line.strip().split('\t')
