@@ -151,7 +151,7 @@ class CRE:
 
     def _group(self, v, p):
         if v["dnase"] <= 1.64 and v["dnase"] != -11.0:
-            return "inactive"
+            return "yinactive"
         if p:
             if v["h3k4me3"] > 1.64: return "promoter"
             if v["h3k27ac"] > 1.64: return "enhancer"
@@ -159,7 +159,8 @@ class CRE:
             if v["h3k27ac"] > 1.64: return "enhancer"
             if v["h3k4me3"] > 1.64: return "promoter"
         if v["ctcf"] > 1.64: return "ctcf"
-        return "dnase" if v["dnase"] > 1.64 else "inactive"
+        if -11.0 == v["dnase"]: return "zunclassified"
+        return "dnase" if v["dnase"] > 1.64 else "yinactive"
     
     def peakIntersectCount(self, eset=None):
         coord = self.coord()
