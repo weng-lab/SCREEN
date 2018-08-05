@@ -36,4 +36,5 @@ class Config:
     rnaSeqIsNorm = re["rnaSeqIsNorm"]
 
     peakIntersectionRunDate = re["peakIntersectionRunDate"]
+    cistromePeakIntersectionRunDate = re["cistromePeakIntersectionRunDate"]
     

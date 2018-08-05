@@ -36,7 +36,7 @@ label text,
 biosample_term_name text,
 tissue text
 )""".format(tn=t))
-    jobs = cistromeIntersections.makeJobs(assembly, paths.cistrome("data", "raw"))
+    jobs = peakIntersections.loadJobs(assembly, Config.peakIntersectionRunDate)
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
@@ -61,7 +61,7 @@ def run(args, DBCONN):
             PI.ImportPeakIntersections(curs, assembly, tsuffix).index()
         else:
             PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
-            runDate = '2018-04-05/..' # TODO: date same as ENCODE peak intersections...
+            runDate = Config.cistromePeakIntersectionRunDate
             ipi = PI.ImportPeakIntersections(curs, assembly, tsuffix, runDate)
             ipi.run()
             ipi.index()

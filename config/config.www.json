@@ -15,7 +15,8 @@
 	"redisHost": "127.0.0.1",
 	"downloadDir": "/app/downloads/",
         "rnaSeqIsNorm": true,
-        "peakIntersectionRunDate": "2018-08-05"
+        "peakIntersectionRunDate": "2018-08-05",
+        "cistromePeakIntersectionRunDate": "2018-04-05"
     },
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",

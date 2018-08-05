@@ -15,7 +15,8 @@
 	"redisHost": "127.0.0.1",
 	"downloadDir": "/tmp/intersect/",
 	"rnaSeqIsNorm": false,
-        "peakIntersectionRunDate": "2018-08-05"
+        "peakIntersectionRunDate": "2018-08-05",
+        "cistromePeakIntersectionRunDate": "2018-04-05"
     },
     "DB": {
 	"database": "screenv10",

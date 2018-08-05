@@ -43,7 +43,7 @@ emap = {"tf": "TF", "histone": "histone"}
 
 def makeJobs(assembly, rootpath, skipCheck = True):
     species = "human" if assembly == "hg19" else "mouse"
-    m = CistromeWS(species, "http://bib7.umassmed.edu/ws/cistrome")
+    m = CistromeWS(species, "https://api.wenglab.org/cistrome")
     allExps = [(m.chipseq_tfs(), "tf"),
                (m.chipseq_histones(), "histone")]
     allExpsIndiv = []

@@ -25,6 +25,15 @@ from constants import paths, chroms
 from common import printr, printt
 from config import Config
 
+def loadJobs(self, assembly, runDate):
+    fnp = paths.path(assembly, "extras", runDate, "jobs.json.gz")
+
+    printt("reading", fnp)
+    with gzip.open(fnp) as f:
+        jobs = json.load(f)
+    printt("loaded", len(jobs))
+    return jobs
+
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
@@ -67,10 +76,12 @@ def runIntersectJob(jobargs, bedfnp):
     return (fileJson, ret)
 
 class PeakIntersection:
-    def __init__(self, args, assembly):
+    def __init__(self, args, assembly, runDate = None):
         self.args = args
         self.assembly = assembly
-        self.runDate = arrow.now().format('YYYY-MM-DD')
+        self.runDate = runDate
+        if not runDate:
+            self.runDate = arrow.now().format('YYYY-MM-DD')
         self.jobsFnp = paths.path(self.assembly, "extras", self.runDate,
                                   "jobs.json.gz")
         Utils.ensureDir(self.jobsFnp)
@@ -126,19 +137,6 @@ class PeakIntersection:
         
         return jobs
 
-    def loadJobs(self, runDate = None):
-        if runDate:
-            fnp = paths.path(self.assembly, "extras", runDate, "jobs.json.gz")
-        else:
-            fnp = self.jobsFnp
-            runDate = self.runDate
-                        
-        printt("reading", fnp)
-        with gzip.open(fnp) as f:
-            jobs = json.load(f)
-        printt("loaded", len(jobs))
-        return jobs, runDate
-    
     def computeIntersections(self):
         bedFnp = paths.path(self.assembly, "extras", "cREs.sorted.bed")
         if not os.path.exists(bedFnp):
