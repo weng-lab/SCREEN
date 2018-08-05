@@ -14,7 +14,8 @@
 	"cassandra": ["cassandra"],
 	"redisHost": "redis",
 	"downloadDir": "/tmp/intersect/",
-        "rnaSeqIsNorm": false
+        "rnaSeqIsNorm": false,
+        "peakIntersectionRunDate": "2018-08-05"
     },
     "bedupload": {
 	"incomingDir": "/ccREs/intersect/incoming",

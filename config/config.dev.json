@@ -14,7 +14,8 @@
 	"cassandra": ["pgs_cassandra"],
 	"redisHost": "127.0.0.1",
 	"downloadDir": "/app/downloads/",
-        "rnaSeqIsNorm": true
+        "rnaSeqIsNorm": true,
+        "peakIntersectionRunDate": "2018-08-05"
     },
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",
