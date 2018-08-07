@@ -8,7 +8,6 @@ import {
     resolve_gwas_study_numLdBlocksOverlap,
     resolve_gwas_study_numCresOverlap,
     resolve_gwas_snps,
-    resolve_gwas_study_activeBiosamples,
 } from '../resolvers/gwas';
 import * as CommonTypes from './CommonSchema';
 import { resolve_gwas_ldblock_leadsnp, resolve_gwas_ldblock_snps } from '../resolvers/snp';
@@ -175,15 +174,6 @@ export const GwasStudy = new GraphQLObjectType({
             },
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCRE))),
             resolve: resolve_gwas_study_cres,
-        },
-        activeBiosamples: {
-            type: new GraphQLList(new GraphQLNonNull(GwasCellType)),
-            args: {
-                snp: {
-                    type: new GraphQLNonNull(GraphQLString),
-                },
-            },
-            resolve: resolve_gwas_study_activeBiosamples,
         },
     }),
 });

@@ -22,7 +22,7 @@ import {
     resolve_snps_nearbygenes,
 } from '../resolvers/snp';
 import { GwasStudy, LDBlock, LDBlockSNP } from './GwasResponse';
-import { resolve_gene_exons } from '../resolvers/common';
+import { resolve_gene_exons, resolve_celltypeinfo_ccREActivity } from '../resolvers/common';
 
 export const Assembly = new GraphQLEnumType({
     name: 'Assembly',
@@ -420,6 +420,15 @@ export const CellTypeInfo = new GraphQLObjectType({
         isde: { type: new GraphQLNonNull(GraphQLBoolean) },
         synonyms: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
         assays: { type: new GraphQLList(new GraphQLNonNull(CellTypeAssay)) },
+        ccREActivity: {
+            args: {
+                ccre: {
+                    type: new GraphQLNonNull(GraphQLString),
+                },
+            },
+            type: ctSpecific,
+            resolve: resolve_celltypeinfo_ccREActivity,
+        },
     }),
 });
 

@@ -7,7 +7,7 @@ const { UserError } = require('graphql-errors');
 
 const getCresForAssembly = async (assembly, accessions) => {
     if (accessions.length === 0) {
-        return [];
+        return { cres: [], total: 0 };
     }
     const ctmap = await loadCache(assembly).ctmap();
     return getCreTable(assembly, ctmap, { accessions }, {});
@@ -17,7 +17,7 @@ const getCres = async cres => {
     const hg19cres = getCresForAssembly('hg19', cres.filter(c => c.startsWith('EH37')));
     const mm10cres = getCresForAssembly('mm10', cres.filter(c => c.startsWith('EM10')));
     return {
-        cres: ([] as any[]).concat(await hg19cres, await mm10cres),
+        cres: ([] as any[]).concat((await hg19cres).cres, (await mm10cres).cres),
     };
 };
 
