@@ -40,40 +40,48 @@ class ImportRNAseq(object):
 
     def run(self):
         for isNormalized in [True, False]:
-            mvTable = GeMv(self.assembly, isNormalized, False)
+            tableNameData = self._tableNameData(isNormalized)
             ranksMvTable = GeMv(self.assembly, isNormalized, True)
-            self._materializeranks(
-                mvTable,
+            self._materializeranks(tableNameData,
+                GeMetadata(self.assembly),
+                self._tableNameGeneInfo(),
                 ranksMvTable)
             self._indexmaterializedranks(isNormalized)
 
-    def _materializeranks(self, mvTable, ranksMvTable):
+    def _materializeranks(self, tableNameData, tableNameMetadata, tableNameGeneInfo, ranksMvTable):
         printt("creating ranks mv", ranksMvTable)
         self.curs.execute("""
-DROP MATERIALIZED VIEW IF EXISTS {ranksMvTable};
+DROP MATERIALIZED VIEW IF EXISTS {ranksMvTable} CASCADE;
 
 CREATE MATERIALIZED VIEW {ranksMvTable} AS
 SELECT *
 FROM (
 	SELECT
-		r.*, 
+		joined.*, 
 		rank() OVER (
-			PARTITION BY celltype, cellcompartment, gene_type, mitochondrial
+			PARTITION BY expid, gene_type, mitochondrial
 			ORDER BY maxtpm DESC
 		)
 	FROM (
-		SELECT r.ensembl_id, r.gene_name, MAX(r.tpm) as maxtpm, r.organ, r.celltype, r.agetitle, r.cellcompartment, r.biosample_type, r.gene_type, r.mitochondrial
-		FROM {mvTable} r
-		GROUP BY r.ensembl_id, r.gene_name, r.organ, r.celltype, r.agetitle, r.cellcompartment, r.biosample_type, r.gene_type, r.mitochondrial
-	) r
-	WHERE maxtpm > 0
-) r
-WHERE rank < 150;
-        """.format(mvTable = mvTable, ranksMvTable = ranksMvTable))
+        SELECT r.ensembl_id, r.gene_name, MAX(r.tpm) as maxtpm, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, meta.expid,
+            i.gene_type,
+            CASE WHEN r.gene_name LIKE 'MT-%' THEN True
+                ELSE False
+            END as mitochondrial
+        FROM {tableNameData} r
+        JOIN {tableNameMetadata} meta ON meta.expid = r.expid AND meta.replicate = r.replicate
+        LEFT JOIN {tableNameGeneInfo} i ON r.ensembl_id = i.ensemblid_ver
+        GROUP BY r.ensembl_id, r.gene_name, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, i.gene_type, meta.expid, mitochondrial
+    ) joined
+    WHERE maxtpm > 0
+) ranks
+WHERE rank < 120;
+        """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
+               ranksMvTable = ranksMvTable))
 
     def _indexmaterializedranks(self, isNormalized):
         printt("creating indices in", GeMv(self.assembly, isNormalized, True), "...")
-        makeIndex(self.curs, GeMv(self.assembly, isNormalized, True), ["ensembl_id", "maxtpm", "celltype", "gene_type", "mitochondrial"])
+        makeIndex(self.curs, GeMv(self.assembly, isNormalized, True), ["ensembl_id", "celltype", "gene_type", "mitochondrial", "expid", "cellcompartment"])
     
 
     def doIndex(self):

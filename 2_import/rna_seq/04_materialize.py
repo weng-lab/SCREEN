@@ -55,22 +55,17 @@ class ImportRNAseq(object):
         self.curs.execute("""
 DROP MATERIALIZED VIEW IF EXISTS {mvTable} CASCADE;
 
-CREATE MATERIALIZED VIEW {mvTable} AS
-SELECT r.ensembl_id, r.gene_name, r.tpm, r.fpkm, meta.organ, meta.celltype, meta.agetitle, meta.expid, meta.replicate, meta.cellcompartment, meta.biosample_type,
-	i.gene_type,
-	CASE WHEN r.gene_name LIKE 'MT-%' THEN True
-		ELSE False
-	END as mitochondrial
-FROM {tableNameData} r
-JOIN {tableNameMetadata} meta ON meta.expid = r.expid AND meta.replicate = r.replicate
-LEFT JOIN {tableNameGeneInfo} i ON r.ensembl_id = i.ensemblid_ver
-ORDER BY r.tpm DESC;
+CREATE MATERIALIZED VIEW {mvTable} AS 
+SELECT norm.*, top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type
+FROM {tableNameData} norm
+INNER JOIN {ranksMvTable} top
+ON norm.ensembl_id = top.ensembl_id AND norm.expid = top.expid;
         """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
                mvTable = mvTable, ranksMvTable = ranksMvTable))
 
     def _indexmaterialized(self, isNormalized):
         printt("creating indices in", GeMv(self.assembly, isNormalized, False), "...")
-        makeIndex(self.curs, GeMv(self.assembly, isNormalized, False), ["ensembl_id", "tpm", "celltype", "gene_type", "mitochondrial", "expid"])
+        makeIndex(self.curs, GeMv(self.assembly, isNormalized, False), ["ensembl_id", "tpm", "celltype", "gene_type", "mitochondrial", "expid", "cellcompartment"])
     
     def doIndex(self):
         for isNormalized in [True, False]:
