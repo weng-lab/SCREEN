@@ -39,7 +39,8 @@ class ImportRNAseq(object):
         return self.assembly + "_gene_info"
 
     def run(self):
-        for isNormalized in [True, False]:
+        #for isNormalized in [True, False]:
+        for isNormalized in [False]:
             tableNameData = self._tableNameData(isNormalized)
             mvTable = GeMv(self.assembly, isNormalized, False)
             ranksMvTable = GeMv(self.assembly, isNormalized, True)
@@ -56,10 +57,14 @@ class ImportRNAseq(object):
 DROP MATERIALIZED VIEW IF EXISTS {mvTable} CASCADE;
 
 CREATE MATERIALIZED VIEW {mvTable} AS 
-SELECT norm.*, top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type
+SELECT
+    norm.ensembl_id, norm.gene_name, norm.expid, AVG(tpm) as tpm, AVG(FPKM) as fpkm,
+    top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type,
+    array_agg(jsonb_build_object('replicate', norm.replicate, 'tpm', norm.tpm, 'fpkm', norm.fpkm)) as reps
 FROM {tableNameData} norm
 INNER JOIN {ranksMvTable} top
-ON norm.ensembl_id = top.ensembl_id AND norm.expid = top.expid;
+ON norm.ensembl_id = top.ensembl_id AND norm.expid = top.expid
+GROUP BY norm.expid, norm.ensembl_id, norm.gene_name, top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type
         """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
                mvTable = mvTable, ranksMvTable = ranksMvTable))
 

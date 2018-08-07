@@ -114,7 +114,7 @@ const BaseType = new GraphQLObjectType({
                 },
                 normalized: {
                     type: GraphQLBoolean,
-                    description: 'Whether or not to return normalized RNA-seq data. Defaults to true.',
+                    description: 'Whether or not to return normalized RNA-seq data. Defaults to false.',
                 },
                 pconly: {
                     type: GraphQLBoolean,

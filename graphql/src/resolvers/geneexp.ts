@@ -24,7 +24,7 @@ export const resolve_geneexp: GraphQLFieldResolver<any, any, GeneExpArgs> = asyn
     let biosample_types = args.biosample_types;
     let compartments = args.compartments;
     const experimentaccession = args.experimentaccession;
-    const normalized = typeof args.normalized === 'boolean' ? args.normalized : true;
+    const normalized = typeof args.normalized === 'boolean' ? args.normalized : false;
     const pconly = typeof args.pconly === 'boolean' ? args.pconly : false;
     const nomitochondrial = typeof args.nomitochondrial === 'boolean' ? args.nomitochondrial : false;
 

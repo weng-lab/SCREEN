@@ -131,54 +131,74 @@ export const geneexp: GeneExpFunction = async (
 ) => {
     const allmv = `${assembly}_rnaseq_${normalized ? 'norm' : 'unnorm'}_mv`;
     const ranksmv = `${assembly}_rnaseq_${normalized ? 'norm' : 'unnorm'}_ranks_mv`;
+    const expression = `${assembly}_rnaseq_expression_${normalized ? 'norm' : 'unnorm'}`;
+    const metadata = `${assembly}_rnaseq_metadata`;
 
     let query;
     if (gene) {
         query = `
-SELECT r.ensembl_id as ensemblid_ver, r.gene_name, r.expid, r.organ, r.cellType, r.ageTitle, json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm)) as reps
-FROM ${allmv} AS r
+SELECT r.ensembl_id as ensemblid_ver, r.gene_name, r.expid, meta.organ, meta.cellType, meta.ageTitle, json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm)) as reps
+FROM ${expression} AS r
+INNER JOIN ${metadata} AS meta ON r.expid = meta.expid AND r.replicate = meta.replicate
 WHERE
-    r.cellCompartment = ANY ($<compartments>)
-    AND r.biosample_type = ANY ($<biosampletypes>)
-    AND gene_name = $<gene>
+    meta.cellCompartment = ANY ($<compartments>)
+    AND meta.biosample_type = ANY ($<biosampletypes>)
+    AND r.gene_name = $<gene>
     ${biosample ? `AND r.celltype = $<biosample>` : ''}
-GROUP BY ensembl_id, r.organ, r.cellType, r.ageTitle, r.expid, r.gene_name
+GROUP BY ensembl_id, meta.organ, meta.cellType, meta.ageTitle, r.expid, r.gene_name
     `;
     } else if (experimentaccession) {
         query = `
-SELECT r.ensembl_id as ensemblid_ver, r.gene_name, r.expid, r.organ, r.cellType, r.ageTitle, json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm)) as reps, MAX(tpm) as maxtpm
-FROM ${allmv} AS r
+SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, gene_type, mitochondrial, reps
+FROM ${allmv} as r
 WHERE
-    expid = $<experimentaccession>
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.ensembl_id = ANY (
+        SELECT ensembl_id
+        FROM (
+            SELECT percentile_cont(0.5) WITHIN GROUP(ORDER BY tpm) as median, ensembl_id
+            FROM ${allmv} as r
+            WHERE
+                r.cellcompartment = ANY ($<compartments>)
+                AND expid = $<experimentaccession>
+                AND r.tpm > 0
+                ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+                ${nomitochondrial ? `AND mitochondrial = False` : ''}
+            GROUP BY ensembl_id
+            ORDER BY median desc
+            LIMIT 100
+        ) median_ranked
+    )
+    AND r.celltype = $<biosample>
+    AND r.tpm > 0
+    AND r.expid = $<experimentaccession>
     ${pconly ? `AND gene_type = 'protein_coding'` : ''}
     ${nomitochondrial ? `AND mitochondrial = False` : ''}
-GROUP BY ensembl_id, r.organ, r.cellType, r.ageTitle, r.expid, r.gene_name
-ORDER BY maxtpm desc
-LIMIT 100
         `;
     } else if (biosample) {
         query = `
-SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, json_agg(json_build_object('replicate', replicate, 'tpm', tpm, 'fpkm', fpkm)) as reps
-FROM (
-    SELECT *
-    FROM ${allmv} as r
-    WHERE
-        r.cellcompartment = ANY ($<compartments>)
-        AND r.ensembl_id = ANY (
-            SELECT top.ensembl_id
-            FROM ${ranksmv} top
-            WHERE celltype = $<biosample>
-            AND cellcompartment = ANY ($<compartments>)
-            ${pconly ? `AND gene_type = 'protein_coding'` : ''}
-            ${nomitochondrial ? `AND mitochondrial = False` : ''}
+SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, gene_type, mitochondrial, reps
+FROM ${allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.ensembl_id = ANY (
+        SELECT ensembl_id
+        FROM (
+            SELECT percentile_cont(0.5) WITHIN GROUP(ORDER BY tpm) as median, ensembl_id
+            FROM ${allmv} as r
+            WHERE
+                r.cellcompartment = ANY ($<compartments>)
+                AND r.celltype = $<biosample>
+                ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+                ${nomitochondrial ? `AND mitochondrial = False` : ''}
             GROUP BY ensembl_id
-            ORDER BY MAX(maxtpm) DESC
+            ORDER BY median desc
             LIMIT 100
-        )
-        AND r.celltype = $<biosample>
-        AND r.tpm > 0
-) singles
-GROUP BY ensembl_id, organ, celltype, agetitle, gene_name, expid
+        ) median_ranked
+    )
+    AND r.celltype = $<biosample>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
     `;
     }
 

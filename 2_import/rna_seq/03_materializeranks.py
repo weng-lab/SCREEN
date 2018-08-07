@@ -63,7 +63,7 @@ FROM (
 			ORDER BY maxtpm DESC
 		)
 	FROM (
-        SELECT r.ensembl_id, r.gene_name, MAX(r.tpm) as maxtpm, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, meta.expid,
+        SELECT r.ensembl_id, r.gene_name, AVG(r.tpm) as tpm, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, meta.expid,
             i.gene_type,
             CASE WHEN r.gene_name LIKE 'MT-%' THEN True
                 ELSE False
@@ -73,7 +73,7 @@ FROM (
         LEFT JOIN {tableNameGeneInfo} i ON r.ensembl_id = i.ensemblid_ver
         GROUP BY r.ensembl_id, r.gene_name, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, i.gene_type, meta.expid, mitochondrial
     ) joined
-    WHERE maxtpm > 0
+    WHERE tpm > 0
 ) ranks
 WHERE rank < 120;
         """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
