@@ -20,9 +20,35 @@ from db_utils import getcursor, makeIndex
 
 
 class ImportLiftover:
+
+    @staticmethod
+    def _load_ccRE_map(assembly):
+        ret = {}
+        with open(paths.path(assembly, "raw", "cREs.sorted.bed"), 'r') as f:
+            for line in f:
+                line = line.strip().split('\t')
+                ret[line[4]] = tuple(line[:4])
+        return ret
+    
     def __init__(self, curs):
         self.curs = curs
         self.tableName = "mm10_liftover"
+        self.ccREmaps = {
+            "hg19": ImportLiftover._load_ccRE_map("hg19"),
+            "mm10": ImportLiftover._load_ccRE_map("mm10")
+        }
+
+    def createImportFile(self):
+        with open(paths.path("mm10", "Two-Way-Synteny.txt"), 'r') as f:
+            with gzip.open(paths.path("mm10", "Two-Way-Synteny.txt.forimport.gz"), 'wb') as o:
+                for line in f:
+                    line = line.strip().split('\t')
+                    mc, ms, me, md = self.ccREmaps["mm10"][line[1]]
+                    hc, hs, he, hd = self.ccREmaps["hg19"][line[0]]
+                    o.write("{hc}\t{hs}\t{he}\t{md}\t{ma}\t{hd}\t{ha}\t0\n".format(
+                        hc = hc, hs = hs, he = he, hd = he, md = md,
+                        ha = line[0], ma = line[1]
+                    ))
 
     def setupLiftover(self):
         printt("dropping and creating", self.tableName)
@@ -40,8 +66,7 @@ class ImportLiftover:
     """.format(tableName=self.tableName))
 
     def run(self):
-        fnp = paths.path("mm10", "mm10-orthologs.txt.gz")
-
+        fnp = paths.path("mm10", "Two-Way-Synteny.txt.forimport.gz")
         self.setupLiftover()
 
         printt("reading", fnp)
@@ -66,23 +91,19 @@ def run(args, DBCONN):
     printt('***********')
     with getcursor(DBCONN, "main") as curs:
         il = ImportLiftover(curs)
+        il.createImportFile()
         il.run()
     return 0
-
 
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     return args
 
-
 def main():
     args = parse_args()
-
     DBCONN = db_connect(os.path.realpath(__file__))
-
     return run(args, DBCONN)
-
 
 if __name__ == '__main__':
     main()
