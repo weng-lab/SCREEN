@@ -42,9 +42,6 @@ import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps } from '../resolvers/snp';
 import { RampageGeneData } from './CreDetailsResponse';
 
-const json = require('../../data.json');
-const search_json = require('../../search.json');
-
 const BaseType = new GraphQLObjectType({
     name: 'BaseType',
     description: 'An API to access various data related to ccREs',
