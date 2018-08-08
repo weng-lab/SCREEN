@@ -108,6 +108,4 @@ jsconfig.json
 
 prod/
 
-yarn.lock
-
 .vscode/
