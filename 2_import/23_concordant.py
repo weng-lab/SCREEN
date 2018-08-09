@@ -22,17 +22,11 @@ from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 from config import Config
 
-AddPath(__file__, '../website/common/')
-from pg_common import PGcommon
-from pg import PGsearch
-from postgres_wrapper import PostgresWrapper
-
 
 class Concordant:
-    def __init__(self, curs, assembly, pg):
+    def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.pg = pg
         self.tableName = assembly + "_concordant"
         self.inFnp = paths.path(self.assembly, self.assembly + "-concordant-cREs.txt")
 
@@ -96,9 +90,8 @@ def run(args, DBCONN):
 
     for assembly in assemblies:
         print('***********', assembly)
-        pg = PostgresWrapper(DBCONN)
         with getcursor(DBCONN, "dropTables") as curs:
-            icg = Concordant(curs, assembly, pg)
+            icg = Concordant(curs, assembly)
             icg.run()
 
     for assembly in assemblies:
