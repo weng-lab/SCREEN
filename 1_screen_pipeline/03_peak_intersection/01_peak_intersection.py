@@ -25,7 +25,7 @@ from constants import paths, chroms
 from common import printr, printt
 from config import Config
 
-def loadJobs(self, assembly, runDate):
+def loadJobs(assembly, runDate):
     fnp = paths.path(assembly, "extras", runDate, "jobs.json.gz")
 
     printt("reading", fnp)

@@ -59,7 +59,7 @@ class ImportPeakIntersections:
         makeIndex(self.curs, self.tableName, ["accession"])
 
 
-def encode_peak_metadata(assembly, t, curs):
+def encode_peak_metadata(assembly, t, curs, runDate):
     printt("dropping and creating table", t)
     curs.execute("""
 DROP TABLE IF EXISTS {tn};
@@ -71,7 +71,7 @@ assay text,
 label text,
 biosample_term_name text
 )""".format(tn=t))
-    jobs = peakIntersections.loadJobs(assembly, Config.peakIntersectionRunDate)
+    jobs = peakIntersections.loadJobs(assembly, runDate)
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write('\t'.join([r["bed"]["expID"],
@@ -99,47 +99,46 @@ VALUES (%s)
     """.format(tn=tableName), (runDate,))
     importedNumRows(curs)
     
-    return (outF, cols, runDate)
+    return (outF, cols)
 
 
 class ImportPeakIntersectionMetadata:
-    def __init__(self, curs, assembly, tsuffix, jobgen):
+    def __init__(self, curs, assembly, tsuffix, jobgen, runDate):
         self.curs = curs
         self.assembly = assembly
         self.tableName = assembly + "_%sMetadata" % tsuffix
         self._tsuffix = tsuffix
         self._jobgen = jobgen
+        self.runDate = runDate
 
     def run(self):
-        outF, cols, runDate = self._jobgen(self.assembly, self.tableName, self.curs)
+        outF, cols = self._jobgen(self.assembly, self.tableName, self.curs, self.runDate)
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         importedNumRows(self.curs)
         makeIndex(self.curs, self.tableName, ["label", "fileID"])
-        return runDate
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
-    Encode = ["peakIntersections", encode_peak_metadata]
-
-    def doRun(args, assembly, curs, tsuffix, jobgen):
+    def doRun(args, assembly, curs, tsuffix, jobgen, runDate):
         if args.metadata:
-            ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
+            ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen, runDate).run()
         elif args.index:
-            ImportPeakIntersections(curs, assembly, tsuffix).index()
+            ImportPeakIntersections(curs, assembly, tsuffix, runDate).index()
         else:
-            m = ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen)
+            m = ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen, runDate)
             runDate = m.run()
             ipi = ImportPeakIntersections(curs, assembly, tsuffix, runDate)
             ipi.run()
             ipi.index()
 
+    runDate = Config.peakIntersectionRunDate
     for assembly in assemblies:
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
-            doRun(args, assembly, curs, Encode[0], Encode[1])
+            doRun(args, assembly, curs, "peakIntersections", encode_peak_metadata, runDate)
 
 
 def parse_args():

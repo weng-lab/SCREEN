@@ -24,7 +24,7 @@ from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndex
 from files_and_paths import Dirs
 
 
-def cistrome_peak_metadata(assembly, t, curs):
+def cistrome_peak_metadata(assembly, t, curs, runDate):
     printt("dropping and creating table", t)
     curs.execute("""
 DROP TABLE IF EXISTS {tn};
@@ -36,7 +36,7 @@ label text,
 biosample_term_name text,
 tissue text
 )""".format(tn=t))
-    jobs = peakIntersections.loadJobs(assembly, Config.peakIntersectionRunDate)
+    jobs = cistromeIntersections.loadJobs(assembly, runDate)
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
@@ -52,26 +52,24 @@ def run(args, DBCONN):
     if args.assembly:
         assemblies = [args.assembly]
 
-    Cistrome = ["cistromeIntersections", cistrome_peak_metadata]
-
-    def doRun(args, assembly, curs, tsuffix, jobgen):
+    def doRun(args, assembly, curs, tsuffix, jobgen, runDate):
         if args.metadata:
-            PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
+            PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen, runDate).run()
         elif args.index:
-            PI.ImportPeakIntersections(curs, assembly, tsuffix).index()
+            PI.ImportPeakIntersections(curs, assembly, tsuffix, runDate).index()
         else:
-            PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
-            runDate = Config.cistromePeakIntersectionRunDate
+            m = PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen, runDate)
+            runDate = m.run()
             ipi = PI.ImportPeakIntersections(curs, assembly, tsuffix, runDate)
             ipi.run()
             ipi.index()
 
+    runDate = Config.cistromePeakIntersectionRunDate
     for assembly in assemblies:
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
-            doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
             if assembly in ["hg38", "mm10"]:
-                doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
+                doRun(args, assembly, curs, "cistromeIntersections", cistrome_peak_metadata, runDate)
 
 
 def parse_args():
