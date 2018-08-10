@@ -119,7 +119,9 @@ strand VARCHAR(1)
 
     outF = StringIO.StringIO()
 
-    mc = MemCacheWrapper(Config.memcache)
+    mc = None
+    if Config.memcache:
+        mc = MemCacheWrapper(Config.memcache)
     qd = QueryDCC(auth=False, cache=mc)
 
     for fileID in fileIDs:

@@ -27,7 +27,9 @@ from constants import paths, chroms
 from common import printr, printt
 from config import Config
 
-mc = MemCacheWrapper("127.0.0.1")
+mc = None
+if Config.memcache:
+    mc = MemCacheWrapper(Config.memcache)
 qd = QueryDCC(cache=mc)
 
 
