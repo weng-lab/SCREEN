@@ -38,18 +38,6 @@ class ImportLiftover:
             "mm10": ImportLiftover._load_ccRE_map("mm10")
         }
 
-    def createImportFile(self):
-        with open(paths.path("mm10", "Two-Way-Synteny.txt"), 'r') as f:
-            with gzip.open(paths.path("mm10", "Two-Way-Synteny.txt.forimport.gz"), 'wb') as o:
-                for line in f:
-                    line = line.strip().split('\t')
-                    mc, ms, me, md = self.ccREmaps["mm10"][line[1]]
-                    hc, hs, he, hd = self.ccREmaps["hg19"][line[0]]
-                    o.write("{hc}\t{hs}\t{he}\t{md}\t{ma}\t{hd}\t{ha}\t0\n".format(
-                        hc = hc, hs = hs, he = he, hd = he, md = md,
-                        ha = line[0], ma = line[1]
-                    ))
-
     def setupLiftover(self):
         printt("dropping and creating", self.tableName)
         self.curs.execute("""
@@ -66,12 +54,17 @@ class ImportLiftover:
     """.format(tableName=self.tableName))
 
     def run(self):
-        fnp = paths.path("mm10", "Two-Way-Synteny.txt.forimport.gz")
+        fnp = paths.path("mm10", "Two-Way-Synteny.txt")
         self.setupLiftover()
 
         printt("reading", fnp)
-        with gzip.open(fnp) as f:
-            mmToHg = [r.rstrip('\n').split('\t') for r in f.readlines()]
+        mmToHG = []
+        with open(fnp, 'r') as f:
+            for line in f:
+                line = line.strip().split('\t')
+                mc, ms, me, md = self.ccREmaps["mm10"][line[1]]
+                hc, hs, he, hd = self.ccREmaps["hg19"][line[0]]
+                mmToHg.append([hc, hs, he, md, line[1], hd, line[0]])
 
         cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
         printt("writing stringio...")
@@ -91,7 +84,6 @@ def run(args, DBCONN):
     printt('***********')
     with getcursor(DBCONN, "main") as curs:
         il = ImportLiftover(curs)
-        il.createImportFile()
         il.run()
     return 0
 
