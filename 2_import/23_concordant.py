@@ -96,7 +96,7 @@ def run(args, DBCONN):
 
     for assembly in assemblies:
         with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, assembly + "_cre_all", [])
+            vacumnAnalyze(conn, assembly + "_cre_all")
 
 
 def parse_args():
