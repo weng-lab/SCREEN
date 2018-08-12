@@ -63,15 +63,41 @@ class DePlot extends React.Component {
 
         let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
         let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
+
+	let margin = {top: 20, right: 20, bottom: 800, left: 40};
+        let width = 1000 - margin.left - margin.right;
+        let height = 1200 - margin.top - margin.bottom;
+        let x = d3.scaleLinear()
+            .domain(this.props.data.xdomain).nice()
+            .range([0, width]);
+	let xdomain = x.domain();
 	
+	let coord = this.props.data.coord;
         let creData = this.props.data.diffCREs.data;
-        let deData = this.props.data.nearbyDEs.data;
-        let genes = this.props.data.nearbyDEs.genes;
-	let xdomain = this.props.data.xdomain;
-        let coord = this.props.data.coord;
+        let deData = this.props.data.nearbyDEs.data.filter( gene => (
+	    (gene.start > xdomain[0] && gene.start < xdomain[1])
+		|| (gene.stop > xdomain[0] && gene.stop < xdomain[1])
+	)).map( gene => ({
+	    gene: gene.gene,
+	    strand: gene.strand,
+	    start: gene.start >= xdomain[0] ? gene.start : xdomain[0],
+	    stop: gene.stop <= xdomain[1] ? gene.stop : xdomain[1],
+	    fc: gene.fc
+	}));
+        let genes = this.props.data.nearbyDEs.genes.filter( gene => (
+	    (gene.start > xdomain[0] && gene.start < xdomain[1])
+		|| (gene.stop > xdomain[0] && gene.stop < xdomain[1])
+	)).map( gene => ({
+	    gene: gene.gene,
+	    strand: gene.strand,
+	    start: gene.start >= xdomain[0] ? gene.start : xdomain[0],
+	    stop: gene.stop <= xdomain[1] ? gene.stop : xdomain[1],
+	    paststart: gene.start < xdomain[0],
+	    pastend: gene.stop > xdomain[1]
+	}));
 
-        let y_domain = d3.extent(creData, function(d) { return d["value"]; });
-
+	let y_domain = d3.extent(creData, function(d) { return d["value"]; });
+	
 	// make sure 0 is in range to show dashed line at 0
 	y_domain = [Math.min(0, y_domain[0]),
 		    Math.max(0, y_domain[1])];
@@ -81,25 +107,18 @@ class DePlot extends React.Component {
                           this.props.data.nearbyDEs.ymax];
 	y_domain = [Math.min(y_domain[0], barYdomain[0]),
                     Math.max(y_domain[1], barYdomain[1])];
-
-        let margin = {top: 20, right: 20, bottom: 800, left: 40};
-        let width = 1000 - margin.left - margin.right;
-        let height = 1200 - margin.top - margin.bottom;
+	let y = d3.scaleLinear()
+            .domain(y_domain).nice()
+            .range([height, 0]);
 
 	let color = d3.scaleOrdinal()
             .domain(["enhancer-like signature", "promoter-like signature"])
             .range(["#ffcd00", "#ff0000"]);
-        let x = d3.scaleLinear()
-            .domain(xdomain).nice()
-            .range([0, width]);
-        let y = d3.scaleLinear()
-            .domain(y_domain).nice()
-            .range([height, 0]);
         let xAxis = d3.axisBottom(x)
             .ticks(6);
         let yAxisRight = d3.axisRight().scale(y);
         let svg = d3.select(chart).append("svg")
-            .attr("width", width + margin.left + margin.right + 50)
+            .attr("width", width + margin.left + margin.right + 250)
             .attr("height", height + margin.top + margin.bottom + deData.length * 20 + genes.length * 20)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top+ ")");
@@ -127,14 +146,14 @@ class DePlot extends React.Component {
 	    .attr("y1", y(0))
 	    .attr("y2", y(0))
 	    .attr("x1", -45)
-	    .attr("x2", -15)
+	    .attr("x2", -28)
 	    .style("stroke", "#ff0000");
 	svg.append("g")
 	    .append("line")
 	    .style("stroke-dasharray", ("3,3"))
 	    .attr("y1", y(0))
 	    .attr("y2", y(0))
-	    .attr("x1", width + 20)
+	    .attr("x1", width + 28)
 	    .attr("x2", width + 40)
 	    .style("stroke", "#ff0000");
 	svg.append("g")
@@ -149,13 +168,13 @@ class DePlot extends React.Component {
 	    .attr("class", "label")
 	    .text(ct2 + '\u25ba');
 	svg.append("g")
-	    .attr("transform", "translate(" + (width + 33) + "," + y(-0.2) + ") rotate(-90)")
+	    .attr("transform", "translate(" + (width + 36) + "," + y(-0.2) + ") rotate(-90)")
 	    .append("text")
 	    .attr("class", "label")
 	    .style("text-anchor", "end")
 	    .text('\u25c4' + ct1);
 	svg.append("g")
-	    .attr("transform", "translate(" + (width + 33) + "," + y(0.2) + ") rotate(-90)")
+	    .attr("transform", "translate(" + (width + 36) + "," + y(0.2) + ") rotate(-90)")
 	    .append("text")
 	    .attr("class", "label")
 	    .text(ct2 + '\u25ba');
@@ -206,7 +225,47 @@ class DePlot extends React.Component {
                 case '+': return geneRed;
                 case '-': return geneBlue;
                 default: return "#000000";
+                }});
+	genelabels.selectAll(".larrow")
+	    .data(genes)
+	    .enter()
+	    .append("path")
+	    .attr("transform", (d, i) => "rotate(-180) translate(" + (-x(d.start)) + ',' + (-i * 20) + ")")
+	    .attr("d", "M -7 -6 5 0 -7 6 -4 0")
+	    .style("stroke", function(d){
+                switch(d["strand"]) {
+                case '+': return geneRed;
+                case '-': return geneBlue;
+                default: return "#000000";
                 }})
+	    .style("fill", function(d){
+                switch(d["strand"]) {
+                case '+': return geneRed;
+                case '-': return geneBlue;
+                default: return "#000000";
+                }})
+	    .style("fill-opacity", d => d.paststart ? 1.0 : 0.0)
+	    .style("stroke-opacity", d => d.paststart ? 1.0 : 0.0);
+	genelabels.selectAll(".rarrow")
+	    .data(genes)
+	    .enter()
+	    .append("path")
+	    .attr("transform", (d, i) => "translate(" + x(d.stop) + ',' + (i * 20) + ")")
+	    .attr("d", "M -7 -6 5 0 -7 6 -4 0")
+	    .style("stroke", function(d){
+                switch(d["strand"]) {
+                case '+': return geneRed;
+                case '-': return geneBlue;
+                default: return "#000000";
+                }})
+	    .style("fill", function(d){
+                switch(d["strand"]) {
+                case '+': return geneRed;
+                case '-': return geneBlue;
+                default: return "#000000";
+                }})
+	    .style("fill-opacity", d => d.pastend ? 1.0 : 0.0)
+	    .style("stroke-opacity", d => d.pastend ? 1.0 : 0.0);
 	genelabels.selectAll(".label")
 	    .data(genes)
 	    .enter()
