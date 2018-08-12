@@ -12,8 +12,6 @@ import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils, eprint, AddPath, printt
-from querydcc import QueryDCC
-from cache_memcache import MemCacheWrapper
 
 AddPath(__file__, '../common/')
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange

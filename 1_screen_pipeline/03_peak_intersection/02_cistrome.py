@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import arrow
 import os
 import sys
 import json  # import ujson as json
@@ -41,7 +42,16 @@ def getFileJson(exp, bed):
 emap = {"tf": "TF", "histone": "histone"}
 
 
-def makeJobs(assembly, rootpath, skipCheck = True):
+def loadJobs(assembly, runDate):
+    fnp = paths.path(assembly, "extras", runDate, "cistromeJobs.json.gz")
+
+    printt("reading", fnp)
+    with gzip.open(fnp) as f:
+        jobs = json.load(f)
+    printt("loaded", len(jobs))
+    return jobs
+
+def makeJobs(assembly, rootpath, runDate, skipCheck = True):
     species = "human" if assembly == "hg19" else "mouse"
     m = CistromeWS(species, "https://api.wenglab.org/cistrome")
     allExps = [(m.chipseq_tfs(), "tf"),
@@ -73,6 +83,21 @@ def makeJobs(assembly, rootpath, skipCheck = True):
             print("warning: skipping file %s : not found" % fnp)
 
     print("will run %d jobs" % len(jobs), file=sys.stderr)
+
+    jobsFnp = paths.path(assembly, "extras", runDate, "cistromeJobs.json.gz")
+    jobsOut = []
+    for job in jobs:
+        j = {"bed": {"expID": job["bed"].expID,
+                        "fileID": job["bed"].fileID},
+                "etype": job["etype"],
+                "exp": {"label": job["exp"].label,
+                        "biosample_term_name": job["exp"].biosample_term_name
+                        }}            
+        jobsOut.append(j)
+    with gzip.open(jobsFnp, 'w') as f:
+        json.dump(jobsOut, f)
+    printt("wrote", jobsFnp)
+    
     return jobs
 
 
@@ -86,7 +111,8 @@ def computeIntersections(args, assembly):
         Utils.sortFile(paths.path(assembly, "raw", "cREs.bed"),
                        bedFnp)
 
-    jobs = makeJobs(assembly, paths.cistrome("data", "raw"))
+    runDate = arrow.now().format('YYYY-MM-DD')
+    jobs = makeJobs(assembly, paths.cistrome("data", "raw"), runDate)
 
     results = Parallel(n_jobs=args.j)(
         delayed(cistromeIntersectJob)(job, bedFnp)
@@ -95,7 +121,7 @@ def computeIntersections(args, assembly):
     print("\n")
     printt("merging intersections into hash...")
 
-    processResults(results, paths.path(assembly, "extras",
+    processResults(results, paths.path(assembly, "extras", runDate,
                                        "cistromeIntersections.json.gz"))
 
 
@@ -118,13 +144,14 @@ def main():
     for assembly in assemblies:
         print("***********************", assembly)
         if args.list:
-            jobs = makeJobs(assembly)
+            jobs = makeJobs(assembly, paths.cistrome("data", "raw"), arrow.now().format('YYYY-MM-DD'))
             for j in jobs:
                 #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
                 print(j["bed"].fileID)
             continue
 
         printt("intersecting TFs and Histones")
+        # TODO: move this to class like peak intersection
         computeIntersections(args, assembly)
 
     return 0

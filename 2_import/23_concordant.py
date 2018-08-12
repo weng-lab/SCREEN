@@ -17,22 +17,16 @@ from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
 
-AddPath(__file__, '../api/common/')
+AddPath(__file__, '../common/')
 from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 from config import Config
 
-AddPath(__file__, '../website/common/')
-from pg_common import PGcommon
-from pg import PGsearch
-from postgres_wrapper import PostgresWrapper
-
 
 class Concordant:
-    def __init__(self, curs, assembly, pg):
+    def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.pg = pg
         self.tableName = assembly + "_concordant"
         self.inFnp = paths.path(self.assembly, self.assembly + "-concordant-cREs.txt")
 
@@ -96,14 +90,13 @@ def run(args, DBCONN):
 
     for assembly in assemblies:
         print('***********', assembly)
-        pg = PostgresWrapper(DBCONN)
         with getcursor(DBCONN, "dropTables") as curs:
-            icg = Concordant(curs, assembly, pg)
+            icg = Concordant(curs, assembly)
             icg.run()
 
     for assembly in assemblies:
         with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, assembly + "_cre_all", [])
+            vacumnAnalyze(conn, assembly + "_cre_all")
 
 
 def parse_args():

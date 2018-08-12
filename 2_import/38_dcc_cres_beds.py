@@ -37,7 +37,9 @@ class DCCCres:
         url += "&files.file_type=bed+bed3%2B&assembly=" + self.assembly
         url += "&format=json&limit=all"
 
-        mc = MemCacheWrapper("localhost")
+        mc = None
+        if Config.memcache:
+            mc = MemCacheWrapper(Config.memcache)
         qd = QueryDCC(auth=False, cache=mc)
 
         fnp = paths.path(self.assembly, self.assembly + "-Look-Up-Matrix.txt")

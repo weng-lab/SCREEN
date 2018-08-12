@@ -40,7 +40,7 @@ stop integer
 );
 """.format(tableName=tableName))
 
-        fns = {"mm10": "snps142common.mm10.bed.gz",
+        fns = {"mm10": "dbsnps.142.mm10.ucsc_table_browser.tsv.gz",
                "hg19": "dbsnps.144.hg19.ucsc_table_browser.tsv.gz",
         #       "hg38": "dbsnps.144.hg38.ucsc_table_browser.tsv.gz"
         }
