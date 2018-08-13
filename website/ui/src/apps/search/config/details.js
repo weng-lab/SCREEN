@@ -285,7 +285,7 @@ const DetailsTabInfo = (assembly) => {
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: "mm10" !== assembly,
                   f: RampageTab},
-        ortholog: {title: Render.tabTitle(["Orthologous ccREs", "in " + otherAssembly]),
+        ortholog: {title: Render.tabTitle(["Homologous ccREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks},
