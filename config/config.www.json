@@ -1,11 +1,11 @@
 {
     "RE": {
-	"version": 10,
-	"db_host": "pg_screen_v10",
+	"version": 12,
+	"db_host": "pg_screen_v11",
 	"db_usr": "postgres",
 	"db_port": 5432,
-	"db": "screenv10",
-	"assemblies": ["hg19", "mm10"],
+	"db": "screenv12",
+	"assemblies": ["hg38"],
 	"minipeaks_ver": 4,
 	"minipeaks_nbins": 0,
 	"ribbon": "beta",

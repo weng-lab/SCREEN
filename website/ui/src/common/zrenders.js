@@ -52,7 +52,7 @@ export const numWithCommas = (x) => {
 
 export const integer = (d) => (d === 1e12 ? "" : numWithCommas(d.toFixed(0)))
 export const real = (d) => (d.toFixed(2))
-export const z_score = (d) => (d === -11.0 || d === '--' ? "--" : d.toFixed(2));
+export const z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : d.toFixed(2));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (

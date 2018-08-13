@@ -24,13 +24,13 @@ class AutocompleterWrapper:
     def __init__(self, ps):
         self.ps = ps
         self.acs = {
-            "hg19": Autocompleter(ps, "hg19"),
-            "mm10": Autocompleter(ps, "mm10")}
+            "hg38": Autocompleter(ps, "hg38")
+        }
 
     def __getitem__(self, assembly):
         return self.acs[assembly]
 
-    def get_suggestions(self, q, assemblies=["hg19", "mm10"]):
+    def get_suggestions(self, q, assemblies=["hg38"]):
         p = q.split(" ")
 
         results = []

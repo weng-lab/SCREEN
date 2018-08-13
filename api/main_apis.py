@@ -86,7 +86,7 @@ class Apis():
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):
@@ -101,7 +101,7 @@ class Apis():
         return self.trackhub.ucsc_trackhub_url_snp(j, j["uuid"])
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def cart(self, *args, **kwargs):
@@ -109,7 +109,7 @@ class Apis():
         return self.cartWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def searchws(self, *args, **kwargs):
@@ -117,7 +117,7 @@ class Apis():
         return self.searchWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def postws(self, *args, **kwargs):
@@ -125,7 +125,7 @@ class Apis():
         return self.postWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def dataws(self, *args, **kwargs):
@@ -134,7 +134,7 @@ class Apis():
         return self.dataWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def gbws(self, *args, **kwargs):
@@ -143,7 +143,7 @@ class Apis():
         return self.gbWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def autows(self, *args, **kwargs):
@@ -152,7 +152,7 @@ class Apis():
         return self.autoWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def gews(self, *args, **kwargs):
@@ -160,7 +160,7 @@ class Apis():
         return self.geWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def dews(self, *args, **kwargs):
@@ -168,7 +168,7 @@ class Apis():
         return self.deWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def gwasws(self, *args, **kwargs):
@@ -176,6 +176,6 @@ class Apis():
         return self.gwasWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    @cherrypy.config(**{'tools.cors.on': True})
+    #@cherrypy.config(**{'tools.cors.on': True})
     def globalData(self, ver, assembly):
         return self.global_data.static(assembly, ver)
