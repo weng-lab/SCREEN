@@ -5,8 +5,10 @@ import {toParams, commajoin} from './utility';
 import * as ApiClient from './api_client';
 import * as Urls from './urls';
 
+let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
+
 export const relink = (assembly, uuid) => (v) => (
-	<a href={"/search?" + toParams({assembly, q: v, uuid})} target={'_blank'}>
+	<a href={root + "/search?" + toParams({assembly, q: v, uuid})} target={'_blank'}>
 	{v}
     </a>
 );
@@ -112,8 +114,8 @@ export const creLinkPop = (accession, type, full, meta) => (
     popup("Click for ccRE details")
 )
 
-export const geLink = (assembly, gene, uuid) => ("/geApp/?" + toParams({assembly, gene, uuid}))
-export const deLink = (assembly, gene, uuid) => ("/deApp/?" + toParams({assembly, gene, uuid}))
+export const geLink = (assembly, gene, uuid) => (root + "/geApp/?" + toParams({assembly, gene, uuid}))
+export const deLink = (assembly, gene, uuid) => (root + "/deApp/?" + toParams({assembly, gene, uuid}))
 
 export const geDeButton = (assembly, accession, uuid) => (d) => {
     const _d = d.replace(/\./g, "%2e");
@@ -253,7 +255,7 @@ export const searchLink = (data, uuid) => (approved_symbol) => {
 	       uuid,
 	       assembly: data.assembly};
     const params = toParams(d);
-    const url = "/search/?" + params;
+    const url = root + "/search/?" + params;
     return <a href={url}>{approved_symbol}</a>;
 }
 

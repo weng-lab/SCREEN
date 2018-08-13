@@ -8,6 +8,8 @@ import {toParams} from '../utility';
 
 import * as Actions from '../actions/searchbox_actions';
 
+let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
+
 class SearchBox extends React.Component {
     constructor(props, key) {
 	super(props);
@@ -18,7 +20,7 @@ class SearchBox extends React.Component {
 	const params = toParams({q: this.state.searchtext,
 				 assembly: this.props.assembly,
 				 uuid: this.props.uuid});
-	const url = "/search/?" + params;
+	const url = root + "/search/?" + params;
 	window.location.href = url;
 	return false;
     }
