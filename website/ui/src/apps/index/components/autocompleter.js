@@ -13,8 +13,7 @@ class Autocompleter extends React.Component {
 
  	this.userQueries = {}; // cache
  	this.loadSearch = this.loadSearch.bind(this);
- 	this.searchHg19 = this.searchHg19.bind(this);
- 	this.searchMm10 = this.searchMm10.bind(this);
+ 	this.searchHg38 = this.searchHg38.bind(this);
  	this.onEnter = this.onEnter.bind(this);
 	this.onChange = this.onChange.bind(this);
 
@@ -61,19 +60,12 @@ class Autocompleter extends React.Component {
  				  });
     }
 
-    searchHg19() {
- 	this.loadSearch("hg19");
-    }
-
-    searchMm10() {
- 	this.loadSearch("mm10");
+    searchHg38() {
+ 	this.loadSearch("hg38");
     }
 
     onEnter(){
-	if (this.state.value.includes("mouse") || this.state.value.includes("mm10")) {
-	    return this.loadSearch("mm10");
-	}
- 	this.loadSearch("hg19");
+ 	this.loadSearch("hg38");
     }
 
     onChange(value){
@@ -125,13 +117,8 @@ class Autocompleter extends React.Component {
  		    <em>{this.props.examples}</em><br/><br/>
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
-                       onClick={this.searchHg19} role={"button"}>
-			Search Human<br /><small>(hg19)</small>
-		    </a>
- 		    {" "}
- 		    <a className={"btn btn-success btn-lg mainButtonMm10"}
-                       onClick={this.searchMm10} role={"button"}>
-			Search Mouse<br /><small>(mm10)</small>
+                       onClick={this.searchHg38} role={"button"}>
+			Search Human<br /><small>(hg38)</small>
 		    </a>
  		    <br />
  		</div>
