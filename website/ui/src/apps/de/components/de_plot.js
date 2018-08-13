@@ -64,6 +64,7 @@ class DePlot extends React.Component {
         let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
         let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
 
+<<<<<<< Updated upstream
 	let margin = {top: 20, right: 20, bottom: 800, left: 40};
         let width = 1000 - margin.left - margin.right;
         let height = 1200 - margin.top - margin.bottom;
@@ -95,6 +96,25 @@ class DePlot extends React.Component {
 	    paststart: gene.start < xdomain[0],
 	    pastend: gene.stop > xdomain[1]
 	}));
+=======
+	let coord = this.props.data.coord;
+        let creData = this.props.data.diffCREs.data;
+        let deData = this.props.data.nearbyDEs.data;
+        let genes = this.props.data.nearbyDEs.genes.filter( gene => (
+	    (gene.start > coord.start && gene.start < coord.end)
+		|| (gene.stop > coord.start && gene.stop < coord.end)
+	)).map( gene => ({
+	    gene: gene.gene,
+	    strand: gene.strand,
+	    start: gene.start >= coord.start ? gene.start : coord.start,
+	    stop: gene.stop <= coord.end ? gene.stop : coord.end,
+	    paststart: gene.start < coord.start,
+	    pastend: gene.stop > coord.end
+	}));
+	let xdomain = this.props.data.xdomain;
+
+        let y_domain = d3.extent(creData, function(d) { return d["value"]; });
+>>>>>>> Stashed changes
 
 	let y_domain = d3.extent(creData, function(d) { return d["value"]; });
 	
@@ -264,8 +284,28 @@ class DePlot extends React.Component {
                 case '-': return geneBlue;
                 default: return "#000000";
                 }})
+<<<<<<< Updated upstream
 	    .style("fill-opacity", d => d.pastend ? 1.0 : 0.0)
 	    .style("stroke-opacity", d => d.pastend ? 1.0 : 0.0);
+=======
+	genelabels.selectAll(".larrow")
+	    .data(genes)
+	    .enter()
+	    .append("svg:marker")
+	    .attr("refX", d => x(d.start))
+	    .attr("refY", (d, i) => (i * 20))
+	    .attr("markerWidth", d => d.paststart ? 6 : 0)
+	    .attr("markerHeight", d => d.paststart ? 6 : 0)
+	    .attr("orient", "auto")
+	    .append("path")
+	    .attr("d", "M 0 0 12 6 0 12 3 6")
+	    .style("stroke", function(d){
+                switch(d["strand"]) {
+                case '+': return geneRed;
+                case '-': return geneBlue;
+                default: return "#000000";
+                }});
+>>>>>>> Stashed changes
 	genelabels.selectAll(".label")
 	    .data(genes)
 	    .enter()
