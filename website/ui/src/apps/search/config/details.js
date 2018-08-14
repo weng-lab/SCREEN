@@ -270,7 +270,7 @@ const DetailsTabInfo = (assembly) => {
     const otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
     
     return {
-        topTissues : {title: Render.tabTitle(["Top", "Tissues"]),
+        topTissues : {title: Render.tabTitle(["In Specific", "Biosamples"]),
                       enabled: true, f: TopTissuesTab},
         nearbyGenomic: {title: Render.tabTitle(["Nearby", "Genomic Features"]),
                         enabled: true, f: NearbyGenomicTab},

@@ -38,7 +38,7 @@ const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
             {"mm10" === assembly && ZHelpTooltip(globals, "DifferentialGeneMouse")}
 	</span>);
 
-    const tz = (name) => (<span>{name}<br />Z</span>)
+    const tz = (name, cts) => cts ? (<span>{name} Z in<br />{cts}</span>) : (<span>{name}<br />max-Z</span>);
     
     return [
       { title: "", data: "checked", className: "selectcre",
@@ -51,16 +51,16 @@ const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
 	    sortDataF: (d) => (ZRender.sctSorter(d)),
 	    render: ZRender.creTableCellTypeSpecific(globals), name: "sctv", width: "12%"
 	}, {
-	    title: tz("DNase"), data: "dnase_zscore", visible: rfacets.includes("dnase"),
+	    title: tz("DNase", cts), data: "dnase_zscore", visible: rfacets.includes("dnase"),
 	    render: ZRender.real, name: "dnase", width: "7%"
 	}, {
-	    title: tz("H3K4me3"), data: "promoter_zscore", visible: rfacets.includes("promoter"),
+	    title: tz("H3K4me3", cts), data: "promoter_zscore", visible: rfacets.includes("promoter"),
 	    render: ZRender.real, name: "promoter", width: "7%"
 	}, {
-	    title: tz("H3K27ac"), data: "enhancer_zscore", visible: rfacets.includes("enhancer"),
+	    title: tz("H3K27ac", cts), data: "enhancer_zscore", visible: rfacets.includes("enhancer"),
 	    render: ZRender.real, name: "enhancer", width: "7%"
 	}, {
-	    title: tz("CTCF"), data: "ctcf_zscore", visible: rfacets.includes("ctcf"),
+	    title: tz("CTCF", cts), data: "ctcf_zscore", visible: rfacets.includes("ctcf"),
 	    render: ZRender.real, name: "ctcf", width: "7%"
 	}, {
 	    title: "chr", data: "chrom",
