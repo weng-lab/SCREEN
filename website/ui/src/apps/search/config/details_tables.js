@@ -20,8 +20,37 @@ const _vistalink = id => (
 );
 
 export const TopTissuesTables = (globals, assembly) => ({
+    iranks: {
+	title: "Cell Type Agnostic Classification",
+	helpkey: "",
+	cols: [
+	    {title: "Cell Type", data: "title", className: "dt-right"},
+	    {title: "DNase max-Z", data: "dnase",
+	     render: Render.z_score
+	    },
+	    {title: "H3K4me3 max-Z", data: "h3k4me3",
+	     render: Render.z_score
+	    },
+	    {title: "H3K27ac max-Z", data: "h3k27ac",
+	     render: Render.z_score
+	    },
+	    {title: "CTCF max-Z", data: "ctcf",
+	     render: Render.z_score
+	    },
+	    {
+		title: "Group", data: "group",
+		render: Render.ctgroup
+	    }
+	],
+	sortCol: ["dnase", false],
+	pageLength: 1,
+	paging: false,
+	bLengthChange: false,
+	bFilter: false,
+	rank_f: d => Math.log(d["dnase"])
+    },
     dnase: {
-	title: "",
+	title: "Cell Type Specific Classifications",
 	helpkey: "",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
