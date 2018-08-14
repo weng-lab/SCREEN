@@ -13,7 +13,6 @@ const useRaven = process.env.NODE_ENV === 'production';
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
 
 import schema from './schema/schema'; // Import schema after
-import { request } from 'http';
 import { graphiqlExpress } from './graphiql';
 
 const logErrors = req => error => {
