@@ -129,11 +129,17 @@ class CRE:
             for ct, v in oneAssay.iteritems():
                 ret[ct] = {"tissue": self._ctToTissue(ct), rm1.lower(): v}
             return ret
-
+        maxes = {
+            "dnase": ranks["dnase_max"],
+            "h3k4me3": ranks["h3k4me3_max"],
+            "h3k27ac": ranks["h3k27ac_max"],
+            "ctcf": ranks["ctcf_max"]
+        }
         ranks = {"dnase": makeArrRanks("DNase"),
                  "h3k4me3": makeArrRanks("H3K4me3"),
                  "h3k27ac": makeArrRanks("H3K27ac"),
-                 "ctcf": makeArrRanks("CTCF")}
+                 "ctcf": makeArrRanks("CTCF")
+                 }
         ret = {}; rret = []
         for _, v in ranks.iteritems():
             for ct, item in v.iteritems():
@@ -147,7 +153,10 @@ class CRE:
             v["ct"] = ct
             v["group"] = self._group(v, proximal)
             rret.append(v)
-        return {"dnase": rret, "ranks": ranks}
+        iranks = [{ k: v for k, v in maxes.iteritems()}]
+        iranks[0]["group"] = self._group(maxes, proximal)
+        iranks[0]["title"] = "cell type agnostic"
+        return {"dnase": rret, "ranks": ranks, "iranks": iranks}
 
     def _group(self, v, p):
         if v["dnase"] <= 1.64 and v["dnase"] != -11.0:

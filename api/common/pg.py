@@ -305,10 +305,14 @@ WHERE accession = %s
         h3k27ac_zscores
         h3k4me3_zscores
         insulator_zscores
-        promoter_zscores""".split('\n')
+        promoter_zscores
+        dnase_max
+        h3k4me3_max
+        h3k27ac_max
+        ctcf_max""".split('\n')
         cols = [c.strip() for c in cols]
         r = self._getColsForAccession(accession, chrom, cols)
-        cols = [c.split('_')[0] for c in cols]
+        cols = [c.split('_')[0] if "max" not in c else c for c in cols]
         return dict(zip(cols, r))
 
     def creMostsimilar(self, acc, assay, threshold=20000):
