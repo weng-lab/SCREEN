@@ -60,7 +60,7 @@ FROM (
 		joined.*, 
 		rank() OVER (
 			PARTITION BY expid, gene_type, mitochondrial
-			ORDER BY maxtpm DESC
+			ORDER BY tpm DESC
 		)
 	FROM (
         SELECT r.ensembl_id, r.gene_name, AVG(r.tpm) as tpm, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, meta.expid,
