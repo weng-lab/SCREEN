@@ -59,16 +59,15 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No orthologous ccREs have been identified for this ccRE.",
+	emptyText: "No homologous ccREs have been identified for this ccRE.",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
              render: Render.relink(assembly === "mm10" ? "hg19" : "mm10", uuid)},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
-	    {title: "end", data: "stop", render: Render.integer},
-	    {title: "overlap", data: "overlap", render: Render.bp}
+	    {title: "end", data: "stop", render: Render.integer}
 	],
-	sortCol: ["overlap", false]
+	sortCol: ["start", false]
     }
 });
 

@@ -33,7 +33,7 @@ class HorizontalBar extends ScaledPlot {
 
     componentWillReceiveProps(props) {
 	super.componentWillReceiveProps(props, props.axis_offsets);
-	const t0 = x => x > 0 ? x : 0;
+	const t0 = x => x > 0 ? x.toFixed(2) : 0;
 	this._format = props.format.value ? props.format.value : x => x;
 	this._label = props.format.label ? props.format.label : x => "";
 	this._grouplabel = props.format.grouplabel ? props.format.grouplabel : x => "";

@@ -51,13 +51,13 @@ class WebServerConfig:
             },
             '/assets': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.staticDir,
-                'tools.cors.on' : True,
+                'tools.staticdir.dir': self.staticDir #,
+                #'tools.cors.on' : True,
             },
             '/downloads': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.downloadDir,
-                'tools.cors.on' : True,
+                'tools.staticdir.dir': self.downloadDir #,
+                #'tools.cors.on' : True,
             }
         }
 
