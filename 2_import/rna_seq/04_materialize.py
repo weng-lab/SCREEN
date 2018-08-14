@@ -58,7 +58,7 @@ DROP MATERIALIZED VIEW IF EXISTS {mvTable} CASCADE;
 
 CREATE MATERIALIZED VIEW {mvTable} AS 
 SELECT
-    norm.ensembl_id, norm.gene_name, norm.expid, AVG(tpm) as tpm, AVG(FPKM) as fpkm,
+    norm.ensembl_id, norm.gene_name, norm.expid, AVG(norm.tpm) as tpm, AVG(norm.fpkm) as fpkm,
     top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type,
     array_agg(jsonb_build_object('replicate', norm.replicate, 'tpm', norm.tpm, 'fpkm', norm.fpkm)) as reps
 FROM {tableNameData} norm
