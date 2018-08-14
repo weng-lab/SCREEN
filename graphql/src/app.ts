@@ -1,10 +1,9 @@
 import * as express from 'express';
-import * as graphqlHTTP from 'express-graphql';
-import * as bodyParser from 'body-parser';
-import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import * as accepts from 'accepts';
+
+import { ApolloServer } from 'apollo-server-express';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
 import { GraphQLError, printSchema, graphql, parse, introspectionQuery } from 'graphql';
-import { ApolloEngine } from 'apollo-engine';
 
 const Raven = require('raven');
 const { formatError } = require('graphql');
@@ -14,6 +13,8 @@ const useRaven = process.env.NODE_ENV === 'production';
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
 
 import schema from './schema/schema'; // Import schema after
+import { request } from 'http';
+import { graphiqlExpress } from './graphiql';
 
 const logErrors = req => error => {
     const data = formatError(error);
@@ -62,26 +63,41 @@ const cors = function(req, res, next) {
 
 useRaven && app.use(Raven.requestHandler());
 
-const config = require('./config.json');
-// Unsure how to get base url when we are served from non-root / - like /screenv10_graphql/
-app.get(
-    '/graphiql',
-    // graphiqlExpress(req => ({ endpointURL: req && req.originalUrl ? console.log(req) || req.originalUrl.split('?')[0] : '/graphql' }))
-    graphiqlExpress({ endpointURL: config.graphql.host })
-);
-
 app.use('/graphql', cors);
-app.use(
-    '/graphql',
-    bodyParser.json(),
-    graphqlExpress(req => ({
-        schema: schema,
-        formatError: logErrors(req),
-        graphiql: true,
-        tracing: true,
-        cacheControl: false,
-    }))
-);
+
+const config = require('./config.json');
+
+const server = new ApolloServer({
+    schema: schema,
+    engine: {
+        apiKey: config.apolloengine_APIkey,
+    },
+    introspection: true,
+    playground: false, // TODO: true once https://github.com/prismagraphql/graphql-playground/issues/793 fixed
+});
+
+// TODO: remove when playground is true
+// along with graphiql, renderGraphiQL, resolveGraphiQLString
+app.use('/graphql', (req, res, next) => {
+    if (req.method === 'GET') {
+        const accept = accepts(req);
+        const types = accept.types() as string[];
+        const prefersHTML = types.find((x: string) => x === 'text/html' || x === 'application/json') === 'text/html';
+
+        if (prefersHTML) {
+            graphiqlExpress({
+                endpointURL: config.graphql.host,
+            })(req, res, next);
+            return;
+        }
+    }
+    next();
+});
+
+server.applyMiddleware({
+    app,
+    path: '/graphql',
+});
 
 app.use('/graphqlschemajson', cors);
 app.use('/graphqlschema', function(req, res, next) {
@@ -97,17 +113,4 @@ app.use('/graphqlschemajson', function(req, res, next) {
 
 useRaven && app.use(Raven.errorHandler());
 
-// Initialize engine with your API key. Alternatively,
-// set the ENGINE_API_KEY environment variable when you
-// run your program.
-const engine = new ApolloEngine({
-    apiKey: config.apolloengine_APIkey,
-});
-
-// Call engine.listen instead of app.listen(port)
-engine.listen({
-    port: 4000,
-    expressApp: app,
-});
-
-// app.listen(4000);
+app.listen({ port: 4000 });
