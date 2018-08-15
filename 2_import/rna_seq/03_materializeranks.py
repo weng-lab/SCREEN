@@ -75,7 +75,7 @@ FROM (
     ) joined
     WHERE tpm > 0
 ) ranks
-WHERE rank < 120;
+WHERE rank <= 100;
         """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
                ranksMvTable = ranksMvTable))
 

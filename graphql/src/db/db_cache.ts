@@ -3,7 +3,7 @@ import * as Common from './db_common';
 import * as De from './db_de';
 import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
-import * as DataLoader from 'dataloader';
+import DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
 import { Assembly, assaytype, ctspecificdata } from '../types';
 import { getCtSpecificData } from './db_cre_table';

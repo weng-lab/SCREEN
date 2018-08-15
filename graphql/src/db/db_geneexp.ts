@@ -83,6 +83,81 @@ export const computeHorBarsAll = async (assembly, gene, compartments, biosample_
     return res.map(makeEntry);
 };
 
+export const geneexp_bygene = (
+    biosample: string | undefined,
+    table_expresssion: string,
+    table_metadata: string
+): string => {
+    return `
+SELECT r.ensembl_id as ensemblid_ver, r.gene_name, r.expid, meta.organ, meta.cellType, meta.ageTitle, json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm)) as reps
+FROM ${table_expresssion} AS r
+INNER JOIN ${table_metadata} AS meta ON r.expid = meta.expid AND r.replicate = meta.replicate
+WHERE
+    meta.cellCompartment = ANY ($<compartments>)
+    AND meta.biosample_type = ANY ($<biosampletypes>)
+    AND r.gene_name = $<gene>
+    ${biosample ? `AND r.celltype = $<biosample>` : ''}
+GROUP BY ensembl_id, meta.organ, meta.cellType, meta.ageTitle, r.expid, r.gene_name
+    `;
+};
+
+export const geneexp_bybiosample = (pconly: boolean, nomitochondrial: boolean, table_allmv: string): string => {
+    return `
+SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, gene_type, mitochondrial, reps
+FROM ${table_allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.ensembl_id = ANY (
+        SELECT ensembl_id
+        FROM (
+            SELECT percentile_cont(0.5) WITHIN GROUP(ORDER BY tpm_avg) as median, ensembl_id
+            FROM ${table_allmv} as r
+            WHERE
+                r.cellcompartment = ANY ($<compartments>)
+                AND r.celltype = $<biosample>
+                ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+                ${nomitochondrial ? `AND mitochondrial = False` : ''}
+            GROUP BY ensembl_id
+            ORDER BY median desc
+            LIMIT 100
+        ) median_ranked
+    )
+    AND r.celltype = $<biosample>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
+    `;
+};
+
+export const geneexp_byexperiment = (pconly: boolean, nomitochondrial: boolean, table_allmv: string) => {
+    return `
+SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, gene_type, mitochondrial, reps
+FROM ${table_allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.ensembl_id = ANY (
+        SELECT ensembl_id
+        FROM (
+            SELECT percentile_cont(0.5) WITHIN GROUP(ORDER BY tpm_avg) as median, ensembl_id
+            FROM ${table_allmv} as r
+            WHERE
+                r.cellcompartment = ANY ($<compartments>)
+                AND expid = $<experimentaccession>
+                AND r.tpm > 0
+                ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+                ${nomitochondrial ? `AND mitochondrial = False` : ''}
+            GROUP BY ensembl_id
+            ORDER BY median desc
+            LIMIT 100
+        ) median_ranked
+    )
+    AND r.celltype = $<biosample>
+    AND r.tpm > 0
+    AND r.expid = $<experimentaccession>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
+    `;
+};
+
 interface GeneExpFunction {
     (
         assembly: Assembly,
@@ -130,76 +205,16 @@ export const geneexp: GeneExpFunction = async (
     nomitochondrial: boolean
 ) => {
     const allmv = `${assembly}_rnaseq_${normalized ? 'norm' : 'unnorm'}_mv`;
-    const ranksmv = `${assembly}_rnaseq_${normalized ? 'norm' : 'unnorm'}_ranks_mv`;
     const expression = `${assembly}_rnaseq_expression_${normalized ? 'norm' : 'unnorm'}`;
     const metadata = `${assembly}_rnaseq_metadata`;
 
     let query;
     if (gene) {
-        query = `
-SELECT r.ensembl_id as ensemblid_ver, r.gene_name, r.expid, meta.organ, meta.cellType, meta.ageTitle, json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm)) as reps
-FROM ${expression} AS r
-INNER JOIN ${metadata} AS meta ON r.expid = meta.expid AND r.replicate = meta.replicate
-WHERE
-    meta.cellCompartment = ANY ($<compartments>)
-    AND meta.biosample_type = ANY ($<biosampletypes>)
-    AND r.gene_name = $<gene>
-    ${biosample ? `AND r.celltype = $<biosample>` : ''}
-GROUP BY ensembl_id, meta.organ, meta.cellType, meta.ageTitle, r.expid, r.gene_name
-    `;
+        query = geneexp_bygene(biosample, expression, metadata);
     } else if (experimentaccession) {
-        query = `
-SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, gene_type, mitochondrial, reps
-FROM ${allmv} as r
-WHERE
-    r.cellcompartment = ANY ($<compartments>)
-    AND r.ensembl_id = ANY (
-        SELECT ensembl_id
-        FROM (
-            SELECT percentile_cont(0.5) WITHIN GROUP(ORDER BY tpm) as median, ensembl_id
-            FROM ${allmv} as r
-            WHERE
-                r.cellcompartment = ANY ($<compartments>)
-                AND expid = $<experimentaccession>
-                AND r.tpm > 0
-                ${pconly ? `AND gene_type = 'protein_coding'` : ''}
-                ${nomitochondrial ? `AND mitochondrial = False` : ''}
-            GROUP BY ensembl_id
-            ORDER BY median desc
-            LIMIT 100
-        ) median_ranked
-    )
-    AND r.celltype = $<biosample>
-    AND r.tpm > 0
-    AND r.expid = $<experimentaccession>
-    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
-    ${nomitochondrial ? `AND mitochondrial = False` : ''}
-        `;
+        query = geneexp_byexperiment(pconly, nomitochondrial, allmv);
     } else if (biosample) {
-        query = `
-SELECT ensembl_id as ensemblid_ver, gene_name, expid, organ, cellType, ageTitle, gene_type, mitochondrial, reps
-FROM ${allmv} as r
-WHERE
-    r.cellcompartment = ANY ($<compartments>)
-    AND r.ensembl_id = ANY (
-        SELECT ensembl_id
-        FROM (
-            SELECT percentile_cont(0.5) WITHIN GROUP(ORDER BY tpm) as median, ensembl_id
-            FROM ${allmv} as r
-            WHERE
-                r.cellcompartment = ANY ($<compartments>)
-                AND r.celltype = $<biosample>
-                ${pconly ? `AND gene_type = 'protein_coding'` : ''}
-                ${nomitochondrial ? `AND mitochondrial = False` : ''}
-            GROUP BY ensembl_id
-            ORDER BY median desc
-            LIMIT 100
-        ) median_ranked
-    )
-    AND r.celltype = $<biosample>
-    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
-    ${nomitochondrial ? `AND mitochondrial = False` : ''}
-    `;
+        query = geneexp_bybiosample(pconly, nomitochondrial, allmv);
     }
 
     const params = {

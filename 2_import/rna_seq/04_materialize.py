@@ -56,21 +56,37 @@ class ImportRNAseq(object):
         self.curs.execute("""
 DROP MATERIALIZED VIEW IF EXISTS {mvTable} CASCADE;
 
-CREATE MATERIALIZED VIEW {mvTable} AS 
+CREATE MATERIALIZED VIEW {mvTable} AS
 SELECT
-    norm.ensembl_id, norm.gene_name, norm.expid, AVG(norm.tpm) as tpm, AVG(norm.fpkm) as fpkm,
-    top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type,
-    array_agg(jsonb_build_object('replicate', norm.replicate, 'tpm', norm.tpm, 'fpkm', norm.fpkm)) as reps
+    norm.ensembl_id, norm.gene_name, norm.expid,
+	meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type,
+    i.gene_type,
+	CASE WHEN norm.gene_name LIKE 'MT-%' THEN True
+		ELSE False
+	END as mitochondrial,
+	round(avg(norm.tpm), 2) as tpm_avg,
+	round(avg(norm.fpkm), 2) as fpkm_avg,
+	array_agg(jsonb_build_object('replicate', norm.replicate, 'tpm', norm.tpm, 'fpkm', norm.fpkm)) as reps,
+	count(norm.replicate) as repcount
+
 FROM {tableNameData} norm
-INNER JOIN {ranksMvTable} top
-ON norm.ensembl_id = top.ensembl_id AND norm.expid = top.expid
-GROUP BY norm.expid, norm.ensembl_id, norm.gene_name, top.gene_type, top.mitochondrial, top.organ, top.celltype, top.agetitle, top.cellcompartment, top.biosample_type
+INNER JOIN {tableNameMetadata} meta ON norm.expid = meta.expid AND norm.replicate = meta.replicate
+LEFT JOIN {tableNameGeneInfo} i ON norm.ensembl_id = i.ensemblid_ver
+WHERE (norm.ensembl_id, meta.celltype) IN (
+	SELECT ensembl_id, celltype
+	FROM {ranksMvTable} top
+)
+GROUP BY
+	norm.expid, norm.ensembl_id, norm.gene_name,
+	meta.celltype, meta.organ, meta.agetitle, meta.cellcompartment, meta.biosample_type,
+	i.gene_type,
+	mitochondrial
         """.format(tableNameData = tableNameData, tableNameMetadata = tableNameMetadata, tableNameGeneInfo = tableNameGeneInfo,
                mvTable = mvTable, ranksMvTable = ranksMvTable))
 
     def _indexmaterialized(self, isNormalized):
         printt("creating indices in", GeMv(self.assembly, isNormalized, False), "...")
-        makeIndex(self.curs, GeMv(self.assembly, isNormalized, False), ["ensembl_id", "tpm", "celltype", "gene_type", "mitochondrial", "expid", "cellcompartment"])
+        makeIndex(self.curs, GeMv(self.assembly, isNormalized, False), ["ensembl_id", "tpm_avg", "celltype", "gene_type", "mitochondrial", "expid", "cellcompartment"])
     
     def doIndex(self):
         for isNormalized in [True, False]:

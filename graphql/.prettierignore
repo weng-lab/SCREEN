@@ -8,3 +8,4 @@ dist
 docs
 *.snap
 package-lock.json
+*.json

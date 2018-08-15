@@ -1,5 +1,5 @@
-import * as express from 'express';
-import * as accepts from 'accepts';
+import express from 'express';
+import accepts from 'accepts';
 
 import { ApolloServer } from 'apollo-server-express';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';

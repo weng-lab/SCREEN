@@ -1,6 +1,6 @@
 import { IDatabase } from 'pg-promise';
-
-const Raven = require('raven');
+import config from '../config.json';
+import * as Raven from 'raven';
 
 const initOptions = {
     error(err, e) {
@@ -21,8 +21,6 @@ const initOptions = {
         // console.log('QUERY:', e.query);
     },
 };
-
-const config = require('../config.json');
 
 export const pgp = require('pg-promise')(initOptions);
 // 1005, 1006, 1007 for _int array
