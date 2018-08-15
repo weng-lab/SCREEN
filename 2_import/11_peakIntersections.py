@@ -129,6 +129,7 @@ def run(args, DBCONN):
             ImportPeakIntersections(curs, assembly, tsuffix, runDate).index()
         else:
             m = ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen, runDate)
+            m.run()
             ipi = ImportPeakIntersections(curs, assembly, tsuffix, runDate)
             ipi.run()
             ipi.index()

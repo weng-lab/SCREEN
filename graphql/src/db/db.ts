@@ -1,6 +1,6 @@
 import { IDatabase } from 'pg-promise';
 import config from '../config.json';
-import * as Raven from 'raven';
+import Raven from 'raven';
 
 const initOptions = {
     error(err, e) {

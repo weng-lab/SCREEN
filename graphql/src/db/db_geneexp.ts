@@ -142,7 +142,6 @@ WHERE
             WHERE
                 r.cellcompartment = ANY ($<compartments>)
                 AND expid = $<experimentaccession>
-                AND r.tpm > 0
                 ${pconly ? `AND gene_type = 'protein_coding'` : ''}
                 ${nomitochondrial ? `AND mitochondrial = False` : ''}
             GROUP BY ensembl_id
@@ -151,7 +150,6 @@ WHERE
         ) median_ranked
     )
     AND r.celltype = $<biosample>
-    AND r.tpm > 0
     AND r.expid = $<experimentaccession>
     ${pconly ? `AND gene_type = 'protein_coding'` : ''}
     ${nomitochondrial ? `AND mitochondrial = False` : ''}
