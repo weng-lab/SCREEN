@@ -21,7 +21,7 @@ const _vistalink = id => (
 
 export const TopTissuesTables = (globals, assembly) => ({
     iranks: {
-	title: "Cell Type Agnostic Classification",
+	title: "Cell type agnostic classification",
 	helpkey: "",
 	cols: [
 	    {title: "Cell Type", data: "title", className: "dt-right"},
@@ -50,7 +50,7 @@ export const TopTissuesTables = (globals, assembly) => ({
 	rank_f: d => Math.log(d["dnase"])
     },
     dnase: {
-	title: "Cell Type Specific Classifications",
+	title: "Classification in specific biosamples",
 	helpkey: "",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
