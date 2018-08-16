@@ -1,0 +1,882 @@
+gastroesophageal_sphincter_female_adult_53_years	gastroesophageal sphincter female adult 53 years	NA	ENCFF435XKF	ENCFF219UQX	NA
+heart_female_embryo_103_days	heart female embryo 103 days	ENCFF281GOQ	NA	NA	NA
+brain_microvascular_endothelial_cell	brain microvascular endothelial cell	ENCFF025HHG	ENCFF256KXI	NA	ENCFF210HSY
+GM08714	GM08714	NA	ENCFF788XNP	NA	NA
+NCI-H460	NCI-H460	ENCFF143RMC	NA	NA	NA
+adrenal_gland_male_adult_37_years	adrenal gland male adult 37 years	ENCFF452CPH	ENCFF610TBO	ENCFF462WGK	ENCFF532QGW
+GM12801	GM12801	NA	NA	NA	ENCFF059OEP
+muscle_of_back_male_embryo_105_days	muscle of back male embryo 105 days	ENCFF779BIA	NA	NA	NA
+frontal_cortex_male_adult_27_years_and_male_adult_35_years	frontal cortex male adult 27 years and male adult 35 years	ENCFF110QGM	NA	NA	NA
+heart_male_adult_27_years_and_male_adult_35_years	heart male adult 27 years and male adult 35 years	ENCFF082SFS	NA	NA	NA
+iPS-18a_female_adult_48_years	iPS-18a female adult 48 years	NA	ENCFF424RJL	ENCFF817HZX	NA
+left_renal_cortex_interstitium_male_embryo_120_days	left renal cortex interstitium male embryo 120 days	ENCFF269PEU	NA	NA	NA
+renal_pelvis_female_embryo_96_days_donor_ENCDO613NXA	renal pelvis female embryo 96 days donor ENCDO613NXA	ENCFF010FIA	NA	NA	NA
+amniotic_stem_cell	amniotic stem cell	ENCFF410CYG	NA	NA	NA
+right_renal_pelvis_male_embryo_105_days_donor_ENCDO171HMD	right renal pelvis male embryo 105 days donor ENCDO171HMD	ENCFF881JSN	NA	NA	NA
+adrenal_gland_female_adult_30_years	adrenal gland female adult 30 years	NA	ENCFF637PCM	ENCFF144KMG	NA
+mid-neurogenesis_radial_glial_cells_genetically_modified_using_stable_transfection_originated_from_H9	mid-neurogenesis radial glial cells genetically modified using stable transfection originated from H9	NA	ENCFF359OXE	NA	NA
+Peyer's_patch_female_adult_51_years	Peyer's patch female adult 51 years	NA	NA	NA	ENCFF534GRR
+temporal_lobe_male_adult_81_years	temporal lobe male adult 81 years	NA	ENCFF158JUA	NA	NA
+esophagus_squamous_epithelium_male_adult_54_years	esophagus squamous epithelium male adult 54 years	NA	NA	NA	ENCFF632ENA
+primary_hematopoietic_stem_cells	primary hematopoietic stem cells	NA	ENCFF246FJL	NA	NA
+GM12892	GM12892	ENCFF536IEC	NA	NA	NA
+limb_embryo_58_days_and_embryo_59_days	limb embryo 58 days and embryo 59 days	ENCFF850IPE	NA	NA	NA
+MCF_10A_treated_with_tamoxifen_24_hours	MCF 10A treated with tamoxifen 24 hours	ENCFF747RHY	NA	NA	NA
+ascending_aorta_female_adult_51_years	ascending aorta female adult 51 years	ENCFF233ORX	ENCFF757WJJ	ENCFF109PKU	ENCFF142LSJ
+foreskin_fibroblast_male_newborn_donor_ENCDO666YUN	foreskin fibroblast male newborn donor ENCDO666YUN	NA	ENCFF560BAF	ENCFF078JZB	NA
+LoVo	LoVo	ENCFF692FQU	NA	NA	NA
+prostate_gland_male_adult_54_years	prostate gland male adult 54 years	NA	ENCFF180DCO	ENCFF589HRX	ENCFF242LSD
+common_myeloid_progenitor_CD34-positive_male_adult	common myeloid progenitor CD34-positive male adult	ENCFF992LZL	ENCFF435KGO	NA	NA
+left_kidney_female_embryo_147_days	left kidney female embryo 147 days	ENCFF963ION	NA	NA	NA
+kidney_epithelial_cell	kidney epithelial cell	ENCFF221IPJ	ENCFF354SQM	NA	ENCFF640EBA
+astrocyte	astrocyte	ENCFF320CHE	ENCFF184NZS	ENCFF058GEM	ENCFF033TTE
+spinal_cord_female_embryo_108_days	spinal cord female embryo 108 days	NA	NA	ENCFF168YVD	NA
+right_renal_cortex_interstitium_male_embryo_105_days_ENCDO513BVP	right renal cortex interstitium male embryo 105 days ENCDO513BVP	ENCFF973VII	NA	NA	NA
+SU-DHL-6	SU-DHL-6	NA	ENCFF413MAJ	ENCFF529EAW	ENCFF560IHK
+kidney_male_adult_67_years	kidney male adult 67 years	NA	ENCFF369QLG	ENCFF722YGU	NA
+HeLa-S3_G1b_phase	HeLa-S3 G1b phase	ENCFF830FDL	ENCFF509ECR	NA	ENCFF427RQE
+large_intestine_female_embryo_107_days	large intestine female embryo 107 days	ENCFF658BNW	NA	NA	NA
+right_kidney_male_embryo_87_days	right kidney male embryo 87 days	ENCFF386DMJ	NA	NA	NA
+RPMI-7951	RPMI-7951	ENCFF991YWM	NA	NA	NA
+Panc1	Panc1	ENCFF698HGI	ENCFF922FRM	ENCFF541JDS	ENCFF266BGZ
+iPS_DF_19.11_male_newborn	iPS DF 19.11 male newborn	ENCFF294LWY	ENCFF488WNX	ENCFF787RFT	NA
+skeletal_muscle_cell	skeletal muscle cell	ENCFF807ARQ	ENCFF338EKW	NA	NA
+keratinocyte_female_donor_ENCDO268AAA	keratinocyte female donor ENCDO268AAA	ENCFF767YBP	ENCFF721SBI	ENCFF717RJQ	ENCFF261CVM
+fibroblast_of_skin_of_abdomen_male_adult_22_years	fibroblast of skin of abdomen male adult 22 years	NA	ENCFF150CNL	NA	ENCFF694SQA
+spleen_male_child_3_years	spleen male child 3 years	NA	ENCFF380SRO	ENCFF529KNT	NA
+right_renal_pelvis_male_embryo_105_days_donor_ENCDO378UAU	right renal pelvis male embryo 105 days donor ENCDO378UAU	ENCFF923TRG	NA	NA	NA
+H9	H9	ENCFF334GMP	ENCFF427EOL	ENCFF250HNU	NA
+CD34-positive_cultured_cells	CD34-positive cultured cells	NA	ENCFF773MPY	NA	NA
+HUES64	HUES64	NA	ENCFF181JZF	ENCFF057DRT	NA
+muscle_of_arm_female_embryo_98_days	muscle of arm female embryo 98 days	ENCFF851IQY	NA	NA	NA
+CD4-positive_helper_T_cell_male_adult_37_years_mobilized	CD4-positive helper T cell male adult 37 years mobilized	ENCFF133LMW	NA	NA	NA
+Jurkat_clone_E61	Jurkat clone E61	ENCFF916JRN	ENCFF017AFO	NA	NA
+A673	A673	ENCFF305GOM	ENCFF938RYF	ENCFF261CVS	ENCFF478HIR
+tibial_artery_male_adult_37_years	tibial artery male adult 37 years	NA	NA	NA	ENCFF072KUF
+thyroid_gland_female_adult_51_years	thyroid gland female adult 51 years	NA	NA	NA	ENCFF698JTY
+angular_gyrus_female_adult_75_years	angular gyrus female adult 75 years	NA	ENCFF797WZE	ENCFF284EJX	NA
+lung_male_embryo_82_days	lung male embryo 82 days	ENCFF606ESZ	NA	NA	NA
+epithelial_cell_of_esophagus	epithelial cell of esophagus	NA	ENCFF901LXI	NA	ENCFF659HPU
+common_myeloid_progenitor_CD34-positive_female	common myeloid progenitor CD34-positive female	ENCFF103KGP	NA	NA	NA
+GM12874	GM12874	NA	NA	NA	ENCFF086QBD
+large_intestine_female_embryo_103_days	large intestine female embryo 103 days	ENCFF691QJR	NA	NA	NA
+RWPE1	RWPE1	NA	NA	ENCFF042VGD	ENCFF614JOJ
+gastrocnemius_medialis_male_adult_37_years	gastrocnemius medialis male adult 37 years	ENCFF161KLK	ENCFF444XUK	ENCFF518NUV	NA
+T-helper_2_cell	T-helper 2 cell	ENCFF335KDD	NA	NA	NA
+A549_treated_with_dexamethasone	A549 treated with dexamethasone	NA	ENCFF645TWL	ENCFF640PJT	ENCFF744LTW
+stomach_female_embryo_96_days_donor_ENCDO613NXA	stomach female embryo 96 days donor ENCDO613NXA	ENCFF827CLR	NA	NA	NA
+small_intestine_male_embryo_91_days	small intestine male embryo 91 days	ENCFF243OFZ	NA	NA	NA
+tibial_nerve_male_adult_37_years	tibial nerve male adult 37 years	NA	NA	NA	ENCFF725SHA
+amnion_male_embryo_16_weeks	amnion male embryo 16 weeks	NA	ENCFF456YYL	ENCFF546WRX	NA
+heart_female_embryo_147_days	heart female embryo 147 days	ENCFF461COG	NA	NA	NA
+muscle_of_leg_male_embryo_96_days_donor_ENCDO220PYT	muscle of leg male embryo 96 days donor ENCDO220PYT	ENCFF160KJF	NA	NA	NA
+muscle_of_back_male_embryo_108_days	muscle of back male embryo 108 days	ENCFF302BVR	NA	NA	NA
+sigmoid_colon_male_adult_34_years	sigmoid colon male adult 34 years	NA	ENCFF995GIN	ENCFF605ZMK	NA
+liver_male_adult_78_years	liver male adult 78 years	NA	ENCFF669BCZ	NA	NA
+stomach_female_embryo_96_days	stomach female embryo 96 days	NA	NA	ENCFF218KJG	NA
+stomach_embryo_101_days	stomach embryo 101 days	ENCFF047HGQ	NA	NA	NA
+brain_pericyte	brain pericyte	ENCFF353QSZ	NA	NA	NA
+gastroesophageal_sphincter_male_adult_37_years	gastroesophageal sphincter male adult 37 years	NA	NA	NA	ENCFF440WKB
+renal_cortex_interstitium_male_embryo_108_days_donor_ENCDO132ASK	renal cortex interstitium male embryo 108 days donor ENCDO132ASK	ENCFF331URX	NA	NA	NA
+CD4-positive_helper_T_cell_female_adult_33_years	CD4-positive helper T cell female adult 33 years	ENCFF502EPK	NA	NA	NA
+stomach_male_child_3_years	stomach male child 3 years	ENCFF280CMC	NA	ENCFF015VNH	NA
+neural_stem_progenitor_cell_originated_from_H9	neural stem progenitor cell originated from H9	NA	ENCFF729NDF	NA	NA
+aorta_female_adult_30_years	aorta female adult 30 years	NA	ENCFF328OPT	ENCFF763TYO	NA
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_15_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 15 day treatment	ENCFF907UIY	NA	NA	NA
+small_intestine_female_embryo_107_days	small intestine female embryo 107 days	ENCFF209YFM	NA	NA	NA
+eye_embryo_56_days_and_male_embryo_76_days	eye embryo 56 days and male embryo 76 days	ENCFF540MDC	NA	NA	NA
+muscle_of_arm_female_embryo_105_days	muscle of arm female embryo 105 days	ENCFF644WCO	NA	NA	NA
+DOHH2	DOHH2	NA	ENCFF981FNN	ENCFF890NAY	ENCFF884IIL
+endothelial_cell_of_umbilical_vein_donor_ENCDO342AAA	endothelial cell of umbilical vein donor ENCDO342AAA	NA	ENCFF669KWL	NA	NA
+skeletal_muscle_myoblast	skeletal muscle myoblast	ENCFF549TYD	NA	NA	NA
+trophoblast_cell_embryo_39_weeks_and_embryo_40_weeks	trophoblast cell embryo 39 weeks and embryo 40 weeks	ENCFF833HDX	NA	NA	NA
+cardiac_fibroblast	cardiac fibroblast	NA	ENCFF493FOT	NA	NA
+brain_male_embryo_122_days	brain male embryo 122 days	ENCFF361UTR	ENCFF942CMQ	NA	NA
+kidney_male_embryo_85_days	kidney male embryo 85 days	ENCFF098CIC	NA	NA	NA
+WERI-Rb-1	WERI-Rb-1	ENCFF369NZI	ENCFF272MMD	NA	ENCFF548YUO
+foreskin_fibroblast_male_newborn_group_1	foreskin fibroblast male newborn group 1	ENCFF107IJY	ENCFF770QSA	ENCFF421TPV	ENCFF354SRQ
+muscle_of_arm_male_embryo_115_days	muscle of arm male embryo 115 days	ENCFF170QVL	NA	NA	NA
+foreskin_melanocyte_male_newborn_donor_ENCDO047TBB	foreskin melanocyte male newborn donor ENCDO047TBB	ENCFF520XMG	NA	ENCFF101BWM	NA
+neural_stem_progenitor_cell_originated_from_H1-hESC	neural stem progenitor cell originated from H1-hESC	ENCFF372SLF	ENCFF015ZVX	ENCFF827WME	NA
+foreskin_fibroblast_male_newborn_donor_ENCDO686OPO	foreskin fibroblast male newborn donor ENCDO686OPO	ENCFF113YFF	ENCFF595BNN	NA	NA
+right_kidney_female_embryo_117_days	right kidney female embryo 117 days	ENCFF712OII	NA	NA	NA
+tibial_nerve_female_adult_51_years	tibial nerve female adult 51 years	NA	NA	NA	ENCFF991GMN
+neutrophil_male	neutrophil male	NA	ENCFF891PZS	NA	NA
+osteoblast	osteoblast	ENCFF300IKA	ENCFF644KJR	ENCFF376MGT	ENCFF887FZI
+lung_embryo_80_days_and_male_embryo_76_days	lung embryo 80 days and male embryo 76 days	ENCFF830TGU	NA	NA	NA
+gastrocnemius_medialis_female_adult_51_year	gastrocnemius medialis female adult 51 year	ENCFF082TEM	NA	NA	NA
+muscle_of_arm_male_embryo_113_days	muscle of arm male embryo 113 days	ENCFF789PQN	NA	NA	NA
+MCF-7_treated_with_estradiol	MCF-7 treated with estradiol	ENCFF606KFN	NA	NA	NA
+B_cell_male_adult_21_years	B cell male adult 21 years	ENCFF220IWU	NA	NA	NA
+KMS-11	KMS-11	NA	ENCFF873IGF	ENCFF869JLM	ENCFF265BPR
+kidney_female_embryo_120_days	kidney female embryo 120 days	ENCFF969UJW	ENCFF486AVO	NA	NA
+GM12875	GM12875	NA	ENCFF718PYZ	NA	NA
+fibroblast_of_lung_male_embryo_12_weeks	fibroblast of lung male embryo 12 weeks	ENCFF882YMD	ENCFF229ICS	ENCFF671LAW	ENCFF993AJR
+left_lung_female_embryo_110_days	left lung female embryo 110 days	ENCFF609SYX	NA	NA	NA
+muscle_of_back_male_embryo_101_days	muscle of back male embryo 101 days	ENCFF499LIJ	NA	NA	NA
+neuroepithelial_stem_cell_genetically_modified_using_stable_transfection_originated_from_H9	neuroepithelial stem cell genetically modified using stable transfection originated from H9	NA	ENCFF319LDF	NA	NA
+large_intestine_male_embryo_105_days_donor_ENCDO350ZUK	large intestine male embryo 105 days donor ENCDO350ZUK	ENCFF824OUT	NA	NA	NA
+HL-60	HL-60	ENCFF634ZUJ	ENCFF334AJI	NA	ENCFF914EDX
+mesendoderm_originated_from_H1-hESC	mesendoderm originated from H1-hESC	NA	ENCFF748XLQ	ENCFF313DOD	NA
+pons_male_adult_78_years	pons male adult 78 years	ENCFF210SQU	NA	NA	NA
+renal_pelvis_female_embryo_105_days	renal pelvis female embryo 105 days	ENCFF161NZJ	NA	NA	NA
+T_helper_naive_cells_from_peripheral_blood_CD25M_CD45RA	T helper naive cells from peripheral blood CD25M CD45RA	NA	ENCFF717QXO	NA	NA
+heart_male_embryo_91_days	heart male embryo 91 days	NA	ENCFF650XMH	NA	NA
+common_myeloid_progenitor_CD34-positive_male	common myeloid progenitor CD34-positive male	ENCFF819VID	NA	NA	NA
+heart_left_ventricle_female_embryo_101_day_and_female_embryo_103_days	heart left ventricle female embryo 101 day and female embryo 103 days	ENCFF791FRX	NA	NA	NA
+hematopoietic_multipotent_progenitor_cell_donor_ENCDO579CCQ	hematopoietic multipotent progenitor cell donor ENCDO579CCQ	ENCFF158ALT	NA	NA	NA
+left_cardiac_atrium_female_embryo_101_days	left cardiac atrium female embryo 101 days	ENCFF920CTO	NA	NA	NA
+thymus_male_embryo_113_days	thymus male embryo 113 days	ENCFF527VFR	NA	NA	NA
+large_intestine_male_embryo_108_days	large intestine male embryo 108 days	ENCFF443KCU	ENCFF298LTL	ENCFF851RBH	NA
+VCaP	VCaP	NA	NA	ENCFF829NYY	ENCFF031ROV
+muscle_of_back_female_embryo_113_days	muscle of back female embryo 113 days	ENCFF739XXP	NA	NA	NA
+muscle_of_back_male_embryo_91_days	muscle of back male embryo 91 days	ENCFF847HLP	NA	NA	NA
+trophoblast_cell_embryo_21_week_	trophoblast cell embryo 21 week 	ENCFF248OBP	NA	NA	NA
+muscle_layer_of_duodenum_male_adult_59_years	muscle layer of duodenum male adult 59 years	NA	ENCFF387XNO	ENCFF318MIL	NA
+spinal_cord_female_embryo_59_days_and_male_embryo_72_days	spinal cord female embryo 59 days and male embryo 72 days	ENCFF370CZR	NA	NA	NA
+common_myeloid_progenitor_CD34-positive_male_adult_23_years	common myeloid progenitor CD34-positive male adult 23 years	ENCFF005DPL	NA	NA	NA
+right_lobe_of_liver_female_adult_53_years	right lobe of liver female adult 53 years	NA	ENCFF958VCA	ENCFF035NGT	ENCFF646FIY
+vagina_female_adult_53_years	vagina female adult 53 years	NA	ENCFF513SIP	ENCFF035ZNG	ENCFF469VIV
+GM12891	GM12891	ENCFF713YTW	NA	NA	NA
+brain_female_embryo_109_days	brain female embryo 109 days	ENCFF003FBE	NA	NA	NA
+CD8-positive,_alpha-beta_T_cell_male_adult_21_years	CD8-positive, alpha-beta T cell male adult 21 years	NA	NA	ENCFF526VJO	NA
+large_intestine_male_embryo_115_days	large intestine male embryo 115 days	ENCFF761ZJC	NA	NA	NA
+stomach_smooth_muscle_male_adult_59_years	stomach smooth muscle male adult 59 years	NA	ENCFF607RBE	NA	NA
+naive_thymus-derived_CD4-positive_alpha-beta_T_cell_female_adult_35_years	naive thymus-derived CD4-positive alpha-beta T cell female adult 35 years	ENCFF276SZR	NA	NA	NA
+MCF-7_treated_with_serum_stimulated_media	MCF-7 treated with serum stimulated media	NA	NA	NA	ENCFF697ZLF
+muscle_of_trunk_female_embryo_113_days	muscle of trunk female embryo 113 days	ENCFF736QYT	NA	NA	NA
+muscle_layer_of_colon_female_adult_56_years	muscle layer of colon female adult 56 years	NA	ENCFF041CMH	ENCFF033HWS	NA
+mesenchymal_stem_cell_originated_from_adipose_tissue	mesenchymal stem cell originated from adipose tissue	NA	ENCFF731PKC	NA	NA
+mammary_epithelial_cell_female_adult	mammary epithelial cell female adult	ENCFF227VUS	ENCFF277MXO	ENCFF210BII	ENCFF212EWI
+muscle_of_leg_female_embryo_113_days	muscle of leg female embryo 113 days	ENCFF716VIS	NA	NA	NA
+left_renal_pelvis_male_embryo_105_days_donor_ENCDO513BVP	left renal pelvis male embryo 105 days donor ENCDO513BVP	ENCFF468WHL	NA	NA	NA
+cardiac_mesoderm_2_days_differentiation	cardiac mesoderm 2 days differentiation	NA	ENCFF421AVJ	NA	NA
+right_kidney_male_embryo_96_days	right kidney male embryo 96 days	ENCFF307BRD	NA	NA	NA
+muscle_of_back_male_embryo_96_days_donor_ENCDO817EKT	muscle of back male embryo 96 days donor ENCDO817EKT	ENCFF990QEC	NA	NA	NA
+urinary_bladder_male_adult_34_years	urinary bladder male adult 34 years	NA	ENCFF469KTC	ENCFF627OFU	NA
+WI38_genetically_modified_using_stable_transfection_treated_with_afimoxifene	WI38 genetically modified using stable transfection treated with afimoxifene	NA	ENCFF181HKY	NA	NA
+T_cells_effector/memory_enriched_from_peripheral_blood	T cells effector/memory enriched from peripheral blood	NA	ENCFF342QXW	ENCFF129BLW	NA
+fibroblast_of_villous_mesenchyme	fibroblast of villous mesenchyme	NA	ENCFF254FXT	NA	ENCFF734VFU
+lung_female_embryo_96_days	lung female embryo 96 days	ENCFF609EGN	NA	NA	NA
+iPS_DF_4.7_male_newborn	iPS DF 4.7 male newborn	ENCFF694RNX	NA	NA	NA
+endocrine_pancreas_male_adult_46_years	endocrine pancreas male adult 46 years	NA	ENCFF402FCT	NA	NA
+placental_basal_plate_female_embryo_40_weeks	placental basal plate female embryo 40 weeks	NA	ENCFF837UAW	ENCFF462QER	NA
+SW480	SW480	ENCFF726FED	NA	NA	NA
+omental_fat_pad_male_adult_37_years	omental fat pad male adult 37 years	NA	NA	NA	ENCFF304IIJ
+CD8-positive_alpha-beta_T_cell_male_adult_21_years	CD8-positive alpha-beta T cell male adult 21 years	ENCFF825SRM	ENCFF039MOH	NA	NA
+stomach_female_embryo_107_days	stomach female embryo 107 days	ENCFF534VWZ	NA	NA	NA
+Caki2	Caki2	ENCFF109WQI	NA	NA	NA
+adipose_tissue_male_adult_34_years	adipose tissue male adult 34 years	NA	NA	ENCFF648TPI	NA
+right_lung_male_embryo_96_days	right lung male embryo 96 days	ENCFF491HNC	NA	NA	NA
+fibroblast_of_mammary_gland_female	fibroblast of mammary gland female	ENCFF724CMH	ENCFF024BEV	NA	ENCFF816IUS
+kidney_female_embryo_82_days	kidney female embryo 82 days	ENCFF603OJF	NA	NA	NA
+middle_frontal_gyrus_male_adult_78_years	middle frontal gyrus male adult 78 years	ENCFF751LHL	NA	NA	NA
+GM19238	GM19238	ENCFF385ITM	NA	NA	NA
+CD45RO-positive_CD4-positive_T_cell_donor_ENCDO688UWB	CD45RO-positive CD4-positive T cell donor ENCDO688UWB	NA	ENCFF988KPC	NA	NA
+muscle_of_back_female_embryo_105_days_donor_ENCDO863KZW	muscle of back female embryo 105 days donor ENCDO863KZW	ENCFF596JMX	NA	NA	NA
+adrenal_gland_female_embryo_113_days	adrenal gland female embryo 113 days	ENCFF815MQN	NA	NA	NA
+mesodermal_cell_originated_from_HUES64	mesodermal cell originated from HUES64	NA	ENCFF314NPX	ENCFF454UPE	NA
+DND-41	DND-41	NA	ENCFF791ZHJ	ENCFF454MCD	ENCFF430YKW
+thyroid_gland_female_adult_53_years	thyroid gland female adult 53 years	ENCFF290ZJP	ENCFF468USL	ENCFF674SKA	ENCFF455YHL
+duodenal_mucosa_male_adult_76_years	duodenal mucosa male adult 76 years	NA	ENCFF830TIW	NA	NA
+placenta_female_embryo_101_days_and_male_embryo_105_days	placenta female embryo 101 days and male embryo 105 days	ENCFF124SMB	NA	NA	NA
+temporal_lobe_female_adult_75_years	temporal lobe female adult 75 years	NA	ENCFF402HML	ENCFF682YSX	NA
+chorion_female_embryo_40_weeks	chorion female embryo 40 weeks	NA	ENCFF123OGY	ENCFF015PTE	NA
+heart_female_embryo_117_days	heart female embryo 117 days	ENCFF008DNO	NA	NA	NA
+transverse_colon_female_adult_51_years	transverse colon female adult 51 years	NA	NA	NA	ENCFF748PHO
+iPS-15b_female_adult_48_years	iPS-15b female adult 48 years	NA	ENCFF261RPA	NA	NA
+common_myeloid_progenitor_CD34-positive_female_adult_33_years	common myeloid progenitor CD34-positive female adult 33 years	ENCFF523VFS	ENCFF707FBC	ENCFF360CFP	NA
+muscle_of_back_male_embryo_97_days	muscle of back male embryo 97 days	ENCFF034GYI	NA	NA	NA
+superior_temporal_gyrus_male_adult_84_years	superior temporal gyrus male adult 84 years	ENCFF029ZOX	NA	NA	NA
+EL	EL	ENCFF923JHL	NA	NA	NA
+right_renal_cortex_interstitium_male_embryo_105_days_donor_ENCDO378UAU	right renal cortex interstitium male embryo 105 days donor ENCDO378UAU	ENCFF461CDQ	NA	NA	NA
+right_lung_female_embryo_105_days	right lung female embryo 105 days	ENCFF071LJS	NA	NA	NA
+lung_embryo_112_days	lung embryo 112 days	ENCFF362UJZ	NA	NA	NA
+middle_frontal_area_46_female_adult_75_years	middle frontal area 46 female adult 75 years	NA	ENCFF119OVG	ENCFF186CZK	NA
+ascending_aorta_female_adult_53_years	ascending aorta female adult 53 years	NA	ENCFF151YZO	ENCFF651IGX	NA
+adrenal_gland_male_embryo_108_days	adrenal gland male embryo 108 days	ENCFF285UPE	NA	NA	NA
+muscle_of_arm_male_embryo_97_days_donor_ENCDO597UXW	muscle of arm male embryo 97 days donor ENCDO597UXW	ENCFF174TXJ	NA	NA	NA
+left_lung_male_embryo_96_days	left lung male embryo 96 days	ENCFF655RAK	NA	NA	NA
+upper_lobe_of_left_lung_female_adult_53_years	upper lobe of left lung female adult 53 years	NA	ENCFF721UKX	ENCFF870RAN	ENCFF645MYR
+22Rv1	22Rv1	NA	NA	ENCFF062MFT	ENCFF809PHW
+iPS-18c_female_adult_48_years	iPS-18c female adult 48 years	NA	ENCFF562LWC	NA	NA
+renal_cortex_interstitium_female_embryo_96_days_donor_ENCDO870OBN	renal cortex interstitium female embryo 96 days donor ENCDO870OBN	ENCFF825MFH	NA	NA	NA
+muscle_of_leg_male_embryo_96_days_donor_ENCDO817EKT	muscle of leg male embryo 96 days donor ENCDO817EKT	ENCFF813VDR	NA	NA	NA
+fibroblast_of_breast_female_adult_17_years	fibroblast of breast female adult 17 years	NA	NA	ENCFF971LUI	NA
+bipolar_neuron_originated_from_GM23338_treated_with_doxycycline_hyclate	bipolar neuron originated from GM23338 treated with doxycycline hyclate	ENCFF399ISP	ENCFF834UFV	ENCFF346CWF	ENCFF205ZOQ
+neutrophil	neutrophil	NA	ENCFF628GHA	ENCFF909JRL	ENCFF822HVX
+CD45RO-positive_CD4-positive_T_cell_donor_ENCDO922CEJ	CD45RO-positive CD4-positive T cell donor ENCDO922CEJ	NA	ENCFF236HUG	NA	NA
+gastroesophageal_sphincter_male_adult_54_years	gastroesophageal sphincter male adult 54 years	NA	NA	NA	ENCFF328CQQ
+renal_cortical_epithelial_cell	renal cortical epithelial cell	ENCFF457RRO	NA	NA	NA
+K562_G2_phase	K562 G2 phase	ENCFF515UNC	NA	NA	NA
+lung_embryo_101_day	lung embryo 101 day	NA	ENCFF603DYO	NA	NA
+spleen_embryo_112_days	spleen embryo 112 days	ENCFF090EZE	NA	NA	NA
+heart_male_embryo_96_days	heart male embryo 96 days	ENCFF135BIN	NA	NA	NA
+stomach_male_adult_37_years	stomach male adult 37 years	NA	NA	NA	ENCFF293VSF
+chorionic_villus_embryo_16_weeks	chorionic villus embryo 16 weeks	NA	ENCFF337CGA	ENCFF970ISL	NA
+large_intestine_female_embryo_105_days	large intestine female embryo 105 days	ENCFF471TWL	NA	NA	NA
+MCF-7_treated_with_lactate	MCF-7 treated with lactate	ENCFF943XJG	NA	NA	NA
+left_kidney_female_embryo_59_days_and_male_embryo_91_days	left kidney female embryo 59 days and male embryo 91 days	ENCFF862JVF	NA	NA	NA
+dermis_blood_vessel_endothelial_cell_female_adult_donor_ENCDO240AAA	dermis blood vessel endothelial cell female adult donor ENCDO240AAA	ENCFF250ZZO	NA	NA	NA
+body_of_pancreas_female_adult_53_years	body of pancreas female adult 53 years	ENCFF116YEY	NA	ENCFF411PEL	NA
+esophagus_muscularis_mucosa_female_adult_51_years	esophagus muscularis mucosa female adult 51 years	NA	NA	NA	ENCFF754CTN
+left_lung_female_embryo_107_days	left lung female embryo 107 days	ENCFF010TXA	NA	NA	NA
+non-pigmented_ciliary_epithelial_cell	non-pigmented ciliary epithelial cell	ENCFF714QQU	NA	NA	NA
+small_intestine_female_adult_30_years	small intestine female adult 30 years	NA	ENCFF246LCK	ENCFF087KLN	NA
+common_myeloid_progenitor_CD34-positive_male_adult_37_years	common myeloid progenitor CD34-positive male adult 37 years	ENCFF242KTE	NA	NA	NA
+sigmoid_colon_male_adult_37_years	sigmoid colon male adult 37 years	NA	NA	NA	ENCFF717BMW
+adrenal_gland_female_adult_53_years	adrenal gland female adult 53 years	NA	ENCFF477RTV	ENCFF024VVX	ENCFF350UER
+cerebellum_male_adult_53_years	cerebellum male adult 53 years	NA	ENCFF597ZGD	NA	NA
+brain_male_embryo_104_days	brain male embryo 104 days	ENCFF622PZI	NA	NA	NA
+muscle_of_leg_female_embryo_110_days	muscle of leg female embryo 110 days	NA	ENCFF362YRX	NA	NA
+MCF-7_treated_with_17beta-estradiol	MCF-7 treated with 17beta-estradiol	NA	NA	NA	ENCFF628MBW
+stomach_female_adult_51_years	stomach female adult 51 years	NA	NA	NA	ENCFF464YGC
+left_kidney_male_embryo_87_days	left kidney male embryo 87 days	ENCFF028YSP	NA	NA	NA
+spleen_female_adult_53_years	spleen female adult 53 years	NA	ENCFF601HLQ	ENCFF812BTH	ENCFF551SXN
+keratinocyte_female_donor_ENCDO302AAA	keratinocyte female donor ENCDO302AAA	ENCFF690MIA	NA	NA	NA
+tongue_male_embryo_72_days	tongue male embryo 72 days	ENCFF616AAF	NA	NA	NA
+mononuclear_cell_male	mononuclear cell male	NA	ENCFF470CHC	NA	NA
+middle_frontal_area_46_male_adult_81_years	middle frontal area 46 male adult 81 years	NA	ENCFF708QSO	ENCFF976FME	NA
+psoas_muscle_male_adult_27_years_and_male_adult_35_years	psoas muscle male adult 27 years and male adult 35 years	ENCFF927VUO	NA	NA	NA
+radial_glial_cell_genetically_modified_using_stable_transfection_originated_from_H9	radial glial cell genetically modified using stable transfection originated from H9	NA	ENCFF883CXQ	NA	NA
+T_helper_cells_PMA-I_stimulated	T helper cells PMA-I stimulated	NA	ENCFF855AXA	ENCFF701MUZ	NA
+muscle_of_trunk_female_embryo_115_days	muscle of trunk female embryo 115 days	NA	ENCFF257DIP	ENCFF100ZDL	NA
+epithelial_cell_of_prostate_male	epithelial cell of prostate male	NA	NA	ENCFF068PBX	ENCFF573GPU
+hematopoietic_multipotent_progenitor_cell_not_treated_and_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin	hematopoietic multipotent progenitor cell not treated and treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin	ENCFF117DAB	NA	NA	NA
+CMK	CMK	ENCFF391HDR	NA	NA	NA
+Peyer's_patch_female_adult_53_years	Peyer's patch female adult 53 years	ENCFF137XIB	ENCFF063ITE	ENCFF859ITG	ENCFF112FNQ
+GM13976	GM13976	NA	NA	NA	ENCFF553JDS
+right_lung_female_embryo_108_days	right lung female embryo 108 days	ENCFF499TWX	NA	NA	NA
+left_lung_female_embryo_91_days	left lung female embryo 91 days	ENCFF772ECZ	NA	NA	NA
+OCI-LY7	OCI-LY7	ENCFF506FHA	ENCFF852DRP	ENCFF787GTX	ENCFF455RLT
+colonic_mucosa_female_adult_56_years	colonic mucosa female adult 56 years	NA	ENCFF877MFN	ENCFF638VOA	NA
+CD14-positive_monocyte_female_adult_34_years	CD14-positive monocyte female adult 34 years	ENCFF759CKK	NA	NA	NA
+right_lung_female_embryo_91_days	right lung female embryo 91 days	ENCFF784RSW	NA	NA	NA
+layer_of_hippocampus_male_adult_73_years	layer of hippocampus male adult 73 years	NA	ENCFF279WOL	ENCFF308VMB	NA
+neuron_originated_from_H9	neuron originated from H9	NA	ENCFF548EWI	NA	NA
+heart_male_embryo_110_days	heart male embryo 110 days	ENCFF782WKY	NA	NA	NA
+GM18507	GM18507	ENCFF714ZSE	NA	NA	NA
+transverse_colon_female_adult_53_years	transverse colon female adult 53 years	ENCFF413EKZ	ENCFF254GWA	ENCFF083BTK	ENCFF458ZYU
+right_kidney_female_embryo_107_days	right kidney female embryo 107 days	ENCFF842TPR	NA	NA	NA
+caudate_nucleus_female_adult_75_years	caudate nucleus female adult 75 years	NA	ENCFF710EXS	ENCFF961LCE	NA
+Karpas-422	Karpas-422	ENCFF220RFB	ENCFF389OHA	ENCFF746SWH	NA
+colonic_mucosa_female_adult_73_years	colonic mucosa female adult 73 years	NA	ENCFF861DEQ	ENCFF932HOT	NA
+CD8-positive_alpha-beta_memory_T_cell	CD8-positive alpha-beta memory T cell	NA	ENCFF489LFC	ENCFF365WHC	NA
+hindlimb_muscle_male_embryo_120_days	hindlimb muscle male embryo 120 days	ENCFF973KXU	NA	NA	NA
+thymus_female_embryo_110_days	thymus female embryo 110 days	NA	ENCFF584VBB	ENCFF291OIO	NA
+islet_precursor_cell	islet precursor cell	ENCFF639JCH	NA	NA	NA
+brain_female_embryo_117_days	brain female embryo 117 days	ENCFF536FNG	NA	NA	NA
+skeletal_muscle_myoblast_male_adult_22_years	skeletal muscle myoblast male adult 22 years	NA	ENCFF363RJQ	ENCFF743ROG	NA
+renal_cortex_interstitium_female_embryo_103_days	renal cortex interstitium female embryo 103 days	ENCFF161UUJ	NA	NA	NA
+dermis_blood_vessel_endothelial_cell_male_newborn	dermis blood vessel endothelial cell male newborn	ENCFF468FOP	NA	NA	NA
+cardiac_muscle_cell_primary	cardiac muscle cell primary	ENCFF446JBL	ENCFF269FSL	ENCFF190PRO	ENCFF467BZS
+renal_cortex_interstitium_male_embryo_91_days	renal cortex interstitium male embryo 91 days	ENCFF981AOU	NA	NA	NA
+naive_thymus-derived_CD4-positive_alpha-beta_T_cell	naive thymus-derived CD4-positive alpha-beta T cell	NA	ENCFF220PSW	ENCFF064LYR	NA
+tongue_female_embryo_59_days_and_female_embryo_76_days	tongue female embryo 59 days and female embryo 76 days	ENCFF645CDA	NA	NA	NA
+thyroid_gland_male_adult_54_years	thyroid gland male adult 54 years	ENCFF762FMJ	ENCFF916BKG	ENCFF331NIO	ENCFF198JTS
+NAMALWA	NAMALWA	ENCFF889CMZ	NA	NA	NA
+transverse_colon_male_adult_54_years	transverse colon male adult 54 years	ENCFF098CAJ	NA	ENCFF604LTF	ENCFF007DYR
+right_renal_pelvis_male_embryo_105_days_donor_ENCDO513BVP	right renal pelvis male embryo 105 days donor ENCDO513BVP	ENCFF630KCX	NA	NA	NA
+SK-N-DZ_treated_with_dimethyl_sulfoxide	SK-N-DZ treated with dimethyl sulfoxide	ENCFF989ALW	NA	NA	NA
+left_kidney_female_embryo_110_days	left kidney female embryo 110 days	ENCFF623DPF	NA	NA	NA
+foreskin_keratinocyte_male_newborn_donor_ENCDO686OPO	foreskin keratinocyte male newborn donor ENCDO686OPO	ENCFF380PKB	ENCFF799EIL	NA	NA
+placenta_embryo_102_days	placenta embryo 102 days	ENCFF933ZHA	NA	NA	NA
+EH	EH	ENCFF746DZE	NA	NA	NA
+omental_fat_pad_female_adult_51_years	omental fat pad female adult 51 years	NA	NA	NA	ENCFF606IEQ
+endodermal_cell_originated_from_HUES64	endodermal cell originated from HUES64	NA	ENCFF478GLT	ENCFF864CEK	NA
+lung_embryo_101_days	lung embryo 101 days	ENCFF283WCF	NA	NA	NA
+muscle_of_arm_female_embryo_115_days	muscle of arm female embryo 115 days	ENCFF529MMP	NA	NA	NA
+PC-3	PC-3	ENCFF999OEJ	ENCFF932KMQ	ENCFF287SLL	ENCFF633UOG
+heart_female_embryo_116_days_and_female_embryo_98_days	heart female embryo 116 days and female embryo 98 days	ENCFF162WFN	NA	NA	NA
+embryonic_facial_prominence_embryo_53_days_and_embryo_58_days	embryonic facial prominence embryo 53 days and embryo 58 days	ENCFF249WKV	NA	NA	NA
+natural_killer_cell_male_adult_21_year	natural killer cell male adult 21 year	ENCFF985WGD	NA	NA	NA
+hepatocyte	hepatocyte	ENCFF818FXA	NA	NA	NA
+kidney_male_embryo_105_days	kidney male embryo 105 days	ENCFF758ZBZ	NA	NA	NA
+breast_epithelium_female_adult_51_year	breast epithelium female adult 51 year	ENCFF322ALX	NA	NA	NA
+T_helper_cells_from_peripheral_blood	T helper cells from peripheral blood	NA	ENCFF067KWB	NA	NA
+glomerular_endothelial_cell	glomerular endothelial cell	ENCFF656ZYW	NA	NA	NA
+stomach_female_embryo_108_days	stomach female embryo 108 days	ENCFF922XNR	NA	NA	NA
+chorion	chorion	ENCFF880MKD	NA	NA	NA
+kidney_female_embryo_76_days_and_male_embryo_76_days	kidney female embryo 76 days and male embryo 76 days	ENCFF248ZTQ	NA	NA	NA
+SK-N-DZ	SK-N-DZ	ENCFF461SNA	NA	NA	NA
+mucosa_of_rectum_female_adult_50_years	mucosa of rectum female adult 50 years	NA	ENCFF688IVJ	ENCFF647BNU	NA
+right_cardiac_atrium_male_adult_34_years	right cardiac atrium male adult 34 years	NA	ENCFF958IXF	ENCFF983HIO	NA
+pancreas_male_adult_34_years	pancreas male adult 34 years	ENCFF230OUF	ENCFF494ZIO	ENCFF342YVM	NA
+T-cell	T-cell	NA	ENCFF942QPG	NA	NA
+subcutaneous_abdominal_adipose_tissue_nuclear_fraction_female_adult_41_year	subcutaneous abdominal adipose tissue nuclear fraction female adult 41 year	NA	ENCFF308DJX	NA	NA
+skin_of_body_female_embryo_82_days	skin of body female embryo 82 days	ENCFF792NVL	NA	NA	NA
+brain_female_embryo_85_days	brain female embryo 85 days	ENCFF735MKP	NA	NA	NA
+renal_cortex_interstitium_male_embryo_108_days_donor_ENCDO014CNM	renal cortex interstitium male embryo 108 days donor ENCDO014CNM	ENCFF332EJM	NA	NA	NA
+Loucy	Loucy	NA	ENCFF280RTW	NA	ENCFF915MLY
+epidermal_melanocyte	epidermal melanocyte	ENCFF863UGY	NA	NA	NA
+right_lung_female_embryo_98_days	right lung female embryo 98 days	ENCFF338GCP	NA	NA	NA
+renal_cortex_interstitium_female_embryo_89_days	renal cortex interstitium female embryo 89 days	ENCFF590MET	NA	NA	NA
+heart_male_embryo_120_days	heart male embryo 120 days	ENCFF851MCI	NA	NA	NA
+renal_pelvis_female_embryo_96_days_donor_ENCDO870OBN	renal pelvis female embryo 96 days donor ENCDO870OBN	ENCFF319GAX	NA	NA	NA
+skeletal_muscle_tissue_male_adult_54_years	skeletal muscle tissue male adult 54 years	NA	ENCFF788KIN	NA	NA
+thymus_male_embryo_127_days	thymus male embryo 127 days	ENCFF921GFL	NA	NA	NA
+stomach_male_adult_54_years	stomach male adult 54 years	NA	NA	NA	ENCFF684OBP
+H9_Early_G1_phase_genetically_modified_using_stable_transfection	H9 Early G1 phase genetically modified using stable transfection	ENCFF685WFL	NA	NA	NA
+lung_embryo_67_days	lung embryo 67 days	ENCFF710LQM	NA	NA	NA
+adrenal_gland_male_adult_54_years	adrenal gland male adult 54 years	ENCFF415UET	ENCFF174JGJ	ENCFF824FEH	ENCFF952XPH
+caudate_nucleus_male_adult	caudate nucleus male adult	ENCFF498QFP	ENCFF337DTR	ENCFF043ZYE	NA
+esophagus_muscularis_mucosa_female_adult_53_years	esophagus muscularis mucosa female adult 53 years	NA	ENCFF078OGK	ENCFF883NAP	ENCFF786YLI
+WI38_genetically_modified_using_stable_transfection_originated_from_WI38	WI38 genetically modified using stable transfection originated from WI38	ENCFF040DSN	NA	NA	NA
+HS-27A	HS-27A	ENCFF132EIR	NA	NA	NA
+placenta_male_embryo_16_weeks	placenta male embryo 16 weeks	NA	ENCFF772SIL	ENCFF890SIF	NA
+HFF-Myc_male_newborn_originated_from_foreskin_fibroblast	HFF-Myc male newborn originated from foreskin fibroblast	ENCFF103JVK	ENCFF044HJS	NA	ENCFF839WGK
+breast_epithelium_female_adult_51_years	breast epithelium female adult 51 years	NA	NA	NA	ENCFF009LCG
+GM19239	GM19239	ENCFF919WIT	NA	NA	NA
+neurosphere_female_embryo_17_weeks_originated_from_cortex	neurosphere female embryo 17 weeks originated from cortex	NA	ENCFF234XSH	NA	NA
+NCI-H226	NCI-H226	ENCFF564MGY	NA	NA	NA
+CD1c-positive_myeloid_dendritic_cell	CD1c-positive myeloid dendritic cell	ENCFF259NLK	NA	NA	NA
+endothelial_cell_of_umbilical_vein_group_1	endothelial cell of umbilical vein group 1	ENCFF305BCB	ENCFF930RTT	ENCFF656TFQ	ENCFF822MVW
+SJSA1	SJSA1	ENCFF909HEZ	NA	NA	NA
+thyroid_gland_male_adult_37_years	thyroid gland male adult 37 years	ENCFF677VKI	ENCFF552YTU	ENCFF259FFL	NA
+testis_male_adult_37_years	testis male adult 37 years	NA	ENCFF430NDD	NA	ENCFF686GDH
+T-cell_donor_ENCDO685OXD	T-cell donor ENCDO685OXD	ENCFF400NBT	NA	NA	NA
+H1-hESC	H1-hESC	ENCFF131HMO	ENCFF730VVX	ENCFF423TVA	ENCFF520THR
+fibroblast_of_gingiva_female_adult_24_years	fibroblast of gingiva female adult 24 years	ENCFF294KLB	ENCFF175JFX	NA	ENCFF336CTF
+lung_male_embryo_103_days	lung male embryo 103 days	ENCFF267BLE	NA	NA	NA
+breast_epithelium_female_adult_53_years	breast epithelium female adult 53 years	NA	ENCFF382HRD	ENCFF766AYD	ENCFF499EZR
+renal_pelvis_female_embryo_89_days	renal pelvis female embryo 89 days	ENCFF734APY	NA	NA	NA
+stomach_male_embryo_91_days	stomach male embryo 91 days	ENCFF362OUW	NA	NA	NA
+CD8-positive,_alpha-beta_T_cell_male_adult_21_year	CD8-positive, alpha-beta T cell male adult 21 year	ENCFF439EFF	NA	NA	NA
+renal_cortex_interstitium_male_embryo_113_days	renal cortex interstitium male embryo 113 days	ENCFF365HVU	NA	NA	NA
+adipocyte_originated_from_mesenchymal_stem_cell	adipocyte originated from mesenchymal stem cell	NA	ENCFF691WBL	NA	NA
+retinal_pigment_epithelial_cell	retinal pigment epithelial cell	ENCFF634YGE	ENCFF405LBE	NA	ENCFF732MRP
+liver_embryo_59_days_and_embryo_80_days	liver embryo 59 days and embryo 80 days	ENCFF068ZBX	NA	NA	NA
+renal_cortex_interstitium_female_embryo_96_days_donor_ENCDO613NXA	renal cortex interstitium female embryo 96 days donor ENCDO613NXA	ENCFF701FFX	NA	NA	NA
+transverse_colon_male_adult_37_years	transverse colon male adult 37 years	ENCFF624FJD	ENCFF412IPU	ENCFF253WKZ	ENCFF653KIU
+stomach_female_adult_30_years	stomach female adult 30 years	NA	NA	ENCFF623QXD	NA
+T-helper_17_cell	T-helper 17 cell	ENCFF566QDG	NA	NA	NA
+foreskin_fibroblast_male_newborn_donor_ENCDO047TBB	foreskin fibroblast male newborn donor ENCDO047TBB	NA	ENCFF507JDZ	NA	NA
+stomach_smooth_muscle_female_adult_84_years	stomach smooth muscle female adult 84 years	NA	ENCFF327QYA	ENCFF175PZL	NA
+GM10248	GM10248	ENCFF149TAY	NA	NA	ENCFF606NRM
+brain_embryo_112_days	brain embryo 112 days	ENCFF657KLL	NA	NA	NA
+RKO	RKO	ENCFF175IFH	NA	NA	NA
+placenta_male_embryo_91_days	placenta male embryo 91 days	ENCFF383SIU	NA	NA	NA
+skin_fibroblast_male_child_10_years	skin fibroblast male child 10 years	ENCFF890OGQ	NA	NA	NA
+CD8-positive_alpha-beta_T_cell_male_adult_28_years	CD8-positive alpha-beta T cell male adult 28 years	NA	ENCFF323SGW	NA	NA
+skeletal_muscle_tissue	skeletal muscle tissue	NA	ENCFF735EGF	NA	NA
+fibroblast_of_lung_female_child_11_years_and_male_adult_45_years	fibroblast of lung female child 11 years and male adult 45 years	NA	ENCFF021KNK	ENCFF637KNN	ENCFF911FWI
+psoas_muscle_male_child_3_years	psoas muscle male child 3 years	ENCFF241XMS	ENCFF024VLY	ENCFF406PPG	NA
+angular_gyrus_male_adult_81_years	angular gyrus male adult 81 years	NA	ENCFF941AKN	ENCFF518CHL	NA
+layer_of_hippocampus_male_adult_81_years	layer of hippocampus male adult 81 years	NA	ENCFF366FNG	ENCFF564VOY	NA
+neural_progenitor_cell_originated_from_H9	neural progenitor cell originated from H9	ENCFF417MBH	ENCFF651TUQ	ENCFF520NLE	ENCFF573GSH
+lower_leg_skin_male_adult_37_years	lower leg skin male adult 37 years	NA	NA	NA	ENCFF836USZ
+retina_embryo_125_days_and_male_embryo_103_days	retina embryo 125 days and male embryo 103 days	ENCFF773NZF	NA	NA	NA
+muscle_layer_of_colon_female_adult_77_years	muscle layer of colon female adult 77 years	NA	ENCFF183LFN	NA	NA
+OCI-LY1	OCI-LY1	NA	ENCFF104CMX	ENCFF061BXV	ENCFF910GAU
+kidney_embryo_80_days	kidney embryo 80 days	ENCFF734DOF	NA	NA	NA
+stomach_female_embryo_96_days_donor_ENCDO870OBN	stomach female embryo 96 days donor ENCDO870OBN	ENCFF218SJO	NA	NA	NA
+common_myeloid_progenitor_CD34-positive_female_adult_50_years	common myeloid progenitor CD34-positive female adult 50 years	ENCFF570PTC	NA	NA	NA
+fibroblast_of_lung_male_adult_45_years	fibroblast of lung male adult 45 years	NA	ENCFF626WKG	NA	ENCFF339PQD
+gastrocnemius_medialis_male_adult_54_years	gastrocnemius medialis male adult 54 years	ENCFF073UDC	ENCFF135XRF	ENCFF360XRD	ENCFF211PSD
+common_myeloid_progenitor_CD34-positive_male_adult_36_years	common myeloid progenitor CD34-positive male adult 36 years	ENCFF139ZYV	ENCFF270FRB	NA	NA
+B_cell_female_adult_43_years	B cell female adult 43 years	NA	ENCFF631DER	NA	NA
+NT2/D1	NT2/D1	ENCFF644NWU	ENCFF928RUE	NA	NA
+stomach_male_embryo_58_days_and_male_embryo_76_days	stomach male embryo 58 days and male embryo 76 days	ENCFF873DWP	NA	NA	NA
+renal_pelvis_male_embryo_108_days	renal pelvis male embryo 108 days	ENCFF643GKF	NA	NA	NA
+small_intestine_male_embryo_115_days_donor_ENCDO816OTW	small intestine male embryo 115 days donor ENCDO816OTW	ENCFF584DSR	NA	NA	NA
+natural_killer_cell_male_adult_37_years	natural killer cell male adult 37 years	ENCFF104JJN	ENCFF977TEF	ENCFF293ETP	NA
+body_of_pancreas_male_adult_37_years	body of pancreas male adult 37 years	ENCFF381POQ	ENCFF685WIZ	ENCFF366LIL	ENCFF603HTW
+medulloblastoma	medulloblastoma	ENCFF585BKY	NA	NA	ENCFF120OYZ
+small_intestine_male_child_3_years	small intestine male child 3 years	NA	NA	ENCFF515SJR	NA
+urinary_bladder_male_embryo_76_days	urinary bladder male embryo 76 days	ENCFF258PIV	NA	NA	NA
+left_lung_female_embryo_98_days	left lung female embryo 98 days	ENCFF903LSX	NA	NA	NA
+placenta_male_embryo_85_days	placenta male embryo 85 days	ENCFF804AOO	NA	NA	NA
+fibroblast_of_skin_of_abdomen_male_embryo_97_days_donor_ENCDO576LXR	fibroblast of skin of abdomen male embryo 97 days donor ENCDO576LXR	ENCFF900LOG	NA	NA	NA
+placenta_female_embryo_85_days	placenta female embryo 85 days	ENCFF180IFD	NA	NA	NA
+LNCAP	LNCAP	NA	NA	NA	ENCFF734ERD
+stomach_female_embryo	stomach female embryo	ENCFF488GEQ	NA	NA	NA
+renal_pelvis_male_embryo_113_days	renal pelvis male embryo 113 days	ENCFF884QVN	NA	NA	NA
+skin_fibroblast_male_adult_71_years	skin fibroblast male adult 71 years	ENCFF568LMQ	NA	NA	NA
+placental_basal_plate_male_embryo_38_weeks	placental basal plate male embryo 38 weeks	NA	ENCFF385PMK	ENCFF626DKO	NA
+parathyroid_adenoma	parathyroid adenoma	NA	NA	ENCFF607JRN	NA
+thymus_male_child_3_years	thymus male child 3 years	NA	ENCFF403KRP	ENCFF418XFA	NA
+uterus_female_adult_53_years	uterus female adult 53 years	ENCFF037DUA	NA	ENCFF343NAL	ENCFF994ERU
+left_kidney_male_embryo_115_days	left kidney male embryo 115 days	ENCFF925SLC	NA	NA	NA
+brain_male_embryo_101_days	brain male embryo 101 days	ENCFF503ZTL	NA	NA	NA
+ovary_female_adult_51_years	ovary female adult 51 years	ENCFF141YBL	NA	NA	ENCFF932OWO
+stomach_male_embryo_108_days	stomach male embryo 108 days	ENCFF450EHI	NA	NA	NA
+T-helper_2_cell_female_adult_26_years	T-helper 2 cell female adult 26 years	ENCFF768PJS	NA	NA	NA
+CD4-positive_alpha-beta_T_cell	CD4-positive alpha-beta T cell	NA	NA	ENCFF042LSM	NA
+foreskin_melanocyte_male_newborn_donor_ENCDO666YUN	foreskin melanocyte male newborn donor ENCDO666YUN	NA	ENCFF819IDN	ENCFF174WXW	NA
+renal_pelvis_female_embryo_103_days	renal pelvis female embryo 103 days	ENCFF407LCA	NA	NA	NA
+K562_G1_phase	K562 G1 phase	ENCFF708UIS	NA	NA	NA
+iPS-11a_male_adult_36_years	iPS-11a male adult 36 years	NA	ENCFF651NSI	NA	NA
+HUES6	HUES6	NA	ENCFF519LEW	ENCFF905JES	NA
+small_intestine_female_embryo_110_days	small intestine female embryo 110 days	ENCFF343DFM	NA	NA	NA
+T-helper_1_cell	T-helper 1 cell	ENCFF479VHW	NA	NA	NA
+kidney_female_embryo_105_days_donor_ENCDO863KZW	kidney female embryo 105 days donor ENCDO863KZW	ENCFF518IQW	NA	NA	NA
+stomach_female_embryo_121_days	stomach female embryo 121 days	ENCFF688EZK	NA	NA	NA
+SK-N-SH_treated_with_all-trans-retinoic_acid	SK-N-SH treated with all-trans-retinoic acid	ENCFF851VBR	ENCFF749OUM	NA	ENCFF222GQG
+fibroblast_of_arm_male_adult_53_years	fibroblast of arm male adult 53 years	ENCFF711EJL	ENCFF285HWO	ENCFF676VSY	NA
+BE2C	BE2C	ENCFF695WLT	ENCFF314PWW	NA	ENCFF578IWZ
+renal_cortex_interstitium_male_embryo_97_days	renal cortex interstitium male embryo 97 days	ENCFF354FAY	NA	NA	NA
+heart_male_embryo_72_days_and_male_embryo_76_days	heart male embryo 72 days and male embryo 76 days	ENCFF702IWR	NA	NA	NA
+heart_right_ventricle_male_adult_34_years	heart right ventricle male adult 34 years	NA	ENCFF986CZC	ENCFF799BTI	NA
+placenta_female_embryo_105_days	placenta female embryo 105 days	ENCFF176WVA	NA	NA	NA
+lung_female_adult_30_years	lung female adult 30 years	NA	ENCFF293ASZ	ENCFF629RAA	NA
+duodenal_mucosa_male_adult_59_years	duodenal mucosa male adult 59 years	NA	ENCFF243BGZ	ENCFF463NRD	NA
+renal_pelvis_male_embryo_127_days	renal pelvis male embryo 127 days	ENCFF964WUW	NA	NA	NA
+subcutaneous_abdominal_adipose_tissue_nuclear_fraction_female_adult_49_years	subcutaneous abdominal adipose tissue nuclear fraction female adult 49 years	NA	ENCFF535CDG	ENCFF743KWB	NA
+iPS_DF_6.9_male_newborn	iPS DF 6.9 male newborn	ENCFF669AED	ENCFF455FFY	ENCFF426AIF	NA
+lung_female_embryo_85_days	lung female embryo 85 days	ENCFF899HCF	NA	NA	NA
+suprapubic_skin_male_adult_54_years	suprapubic skin male adult 54 years	NA	NA	NA	ENCFF967TUN
+brain_embryo_56_days_and_male_embryo_58_days	brain embryo 56 days and male embryo 58 days	ENCFF641HVS	NA	NA	NA
+kidney_male_adult_50_years	kidney male adult 50 years	NA	ENCFF438RHT	ENCFF871QBB	NA
+lung_female_embryo_120_days	lung female embryo 120 days	ENCFF029QDT	ENCFF127MNE	NA	NA
+HT-29	HT-29	ENCFF528SGI	NA	NA	NA
+body_of_pancreas_male_adult_54_years	body of pancreas male adult 54 years	ENCFF102SIK	ENCFF242BVN	ENCFF548KBM	ENCFF114RHO
+neural_cell	neural cell	NA	ENCFF864VYP	ENCFF688DBU	NA
+LNCaP_clone_FGC_treated_with_17beta-hydroxy-17-methylestra-4-9-11-trien-3-one	LNCaP clone FGC treated with 17beta-hydroxy-17-methylestra-4-9-11-trien-3-one	ENCFF009NEA	NA	NA	NA
+cardiac_mesoderm_14_day_differentiation	cardiac mesoderm 14 day differentiation	ENCFF213FJN	NA	NA	NA
+chorion_male_embryo_16_weeks	chorion male embryo 16 weeks	NA	ENCFF389FXB	ENCFF942GZB	NA
+gastrocnemius_medialis_female_adult_53_years	gastrocnemius medialis female adult 53 years	NA	ENCFF549MDM	ENCFF208VLV	ENCFF167XIH
+heart_female_embryo_105_days	heart female embryo 105 days	ENCFF604EJP	NA	NA	NA
+Peyer's_patch_male_adult_54_years	Peyer's patch male adult 54 years	ENCFF340RUK	NA	NA	ENCFF683ZWT
+lung_male_adult_27_years_and_male_adult_35_years	lung male adult 27 years and male adult 35 years	NA	NA	NA	ENCFF763NIU
+SK-N-MC	SK-N-MC	ENCFF440XZH	ENCFF877SOO	ENCFF695FFO	NA
+kidney_female_embryo_121_days	kidney female embryo 121 days	ENCFF192KLJ	NA	NA	NA
+ovary_female_adult_53_years	ovary female adult 53 years	ENCFF802LRO	ENCFF224ZEB	NA	ENCFF703ZRL
+germinal_matrix_male_embryo_20_weeks	germinal matrix male embryo 20 weeks	NA	ENCFF811YIS	NA	NA
+lung_female_embryo_76_days	lung female embryo 76 days	ENCFF083VCD	NA	NA	NA
+muscle_of_back_female_embryo_105_days_donor_ENCDO766MZV	muscle of back female embryo 105 days donor ENCDO766MZV	ENCFF577QJI	NA	NA	NA
+placenta_female_embryo_113_days	placenta female embryo 113 days	ENCFF681MHT	ENCFF374VXQ	ENCFF689XXW	NA
+muscle_of_leg_male_embryo_104_days	muscle of leg male embryo 104 days	ENCFF779SYM	NA	NA	NA
+GM06990	GM06990	ENCFF617HEH	ENCFF851EPY	NA	ENCFF272DTZ
+large_intestine_male_embryo_105_days_donor_ENCDO171HMD	large intestine male embryo 105 days donor ENCDO171HMD	ENCFF365LXQ	NA	NA	NA
+NCI-H929	NCI-H929	NA	ENCFF777XEM	NA	ENCFF175OKQ
+left_renal_pelvis_male_embryo_105_days_donor_ENCDO171HMD	left renal pelvis male embryo 105 days donor ENCDO171HMD	ENCFF637LBX	NA	NA	NA
+muscle_of_trunk_female_embryo_121_days	muscle of trunk female embryo 121 days	ENCFF562EUF	NA	NA	NA
+H9_G2_phase_genetically_modified_using_stable_transfection	H9 G2 phase genetically modified using stable transfection	ENCFF692AJS	NA	NA	NA
+HS-5	HS-5	ENCFF964WLS	NA	NA	NA
+muscle_of_trunk_female_embryo_120_days	muscle of trunk female embryo 120 days	ENCFF484VHZ	NA	NA	NA
+left_kidney_female_embryo_87_days	left kidney female embryo 87 days	ENCFF541UPO	NA	NA	NA
+CD8-positive_alpha-beta_T_cell_female_adult_34_years	CD8-positive alpha-beta T cell female adult 34 years	ENCFF726GTU	NA	NA	NA
+right_atrium_auricular_region_female_adult_53_years	right atrium auricular region female adult 53 years	NA	ENCFF759FCM	ENCFF880HJF	NA
+brain_male_embryo_72_days_and_male_embryo_76_days	brain male embryo 72 days and male embryo 76 days	ENCFF468SMI	NA	NA	NA
+kidney_female_embryo_85_days	kidney female embryo 85 days	ENCFF890HSZ	NA	NA	NA
+Peyer's_patch_male_adult_37_years	Peyer's patch male adult 37 years	ENCFF220BQY	NA	NA	ENCFF018VYW
+adrenal_gland_female_embryo_85_days	adrenal gland female embryo 85 days	ENCFF530PCA	NA	NA	NA
+Parathyroid_adenoma_male_adult_65_years	Parathyroid adenoma male adult 65 years	NA	NA	NA	ENCFF087RIC
+kidney_female_embryo_105_days_donor_ENCDO718LHH	kidney female embryo 105 days donor ENCDO718LHH	ENCFF207ECZ	NA	NA	NA
+small_intestine_male_embryo_87_days	small intestine male embryo 87 days	ENCFF746JHF	NA	NA	NA
+thymus_female_embryo_98_days	thymus female embryo 98 days	ENCFF858RAV	NA	NA	NA
+CD14-positive_monocyte_female_donor_ENCDO266AAA	CD14-positive monocyte female donor ENCDO266AAA	ENCFF678LXL	NA	NA	NA
+urothelium_cell_line	urothelium cell line	ENCFF300QLZ	NA	NA	NA
+chorionic_villus_male_embryo_16_weeks	chorionic villus male embryo 16 weeks	NA	ENCFF462HVU	ENCFF617MCD	NA
+dermis_blood_vessel_endothelial_cell_female_adult_donor_ENCDO239AAA	dermis blood vessel endothelial cell female adult donor ENCDO239AAA	ENCFF969NNQ	NA	NA	NA
+adrenal_gland_embryo_96_days	adrenal gland embryo 96 days	ENCFF613SVD	NA	NA	NA
+ACHN	ACHN	ENCFF828TLX	NA	NA	NA
+sigmoid_colon_female_adult_53_years	sigmoid colon female adult 53 years	NA	ENCFF949COK	ENCFF544HBF	ENCFF903AWD
+MCF-7_originated_from_MCF-7	MCF-7 originated from MCF-7	ENCFF382YNA	NA	NA	NA
+adipocyte	adipocyte	ENCFF531MYW	NA	NA	NA
+brain_female_embryo_96_days	brain female embryo 96 days	ENCFF064KBT	NA	NA	NA
+mucosa_of_stomach_male_adult_59_years	mucosa of stomach male adult 59 years	NA	ENCFF622TRE	NA	NA
+prostate_gland_male_adult_37_years	prostate gland male adult 37 years	NA	NA	NA	ENCFF306NUN
+muscle_of_leg_male_embryo_101_days	muscle of leg male embryo 101 days	ENCFF858BSX	NA	NA	NA
+fibroblast_of_breast_female_adult_26_years	fibroblast of breast female adult 26 years	NA	ENCFF116FZG	ENCFF268JQO	NA
+MCF_10A_treated_with_tamoxifen_6_hours	MCF 10A treated with tamoxifen 6 hours	ENCFF955DHP	NA	NA	NA
+HEK293	HEK293	NA	ENCFF342FTF	ENCFF936VAZ	ENCFF133AZT
+LHCN-M2	LHCN-M2	ENCFF639MPM	NA	NA	NA
+fibroblast_of_pedal_digit_skin_female_adult_21_years	fibroblast of pedal digit skin female adult 21 years	ENCFF160AIM	ENCFF252FYX	NA	ENCFF640EZJ
+heart_embryo_80_days	heart embryo 80 days	ENCFF751LRX	NA	NA	NA
+esophagus_squamous_epithelium_female_adult_53_years	esophagus squamous epithelium female adult 53 years	NA	ENCFF515MXQ	ENCFF511QGD	ENCFF216RHI
+muscle_of_arm_female_embryo_120_days	muscle of arm female embryo 120 days	ENCFF941ILF	NA	NA	NA
+coronary_artery_female_adult_53_years	coronary artery female adult 53 years	NA	ENCFF397IIG	ENCFF970RKM	NA
+trophoblast_cell_originated_from_H1-hESC	trophoblast cell originated from H1-hESC	ENCFF532VGP	ENCFF281YYH	ENCFF197AVJ	NA
+subcutaneous_adipose_tissue_female_adult_53_years	subcutaneous adipose tissue female adult 53 years	NA	NA	NA	ENCFF966IHQ
+CD4-positive_CD25-positive_alpha-beta_regulatory_T_cell	CD4-positive CD25-positive alpha-beta regulatory T cell	NA	ENCFF093FLS	ENCFF711EZH	NA
+stomach_female_embryo_147_days	stomach female embryo 147 days	ENCFF138ZHG	NA	NA	NA
+foreskin_melanocyte_male_newborn_donor_ENCDO686OPO	foreskin melanocyte male newborn donor ENCDO686OPO	ENCFF910FZX	ENCFF684BHN	NA	NA
+common_myeloid_progenitor_CD34-positive_female_adult_27_years	common myeloid progenitor CD34-positive female adult 27 years	ENCFF328DCV	ENCFF033UNX	ENCFF901XNI	NA
+spleen_male_adult_34_years	spleen male adult 34 years	NA	ENCFF400CTE	ENCFF557ZRD	NA
+right_renal_cortex_interstitium_male_embryo_120_days	right renal cortex interstitium male embryo 120 days	ENCFF596RFA	NA	NA	NA
+adrenal_gland_female_embryo_108_days	adrenal gland female embryo 108 days	ENCFF166VWE	NA	NA	NA
+left_lung_male_embryo_115_days	left lung male embryo 115 days	ENCFF106TCU	NA	NA	NA
+hematopoietic_multipotent_progenitor_cell_donor_ENCDO937OUY	hematopoietic multipotent progenitor cell donor ENCDO937OUY	ENCFF996GHG	NA	NA	NA
+subcutaneous_abdominal_adipose_tissue_nuclear_fraction_female_adult_59_years	subcutaneous abdominal adipose tissue nuclear fraction female adult 59 years	NA	ENCFF179GFG	NA	NA
+left_kidney_male_embryo_96_days	left kidney male embryo 96 days	ENCFF401OYD	NA	NA	NA
+natural_killer_cell_female_adult_34_years	natural killer cell female adult 34 years	ENCFF125SYT	NA	NA	NA
+small_intestine_female_embryo_91_days	small intestine female embryo 91 days	ENCFF359LKO	NA	NA	NA
+CWRU1_male	CWRU1 male	ENCFF015IAT	NA	NA	NA
+fibroblast_of_gingiva	fibroblast of gingiva	ENCFF117RGP	NA	NA	NA
+skin_fibroblast_female_adult_31_years_donor_ENCDO000AAJ	skin fibroblast female adult 31 years donor ENCDO000AAJ	ENCFF602PIH	NA	NA	NA
+OCI-LY3	OCI-LY3	NA	ENCFF917EGP	ENCFF378QIB	ENCFF832UOL
+HEK293_genetically_modified_using_site-specific_recombination_originated_from_HEK293	HEK293 genetically modified using site-specific recombination originated from HEK293	NA	NA	NA	ENCFF032ZFY
+left_lung_male_embryo_91_days	left lung male embryo 91 days	ENCFF735QXG	NA	NA	NA
+CD14-positive_monocyte_male_adult_21_years	CD14-positive monocyte male adult 21 years	ENCFF724HAH	NA	ENCFF601NLG	NA
+cardiac_mesoderm_2_day_differentiation	cardiac mesoderm 2 day differentiation	ENCFF501KNP	NA	NA	NA
+KBM-7	KBM-7	ENCFF953EXS	NA	NA	NA
+CD14-positive_monocyte_female_donor_ENCDO265AAA	CD14-positive monocyte female donor ENCDO265AAA	ENCFF659BVQ	ENCFF227YKR	ENCFF526GZE	ENCFF974NBA
+ELF-1	ELF-1	ENCFF422YYH	NA	NA	NA
+placenta_female_embryo_108_days	placenta female embryo 108 days	ENCFF987HVM	NA	NA	NA
+heart_female_embryo_110_days	heart female embryo 110 days	ENCFF509TTX	NA	NA	NA
+K562_treated_with_vorinostat	K562 treated with vorinostat	ENCFF899YDP	NA	NA	NA
+GM23338_male_adult_53_years_originated_from_fibroblast_of_arm	GM23338 male adult 53 years originated from fibroblast of arm	ENCFF938XUM	ENCFF984QGK	ENCFF459NSX	ENCFF031SGA
+heart_male_embryo_105_days	heart male embryo 105 days	ENCFF915OOI	NA	NA	NA
+esophagus_squamous_epithelium_male_adult_37_years	esophagus squamous epithelium male adult 37 years	NA	NA	NA	ENCFF052XJF
+adrenal_gland_male_embryo_85_days	adrenal gland male embryo 85 days	ENCFF378ZLF	NA	NA	NA
+foreskin_keratinocyte_male_newborn_2-4_days_treated_with_calcium_donor_ENCDO615NVN	foreskin keratinocyte male newborn 2-4 days treated with calcium donor ENCDO615NVN	NA	NA	ENCFF541XWN	NA
+muscle_of_leg_female_embryo_115_days	muscle of leg female embryo 115 days	ENCFF131DEL	NA	NA	NA
+left_lung_female_embryo_108_days	left lung female embryo 108 days	ENCFF549BSX	NA	NA	NA
+MCF_10A	MCF 10A	ENCFF222GDV	NA	NA	NA
+left_renal_pelvis_male_embryo_120_days	left renal pelvis male embryo 120 days	ENCFF688UBR	NA	NA	NA
+putamen_male_adult_78_years	putamen male adult 78 years	ENCFF681JFJ	NA	NA	NA
+peripheral_blood_mononuclear_cell_female_adult_28_years	peripheral blood mononuclear cell female adult 28 years	NA	ENCFF074XHZ	ENCFF067MDM	NA
+T_helper_memory_cells_from_peripheral_blood_1	T helper memory cells from peripheral blood 1	NA	ENCFF118ZKL	ENCFF810PQK	NA
+renal_cortex_interstitium_male_embryo_127_days	renal cortex interstitium male embryo 127 days	ENCFF493QSG	NA	NA	NA
+muscle_of_leg_male_embryo_105_days	muscle of leg male embryo 105 days	ENCFF683HAF	NA	NA	NA
+endocrine_pancreas_male_adult_45_years	endocrine pancreas male adult 45 years	NA	ENCFF340VVU	ENCFF409AKL	NA
+HeLa-S3_treated_with_interferon_alpha	HeLa-S3 treated with interferon alpha	ENCFF422TAV	NA	NA	NA
+peripheral_blood_mononuclear_cell_male_adult_32_years	peripheral blood mononuclear cell male adult 32 years	NA	ENCFF714BHC	ENCFF590YLH	NA
+lung_microvascular_endothelial_cell_female	lung microvascular endothelial cell female	ENCFF010NPI	NA	NA	NA
+stomach_female_embryo_105_days_donor_ENCDO863KZW	stomach female embryo 105 days donor ENCDO863KZW	ENCFF022OWT	NA	NA	NA
+astrocyte_of_the_spinal_cord	astrocyte of the spinal cord	NA	ENCFF510YMH	NA	ENCFF424JNY
+kidney_female_embryo_108_days	kidney female embryo 108 days	ENCFF547ICI	NA	NA	NA
+Daoy	Daoy	ENCFF399TJD	NA	NA	NA
+arm_bone_male_embryo_81_day	arm bone male embryo 81 day	ENCFF430CNF	NA	NA	NA
+G401	G401	ENCFF006KSE	NA	NA	NA
+cardiac_fibroblast_female	cardiac fibroblast female	ENCFF472TFO	ENCFF419MUF	NA	ENCFF921GHG
+left_renal_cortex_interstitium_male_embryo_105_days_donor_ENCDO171HMD	left renal cortex interstitium male embryo 105 days donor ENCDO171HMD	ENCFF946AQO	NA	NA	NA
+M059J	M059J	ENCFF250TLK	NA	NA	NA
+left_renal_cortex_interstitium_male_embryo_105_days_donor_ENCDO513BVP	left renal cortex interstitium male embryo 105 days donor ENCDO513BVP	ENCFF168UHZ	NA	NA	NA
+fibroblast_of_pulmonary_artery	fibroblast of pulmonary artery	ENCFF184UHW	ENCFF104DXZ	NA	ENCFF702TBG
+CD8-positive_alpha-beta_T_cell_male_adult_37_years	CD8-positive alpha-beta T cell male adult 37 years	ENCFF468PTJ	NA	NA	NA
+L1-S8R	L1-S8R	ENCFF572BDN	NA	NA	NA
+leg_bone_male_embryo_81_day	leg bone male embryo 81 day	ENCFF869XYK	NA	NA	NA
+large_intestine_female_embryo_120_days	large intestine female embryo 120 days	ENCFF811EUQ	NA	NA	NA
+ectodermal_cell_originated_from_embryonic_stem_cell	ectodermal cell originated from embryonic stem cell	NA	ENCFF063KKR	ENCFF706UPZ	NA
+HCT116	HCT116	ENCFF169PCK	ENCFF176SFX	ENCFF984WLE	ENCFF620LDT
+sigmoid_colon_male_child_3_years	sigmoid colon male child 3 years	NA	ENCFF984ZZC	ENCFF361CCL	NA
+large_intestine_female_embryo_91_days	large intestine female embryo 91 days	ENCFF584GYN	NA	NA	NA
+right_lung_male_embryo_105_days	right lung male embryo 105 days	ENCFF942LPA	NA	NA	NA
+liver_male_adult_32_years	liver male adult 32 years	NA	ENCFF641UEZ	NA	NA
+lung_male_embryo_108_days	lung male embryo 108 days	ENCFF475YJR	NA	NA	NA
+body_of_pancreas_female_adult_51_year	body of pancreas female adult 51 year	ENCFF095KFF	NA	NA	NA
+small_intestine_female_embryo_105_days	small intestine female embryo 105 days	ENCFF374WLB	NA	NA	NA
+upper_lobe_of_left_lung_male_adult_54_years	upper lobe of left lung male adult 54 years	NA	NA	NA	ENCFF344WUU
+B_cell_female_adult_34_years	B cell female adult 34 years	ENCFF104EQW	NA	NA	NA
+liver_female_child_6_years_and_male_adult_32_years	liver female child 6 years and male adult 32 years	NA	NA	NA	ENCFF722DBY
+endothelial_cell_of_umbilical_vein_donor_ENCDO551FXN	endothelial cell of umbilical vein donor ENCDO551FXN	NA	ENCFF032KUS	NA	NA
+foreskin_fibroblast_male_newborn_donor_ENCDO191CQJ	foreskin fibroblast male newborn donor ENCDO191CQJ	NA	ENCFF442WNT	NA	ENCFF761RHS
+testis_male_embryo_donor_ENCDO482LIM	testis male embryo donor ENCDO482LIM	ENCFF037YBR	NA	NA	NA
+smooth_muscle_cell_originated_from_H9	smooth muscle cell originated from H9	ENCFF123CTY	ENCFF034PSU	ENCFF360FGJ	ENCFF231ZKR
+trophoblast_female_embryo_40_weeks	trophoblast female embryo 40 weeks	NA	NA	ENCFF210SFK	NA
+renal_pelvis_male_embryo_91_days	renal pelvis male embryo 91 days	ENCFF069WLL	NA	NA	NA
+IMR-90_female_embryo_16_weeks	IMR-90 female embryo 16 weeks	ENCFF706WOH	ENCFF721URL	ENCFF663RRL	ENCFF256DUS
+esophagus_squamous_epithelium_female_adult_51_years	esophagus squamous epithelium female adult 51 years	NA	NA	NA	ENCFF268COV
+HUES48	HUES48	NA	ENCFF557FCH	ENCFF332HAA	NA
+GM12865	GM12865	NA	ENCFF599QMA	NA	ENCFF676FHP
+large_intestine_female_embryo_98_days	large intestine female embryo 98 days	ENCFF112GQO	NA	NA	NA
+astrocyte_of_the_cerebellum	astrocyte of the cerebellum	ENCFF382FZE	ENCFF072YMW	NA	ENCFF757YRI
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_13_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 13 day treatment	ENCFF667COT	NA	NA	NA
+hepatocyte_originated_from_H9	hepatocyte originated from H9	ENCFF136YOJ	ENCFF735SZZ	ENCFF606PZU	ENCFF300TSI
+uterus_female_adult_51_years	uterus female adult 51 years	NA	NA	NA	ENCFF791NUX
+Caco-2	Caco-2	ENCFF085OHV	ENCFF109LUV	NA	ENCFF473QVA
+psoas_muscle_male_adult_34_years	psoas muscle male adult 34 years	NA	ENCFF639BRW	ENCFF713BLF	NA
+adrenal_gland_female_adult_51_years	adrenal gland female adult 51 years	ENCFF193WRL	NA	NA	ENCFF117XJK
+epithelial_cell_of_prostate	epithelial cell of prostate	ENCFF739CBQ	NA	NA	NA
+fibroblast_of_the_conjunctiva	fibroblast of the conjunctiva	ENCFF923EUB	NA	NA	NA
+CD4-positive_helper_T_cell_male_adult_37_years	CD4-positive helper T cell male adult 37 years	ENCFF522NPH	NA	NA	NA
+kidney_male_embryo_87_days	kidney male embryo 87 days	ENCFF369CRG	NA	NA	NA
+skin_fibroblast_female_adult_31_years_donor_ENCDO009AAA	skin fibroblast female adult 31 years donor ENCDO009AAA	ENCFF171BUA	NA	NA	NA
+right_kidney_female_embryo_87_days	right kidney female embryo 87 days	ENCFF960UKQ	NA	NA	NA
+muscle_of_back_male_embryo_104_days	muscle of back male embryo 104 days	ENCFF044CTX	NA	NA	NA
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_17_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 17 day treatment	ENCFF708ZHA	NA	NA	NA
+small_intestine_male_adult_34_years	small intestine male adult 34 years	ENCFF619LIB	ENCFF843QTK	ENCFF465TWC	NA
+cardiac_fibroblast_female_embryo_94_days_and_female_embryo_98_days	cardiac fibroblast female embryo 94 days and female embryo 98 days	ENCFF626LYV	NA	NA	NA
+thyroid_gland_female_adult_51_year	thyroid gland female adult 51 year	ENCFF126DFR	NA	NA	NA
+spinal_cord_female_embryo_87_days	spinal cord female embryo 87 days	ENCFF217JVN	NA	NA	NA
+cingulate_gyrus_female_adult_75_years	cingulate gyrus female adult 75 years	NA	ENCFF671FBK	ENCFF020ZHY	NA
+amniotic_epithelial_cell	amniotic epithelial cell	ENCFF102UQK	NA	NA	NA
+Ishikawa_treated_with_dimethyl_sulfoxide	Ishikawa treated with dimethyl sulfoxide	ENCFF463ZLQ	NA	NA	ENCFF992ZMC
+common_myeloid_progenitor_CD34-positive_male_adult_42_years	common myeloid progenitor CD34-positive male adult 42 years	ENCFF893ONO	ENCFF558SMG	NA	NA
+heart_left_ventricle_male_adult_34_years	heart left ventricle male adult 34 years	NA	ENCFF259CAK	ENCFF630HIW	NA
+muscle_of_leg_male_embryo_127_days	muscle of leg male embryo 127 days	ENCFF906KHN	NA	NA	NA
+cardiac_mesoderm_9_day_differentiation	cardiac mesoderm 9 day differentiation	ENCFF554DWH	NA	NA	NA
+neurosphere_female_embryo_17_weeks_originated_from_ganglionic_eminence	neurosphere female embryo 17 weeks originated from ganglionic eminence	NA	ENCFF384DPM	NA	NA
+common_myeloid_progenitor_CD34-positive_male_adult_49_years	common myeloid progenitor CD34-positive male adult 49 years	ENCFF819IOM	NA	NA	NA
+kidney_female_embryo_113_days	kidney female embryo 113 days	ENCFF433YLK	NA	NA	NA
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_8_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 8 day treatment	ENCFF800PMS	NA	NA	NA
+skin_fibroblast_female_adult_85_years	skin fibroblast female adult 85 years	ENCFF787MSC	NA	NA	NA
+muscle_of_arm_male_embryo_127_days	muscle of arm male embryo 127 days	ENCFF963NPI	NA	NA	NA
+small_intestine_male_embryo_108_days	small intestine male embryo 108 days	ENCFF053FMQ	ENCFF033OVU	ENCFF357DTZ	NA
+thymus_female_embryo_105_days	thymus female embryo 105 days	ENCFF353EKI	NA	NA	NA
+heart_embryo_96_days	heart embryo 96 days	ENCFF326FWY	NA	NA	NA
+H7-hESC	H7-hESC	ENCFF696IEW	ENCFF181RQZ	NA	NA
+skin_fibroblast_male_child_10_years_genetically_modified_using_transduction_treated_with_doxycycline	skin fibroblast male child 10 years genetically modified using transduction treated with doxycycline	ENCFF996AEF	NA	NA	NA
+fibroblast_of_lung	fibroblast of lung	ENCFF655AEV	ENCFF103CWS	NA	ENCFF117BRM
+rectal_smooth_muscle_tissue_female_adult_50_years	rectal smooth muscle tissue female adult 50 years	NA	ENCFF557FOT	ENCFF881WBN	NA
+muscle_of_arm_male_embryo_104_days	muscle of arm male embryo 104 days	ENCFF778GKQ	NA	NA	NA
+femur_female_embryo_98_days	femur female embryo 98 days	ENCFF130BQK	NA	NA	NA
+adrenal_gland_male_embryo_101_days	adrenal gland male embryo 101 days	ENCFF580LWU	NA	NA	NA
+medulla_oblongata_male_adult_78_years_and_male_adult_84_years	medulla oblongata male adult 78 years and male adult 84 years	ENCFF151SBP	NA	NA	NA
+renal_pelvis_male_embryo_97_days	renal pelvis male embryo 97 days	ENCFF078RPO	NA	NA	NA
+epithelial_cell_of_proximal_tubule	epithelial cell of proximal tubule	ENCFF499KPZ	ENCFF451ARW	NA	ENCFF585EEJ
+T-cell_male_adult_36_years	T-cell male adult 36 years	ENCFF508ADO	NA	NA	NA
+cardiac_mesoderm_14_days_differentiation	cardiac mesoderm 14 days differentiation	NA	ENCFF013QVO	NA	NA
+thymus_male_embryo_104_days	thymus male embryo 104 days	ENCFF689ZKP	NA	NA	NA
+HeLa-S3	HeLa-S3	ENCFF977IGB	ENCFF489CIY	ENCFF194XTD	ENCFF836JPY
+glomerular_visceral_epithelial_cell_child_3_years	glomerular visceral epithelial cell child 3 years	ENCFF888PNL	NA	NA	NA
+cardiac_muscle_cell_in_vitro_differentiated	cardiac muscle cell in vitro differentiated	NA	ENCFF852WXE	NA	NA
+spinal_cord_male_embryo_96_days	spinal cord male embryo 96 days	ENCFF072UOA	NA	NA	NA
+muscle_of_arm_male_embryo_101_days	muscle of arm male embryo 101 days	ENCFF147PGS	NA	NA	NA
+LNCAP_treated_with_17beta-hydroxy-5alpha-androstan-3-one	LNCAP treated with 17beta-hydroxy-5alpha-androstan-3-one	NA	NA	NA	ENCFF376FKS
+substantia_nigra_female_adult_75_years	substantia nigra female adult 75 years	NA	ENCFF028OGH	NA	NA
+neurosphere_embryo_15_weeks_originated_from_ganglionic_eminence_donor_ENCDO280TXL	neurosphere embryo 15 weeks originated from ganglionic eminence donor ENCDO280TXL	NA	ENCFF244AQE	NA	NA
+right_kidney_female_embryo_98_days	right kidney female embryo 98 days	ENCFF759AQQ	NA	NA	NA
+testis_male_adult_54_years	testis male adult 54 years	NA	NA	NA	ENCFF343ULH
+H9_S1_phase_genetically_modified_using_stable_transfection	H9 S1 phase genetically modified using stable transfection	ENCFF855CJL	NA	NA	NA
+right_lung_male_embryo_115_days	right lung male embryo 115 days	ENCFF640UAZ	NA	NA	NA
+small_intestine_female_embryo_98_days	small intestine female embryo 98 days	ENCFF389EEG	NA	NA	NA
+heart_female_embryo_91_days	heart female embryo 91 days	ENCFF854MAD	NA	NA	NA
+renal_cortex_interstitium_female_embryo_120_days	renal cortex interstitium female embryo 120 days	ENCFF631XBY	NA	NA	NA
+mucosa_of_rectum_female_adult_61_year	mucosa of rectum female adult 61 year	NA	ENCFF673DEB	ENCFF696UYH	NA
+aorta_male_adult_34_years	aorta male adult 34 years	NA	ENCFF432XVD	ENCFF039JTK	NA
+muscle_of_leg_female_embryo_105_days	muscle of leg female embryo 105 days	ENCFF502QQC	NA	NA	NA
+B_cell_adult	B cell adult	ENCFF570XSN	ENCFF713JLD	ENCFF951ZBV	ENCFF031CXE
+lower_leg_skin_female_adult_51_years	lower leg skin female adult 51 years	NA	NA	NA	ENCFF913XZA
+H54	H54	ENCFF452DLO	NA	NA	ENCFF105OZZ
+T-helper_1_cell_male_adult_33_years	T-helper 1 cell male adult 33 years	ENCFF795TGF	NA	NA	NA
+muscle_of_leg_male_embryo_97_days_donor_ENCDO576LXR	muscle of leg male embryo 97 days donor ENCDO576LXR	ENCFF674WBH	NA	NA	NA
+PC-9	PC-9	ENCFF363RKM	ENCFF912RES	ENCFF951CMP	ENCFF160DIZ
+left_renal_pelvis_male_embryo_105_days_donor_ENCDO378UAU	left renal pelvis male embryo 105 days donor ENCDO378UAU	ENCFF245IYM	NA	NA	NA
+KOPT-K1	KOPT-K1	NA	NA	ENCFF748YAH	NA
+H4	H4	ENCFF345ALB	NA	NA	NA
+heart_left_ventricle_male_child_3_years	heart left ventricle male child 3 years	NA	ENCFF094USN	ENCFF010EUT	NA
+spleen_female_adult_30_years	spleen female adult 30 years	NA	NA	ENCFF627DBB	NA
+T-cell_male_adult_37_years	T-cell male adult 37 years	ENCFF010ZNC	ENCFF310JVO	ENCFF750GKW	NA
+B_cell	B cell	NA	ENCFF984VCI	NA	NA
+globus_pallidus_male_adult_78_years_and_male_adult_84_years	globus pallidus male adult 78 years and male adult 84 years	ENCFF328BAN	NA	NA	NA
+fibroblast_of_upper_leg_skin_male_embryo_12_weeks	fibroblast of upper leg skin male embryo 12 weeks	ENCFF802ZBQ	ENCFF665GSY	NA	ENCFF078VLY
+heart_embryo_59_days_and_female_embryo_76_days	heart embryo 59 days and female embryo 76 days	ENCFF351UQV	NA	NA	NA
+muscle_of_arm_female_embryo_85_days	muscle of arm female embryo 85 days	ENCFF428DTK	NA	NA	NA
+colon_epithelial_cell_line	colon epithelial cell line	ENCFF188JVI	NA	NA	NA
+GM12864	GM12864	ENCFF709TDR	ENCFF928ETA	NA	ENCFF593YIG
+stomach_female_embryo_105_days_donor_ENCDO766MZV	stomach female embryo 105 days donor ENCDO766MZV	ENCFF424IXN	NA	NA	NA
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_6_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 6 day treatment	ENCFF438MEL	NA	NA	NA
+muscle_of_leg_female_embryo_85_days	muscle of leg female embryo 85 days	ENCFF875TFI	NA	NA	NA
+SJCRH30	SJCRH30	ENCFF741DDM	NA	NA	NA
+MM.1S	MM.1S	ENCFF896FUI	ENCFF039PUD	ENCFF226XSS	ENCFF558FUO
+A172	A172	ENCFF385DEA	NA	NA	NA
+umbilical_cord_embryo_59_days_and_male_embryo_76_days	umbilical cord embryo 59 days and male embryo 76 days	ENCFF622CII	NA	NA	NA
+muscle_of_leg_male_embryo_115_days	muscle of leg male embryo 115 days	ENCFF198FAC	NA	NA	NA
+spinal_cord_male_embryo_105_days	spinal cord male embryo 105 days	ENCFF085EFX	NA	NA	NA
+chorionic_villus_female_embryo_40_weeks	chorionic villus female embryo 40 weeks	NA	ENCFF122PSF	ENCFF266YLQ	NA
+spleen_female_adult_20_years_and_female_adult_30_years	spleen female adult 20 years and female adult 30 years	NA	NA	NA	ENCFF292KXW
+heart_left_ventricle_female_embryo_101_days_and_female_embryo_136_days	heart left ventricle female embryo 101 days and female embryo 136 days	ENCFF185JEB	NA	NA	NA
+brain_female_embryo_142_days	brain female embryo 142 days	ENCFF378OWK	NA	NA	NA
+GM13977	GM13977	NA	NA	NA	ENCFF983RTJ
+thymus_male_embryo_108_days	thymus male embryo 108 days	ENCFF350RPE	NA	NA	NA
+foreskin_keratinocyte_male_newborn_donor_ENCDO666YUN	foreskin keratinocyte male newborn donor ENCDO666YUN	NA	ENCFF927LSQ	ENCFF061ZZS	NA
+dedifferentiated_amniotic_fluid_mesenchymal_stem_cell	dedifferentiated amniotic fluid mesenchymal stem cell	ENCFF867YFT	NA	NA	NA
+midbrain_male_adult_78_years_and_male_adult_84_years	midbrain male adult 78 years and male adult 84 years	ENCFF225GCE	NA	NA	NA
+substantia_nigra_male_adult_81_year	substantia nigra male adult 81 year	NA	NA	ENCFF198BHD	NA
+placenta_embryo_56_days_and_embryo_59_days	placenta embryo 56 days and embryo 59 days	ENCFF708XRO	NA	NA	NA
+B_cell_female_adult	B cell female adult	NA	ENCFF035KWP	ENCFF696PMM	NA
+retina_embryo_74_days_and_embryo_85_days	retina embryo 74 days and embryo 85 days	ENCFF113RRS	NA	NA	NA
+MG63	MG63	ENCFF723FDT	NA	NA	NA
+stomach_male_embryo_127_days	stomach male embryo 127 days	ENCFF581JYZ	NA	NA	NA
+placenta_embryo_16_weeks	placenta embryo 16 weeks	NA	NA	ENCFF468HHO	NA
+left_lung_male_embryo_105_days	left lung male embryo 105 days	ENCFF459LFA	NA	NA	NA
+gastrocnemius_medialis_female_adult_51_years	gastrocnemius medialis female adult 51 years	NA	NA	NA	ENCFF863VDR
+left_lung_male_embryo_87_days	left lung male embryo 87 days	ENCFF216TLU	NA	NA	NA
+cingulate_gyrus_male_adult_81_years	cingulate gyrus male adult 81 years	NA	ENCFF065CFJ	ENCFF227KJH	NA
+ACC112	ACC112	NA	ENCFF260LNF	ENCFF556MMP	NA
+cerebellum_male_adult_27_years_and_male_adult_35_years	cerebellum male adult 27 years and male adult 35 years	ENCFF833POA	NA	NA	NA
+eye_female_embryo_76_days	eye female embryo 76 days	ENCFF681KGX	NA	NA	NA
+muscle_layer_of_duodenum_male_adult_73_years	muscle layer of duodenum male adult 73 years	NA	ENCFF895GSC	NA	NA
+regulatory_T_cell_female_adult_35_years	regulatory T cell female adult 35 years	ENCFF313YWE	NA	NA	NA
+heart_right_ventricle_male_child_3_years	heart right ventricle male child 3 years	NA	ENCFF069RMH	ENCFF592FPI	NA
+T_helper_17_cells_PMA-I_stimulated	T helper 17 cells PMA-I stimulated	NA	ENCFF704LYJ	ENCFF328RKQ	NA
+inferior_parietal_cortex_male_adult_84_years	inferior parietal cortex male adult 84 years	ENCFF848BGL	NA	NA	NA
+foreskin_fibroblast_male_newborn_donor_ENCDO232AAA	foreskin fibroblast male newborn donor ENCDO232AAA	NA	ENCFF259BDX	NA	ENCFF380PGD
+GM12878	GM12878	ENCFF633GVF	ENCFF583MDQ	ENCFF340JIF	ENCFF852CRG
+muscle_of_arm_male_embryo_105_days	muscle of arm male embryo 105 days	ENCFF293NBG	NA	NA	NA
+large_intestine_female_embryo_110_days	large intestine female embryo 110 days	ENCFF207LXN	NA	NA	NA
+frontal_cortex_female_adult_67_years_and_female_adult_80_years	frontal cortex female adult 67 years and female adult 80 years	ENCFF685MZL	NA	NA	NA
+regulatory_T_cell_male_adult_28_years	regulatory T cell male adult 28 years	ENCFF622JVD	NA	NA	NA
+SK-N-SH	SK-N-SH	NA	ENCFF555ZEF	ENCFF151FXB	ENCFF031JNH
+tibial_nerve_female_adult_53_years	tibial nerve female adult 53 years	NA	ENCFF921FBI	ENCFF420PYG	ENCFF423FWZ
+liver_female_adult_25_years	liver female adult 25 years	NA	ENCFF069ZID	ENCFF611FWS	NA
+left_lung_male_embryo_113_days	left lung male embryo 113 days	ENCFF877ULZ	NA	NA	NA
+psoas_muscle_female_adult_30_years	psoas muscle female adult 30 years	NA	NA	ENCFF088CPA	NA
+muscle_of_arm_male_embryo_120_days	muscle of arm male embryo 120 days	ENCFF897JFY	NA	NA	NA
+spleen_female_adult_51_years	spleen female adult 51 years	NA	NA	NA	ENCFF887GWM
+ecto_neural_progenitor_cell_originated_from_H9	ecto neural progenitor cell originated from H9	ENCFF095HIQ	NA	NA	NA
+right_lung_male_embryo_87_days	right lung male embryo 87 days	ENCFF030GLD	NA	NA	NA
+choroid_plexus_epithelial_cell	choroid plexus epithelial cell	ENCFF021NBR	ENCFF129PMO	NA	ENCFF844WPW
+left_lung_female_embryo_117_days	left lung female embryo 117 days	ENCFF149IUC	NA	NA	NA
+GM20000	GM20000	NA	NA	NA	ENCFF251SEQ
+K562	K562	ENCFF971AHO	ENCFF847JMY	ENCFF779QTH	ENCFF405AYC
+foreskin_keratinocyte_male_newborn_donor_ENCDO047TBB	foreskin keratinocyte male newborn donor ENCDO047TBB	NA	ENCFF491HAF	NA	NA
+Parathyroid_adenoma_male_adult_62_years	Parathyroid adenoma male adult 62 years	NA	ENCFF521HRT	ENCFF122JJG	ENCFF837MFV
+lower_leg_skin_male_adult_54_years	lower leg skin male adult 54 years	NA	NA	NA	ENCFF041MGW
+HTR-8/SVneo	HTR-8/SVneo	ENCFF284JHO	NA	NA	NA
+ELR	ELR	ENCFF818DSK	NA	NA	NA
+left_renal_cortex_interstitium_male_embryo_105_days_donor_ENCDO378UAU	left renal cortex interstitium male embryo 105 days donor ENCDO378UAU	ENCFF617ONE	NA	NA	NA
+muscle_of_leg_male_embryo_97_days_donor_ENCDO597UXW	muscle of leg male embryo 97 days donor ENCDO597UXW	ENCFF920AZN	NA	NA	NA
+esophagus_male_adult_34_years	esophagus male adult 34 years	NA	ENCFF633LAF	ENCFF385ZVU	NA
+T-helper_2_cell_male_adult_33_years	T-helper 2 cell male adult 33 years	ENCFF438GIW	NA	NA	NA
+skeletal_muscle_tissue_female_adult_72_years	skeletal muscle tissue female adult 72 years	NA	ENCFF525KYJ	ENCFF096AVB	NA
+iPS-NIHi11_male_adult_71_years_originated_from_skin_fibroblast	iPS-NIHi11 male adult 71 years originated from skin fibroblast	ENCFF565AEK	NA	NA	NA
+trophoblast_cell_embryo_17_weeks_and_embryo_18_weeks	trophoblast cell embryo 17 weeks and embryo 18 weeks	ENCFF925UKW	NA	NA	NA
+neural_cell_originated_from_H1-hESC	neural cell originated from H1-hESC	NA	NA	NA	ENCFF182VZV
+right_kidney_male_embryo_115_days	right kidney male embryo 115 days	ENCFF253IUB	NA	NA	NA
+body_of_pancreas_female_adult_51_years	body of pancreas female adult 51 years	NA	NA	NA	ENCFF788GYB
+CD4-positive_alpha-beta_memory_T_cell_originated_from_blood_cell	CD4-positive alpha-beta memory T cell originated from blood cell	NA	ENCFF884WBT	NA	NA
+cardiac_mesoderm_5_day_differentiation	cardiac mesoderm 5 day differentiation	ENCFF274NDO	NA	NA	NA
+neurosphere_embryo_15_weeks_originated_from_ganglionic_eminence_donor_ENCDO594MAO	neurosphere embryo 15 weeks originated from ganglionic eminence donor ENCDO594MAO	NA	ENCFF823NMC	ENCFF623CXL	NA
+spinal_cord_female_embryo_89_days	spinal cord female embryo 89 days	ENCFF599PVD	NA	NA	NA
+ovary_female_embryo	ovary female embryo	ENCFF190AUQ	NA	NA	NA
+retina_female_embryo_89_days	retina female embryo 89 days	ENCFF489DYU	NA	NA	NA
+iPS-20b_male_adult_55_years	iPS-20b male adult 55 years	NA	ENCFF483DAZ	ENCFF703VST	NA
+limb_embryo_53_days_and_embryo_56_days	limb embryo 53 days and embryo 56 days	ENCFF540ITV	NA	NA	NA
+right_lung_female_embryo_107_days	right lung female embryo 107 days	ENCFF586GLK	NA	NA	NA
+CD8-positive_alpha-beta_T_cell_female_adult_33_years	CD8-positive alpha-beta T cell female adult 33 years	ENCFF398WIV	NA	NA	NA
+T-cell_male_adult_21_years_donor_ENCDO190HXC	T-cell male adult 21 years donor ENCDO190HXC	ENCFF801DBL	NA	NA	NA
+peripheral_blood_mononuclear_cell_male_adult_39_years	peripheral blood mononuclear cell male adult 39 years	NA	ENCFF557YZA	ENCFF810HHZ	NA
+T_helper_naive_cells_from_peripheral_blood_CD25M_CD45R	T helper naive cells from peripheral blood CD25M CD45R	NA	NA	ENCFF719VWH	NA
+heart_left_ventricle_male_adult_32_years	heart left ventricle male adult 32 years	NA	NA	ENCFF891SNS	NA
+small_intestine_female_embryo_108_days	small intestine female embryo 108 days	ENCFF966IYT	NA	NA	NA
+ovary_female_adult_30_years	ovary female adult 30 years	ENCFF338CIA	ENCFF381JBK	ENCFF088WXE	NA
+H9_Late_G1_phase_genetically_modified_using_stable_transfection	H9 Late G1 phase genetically modified using stable transfection	ENCFF091ZXC	NA	NA	NA
+sigmoid_colon_male_adult_54_years	sigmoid colon male adult 54 years	NA	NA	NA	ENCFF599OCP
+vagina_female_adult_51_years	vagina female adult 51 years	NA	NA	NA	ENCFF028ZYN
+muscle_of_back_female_embryo_115_days	muscle of back female embryo 115 days	ENCFF413KYW	NA	NA	NA
+lower_leg_skin_female_adult_53_years	lower leg skin female adult 53 years	NA	NA	NA	ENCFF645EDR
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_11_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 11 day treatment	ENCFF121CVF	NA	NA	NA
+pancreas_male_adult_54_years_and_male_adult_60_years	pancreas male adult 54 years and male adult 60 years	NA	NA	NA	ENCFF587MHE
+esophagus_muscularis_mucosa_male_adult_37_years	esophagus muscularis mucosa male adult 37 years	NA	NA	NA	ENCFF817PJG
+GM19240	GM19240	ENCFF814MPK	NA	NA	NA
+thymus_female_embryo_147_days	thymus female embryo 147 days	ENCFF721IYP	NA	NA	NA
+22Rv1_treated_with_17beta-hydroxy-5alpha-androstan-3-one	22Rv1 treated with 17beta-hydroxy-5alpha-androstan-3-one	NA	NA	ENCFF611AMV	ENCFF589EBF
+iPS_DF_19.7_male_newborn	iPS DF 19.7 male newborn	ENCFF732WSQ	NA	NA	NA
+spinal_cord_female_embryo_113_days	spinal cord female embryo 113 days	ENCFF024WMP	ENCFF539YKP	NA	NA
+RPMI8226	RPMI8226	ENCFF548BBX	NA	NA	NA
+myoepithelial_cell_of_mammary_gland_female_adult_36_years	myoepithelial cell of mammary gland female adult 36 years	NA	ENCFF744ANQ	NA	NA
+peripheral_blood_mononuclear_cell_male_adult_27_years	peripheral blood mononuclear cell male adult 27 years	NA	ENCFF312ENS	NA	NA
+GM12873	GM12873	NA	NA	NA	ENCFF489APG
+bronchial_epithelial_cell_female_treated_with_retinoic_acid	bronchial epithelial cell female treated with retinoic acid	ENCFF940PZT	NA	NA	NA
+small_intestine_female_embryo_120_days	small intestine female embryo 120 days	ENCFF671BMS	NA	NA	NA
+right_renal_pelvis_male_embryo_120_days	right renal pelvis male embryo 120 days	ENCFF785TYR	NA	NA	NA
+lung_female_embryo_108_days	lung female embryo 108 days	ENCFF036RHD	NA	NA	NA
+muscle_of_back_female_embryo_85_days	muscle of back female embryo 85 days	ENCFF748UWO	NA	NA	NA
+liver_female_embryo_101_day_and_female_embryo_113_days	liver female embryo 101 day and female embryo 113 days	ENCFF775FBE	NA	NA	NA
+cardiac_mesoderm_5_days_differentiation	cardiac mesoderm 5 days differentiation	NA	ENCFF823NVC	NA	NA
+skeletal_muscle_satellite_cell_female_adult_originated_from_mesodermal_cell	skeletal muscle satellite cell female adult originated from mesodermal cell	NA	ENCFF447BFP	NA	NA
+endodermal_cell	endodermal cell	ENCFF131GBV	NA	NA	NA
+chorionic_villus_male_embryo_38_weeks	chorionic villus male embryo 38 weeks	NA	ENCFF643OVE	ENCFF550YNT	NA
+liver_male_adult_31_year	liver male adult 31 year	NA	ENCFF151YYY	ENCFF905FLR	NA
+forelimb_muscle_female_embryo_108_days	forelimb muscle female embryo 108 days	ENCFF016KEV	NA	NA	NA
+C4-2B	C4-2B	NA	NA	ENCFF785XPE	ENCFF319XGW
+small_intestine_male_embryo_105_days	small intestine male embryo 105 days	ENCFF687KFN	NA	NA	NA
+upper_lobe_of_left_lung_male_adult_37_years	upper lobe of left lung male adult 37 years	NA	NA	NA	ENCFF976WZF
+thoracic_aorta_male_adult_37_years	thoracic aorta male adult 37 years	NA	ENCFF715CEI	ENCFF477GTH	NA
+heart_embryo_101_days	heart embryo 101 days	ENCFF802UAF	NA	NA	NA
+testis_male_embryo_donor_ENCDO836UAR	testis male embryo donor ENCDO836UAR	ENCFF639ZOF	NA	NA	NA
+myotube	myotube	ENCFF684FJC	ENCFF793JPB	ENCFF040VCY	ENCFF737HMZ
+layer_of_hippocampus_female_adult_75_years	layer of hippocampus female adult 75 years	NA	ENCFF605OIM	ENCFF472YNZ	NA
+muscle_of_back_female_embryo_98_days	muscle of back female embryo 98 days	ENCFF581JDF	NA	NA	NA
+HepG2	HepG2	ENCFF205TKQ	ENCFF777EVS	ENCFF764VYK	ENCFF716BKU
+RCC_7860	RCC 7860	ENCFF076JMD	NA	NA	NA
+muscle_of_back_male_embryo_127_days	muscle of back male embryo 127 days	ENCFF167DZY	NA	NA	NA
+L1-S8	L1-S8	ENCFF464NHA	NA	NA	NA
+placenta_female_embryo_113_days_and_female_embryo_116_days	placenta female embryo 113 days and female embryo 116 days	ENCFF948NNO	NA	NA	NA
+heart_male_child_3_years	heart male child 3 years	ENCFF064YHT	NA	NA	NA
+mammary_epithelial_cell_female	mammary epithelial cell female	ENCFF263BZU	ENCFF499KDV	NA	ENCFF587EDB
+WI38_genetically_modified_using_stable_transfection_originated_from_WI38_treated_with_afimoxifene	WI38 genetically modified using stable transfection originated from WI38 treated with afimoxifene	ENCFF189ULK	NA	NA	NA
+GM10266	GM10266	NA	NA	NA	ENCFF238GME
+pancreas_female_adult_30_years	pancreas female adult 30 years	ENCFF158QOY	ENCFF942UQE	ENCFF913NVD	NA
+left_kidney_female_embryo_98_days	left kidney female embryo 98 days	ENCFF415LNY	NA	NA	NA
+endocrine_pancreas_adult_59_years	endocrine pancreas adult 59 years	NA	ENCFF136PJT	ENCFF592MXT	NA
+neuroepithelial_stem_cell_genetically_modified_using_stable_transfection_NONE_and_originated_from_H9	neuroepithelial stem cell genetically modified using stable transfection NONE and originated from H9	NA	NA	ENCFF166CIB	NA
+breast_epithelium_male_adult_54_years	breast epithelium male adult 54 years	NA	NA	NA	ENCFF270ZPN
+large_intestine_female_embryo_108_days	large intestine female embryo 108 days	ENCFF367ZCY	NA	NA	NA
+occipital_lobe_male_adult_84_years	occipital lobe male adult 84 years	ENCFF568EAH	NA	NA	NA
+subcutaneous_adipose_tissue_female_adult_51_years	subcutaneous adipose tissue female adult 51 years	NA	NA	NA	ENCFF496YPU
+hematopoietic_multipotent_progenitor_cell_donor_ENCDO116AAA	hematopoietic multipotent progenitor cell donor ENCDO116AAA	ENCFF274MGW	NA	NA	NA
+trophoblast_female_embryo_20_weeks	trophoblast female embryo 20 weeks	NA	NA	ENCFF235OKK	NA
+omental_fat_pad_male_adult_54_years	omental fat pad male adult 54 years	NA	NA	NA	ENCFF412AZH
+T47D	T47D	ENCFF367ZVE	NA	NA	NA
+stomach_female_embryo_98_days	stomach female embryo 98 days	ENCFF978RWQ	ENCFF905GLU	NA	NA
+spleen_male_adult_54_years	spleen male adult 54 years	NA	NA	NA	ENCFF158LCC
+CD8-positive_alpha-beta_T_cell	CD8-positive alpha-beta T cell	NA	ENCFF677JDF	ENCFF383VYS	NA
+large_intestine_male_embryo_113_days	large intestine male embryo 113 days	ENCFF304TGP	NA	NA	NA
+H9_genetically_modified_using_stable_transfection	H9 genetically modified using stable transfection	NA	ENCFF085UOM	NA	NA
+thymus_female_embryo_113_days	thymus female embryo 113 days	ENCFF936MHE	NA	NA	NA
+LNCaP_clone_FGC	LNCaP clone FGC	ENCFF571HTM	ENCFF315WID	NA	ENCFF273CND
+subcutaneous_abdominal_adipose_tissue_nuclear_fraction_female_adult_25_years	subcutaneous abdominal adipose tissue nuclear fraction female adult 25 years	NA	ENCFF701QYD	NA	NA
+left_lung_female_embryo_105_days	left lung female embryo 105 days	ENCFF852RDH	NA	NA	NA
+UCSF-4	UCSF-4	NA	ENCFF243OEH	ENCFF866FPZ	NA
+foreskin_keratinocyte_male_newborn_2-4_days_donor_ENCDO615NVN	foreskin keratinocyte male newborn 2-4 days donor ENCDO615NVN	NA	NA	ENCFF777KQC	NA
+thoracic_aorta_male_adult_54_years	thoracic aorta male adult 54 years	NA	ENCFF713DRZ	ENCFF721SMI	NA
+HAP-1	HAP-1	ENCFF442SRX	NA	NA	NA
+CD4-positive_helper_T_cell_male_adult_21_years	CD4-positive helper T cell male adult 21 years	ENCFF131RGB	ENCFF438NJV	ENCFF181OXO	NA
+muscle_of_arm_male_embryo_96_days_donor_ENCDO817EKT	muscle of arm male embryo 96 days donor ENCDO817EKT	ENCFF259GAI	NA	NA	NA
+muscle_of_back_male_embryo_96_days_donor_ENCDO220PYT	muscle of back male embryo 96 days donor ENCDO220PYT	ENCFF545YJA	NA	NA	NA
+kidney_embryo_59_days_and_female_embryo_59_days	kidney embryo 59 days and female embryo 59 days	ENCFF419BLQ	NA	NA	NA
+foreskin_keratinocyte_male_newborn_2-4_days_treated_with_calcium_donor_ENCDO005EGE	foreskin keratinocyte male newborn 2-4 days treated with calcium donor ENCDO005EGE	NA	NA	ENCFF737AXA	NA
+CD4-positive_alpha-beta_memory_T_cell	CD4-positive alpha-beta memory T cell	NA	NA	ENCFF519MZR	NA
+NB4	NB4	NA	ENCFF493FQG	NA	ENCFF977ZXO
+stromal_cell_of_bone_marrow_male	stromal cell of bone marrow male	ENCFF747REW	NA	NA	NA
+stomach_male_adult_34_years	stomach male adult 34 years	ENCFF017FGP	ENCFF710OZO	ENCFF034RXK	NA
+A549	A549	ENCFF688CJL	ENCFF152LRB	NA	ENCFF344MYT
+WI38	WI38	NA	ENCFF319QVY	NA	ENCFF645TQU
+adrenal_gland_male_embryo_97_days	adrenal gland male embryo 97 days	NA	ENCFF947RXV	ENCFF988BQU	NA
+SK-MEL-5	SK-MEL-5	ENCFF810XTS	NA	NA	NA
+brain_female_embryo_105_days	brain female embryo 105 days	ENCFF643ARA	NA	NA	NA
+esophagus_female_adult_30_years	esophagus female adult 30 years	NA	ENCFF418JJK	ENCFF620QPO	NA
+adrenal_gland_male_adult_34_years	adrenal gland male adult 34 years	NA	ENCFF714QZH	ENCFF608OTO	NA
+placenta_embryo_53_days	placenta embryo 53 days	ENCFF555ENQ	NA	NA	NA
+thymus_female_embryo	thymus female embryo	ENCFF538SYZ	NA	NA	NA
+myoepithelial_cell_of_mammary_gland_female_adult_33_years	myoepithelial cell of mammary gland female adult 33 years	NA	ENCFF080JHQ	NA	NA
+RWPE2	RWPE2	NA	NA	ENCFF459NZD	ENCFF934BWM
+spleen_male_adult_37_years	spleen male adult 37 years	NA	NA	NA	ENCFF600BSH
+HT1080	HT1080	ENCFF953AFG	NA	NA	NA
+suprapubic_skin_female_adult_51_years	suprapubic skin female adult 51 years	NA	NA	NA	ENCFF743FWJ
+myocyte_originated_from_LHCN-M2	myocyte originated from LHCN-M2	ENCFF748YJM	NA	NA	NA
+hematopoietic_multipotent_progenitor_cell_treated_with_interleukin-3_kit_ligand_hydrocortisone_succinate_erythropoietin_4_day_treatment	hematopoietic multipotent progenitor cell treated with interleukin-3 kit ligand hydrocortisone succinate erythropoietin 4 day treatment	ENCFF833WVM	NA	NA	NA
+regulatory_T_cell_originated_from_blood_cell	regulatory T cell originated from blood cell	NA	ENCFF706HRP	NA	NA
+dermis_microvascular_lymphatic_vessel_endothelial_cell_female	dermis microvascular lymphatic vessel endothelial cell female	ENCFF130RBG	NA	NA	NA
+large_intestine_male_embryo_91_days	large intestine male embryo 91 days	ENCFF484MWV	NA	NA	NA
+subcutaneous_abdominal_adipose_tissue_nuclear_fraction_female_adult_81_year	subcutaneous abdominal adipose tissue nuclear fraction female adult 81 year	NA	ENCFF579CVA	NA	NA
+common_myeloid_progenitor_CD34-positive_male_adult_43_years	common myeloid progenitor CD34-positive male adult 43 years	ENCFF158JPG	NA	NA	NA
+left_kidney_female_embryo_107_days	left kidney female embryo 107 days	ENCFF532VZC	NA	NA	NA
+fibroblast_of_peridontal_ligament_male	fibroblast of peridontal ligament male	ENCFF519CAJ	NA	NA	NA
+mammary_epithelial_cell_female_adult_18_years	mammary epithelial cell female adult 18 years	NA	ENCFF500EXB	NA	NA
+T47D_treated_with_17beta-estradiol	T47D treated with 17beta-estradiol	ENCFF613XPC	NA	NA	NA
+muscle_of_arm_embryo_101_days	muscle of arm embryo 101 days	ENCFF924PVB	NA	NA	NA
+muscle_of_arm_male_embryo_96_days_donor_ENCDO220PYT	muscle of arm male embryo 96 days donor ENCDO220PYT	ENCFF736ZAN	NA	NA	NA
+smooth_muscle_cell_of_the_brain_vasculature_female	smooth muscle cell of the brain vasculature female	ENCFF443IYY	NA	NA	NA
+mesenchymal_stem_cell_originated_from_H1-hESC	mesenchymal stem cell originated from H1-hESC	NA	ENCFF712CJP	ENCFF301WTK	NA
+right_lung_female_embryo_117_days	right lung female embryo 117 days	ENCFF520PUY	NA	NA	NA
+substantia_nigra_male_adult_81_years	substantia nigra male adult 81 years	NA	ENCFF680BLM	NA	NA
+fibroblast_of_dermis	fibroblast of dermis	ENCFF302JEV	ENCFF684QGK	ENCFF969ORH	ENCFF146YJY
+T-helper_1_cell_female_adult_26_years	T-helper 1 cell female adult 26 years	ENCFF204BQM	NA	NA	NA
+heart_left_ventricle_female_adult_53_years	heart left ventricle female adult 53 years	ENCFF678EIG	ENCFF254JZR	ENCFF491UMQ	ENCFF556RUC
+temporal_lobe_male_adult_81_year	temporal lobe male adult 81 year	NA	NA	ENCFF194NPN	NA
+pulmonary_artery_endothelial_cell_female	pulmonary artery endothelial cell female	ENCFF719ZEX	NA	NA	NA
+MCF-7	MCF-7	ENCFF924FJR	ENCFF530LJW	ENCFF515VXR	ENCFF551DQV
+right_kidney_male_embryo_108_days	right kidney male embryo 108 days	ENCFF645BQM	NA	NA	NA
+cardiac_mesoderm_9_days_differentiation	cardiac mesoderm 9 days differentiation	NA	ENCFF591TLE	NA	NA
+trophoblast_cell_embryo_23_weeks	trophoblast cell embryo 23 weeks	ENCFF497YLT	NA	NA	NA
+skin_fibroblast_male_embryo_97_days	skin fibroblast male embryo 97 days	ENCFF338NJM	NA	NA	NA
+right_lung_female_embryo_110_days	right lung female embryo 110 days	ENCFF631ZXV	NA	NA	NA
+Ammon's_horn_male_adult_84_years	Ammon's horn male adult 84 years	ENCFF460VUW	NA	NA	NA
+naive_thymus-derived_CD4-positive,_alpha-beta_T_cell_male_adult_26_years	naive thymus-derived CD4-positive, alpha-beta T cell male adult 26 years	ENCFF753ETN	NA	NA	NA
+stomach_female_adult_53_years	stomach female adult 53 years	NA	ENCFF290ETW	ENCFF026WLD	ENCFF848ZIL
+upper_lobe_of_left_lung_female_adult_51_years	upper lobe of left lung female adult 51 years	NA	NA	NA	ENCFF283YML
+muscle_of_arm_male_embryo_97_days_donor_ENCDO576LXR	muscle of arm male embryo 97 days donor ENCDO576LXR	ENCFF903LEE	NA	NA	NA
+right_kidney_male_embryo_91_days	right kidney male embryo 91 days	ENCFF268XHZ	NA	NA	NA
+CD14-positive_monocyte_male_adult_37_years	CD14-positive monocyte male adult 37 years	ENCFF722MXM	ENCFF363RHA	NA	NA
+right_kidney_female_embryo_147_days	right kidney female embryo 147 days	ENCFF200VXY	NA	NA	NA
+A549_treated_with_ethanol	A549 treated with ethanol	NA	ENCFF838MAH	ENCFF681WFO	NA
+fibroblast_of_the_aortic_adventitia_female	fibroblast of the aortic adventitia female	ENCFF869ECL	ENCFF029UXF	NA	ENCFF475VZY
+bronchial_epithelial_cell	bronchial epithelial cell	ENCFF827VFY	ENCFF880KYS	NA	NA
+heart_right_ventricle_female_embryo_101_days_and_female_embryo_103_days	heart right ventricle female embryo 101 days and female embryo 103 days	ENCFF062BSK	NA	NA	NA
+lung_male_child_3_years	lung male child 3 years	NA	ENCFF910JMH	ENCFF105RLH	NA

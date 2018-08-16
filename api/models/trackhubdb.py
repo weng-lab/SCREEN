@@ -30,15 +30,23 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
 AgnosticCres = {"5-group": {"hg19": "ENCFF658MYW",
-                            "mm10": "ENCFF318XQA"},
+                            "mm10": "ENCFF318XQA",
+                            "hg38": "hg38-ccREs.CTA"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
-                                        "mm10": "ENCFF549SJX"},
+                                        "mm10": "ENCFF549SJX",
+                                        "hg38": "hg38-ccREs.H3K4me3.sorted.bed"},
                             "H3K27ac": {"hg19": "ENCFF656QBL",
-                                        "mm10": "ENCFF776IAR"},
+                                        "mm10": "ENCFF776IAR",
+                                        "hg38": "hg38-ccREs.H3K27ac.sorted.bed"},
                             "CTCF": {"hg19": "ENCFF106AGR",
-                                       "mm10": "ENCFF506YHI"}}}
+                                       "mm10": "ENCFF506YHI",
+                                     "hg38": "hg38-ccREs.CTCF.sorted.bed"}}}
 
-def EncodeUrlBigBed(accession):
+def EncodeUrlBigBed(accession, notencode = False):
+    if notencode:
+        if accession.startswith("http:"): return accession
+        return os.path.join("http://users.wenglab.org/pratth/",
+                            accession + ".bigBed")
     return os.path.join("https://www.encodeproject.org/files/",
                         accession,
                         "@@download/",
@@ -67,7 +75,7 @@ def colorize(assay):
     return c
 
 class cRETrack(object):
-    def __init__(self, assembly, assay, show5group, cREaccession, parent, active, ct):
+    def __init__(self, assembly, assay, show5group, cREaccession, parent, active, ct, notencode = False):
         self.assembly = assembly
         self.assay = assay
         self.show5group = show5group
@@ -75,6 +83,7 @@ class cRETrack(object):
         self.parent = parent
         self.active = active
         self.ct = ct
+        self.notencode = notencode
         self.p = self._init()
 
     def _init(self):
@@ -107,7 +116,7 @@ class cRETrack(object):
         return p
 
     def _url(self):
-        return EncodeUrlBigBed(self.cREaccession)
+        return EncodeUrlBigBed(self.cREaccession, self.notencode)
     
     def lines(self, priority):
         return ''.join([x for x in outputLines(self.p, 1, {"priority": priority})])
@@ -246,14 +255,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         
         cREaccession = AgnosticCres["5-group"][self.assembly]
         t = cRETrack(self.assembly, '', True, cREaccession, superTrackName,
-                     True == show5group, 'general').lines(self.priority)
+                     True == show5group, 'general', self.assembly == "hg38").lines(self.priority)
         self.priority += 1
         ret += [t]
         
         for assay in ["H3K4me3", "H3K27ac", "CTCF"]:
             cREaccession = AgnosticCres["9-state"][assay][self.assembly]
             t = cRETrack(self.assembly, assay, False, cREaccession, superTrackName,
-                         False == show5group, 'general').lines(self.priority)
+                         False == show5group, 'general', self.assembly == "hg38").lines(self.priority)
             self.priority += 1
             ret += [t]
 
@@ -273,7 +282,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         ret = []
 
         cache = self.cacheW[self.assembly]
-        cREs = cache.creBigBeds[ct]
+        cREs = cache.creBigBeds[ct] if ct in cache.creBigBeds else {}
         if show5group:
 	    if "5group" not in cREs:
 		print("missing 5group for ", cREs)
@@ -281,7 +290,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
             	cREaccession = cREs["5group"]
             	url = EncodeUrlBigBed(cREaccession)
             	t = cRETrack(self.assembly, '', show5group, cREaccession, superTrackName,
-                	         True, ct).lines(self.priority)
+                	         True, ct, self.assembly == "hg38").lines(self.priority)
             	self.priority += 1
             	ret += [t]
         else:
@@ -291,7 +300,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
                     continue
                 cREaccession = cREs[key]
                 t = cRETrack(self.assembly, assay, show5group, cREaccession, superTrackName,
-                              True, ct).lines(self.priority)
+                              True, ct, self.assembly == "hg38").lines(self.priority)
                 self.priority += 1
                 ret += [t]
         return ret

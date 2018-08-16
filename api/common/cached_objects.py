@@ -86,7 +86,17 @@ class CachedObjects:
         if self.assembly in ["hg38", "mm10"]:
             self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset="cistrome")
 
-        self.creBigBeds = self.pgSearch.creBigBeds()
+        # self.creBigBeds = self.pgSearch.creBigBeds()
+        self.creBigBeds = {}
+        keys = [ '_', '_', "DNase", "H3K4me3", "H3K27ac", "CTCF" ]
+        with open("/app/SCREENapi/api/hg38-Look-Up-Matrix.txt", 'r') as f:
+            for line in f:
+                line = line.strip().split('\t')
+                self.creBigBeds[line[0]] = {}
+                self.creBigBeds[line[0]]["5group"] = "http://users.wenglab.org/pratth/CTS-ccREs/Five-Group/%s.5group.bigBed" % ("_".join([ x for x in line[2:] if x != 'NA' ]))
+                for i in range(2, len(keys)):
+                    if line[i] == "NA": continue
+                    self.creBigBeds[line[0]]["9state-%s" % keys[i]] = "http://users.wenglab.org/pratth/CTS-ccREs/Nine-State/%s.9state.bigBed" % line[i]
         self.creBeds = self.pgSearch.creBeds()
         self.filesList2 = self.indexFilesTab2(self.creBeds)
 
