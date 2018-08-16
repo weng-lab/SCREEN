@@ -59,6 +59,11 @@ class Gwas:
             for r in cres:
                 for f in hiddenFields:
                     r[f] = ''
+        lookup = self.cache.geneIDsToApprovedSymbol
+        for r in activeCres:
+            r["genesallpc"] = {"all": [lookup[gid] for gid in r["gene_all_id"][:3]],
+                               "pc": [lookup[gid] for gid in r["gene_pc_id"][:3]],
+                               "accession": r["info"]["accession"]}
         vcols = {}
         for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
             vcols[f] = f not in hiddenFields
