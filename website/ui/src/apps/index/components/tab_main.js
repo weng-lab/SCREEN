@@ -61,8 +61,8 @@ class TabMain extends React.Component {
 
     searchBox() {
 	let instructions = "Enter a gene name or alias, a SNP rsID, a ccRE accession, or a genomic region in the form chr:start-end. You may also enter a cell type name to filter results."
-	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4", "rs4846913", "EH37E0204974"';
-	let dv = "chr11:5226493-5403124";
+	let examples = 'Examples: "K562 chr11:5205263-5381894", "SOX4", "rs4846913", "EH37E0204974"';
+	let dv = "chr11:5205263-5381894";
 	return (
 	    <Autocompleter defaultvalue={dv}
 	    uuid={this.props.uuid}
