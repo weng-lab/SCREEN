@@ -23,7 +23,7 @@ class LargeHorizontalBars extends React.Component {
 	const format = {
 	    value: rid => {
 		const d = itemsByRID[rid];
-		return d[this.props.dataScale].toFixed(2)},
+		return d[this.props.dataScale] && d[this.props.dataScale].toFixed ? d[this.props.dataScale].toFixed(2) : '--'},
 	    label: rid => {
 		const d = itemsByRID[rid];
 		if(d.ageTitle){

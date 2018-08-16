@@ -28,6 +28,8 @@ const initialState = (search, globals) => {
 	gwas_cell_types: null,
 	cart_accessions: new Set(),
         re_details_tab_active: subtab,
+	compartments_selected: new Set(["cell"]),
+	biosample_types_selected: new Set(globals.geBiosampleTypes),
     }
 }
 
