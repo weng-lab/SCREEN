@@ -10,8 +10,8 @@ const MainTabsConfig = () => {
     return {main : {title: "Overview", visible: true, f: TabMain},
             about : {title: "About", visible: true, f: TabAbout},
             tutorial : {title: "Tutorials", visible: true, f: TabTutorial},
-	    files: {title: "Downloads", visible: true, f: TabFiles},
-	    versions: {title: "Versions", visible: true, f: TabVersions},
+	    /* files: {title: "Downloads", visible: true, f: TabFiles},
+	    versions: {title: "Versions", visible: true, f: TabVersions}, */
             query: {title: "Query Results", visible: false, f: TabQuery},
             api: {title: "API", visible: true, f: TabAPI}
     };

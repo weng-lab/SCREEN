@@ -97,8 +97,8 @@ const MainTabInfo = (parsedQuery, globals) => {
     let resultsTitle = isCart() ? "ccREs in Cart" : Render.tabTitle(["ccRE", "Search Results"]);
 
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
-	    bedupload : {title: Render.tabTitle(["Bed", "Upload"]),
-			 visible: true, f: BedUploadTab},
+	    /*bedupload : {title: Render.tabTitle(["Bed", "Upload"]),
+			 visible: true, f: BedUploadTab},*/
 	    expression: {title: geTitle, visible: !!gene, f: GeBigTab},
 	    rampage: {title: rTitle,  visible: showRampage, f: RampageBigTab},
 	    details: {title: Render.tabTitle(["ccRE", "Details"]), visible: false,

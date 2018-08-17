@@ -276,21 +276,21 @@ const DetailsTabInfo = (assembly) => {
                         enabled: true, f: NearbyGenomicTab},
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
-	cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
-                               enabled: assembly === "mm10" || assembly === "hg38", f: CistromeIntersectionTab},
+	/* cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
+                               enabled: assembly === "mm10" || assembly === "hg38", f: CistromeIntersectionTab}, */
 	fantom_cat: {title: Render.tabTitle(["FANTOM", "Intersection"]),
 		     enabled: assembly === "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
-        rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
+        /* rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: "mm10" !== assembly,
-                  f: RampageTab},
-        ortholog: {title: Render.tabTitle(["Homologous ccREs", "in " + otherAssembly]),
+                  f: RampageTab}, */
+        ortholog: {title: Render.tabTitle(["Linked ccREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
-        miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
-                     enabled: true, f: MiniPeaks},
-	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
-		      enabled: true, f: LinkedGenesTab}
+        /* miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
+                     enabled: true, f: MiniPeaks}, */
+	/* linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
+		      enabled: true, f: LinkedGenesTab} */
     };
 }
 

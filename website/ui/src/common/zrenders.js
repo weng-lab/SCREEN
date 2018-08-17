@@ -8,7 +8,13 @@ import * as Urls from './urls';
 let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
 
 export const relink = (assembly, uuid) => (v) => (
-	<a href={root + "/search?" + toParams({assembly, q: v, uuid})} target={'_blank'}>
+    <a href={root + "/search?" + toParams({assembly, q: v, uuid})} target="_blank">
+	{v}
+    </a>
+);
+
+export const exrelink = (assembly, uuid) => (v) => (
+    <a href={"/original/search?" + toParams({ assembly, q: v, uuid })} target="_blank">
 	{v}
     </a>
 );

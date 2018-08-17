@@ -23,8 +23,8 @@ class TabMain extends React.Component {
                     <div className="col-md-12">
 		        SCREEN is a web interface for searching and visualizing the Registry of
 			candidate cis-Regulatory Elements (ccREs) derived from <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>.
-		        The Registry contains 1.31M human ccREs in hg19 and 0.43M mouse ccREs in mm10,
-			with homologous ccREs cross-referenced.  SCREEN presents the data that support
+		        The Registry contains 1.59M human ccREs in hg38,
+			with homologous ccREs in hg19 and mm10 cross-referenced.  SCREEN presents the data that support
 			biochemical activities of the ccREs and the expression of nearby genes in
 			specific cell and tissue types.
                     </div>
@@ -34,16 +34,9 @@ class TabMain extends React.Component {
                 </div>
 
                 <div className="row">
-                    <div className="col-md-8">
-                        You may launch SCREEN using the search box below or browse a curated list of
-			SNPs from the NHGRI-EBI Genome Wide Association Study (GWAS) catalog to annotate genetic variants using ccREs.
+                    <div className="col-md-12">
+                        You may launch SCREEN using the search box below.
                     </div>
-                    <div className="col-md-4">
-		        <a className={"btn btn-primary mainButtonGwas"}
-                           href={root + "/gwasApp/?assembly=hg19"} role={"button"}>
-		            {"Browse GWAS"}
-		        </a>
-		    </div>
                 </div>
 
         </div>);
@@ -61,7 +54,7 @@ class TabMain extends React.Component {
 
     searchBox() {
 	let instructions = "Enter a gene name or alias, a SNP rsID, a ccRE accession, or a genomic region in the form chr:start-end. You may also enter a cell type name to filter results."
-	let examples = 'Examples: "K562 chr11:5205263-5381894", "SOX4", "rs4846913", "EH37E0204974"';
+	let examples = 'Examples: "K562 chr11:5205263-5381894", "SOX4", "rs4846913", "EH38E0278173"';
 	let dv = "chr11:5205263-5381894";
 	return (
 	    <Autocompleter defaultvalue={dv}

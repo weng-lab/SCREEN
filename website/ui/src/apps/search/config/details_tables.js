@@ -83,7 +83,7 @@ export const TopTissuesTables = (globals, assembly) => ({
 
 export const OrthologTable = (globals, assembly, uuid) => ({
     ortholog: {
-	title: "",
+	title: "homologous ccREs in mouse (mm10)",
 	paging: false,
 	info: false,
 	bFilter: true,
@@ -91,7 +91,23 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	emptyText: "No homologous ccREs have been identified for this ccRE.",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
-             render: Render.relink(assembly === "mm10" ? "hg19" : "mm10", uuid)},
+             render: Render.exrelink("mm10", uuid)},
+	    {title: "chromosome", data: "chrom", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer}
+	],
+	sortCol: ["start", false]
+    },
+    hg19: {
+	title: "homologous ccREs in hg19",
+	paging: false,
+	info: false,
+	bFilter: true,
+	bLengthChange: false,
+	emptyText: "No homologous ccREs have been identified for this ccRE.",
+	cols: [
+	    {title: "accession", data: "accession", className: "dt-right",
+             render: Render.exrelink("hg19", uuid)},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
 	    {title: "end", data: "stop", render: Render.integer}
