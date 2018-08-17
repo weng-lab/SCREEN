@@ -268,10 +268,11 @@ class TableWithCart extends React.Component {
 	}
 
 	let meetMsg = "";
-	if(!isCart()){
+	let jq = JSON.parse(this.props.jq);
+	if(!isCart() && jq && jq.coord_chrom){
 	    meetMsg = (
 		<li className={"list-group-item"}>
-		    Candidate cis-Regulatory Elements (ccREs) that meet your search criteria are listed in the table below.
+		    <h4>Showing {data.length > 1000 ? 1000 : data.length} matching Candidate cis-Regulatory Elements (ccREs) in the region {jq.coord_chrom}:{jq.coord_start}-{jq.coord_end}.</h4>
 		</li>);
 	}
 	let click = "Click a ccRE accession to view details about the ccRE, including top tissues, nearby genomic features, etc.";
