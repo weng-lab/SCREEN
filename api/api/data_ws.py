@@ -91,8 +91,9 @@ class DataWebService():
             raise
 
     def _ortholog(self, j, accession):
-        orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
-        return {accession: {"ortholog": orth.as_dict()}}
+        mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession)
+        hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, hg19 = True)
+        return {accession: {"ortholog": mm10.as_dict(), "hg19": hg19.as_dict()}}
 
     def global_liftover(self, j, args):
         retval = {"saturation": {self.assembly: self.global_object({"name": "saturation"}, args),

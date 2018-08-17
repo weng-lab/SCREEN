@@ -6,13 +6,13 @@ from db_utils import getcursor
 
 
 class Ortholog:
-    def __init__(self, assembly, DBCONN, acc):
+    def __init__(self, assembly, DBCONN, acc, hg19 = False):
         self.DBCONN = DBCONN
         self.assembly = assembly
         self.acc = acc
         self.species = {"ortholog": "mouse" if assembly != "mm10" else "human",
                         "current": "mouse" if assembly == "mm10" else "human"}
-        self.tablename = "mm10_liftover"
+        self.tablename = "mm10_liftover" if not hg19 else "hg19_liftover"
 
         with getcursor(DBCONN, "ortholog$Ortholog::__init__") as curs:
             curs.execute("""SELECT chrom, start, stop, {ospecies}Accession, overlap
