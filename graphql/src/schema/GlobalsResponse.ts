@@ -21,6 +21,7 @@ import {
     resolve_globals_inputData,
     resolve_globals_assembly_geExperiments,
 } from '../resolvers/globals';
+import { GeneExpBiosample } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
@@ -75,7 +76,7 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         },
         geBiosamples: {
             description: 'Returns biosamples available in gene expression',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GeneExpBiosample))),
             resolve: resolve_globals_assembly_geBiosamples,
         },
         geExperiments: {

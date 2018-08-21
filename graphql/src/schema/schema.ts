@@ -24,7 +24,6 @@ import UCSCTrackhubResponse from './UCSCTrackhubSchema';
 import * as SearchResponseTypes from './SearchResponse';
 import * as UCSCTrackhub from './UCSCTrackhubSchema';
 import BedUploadResponse from './BedUploadResponse';
-import { TopGenesReplicateData } from './GeneTopResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_globals } from '../resolvers/globals';

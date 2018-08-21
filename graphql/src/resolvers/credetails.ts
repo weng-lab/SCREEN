@@ -91,7 +91,9 @@ export class CREDetails {
         for (const g of genesAll) {
             g['pc'] = pcGenes.includes(g.gene.gene);
         }
-        return genesAll.sort((a, b) => a.distance - b.distance) as (nearbyGene & { pc: boolean })[];
+        return ([] as any[])
+            .concat(genesAll.filter(g => !g['pc']), genesPC.map(g => ({ ...g, pc: true })))
+            .sort((a, b) => a.distance - b.distance) as (nearbyGene & { pc: boolean })[];
     }
 
     async nearbyPcGenes() {

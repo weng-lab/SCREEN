@@ -5,7 +5,7 @@ import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
 import DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
-import { Assembly, assaytype, ctspecificdata } from '../types';
+import { Assembly, assaytype, ctspecificdata, GeBiosample } from '../types';
 import { getCtSpecificData } from './db_cre_table';
 import { nearbyGene } from '../resolvers/credetails';
 import { reduceAsKeys } from '../utils';
@@ -108,7 +108,7 @@ export type cache = {
     inputData: any;
     geBiosampleTypes: string[];
     geBiosamples: any;
-    geExperiments: string[];
+    geExperiments: GeBiosample[];
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
     creBigBeds: any;

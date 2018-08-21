@@ -1,6 +1,21 @@
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLFloat } from 'graphql';
 import * as CommonTypes from './CommonSchema';
 
+export const GeneExpBiosample = new GraphQLObjectType({
+    name: 'GeneExpBiosample',
+    description: 'Represents a single biosample from gene expresion',
+    fields: () => ({
+        biosample: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The biosample name',
+        },
+        tissue: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The tissue for this biosample',
+        },
+    }),
+});
+
 export const GeneExpGene = new GraphQLObjectType({
     name: 'GeneExpGene',
     description: 'Gene info for gene expression',

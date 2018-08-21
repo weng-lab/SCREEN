@@ -23,3 +23,5 @@ export type ctspecificdata = {
     ctcf_zscore: number;
     maxz: number;
 };
+
+export type GeBiosample = { biosample: string; tissue: string };

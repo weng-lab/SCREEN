@@ -144,6 +144,19 @@ async function de(assembly, gene, ct1, ct2) {
     const expandedgenecoord = CoordUtils.expanded(genecoord, de.halfWindow);
 
     const nearbyDEs = await de.nearbyDEs(expandedgenecoord);
+    if (nearbyDEs.length === 0) {
+        return {
+            gene: {
+                coords: genecoord,
+                gene: de.names[0],
+                ensemblid_ver: de.names[1],
+            },
+            diffCREs: [],
+            nearbyGenes: null,
+            min: genecoord.start,
+            max: genecoord.end,
+        };
+    }
 
     const nearbyDEsmin = nearbyDEs
         .map(d => d.gene.coords.start)
@@ -152,10 +165,13 @@ async function de(assembly, gene, ct1, ct2) {
         .map(d => d.gene.coords.end)
         .reduce((max, curr) => Math.max(max, curr), Number.MIN_SAFE_INTEGER);
 
-    const range = CoordUtils.expanded(
-        { chrom: genecoord.chrom, start: nearbyDEsmin, end: nearbyDEsmax },
-        de.halfWindow / 2
-    );
+    const center = (nearbyDEsmax - nearbyDEsmin) / 2 + nearbyDEsmin;
+    const halfWindow = Math.max(de.halfWindow, (nearbyDEsmax - nearbyDEsmin) / 2);
+    const range = {
+        chrom: genecoord.chrom,
+        start: Math.max(0, center - halfWindow),
+        end: center + halfWindow, // TODO: chrom max
+    };
     const diffCREs = await de.diffCREs(range);
 
     return {

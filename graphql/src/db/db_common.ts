@@ -2,7 +2,7 @@ import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
-import { Assembly, assaytype } from '../types';
+import { Assembly, assaytype, GeBiosample } from '../types';
 import { nearbyGene } from '../resolvers/credetails';
 import { UserError } from 'graphql-errors';
 
@@ -68,15 +68,15 @@ export async function geBiosampleTypes(assembly) {
     return res.map(r => r['biosample_type']);
 }
 
-export async function geBiosamples(assembly) {
+export async function geBiosamples(assembly): Promise<GeBiosample[]> {
     const tableName = assembly + '_rnaseq_metadata';
     const q = `
-        SELECT DISTINCT(celltype) as biosample
-        FROM ${tableName}
-        ORDER BY celltype
+SELECT DISTINCT(celltype) as biosample, (array_agg(DISTINCT(organ)))[1] as tissue
+FROM ${tableName}
+GROUP BY biosample
+ORDER BY celltype
     `;
-    const res = await db.many(q);
-    return res.map(r => r['biosample']);
+    return db.any(q);
 }
 
 export async function geExperiments(assembly: Assembly, biosample: string | null): Promise<string[]> {
