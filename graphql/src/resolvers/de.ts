@@ -152,7 +152,7 @@ async function de(assembly, gene, ct1, ct2) {
                 ensemblid_ver: de.names[1],
             },
             diffCREs: [],
-            nearbyGenes: null,
+            nearbyGenes: undefined,
             min: genecoord.start,
             max: genecoord.end,
         };
