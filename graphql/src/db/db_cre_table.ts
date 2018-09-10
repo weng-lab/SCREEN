@@ -17,8 +17,8 @@ const accessions = (wheres, params, j: { accessions?: string[] }) => {
     return true;
 };
 
-const notCtSpecificRanks = (wheres, params, j: { ctexps?: any }) => {
-    j = j.ctexps || {};
+const notCtSpecificRanks = (wheres, params, j: { expmaxs?: any }) => {
+    j = j.expmaxs || {};
     // use max zscores
     const map = {
         dnase: 'dnase_max',
@@ -105,7 +105,7 @@ const where = (wheres, params, chrom, start, stop) => {
 export const buildWhereStatement = (
     assembly,
     ctmap: Record<string, any>,
-    j: { ctexps?: any; accessions?: string[] },
+    j: { expmaxs?: any; ctexps?: any; accessions?: string[] },
     chrom: string | undefined,
     start: number | undefined,
     stop: number | undefined,
