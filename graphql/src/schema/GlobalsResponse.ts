@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLString, GraphQLList, GraphQLObjectType, GraphQLNonNull } from 'graphql';
+import { GraphQLString, GraphQLList, GraphQLObjectType, GraphQLNonNull } from 'graphql';
 import * as CommonTypes from './CommonSchema';
 import {
     resolve_globals_assembly,
@@ -20,6 +20,7 @@ import {
     resolve_globals_files,
     resolve_globals_inputData,
     resolve_globals_assembly_geExperiments,
+    resolve_globals_assembly_gene,
 } from '../resolvers/globals';
 import { GeneExpBiosample } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
@@ -103,6 +104,16 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
             description: 'Returns info on the data used for SCREEN',
             type: GraphQLJSON,
             resolve: resolve_globals_assembly_inputData,
+        },
+        gene: {
+            description: 'Returns info related to a specific gene',
+            type: CommonTypes.Gene,
+            args: {
+                gene: {
+                    type: GraphQLString,
+                },
+            },
+            resolve: resolve_globals_assembly_gene,
         },
     }),
 });

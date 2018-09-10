@@ -63,8 +63,8 @@ export const SearchToken = new GraphQLInterfaceType({
     resolveType: resolveSearchToken,
 });
 
-export const Gene = new GraphQLObjectType({
-    name: 'Gene',
+export const SearchGene = new GraphQLObjectType({
+    name: 'SearchGene',
     description: 'Information pertaining to a gene',
     fields: () => ({
         approved_symbol: {
@@ -102,7 +102,7 @@ export const SingleGeneToken = new GraphQLObjectType({
         },
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
-        gene: { type: new GraphQLNonNull(Gene) },
+        gene: { type: new GraphQLNonNull(SearchGene) },
     }),
 });
 
@@ -118,7 +118,7 @@ export const MultiGeneToken = new GraphQLObjectType({
         },
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
-        genes: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Gene))) },
+        genes: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SearchGene))) },
     }),
 });
 

@@ -226,3 +226,133 @@ export const geneexp: GeneExpFunction = async (
     const res = await db.any(query, params);
     return res.map(makeEntry);
 };
+
+export const biosample_types: GeneExpFunction = async (
+    assembly: Assembly,
+    gene: string | undefined,
+    biosample: string | undefined,
+    experimentaccession: string | undefined,
+    compartments: string[],
+    biosample_types: string[],
+    normalized: boolean,
+    pconly: boolean,
+    nomitochondrial: boolean
+) => {
+    const allmv = `${assembly}_rnaseq_${normalized ? 'norm' : 'unnorm'}_mv`;
+    const expression = `${assembly}_rnaseq_expression_${normalized ? 'norm' : 'unnorm'}`;
+    const metadata = `${assembly}_rnaseq_metadata`;
+
+    let query;
+    if (gene) {
+        query = `
+SELECT biosample_type
+FROM ${expression} AS r
+INNER JOIN ${metadata} AS meta ON r.expid = meta.expid AND r.replicate = meta.replicate
+WHERE
+    meta.cellCompartment = ANY ($<compartments>)
+    AND meta.biosample_type = ANY ($<biosampletypes>)
+    AND r.gene_name = $<gene>
+    ${biosample ? `AND r.celltype = $<biosample>` : ''}
+GROUP BY biosample_type
+        `;
+    } else if (experimentaccession) {
+        query = `
+SELECT biosample_type
+FROM ${allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.celltype = $<biosample>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
+GROUP BY biosample_type
+        `;
+    } else if (biosample) {
+        query = `
+SELECT biosample_type
+FROM ${allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.celltype = $<biosample>
+    AND r.expid = $<experimentaccession>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
+GROUP BY biosample_type
+    `;
+    }
+
+    const params = {
+        compartments,
+        biosampletypes: biosample_types,
+        gene,
+        biosample,
+        experimentaccession,
+    };
+
+    const res = await db.any(query, params);
+    return res.map(r => r.biosample_type);
+};
+
+export const cell_compartments: GeneExpFunction = async (
+    assembly: Assembly,
+    gene: string | undefined,
+    biosample: string | undefined,
+    experimentaccession: string | undefined,
+    compartments: string[],
+    biosample_types: string[],
+    normalized: boolean,
+    pconly: boolean,
+    nomitochondrial: boolean
+) => {
+    const allmv = `${assembly}_rnaseq_${normalized ? 'norm' : 'unnorm'}_mv`;
+    const expression = `${assembly}_rnaseq_expression_${normalized ? 'norm' : 'unnorm'}`;
+    const metadata = `${assembly}_rnaseq_metadata`;
+
+    let query;
+    if (gene) {
+        query = `
+SELECT cellcompartment
+FROM ${expression} AS r
+INNER JOIN ${metadata} AS meta ON r.expid = meta.expid AND r.replicate = meta.replicate
+WHERE
+    meta.cellCompartment = ANY ($<compartments>)
+    AND meta.biosample_type = ANY ($<biosampletypes>)
+    AND r.gene_name = $<gene>
+    ${biosample ? `AND r.celltype = $<biosample>` : ''}
+GROUP BY cellcompartment
+        `;
+    } else if (experimentaccession) {
+        query = `
+SELECT cellcompartment
+FROM ${allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.celltype = $<biosample>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
+GROUP BY cellcompartment
+        `;
+    } else if (biosample) {
+        query = `
+SELECT cellcompartment
+FROM ${allmv} as r
+WHERE
+    r.cellcompartment = ANY ($<compartments>)
+    AND r.celltype = $<biosample>
+    AND r.expid = $<experimentaccession>
+    ${pconly ? `AND gene_type = 'protein_coding'` : ''}
+    ${nomitochondrial ? `AND mitochondrial = False` : ''}
+GROUP BY cellcompartment
+    `;
+    }
+
+    const params = {
+        compartments,
+        biosampletypes: biosample_types,
+        gene,
+        biosample,
+        experimentaccession,
+    };
+
+    const res = await db.any(query, params);
+    return res.map(r => r.cellcompartment);
+};

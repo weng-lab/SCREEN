@@ -1,8 +1,8 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { loadCache, Compartments, loadGlobalCache } from '../db/db_cache';
+import { loadCache, loadGlobalCache } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
 import { chrom_lengths } from '../constants';
-import { geExperiments } from '../db/db_common';
+import { geExperiments, getGene } from '../db/db_common';
 import { Assembly } from '../types';
 
 export const resolve_globals = () => ({});
@@ -23,7 +23,7 @@ export const resolve_globals_assembly: GraphQLFieldResolver<any, any> = (source,
 
 export const resolve_globals_assembly_tfs = source => loadCache(source.assembly).tf_list();
 
-export const resolve_globals_assembly_cellCompartments = source => Compartments;
+export const resolve_globals_assembly_cellCompartments = source => loadCache(source.assembly).geCellCompartments();
 
 export const resolve_globals_assembly_cellTypeInfoArr = source =>
     loadCache(source.assembly)
@@ -51,6 +51,11 @@ export const resolve_globals_assembly_creBigBedsByCellType = source => loadCache
 export const resolve_globals_assembly_creFiles = source => loadCache(source.assembly).filesList();
 
 export const resolve_globals_assembly_inputData = source => loadCache(source.assembly).inputData();
+
+export const resolve_globals_assembly_gene: GraphQLFieldResolver<{ assembly: Assembly }, any, { gene: string }> = (
+    source,
+    args
+) => getGene(source.assembly, args.gene);
 
 export const resolve_help_key: GraphQLFieldResolver<any, any> = async (source, args, context) => {
     const key = args.key;

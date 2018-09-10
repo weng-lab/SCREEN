@@ -106,6 +106,7 @@ export type cache = {
     nineState: any;
     filesList: any;
     inputData: any;
+    geCellCompartments: string[];
     geBiosampleTypes: string[];
     geBiosamples: any;
     geExperiments: GeBiosample[];
@@ -137,6 +138,7 @@ function getCacheMap(assembly): loadablecache {
         filesList: () => indexFilesTab(assembly),
         inputData: () => Common.inputData(assembly),
 
+        geCellCompartments: () => Common.geBiosampleTypes(assembly),
         geBiosampleTypes: () => Common.geBiosampleTypes(assembly),
         geBiosamples: () => Common.geBiosamples(assembly),
 
@@ -254,15 +256,5 @@ export function loadCache(assembly: Assembly): loadablecache {
 export function loadGlobalCache(): loadableglobalcache {
     return globalcache;
 }
-
-export const Compartments = Promise.resolve([
-    'cell',
-    'nucleoplasm',
-    'cytosol',
-    'nucleus',
-    'membrane',
-    'chromatin',
-    'nucleolus',
-]);
 
 prepareCache();

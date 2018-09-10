@@ -2,7 +2,6 @@ import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLE
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
-import { GeneExpGene } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
 
 export const AssayValues = new GraphQLObjectType({
@@ -52,7 +51,7 @@ export const NearbyGene = new GraphQLObjectType({
             description: 'The distance to the ccRE',
         },
         gene: {
-            type: new GraphQLNonNull(GeneExpGene),
+            type: new GraphQLNonNull(CommonTypes.Gene),
             description: 'The gene',
         },
         pc: {
@@ -99,7 +98,7 @@ export const NearbyGenomic = new GraphQLObjectType({
             resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_nearbyGenes,
         },
         tads: {
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GeneExpGene))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.Gene))),
             resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_genesInTad,
         },
         re_tads: {
@@ -207,7 +206,7 @@ export const RampageGeneData = new GraphQLObjectType({
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscript))),
         },
         gene: {
-            type: new GraphQLNonNull(GeneExpGene),
+            type: new GraphQLNonNull(CommonTypes.Gene),
         },
     }),
 });

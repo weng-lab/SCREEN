@@ -12,6 +12,7 @@ const { UserError } = require('graphql-errors');
 
 export type nearbyGene = {
     gene: {
+        assembly: Assembly;
         gene: string;
         ensemblid_ver: string;
         coords: {
@@ -108,6 +109,7 @@ export class CREDetails {
         const coord = await this.coord();
         const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom, tadInfo);
         return rows.map(g => ({
+            assembly: this.assembly,
             gene: g.approved_symbol,
             ensemblid_ver: g.ensemblid_ver,
             coords: {

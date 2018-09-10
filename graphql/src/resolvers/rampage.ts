@@ -36,6 +36,6 @@ export async function getByGene(assembly: Assembly, gene: { ensemblid_ver: strin
 export const resolve_rampage: GraphQLFieldResolver<any, any> = async (source, args, context) => {
     const assembly: Assembly = args.assembly;
     const gene: string = args.gene;
-    const r = await DbCommon.rampageEnsemblID(assembly, gene);
+    const r = await DbCommon.getGene(assembly, gene);
     return getByGene(assembly, r);
 };

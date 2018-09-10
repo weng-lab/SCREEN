@@ -1,8 +1,8 @@
-import { GraphQLFieldResolver } from 'graphql';
+import { GraphQLFieldResolver, Source } from 'graphql';
 import * as Common from '../db/db_common';
 import * as DbGene from '../db/db_geneexp';
 
-import { loadCache, Compartments } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
 import { Assembly } from '../types';
 import { UserError } from 'graphql-errors';
 
@@ -17,16 +17,22 @@ type GeneExpArgs = {
     pconly: boolean | null;
     nomitochondrial: boolean | null;
 };
-export const resolve_geneexp: GraphQLFieldResolver<any, any, GeneExpArgs> = async (source, args, context) => {
-    const assembly = args.assembly;
-    const gene = args.gene;
-    const biosample = args.biosample;
-    let biosample_types = args.biosample_types;
-    let compartments = args.compartments;
-    const experimentaccession = args.experimentaccession;
-    const normalized = typeof args.normalized === 'boolean' ? args.normalized : false;
-    const pconly = typeof args.pconly === 'boolean' ? args.pconly : false;
-    const nomitochondrial = typeof args.nomitochondrial === 'boolean' ? args.nomitochondrial : false;
+
+export const resolve_geneexp_items: GraphQLFieldResolver<{ args: GeneExpArgs }, any, {}> = async (
+    source,
+    args,
+    context
+) => {
+    const sourceargs = source.args;
+    const assembly = sourceargs.assembly;
+    const gene = sourceargs.gene;
+    const biosample = sourceargs.biosample;
+    let biosample_types = sourceargs.biosample_types;
+    let compartments = sourceargs.compartments;
+    const experimentaccession = sourceargs.experimentaccession;
+    const normalized = typeof sourceargs.normalized === 'boolean' ? sourceargs.normalized : false;
+    const pconly = typeof sourceargs.pconly === 'boolean' ? sourceargs.pconly : false;
+    const nomitochondrial = typeof sourceargs.nomitochondrial === 'boolean' ? sourceargs.nomitochondrial : false;
 
     if (!gene && !biosample && !experimentaccession) {
         throw new UserError('Must include either gene, biosample, or experimentaccession');
@@ -43,7 +49,7 @@ export const resolve_geneexp: GraphQLFieldResolver<any, any, GeneExpArgs> = asyn
         );
     }
 
-    const available_compartments = await Compartments;
+    const available_compartments = await loadCache(assembly).geCellCompartments();
     if (!compartments) {
         compartments = available_compartments;
     } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
@@ -52,28 +58,12 @@ export const resolve_geneexp: GraphQLFieldResolver<any, any, GeneExpArgs> = asyn
         );
     }
 
-    let gene_info: any = Promise.resolve(
-        new UserError(
-            gene + ' is not a valid gene. This may not be an error if you are searching for a spike-in, for example.'
-        )
-    );
     let name = gene;
     if (gene) {
         const rows = await Common.geneInfo(assembly, gene);
         if (rows.length !== 0) {
             const gi = rows[0];
             name = gi.approved_symbol;
-            const strand = gi.strand;
-            gene_info = {
-                gene: name,
-                ensemblid_ver: gi.ensemblid_ver,
-                coords: {
-                    chrom: gi.chrom,
-                    start: gi.start,
-                    end: gi.stop,
-                    strand: strand,
-                },
-            };
         }
     }
 
@@ -88,8 +78,135 @@ export const resolve_geneexp: GraphQLFieldResolver<any, any, GeneExpArgs> = asyn
         pconly,
         nomitochondrial
     );
+    return items;
+};
+
+export const resolve_geneexp_biosample_types: GraphQLFieldResolver<{ args: GeneExpArgs }, any, {}> = async (
+    source,
+    args,
+    context
+) => {
+    const sourceargs = source.args;
+    const assembly = sourceargs.assembly;
+    const gene = sourceargs.gene;
+    const biosample = sourceargs.biosample;
+    let biosample_types = sourceargs.biosample_types;
+    let compartments = sourceargs.compartments;
+    const experimentaccession = sourceargs.experimentaccession;
+    const normalized = typeof sourceargs.normalized === 'boolean' ? sourceargs.normalized : false;
+    const pconly = typeof sourceargs.pconly === 'boolean' ? sourceargs.pconly : false;
+    const nomitochondrial = typeof sourceargs.nomitochondrial === 'boolean' ? sourceargs.nomitochondrial : false;
+
+    if (!gene && !biosample && !experimentaccession) {
+        throw new UserError('Must include either gene, biosample, or experimentaccession');
+    }
+
+    const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
+
+    const available_biosamples = geBiosampleTypes;
+    if (!biosample_types) {
+        biosample_types = available_biosamples;
+    } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
+        throw new UserError(
+            'invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(',')
+        );
+    }
+
+    const available_compartments = await loadCache(assembly).geCellCompartments();
+    if (!compartments) {
+        compartments = available_compartments;
+    } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
+        throw new UserError(
+            'invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(',')
+        );
+    }
+
+    let name = gene;
+    if (gene) {
+        const rows = await Common.geneInfo(assembly, gene);
+        if (rows.length !== 0) {
+            const gi = rows[0];
+            name = gi.approved_symbol;
+        }
+    }
+
+    return DbGene.biosample_types(
+        assembly,
+        name as any,
+        biosample as any,
+        experimentaccession as any,
+        compartments,
+        biosample_types,
+        normalized,
+        pconly,
+        nomitochondrial
+    );
+};
+
+export const resolve_geneexp_cell_compartments: GraphQLFieldResolver<{ args: GeneExpArgs }, any, {}> = async (
+    source,
+    args,
+    context
+) => {
+    const sourceargs = source.args;
+    const assembly = sourceargs.assembly;
+    const gene = sourceargs.gene;
+    const biosample = sourceargs.biosample;
+    let biosample_types = sourceargs.biosample_types;
+    let compartments = sourceargs.compartments;
+    const experimentaccession = sourceargs.experimentaccession;
+    const normalized = typeof sourceargs.normalized === 'boolean' ? sourceargs.normalized : false;
+    const pconly = typeof sourceargs.pconly === 'boolean' ? sourceargs.pconly : false;
+    const nomitochondrial = typeof sourceargs.nomitochondrial === 'boolean' ? sourceargs.nomitochondrial : false;
+
+    if (!gene && !biosample && !experimentaccession) {
+        throw new UserError('Must include either gene, biosample, or experimentaccession');
+    }
+
+    const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
+
+    const available_biosamples = geBiosampleTypes;
+    if (!biosample_types) {
+        biosample_types = available_biosamples;
+    } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
+        throw new UserError(
+            'invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(',')
+        );
+    }
+
+    const available_compartments = await loadCache(assembly).geCellCompartments();
+    if (!compartments) {
+        compartments = available_compartments;
+    } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
+        throw new UserError(
+            'invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(',')
+        );
+    }
+
+    let name = gene;
+    if (gene) {
+        const rows = await Common.geneInfo(assembly, gene);
+        if (rows.length !== 0) {
+            const gi = rows[0];
+            name = gi.approved_symbol;
+        }
+    }
+
+    return DbGene.cell_compartments(
+        assembly,
+        name as any,
+        biosample as any,
+        experimentaccession as any,
+        compartments,
+        biosample_types,
+        normalized,
+        pconly,
+        nomitochondrial
+    );
+};
+
+export const resolve_geneexp: GraphQLFieldResolver<any, any, GeneExpArgs> = async (source, args, context) => {
     return {
-        gene_info,
-        items,
+        args,
     };
 };

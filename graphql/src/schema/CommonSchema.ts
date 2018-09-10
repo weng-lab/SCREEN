@@ -481,13 +481,13 @@ const GeneAndDistance = new GraphQLObjectType({
             description: 'The distance',
         },
         gene: {
-            type: new GraphQLNonNull(CommonGene),
+            type: new GraphQLNonNull(Gene),
             description: 'The gene',
         },
     }),
 });
-export const CommonGene = new GraphQLObjectType({
-    name: 'CommonGene',
+export const Gene = new GraphQLObjectType({
+    name: 'Gene',
     description: 'Gene info for gene expression',
     fields: () => ({
         assembly: {

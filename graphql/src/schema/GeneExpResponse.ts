@@ -1,5 +1,10 @@
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLFloat } from 'graphql';
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLFloat, GraphQLBoolean } from 'graphql';
 import * as CommonTypes from './CommonSchema';
+import {
+    resolve_geneexp_items,
+    resolve_geneexp_biosample_types,
+    resolve_geneexp_cell_compartments,
+} from '../resolvers/geneexp';
 
 export const GeneExpBiosample = new GraphQLObjectType({
     name: 'GeneExpBiosample',
@@ -12,25 +17,6 @@ export const GeneExpBiosample = new GraphQLObjectType({
         tissue: {
             type: new GraphQLNonNull(GraphQLString),
             description: 'The tissue for this biosample',
-        },
-    }),
-});
-
-export const GeneExpGene = new GraphQLObjectType({
-    name: 'GeneExpGene',
-    description: 'Gene info for gene expression',
-    fields: () => ({
-        coords: {
-            type: new GraphQLNonNull(CommonTypes.ChromRange),
-            description: 'The coordinates of this gene',
-        },
-        gene: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: 'The gene name',
-        },
-        ensemblid_ver: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: 'The ensembl id and ver of the gene',
         },
     }),
 });
@@ -101,14 +87,21 @@ export const GeneExpResponse = new GraphQLObjectType({
     name: 'GeneExp',
     description: 'Gene expression data',
     fields: () => ({
-        gene_info: {
-            type: GeneExpGene,
-            description:
-                'Info on the gene queried. If the gene does not exist (like for spike-ins), this will be null.',
-        },
         items: {
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ExperimentData))),
-            description: 'All experimental data for this gene',
+            description: 'All experimental data for this gene in the specified conditions.',
+            resolve: resolve_geneexp_items,
+        },
+        // TODO: we could instead request these directly from items, but this has a bit more overhead, because we would request all data from db
+        biosample_types: {
+            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+            description: 'A list of all biosample types available in the specified conditions',
+            resolve: resolve_geneexp_biosample_types,
+        },
+        cell_compartments: {
+            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+            description: 'A list of all cell compartments available in the specified conditions',
+            resolve: resolve_geneexp_cell_compartments,
         },
     }),
 });

@@ -68,6 +68,17 @@ export async function geBiosampleTypes(assembly) {
     return res.map(r => r['biosample_type']);
 }
 
+export async function geCellCompartments(assembly) {
+    const tableName = assembly + '_rnaseq_metadata';
+    const q = `
+        SELECT DISTINCT(cellcompartment)
+        FROM ${tableName}
+        ORDER BY 1
+    `;
+    const res = await db.many(q);
+    return res.map(r => r['cellcompartment']);
+}
+
 export async function geBiosamples(assembly): Promise<GeBiosample[]> {
     const tableName = assembly + '_rnaseq_metadata';
     const q = `
@@ -571,6 +582,7 @@ ON gi.ensemblid_ver = tss.ensemblid_ver
 
             prev[row.accession].push({
                 gene: {
+                    assembly,
                     gene: row.approved_symbol,
                     ensemblid_ver: row.ensemblid_ver,
                     coords: {
@@ -751,7 +763,7 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export async function rampageEnsemblID(
+export async function getGene(
     assembly: Assembly,
     gene: string
 ): Promise<{ gene: string; ensemblid_ver: string; coords: { chrom: string; start: number; end: number } }> {
@@ -762,6 +774,7 @@ export async function rampageEnsemblID(
         WHERE approved_symbol = $1
     `;
     return await db.one(q, [gene], r => ({
+        assembly,
         gene: r.gene,
         ensemblid_ver: r.ensemblid_ver,
         coords: {
