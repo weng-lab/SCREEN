@@ -138,7 +138,7 @@ function getCacheMap(assembly): loadablecache {
         filesList: () => indexFilesTab(assembly),
         inputData: () => Common.inputData(assembly),
 
-        geCellCompartments: () => Common.geBiosampleTypes(assembly),
+        geCellCompartments: () => Common.geCellCompartments(assembly),
         geBiosampleTypes: () => Common.geBiosampleTypes(assembly),
         geBiosamples: () => Common.geBiosamples(assembly),
 
