@@ -7,6 +7,7 @@ import time
 import numpy as np
 import cherrypy
 import uuid
+import requests
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -81,6 +82,7 @@ class DataWebService():
             "rampage": self._re_detail_rampage,
             "linkedGenes": self._re_detail_linkedGenes,
             "miniPeaks": self._re_detail_miniPeaks,
+            "groundLevel": self._re_detail_groundlevel
         }
 
     def process(self, j, args, kwargs):
@@ -280,6 +282,17 @@ class DataWebService():
                                                     [accession])
         return {accession: {"rows": rows,
                             "accessions": accessions}}
+
+    def _re_detail_groundlevel(self, j, accession):
+        cre = CRE(self.pgSearch, accession, self.cache)
+        coord = cre.coord()
+        def _dreq(url):
+            return requests.get(url % (coord.chrom, coord.start, coord.end)).json()
+        return {accession: {
+            k: _dreq("https://api.wenglab.org/peaksws/" + self.assembly + "/" + k + "/search/%s/%d/%d")
+            for k in [ "tf", "histone", "dnase", "3dinteractions" ]
+        }}
+            
 
     def home_inputData(self, j, args):
         home = PGHome(self.ps)
