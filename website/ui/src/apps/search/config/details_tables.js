@@ -2,6 +2,12 @@ import React from 'react';
 import * as Render from '../../../common/zrenders';
 import {commajoin} from '../../../common/utility';
 
+import {dnase_tablecols} from '../../../common/components/nucleosomeoccupancy';
+import {histone_tablecols} from '../../../common/components/histonemodification';
+import {interactions_tablecols} from '../../../common/components/interactions';
+import {tf_tablecols} from '../../../common/components/tfbinding';
+import {cDHS_tablecols} from '../../../common/components/cdhs';
+
 import IntersectingAssayTf from '../components/intersecting_assay_tf';
 import IntersectingAssayHistone from '../components/intersecting_assay_histone';
 
@@ -435,3 +441,31 @@ export const LinkedGenesTable = (globals, assembly) => ({
     }
 });
 
+export const GroundLevelTables = (globals, assembly) => ({
+    "cdhs": {
+	title: "cDHSs",
+	emptyText: "This ccRE does not intersect any cDHSs.",
+	cols: cDHS_tablecols
+    },
+    "dnase": {
+	title: "DNase Peaks",
+	emptyText: "No nucleosome-free regions intersect this ccRE.",
+	cols: dnase_tablecols
+    },
+    "histone": {
+	title: "Histone Modifications",
+	emptyText: "No histone mark peaks intersect this ccRE.",
+	cols: histone_tablecols
+    },
+    "tf": {
+	title: "Transcription Factor Binding Sites",
+	emptyText: "No TF ChIP-seq peaks intersect this ccRE.",
+	cols: tf_tablecols
+    },
+    "3dinteractions": {
+	title: "Long Distance Interactions from ChIA-PET",
+	emptyText: "No long distance interactions intersect this ccRE.",
+	cols: interactions_tablecols
+    }
+});
+    
