@@ -289,8 +289,8 @@ class DataWebService():
         def _dreq(url):
             return requests.get(url % (coord.chrom, coord.start, coord.end)).json()
         return {accession: {
-            k: _dreq("https://api.wenglab.org/peaksws/" + self.assembly + "/" + k + "/search/%s/%d/%d")
-            for k in [ "tf", "histone", "dnase", "3dinteractions" ]
+            k: _dreq("https://api.wenglab.org/peaksws/GRCh38/" + k + "/search/%s/%d/%d")
+            for k in [ "tf", "histone", "dnase", "3dinteractions", "cdhs" ]
         }}
             
 
