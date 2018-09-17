@@ -13,7 +13,7 @@ import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
         TfIntersectionTable, OrthologTable, FantomCatTable,
-	CistromeIntersectionTable} from './details_tables';
+	CistromeIntersectionTable, GroundLevelTables} from './details_tables';
 
 import loading from '../../../common/components/loading';
 
@@ -266,6 +266,15 @@ class LinkedGenesTab extends ReTabBase{
     }
 }
 
+class GroundLevelTab extends ReTabBase {
+    constructor(props) {
+	super(props, "groundLevel");
+	this.doRender = (globals, assembly, data) => {
+	    return tabEles(globals, data, GroundLevelTables(globals, assembly), 1);
+	}
+    }
+}
+
 const DetailsTabInfo = (assembly) => {
     const otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
     
@@ -287,6 +296,8 @@ const DetailsTabInfo = (assembly) => {
                   f: RampageTab}, */
         ortholog: {title: Render.tabTitle(["Linked ccREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
+	groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
+		      enabled: true, f: GroundLevelTab}
         /* miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks}, */
 	/* linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
