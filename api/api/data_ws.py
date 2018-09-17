@@ -287,7 +287,7 @@ class DataWebService():
         cre = CRE(self.pgSearch, accession, self.cache)
         coord = cre.coord()
         def _dreq(url):
-            return requests.get(url % (coord.chrom, coord.start, coord.end)).json()
+            return requests.get(url % (coord.chrom, coord.start, coord.end)).json()["results"]["all"]
         return {accession: {
             k: _dreq("https://api.wenglab.org/peaksws/GRCh38/" + k + "/search/%s/%d/%d")
             for k in [ "tf", "histone", "dnase", "3dinteractions", "cdhs" ]
