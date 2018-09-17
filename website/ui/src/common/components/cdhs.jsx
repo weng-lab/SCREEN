@@ -2,7 +2,7 @@ import React from 'react';
 import Ztable from './ztable/ztable';
 
 export const cDHS_tablecols = [
-    {title: "ID", data: "acc", className: "dt-right"},
+    {title: "ID", data: "dacc", className: "dt-right"},
     {title: "chromosome", data: "chrom", className: "dt-right"},
     {title: "start", data: "start"},
     {title: "end", data: "stop"},
