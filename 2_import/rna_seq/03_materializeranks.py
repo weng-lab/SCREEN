@@ -65,7 +65,7 @@ FROM (
 	FROM (
         SELECT r.ensembl_id, r.gene_name, AVG(r.tpm) as tpm, meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type, meta.expid,
             i.gene_type,
-            CASE WHEN r.gene_name LIKE 'MT-%' THEN True
+            CASE WHEN r.gene_name LIKE 'MT-%' OR r.gene_name LIKE 'mt-%' THEN True
                 ELSE False
             END as mitochondrial
         FROM {tableNameData} r
