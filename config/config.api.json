@@ -30,7 +30,7 @@
 	"mm10bed": "/ccREs/mm10.sorted.bed"
     },
     "trackhubs": {
-	"host": "https://api.wenglab.org"
+	"host": "https://api.wenglab.org/screenv10_python"
     },
     "apolloengine_APIkey": "service:SCREENapi-production:D8zbl1MZUcKhRYI4tALZlg",
     "UI": {
