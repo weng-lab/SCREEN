@@ -61,7 +61,7 @@ SELECT
     norm.ensembl_id, norm.gene_name, norm.expid,
 	meta.organ, meta.celltype, meta.agetitle, meta.cellcompartment, meta.biosample_type,
     i.gene_type,
-	CASE WHEN norm.gene_name LIKE 'MT-%' THEN True
+	CASE WHEN norm.gene_name LIKE 'MT-%' OR norm.gene_name LIKE 'mt-%' THEN True
 		ELSE False
 	END as mitochondrial,
 	round(avg(norm.tpm), 2) as tpm_avg,
