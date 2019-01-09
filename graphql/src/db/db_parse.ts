@@ -229,11 +229,10 @@ async function do_find_celltype(
                 return q;
             } else {
                 possible.length = 0;
-                moresimilar.forEach(
-                    res =>
-                        possible.map(c => c.biosample_term_name).includes(res.biosample_term_name)
-                            ? true
-                            : possible.push(res)
+                moresimilar.forEach(res =>
+                    possible.map(c => c.biosample_term_name).includes(res.biosample_term_name)
+                        ? true
+                        : possible.push(res)
                 );
             }
         }

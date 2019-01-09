@@ -108,10 +108,12 @@ export async function geneIDsToApprovedSymbol(assembly) {
         ORDER BY 1
     `;
     const res = await db.many(q);
-    return res.filter(o => o.geneid !== -1).reduce((obj, r) => {
-        obj[r['geneid']] = r['approved_symbol'];
-        return obj;
-    }, {});
+    return res
+        .filter(o => o.geneid !== -1)
+        .reduce((obj, r) => {
+            obj[r['geneid']] = r['approved_symbol'];
+            return obj;
+        }, {});
 }
 
 export async function getHelpKeys() {

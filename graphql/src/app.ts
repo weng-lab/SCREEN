@@ -13,7 +13,6 @@ useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676
 
 import schema from './schema/schema'; // Import schema after
 
-
 let schemajson = '';
 graphql(schema, getIntrospectionQuery()).then(r => {
     const filteredData = (r.data as any).__schema.types.filter(type => null !== type.possibleTypes);
@@ -26,7 +25,7 @@ const app = express();
 
 const cors = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header("Access-Control-Allow-Headers","*")
+    res.header('Access-Control-Allow-Headers', '*');
     res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     if (req.method === 'OPTIONS') {
         res.sendStatus(200);
@@ -58,7 +57,7 @@ const server = new ApolloServer({
         } else {
             return new Error('Internal Server Error');
         }
-    }
+    },
 });
 
 server.applyMiddleware({
