@@ -327,8 +327,8 @@ export const ctSpecific = new GraphQLObjectType({
     },
 });
 
-export const cRE = new GraphQLObjectType({
-    name: 'cRE',
+export const ccRE = new GraphQLObjectType({
+    name: 'ccRE',
     description: 'All data related to a ccRE.',
     fields: () => ({
         assembly: {
@@ -462,7 +462,7 @@ export const SNP = new GraphQLObjectType({
         },
         overlapping_ccRE: {
             description: 'Returns the ccRE that overlaps this SNP, if one exists',
-            type: cRE,
+            type: ccRE,
             resolve: resolve_snps_overlapping_ccRE,
         },
         nearbygenes: {

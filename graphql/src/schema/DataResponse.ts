@@ -20,9 +20,9 @@ export const DataResponse = new GraphQLObjectType({
                 'Returns the total number of ccREs that match the parameters. However, for speed, only up to the top 1000 will be displayed',
             type: new GraphQLNonNull(GraphQLInt),
         },
-        cres: {
+        ccres: {
             description: 'Returns the ccREs that match the parameters',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.ccRE))),
         },
     }),
 });

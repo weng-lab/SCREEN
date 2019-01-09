@@ -46,7 +46,7 @@ const BaseType = new GraphQLObjectType({
     description: 'An API to access various data related to ccREs',
     fields: () => ({
         data: {
-            description: 'Get cRE data',
+            description: 'Get ccRE data',
             type: DataResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
@@ -169,7 +169,7 @@ const BaseType = new GraphQLObjectType({
         },
         credetails: {
             description: 'Get details for specific ccREs',
-            type: CommonTypes.cRE,
+            type: CommonTypes.ccRE,
             args: {
                 accession: { type: new GraphQLNonNull(GraphQLString) },
             },

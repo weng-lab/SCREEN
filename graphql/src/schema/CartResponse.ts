@@ -6,7 +6,7 @@ export const CartResponse = new GraphQLObjectType({
     fields: () => ({
         cres: {
             description: 'A list of accessions in the cart',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.ccRE))),
         },
     }),
 });

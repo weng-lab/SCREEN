@@ -60,7 +60,7 @@ export class Gwas {
         }
 
         // accession, snp, geneid, zscores
-        return activeCres.map(c => ({ cRE: c, geneid: c.geneid, snps: c.snps }));
+        return activeCres.map(c => ({ ccRE: c, geneid: c.geneid, snps: c.snps }));
     }
 }
 

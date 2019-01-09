@@ -9,7 +9,10 @@ import { CREDetails } from './credetails';
 async function cre_table(data, assembly, pagination) {
     const ctmap = await loadCache(assembly).ctmap();
     const results = await getCreTable(assembly, ctmap, data, pagination);
-    return results;
+    return {
+        total: results.total,
+        ccREs: results.cres,
+    };
 }
 
 export async function resolve_data(source, inargs, context, info) {

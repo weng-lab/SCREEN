@@ -35,12 +35,12 @@ export const GwasCellType = new GraphQLObjectType({
     }),
 });
 
-export const GwasCRE = new GraphQLObjectType({
-    name: 'GwasCRE',
-    description: 'Contains a cRE for Gwas and associated data',
+export const GwasCCRE = new GraphQLObjectType({
+    name: 'GwasCCRE',
+    description: 'Contains a ccRE for GWAS and associated data',
     fields: () => ({
-        cRE: {
-            type: new GraphQLNonNull(CommonTypes.cRE),
+        ccRE: {
+            type: new GraphQLNonNull(CommonTypes.ccRE),
         },
         geneid: {
             type: new GraphQLNonNull(GraphQLString),
@@ -172,7 +172,7 @@ export const GwasStudy = new GraphQLObjectType({
                     type: GraphQLString,
                 },
             },
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCRE))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCCRE))),
             resolve: resolve_gwas_study_cres,
         },
     }),

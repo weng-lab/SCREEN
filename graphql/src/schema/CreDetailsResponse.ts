@@ -70,7 +70,7 @@ const NearbyRE = new GraphQLObjectType({
             description: 'The distance from the ccRE',
         },
         ccRE: {
-            type: new GraphQLNonNull(CommonTypes.cRE),
+            type: new GraphQLNonNull(CommonTypes.ccRE),
         },
     }),
 });

@@ -29,13 +29,13 @@ export const DeGene = new GraphQLObjectType({
     }),
 });
 
-export const DiffCRE = new GraphQLObjectType({
-    name: 'DiffCRE',
+export const DiffCCRE = new GraphQLObjectType({
+    name: 'DiffCCRE',
     fields: () => ({
         center: { type: new GraphQLNonNull(GraphQLFloat) },
         value: { type: new GraphQLNonNull(GraphQLFloat) },
         typ: { type: new GraphQLNonNull(GraphQLString) },
-        ccRE: { type: new GraphQLNonNull(CommonTypes.cRE) },
+        ccRE: { type: new GraphQLNonNull(CommonTypes.ccRE) },
     }),
 });
 
@@ -53,7 +53,7 @@ export const DeResponse = new GraphQLObjectType({
     description: 'Differential expression data',
     fields: () => ({
         gene: { type: new GraphQLNonNull(DeGene) },
-        diffCREs: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(DiffCRE))) },
+        diffCREs: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(DiffCCRE))) },
         nearbyGenes: {
             type: new GraphQLList(new GraphQLNonNull(DiffGene)),
             description: 'Null if there are no de genes',
