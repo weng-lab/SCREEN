@@ -1,6 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import { loadCache, loadGlobalCache } from '../db/db_cache';
-import { UserError } from 'graphql-errors';
+import { UserInputError } from 'apollo-server-express';
 import { chrom_lengths } from '../constants';
 import { geExperiments, getGene } from '../db/db_common';
 import { Assembly } from '../types';
@@ -62,7 +62,7 @@ export const resolve_help_key: GraphQLFieldResolver<any, any> = async (source, a
     const helpKeys = await loadGlobalCache().helpKeys();
     const helpText = helpKeys.all[key];
     if (!helpText) {
-        throw new UserError(`Invalid help key: ${key}`);
+        throw new UserInputError(`Invalid help key: ${key}`);
     }
     return helpText;
 };
@@ -75,7 +75,7 @@ export const resolve_ctinfo: GraphQLFieldResolver<any, any> = async (source, arg
         .then(d => d.globalCellTypeInfoArr);
     const result = cellTypeInfoArr.filter(ct => ct.value === cellType || ct.name === cellType);
     if (result.length == 0) {
-        throw new UserError(cellType, ' does not exist!');
+        throw new UserInputError(cellType + ' does not exist!');
     }
     return result[0];
 };

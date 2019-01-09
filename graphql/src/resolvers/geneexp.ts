@@ -4,7 +4,7 @@ import * as DbGene from '../db/db_geneexp';
 
 import { loadCache } from '../db/db_cache';
 import { Assembly } from '../types';
-import { UserError } from 'graphql-errors';
+import { UserInputError } from 'apollo-server-express';
 
 type GeneExpArgs = {
     assembly: Assembly;
@@ -35,7 +35,7 @@ export const resolve_geneexp_items: GraphQLFieldResolver<{ args: GeneExpArgs }, 
     const nomitochondrial = typeof sourceargs.nomitochondrial === 'boolean' ? sourceargs.nomitochondrial : false;
 
     if (!gene && !biosample && !experimentaccession) {
-        throw new UserError('Must include either gene, biosample, or experimentaccession');
+        throw new UserInputError('Must include either gene, biosample, or experimentaccession');
     }
 
     const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
@@ -44,7 +44,7 @@ export const resolve_geneexp_items: GraphQLFieldResolver<{ args: GeneExpArgs }, 
     if (!biosample_types) {
         biosample_types = available_biosamples;
     } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new UserInputError(
             'invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(',')
         );
     }
@@ -53,7 +53,7 @@ export const resolve_geneexp_items: GraphQLFieldResolver<{ args: GeneExpArgs }, 
     if (!compartments) {
         compartments = available_compartments;
     } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new UserInputError(
             'invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(',')
         );
     }
@@ -98,7 +98,7 @@ export const resolve_geneexp_biosample_types: GraphQLFieldResolver<{ args: GeneE
     const nomitochondrial = typeof sourceargs.nomitochondrial === 'boolean' ? sourceargs.nomitochondrial : false;
 
     if (!gene && !biosample && !experimentaccession) {
-        throw new UserError('Must include either gene, biosample, or experimentaccession');
+        throw new UserInputError('Must include either gene, biosample, or experimentaccession');
     }
 
     const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
@@ -107,7 +107,7 @@ export const resolve_geneexp_biosample_types: GraphQLFieldResolver<{ args: GeneE
     if (!biosample_types) {
         biosample_types = available_biosamples;
     } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new UserInputError(
             'invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(',')
         );
     }
@@ -116,7 +116,7 @@ export const resolve_geneexp_biosample_types: GraphQLFieldResolver<{ args: GeneE
     if (!compartments) {
         compartments = available_compartments;
     } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new UserInputError(
             'invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(',')
         );
     }
@@ -160,7 +160,7 @@ export const resolve_geneexp_cell_compartments: GraphQLFieldResolver<{ args: Gen
     const nomitochondrial = typeof sourceargs.nomitochondrial === 'boolean' ? sourceargs.nomitochondrial : false;
 
     if (!gene && !biosample && !experimentaccession) {
-        throw new UserError('Must include either gene, biosample, or experimentaccession');
+        throw new UserInputError('Must include either gene, biosample, or experimentaccession');
     }
 
     const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
@@ -169,7 +169,7 @@ export const resolve_geneexp_cell_compartments: GraphQLFieldResolver<{ args: Gen
     if (!biosample_types) {
         biosample_types = available_biosamples;
     } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new UserInputError(
             'invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(',')
         );
     }
@@ -178,7 +178,7 @@ export const resolve_geneexp_cell_compartments: GraphQLFieldResolver<{ args: Gen
     if (!compartments) {
         compartments = available_compartments;
     } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new UserInputError(
             'invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(',')
         );
     }

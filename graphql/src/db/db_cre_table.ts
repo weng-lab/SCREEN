@@ -4,8 +4,6 @@ import { db, pgp } from './db';
 import { loadablecache, loadCache } from './db_cache';
 import { ChromRange, Assembly, ctspecificdata } from '../types';
 
-const { UserError } = require('graphql-errors');
-
 const accessions = (wheres, params, j: { accessions?: string[] }) => {
     const accs: Array<string> = j['accessions'] || [];
     if (0 == accs.length) {

@@ -2,7 +2,7 @@ import { getCreTable } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
-import { UserError } from 'graphql-errors';
+import { UserInputError } from 'apollo-server-express';
 import { Assembly } from '../types';
 import { CREDetails } from './credetails';
 
@@ -18,13 +18,13 @@ export async function resolve_data(source, inargs, context, info) {
     const limit = (inargs.pagination && inargs.pagination.limit) || 1000;
     const offset = (inargs.pagination && inargs.pagination.offset) || 0;
     if (limit > 1000) {
-        throw new UserError('Cannot have a limit greater than 1000 in pagination parameters.');
+        throw new UserInputError('Cannot have a limit greater than 1000 in pagination parameters.');
     }
     if (offset + limit > 10000) {
-        throw new UserError('Offset + limit cannot be greater than 10000. Refine your search for more data.');
+        throw new UserInputError('Offset + limit cannot be greater than 10000. Refine your search for more data.');
     }
     if (limit < 0 || offset < 0) {
-        throw new UserError('Offset and limit must both be greater than or equal to 0.');
+        throw new UserInputError('Offset and limit must both be greater than or equal to 0.');
     }
     const results = cre_table(data, assembly, { ...(inargs.pagination || {}), limit, offset });
     return results;

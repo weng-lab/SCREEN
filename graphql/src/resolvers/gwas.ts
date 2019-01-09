@@ -2,8 +2,7 @@ import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { Assembly } from '../types';
-
-const { UserError } = require('graphql-errors');
+import { UserInputError } from 'apollo-server-express';
 
 export class Gwas {
     assembly: Assembly;
@@ -78,7 +77,7 @@ export const resolve_gwas_study: GraphQLFieldResolver<any, any> = (source, args)
     const g: Gwas = source.gwas_obj;
     const studyarg = args.study;
     if (!g.checkStudy(studyarg)) {
-        throw new UserError('invalid gwas study');
+        throw new UserInputError('invalid gwas study');
     }
     return {
         study_name: studyarg,

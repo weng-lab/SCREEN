@@ -3,7 +3,7 @@ import { snptable, nearbygenes } from '../db/db_snp';
 import { SNP, Assembly } from '../types';
 import { gwasLDBlockSNPBySNP, SNPsInLDBlock } from '../db/db_gwas';
 import { Gwas } from './gwas';
-import { UserError } from 'graphql-errors';
+import { UserInputError } from 'apollo-server-express';
 import { getCreTable } from '../db/db_cre_table';
 import { loadCache } from '../db/db_cache';
 
@@ -12,10 +12,10 @@ export const resolve_snps: GraphQLFieldResolver<any, any> = async (source, args,
     const range = args.range;
     const id = args.id;
     if (!assembly && !id) {
-        throw new UserError('Must pass either an assembly or a range.');
+        throw new UserInputError('Must pass either an assembly or a range.');
     }
     if (id && range) {
-        throw new UserError('Cannot pass both a range and an id.');
+        throw new UserInputError('Cannot pass both a range and an id.');
     }
     if (!assembly) {
         for (const test_assembly of ['hg19', 'mm10'] as Assembly[]) {
