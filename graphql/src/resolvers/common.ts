@@ -1,6 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { exonsfortranscript, transcriptsForGene, Gene } from '../db/db_common';
-import { Assembly } from '../types';
+import { exonsfortranscript, transcriptsForGene } from '../db/db_common';
+import { Assembly, Gene } from '../types';
 import { getAssemblyFromCre } from '../utils';
 import { UserInputError } from 'apollo-server-express';
 import { ccRECtspecificLoaders } from '../db/db_cache';

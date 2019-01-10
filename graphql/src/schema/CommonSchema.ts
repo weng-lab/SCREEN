@@ -11,7 +11,6 @@ import {
     GraphQLInputObjectType,
     GraphQLEnumType,
 } from 'graphql';
-import * as CommonTypes from './CommonSchema';
 import { CreDetailsResponse, NearbyGene, Transcript } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
@@ -30,6 +29,8 @@ import {
     resolve_gene_differentialexpression,
 } from '../resolvers/gene';
 import { DifferentialExpression } from './DeResponse';
+import DataResponse from './DataResponse';
+import { resolve_range_ccres, resolve_range_genes, resolve_range_snps } from '../resolvers/range';
 
 export const Assembly = new GraphQLEnumType({
     name: 'Assembly',
@@ -47,6 +48,9 @@ export const ChromRange = new GraphQLObjectType({
     name: 'ChromRange',
     description: 'Represents a range on a chromomsome. May optionally specify a strand.',
     fields: () => ({
+        assembly: {
+            type: new GraphQLNonNull(Assembly),
+        },
         chrom: {
             description: 'Chromosome',
             type: new GraphQLNonNull(GraphQLString),
@@ -62,6 +66,22 @@ export const ChromRange = new GraphQLObjectType({
         strand: {
             description: 'Strand of this range or null if not defined',
             type: GraphQLString,
+        },
+        ccres: {
+            description:
+                'Gets ccres that intersect this range. If more than 1000 ccREs intersect, only the top 1000 are returned for performance.',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ccRE))),
+            resolve: resolve_range_ccres,
+        },
+        genes: {
+            description: 'Gets all genes that intersect this range',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Gene))),
+            resolve: resolve_range_genes,
+        },
+        snps: {
+            description: 'Gets all SNPs that intersect this range',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SNP))),
+            resolve: resolve_range_snps,
         },
     }),
 });
@@ -348,7 +368,7 @@ export const ccRE = new GraphQLObjectType({
         },
         range: {
             description: 'The range of the ccRE',
-            type: new GraphQLNonNull(CommonTypes.ChromRange),
+            type: new GraphQLNonNull(ChromRange),
             resolve: resolve_data_range,
         },
         maxz: {
@@ -453,7 +473,7 @@ export const SNP = new GraphQLObjectType({
         },
         range: {
             description: 'The range of this SNP',
-            type: new GraphQLNonNull(CommonTypes.ChromRange),
+            type: new GraphQLNonNull(ChromRange),
         },
         ldblocks: {
             description:
@@ -509,7 +529,7 @@ export const Gene = new GraphQLObjectType({
             description: 'The ensembl id and ver of the gene',
         },
         coords: {
-            type: new GraphQLNonNull(CommonTypes.ChromRange),
+            type: new GraphQLNonNull(ChromRange),
             description: 'The coordinates of this gene',
         },
         gene_type: {

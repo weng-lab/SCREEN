@@ -39,6 +39,7 @@ import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps } from '../resolvers/snp';
 import { resolve_gene } from '../resolvers/gene';
+import { resolve_range } from '../resolvers/range';
 
 const BaseType = new GraphQLObjectType({
     name: 'BaseType',
@@ -206,6 +207,15 @@ const BaseType = new GraphQLObjectType({
                 gene: { type: new GraphQLNonNull(GraphQLString) },
             },
             resolve: resolve_gene,
+        },
+        range: {
+            description: 'Gets information related to a range in an Assembly',
+            type: CommonTypes.ChromRange,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                range: { type: new GraphQLNonNull(CommonTypes.InputChromRange) },
+            },
+            resolve: resolve_range,
         },
     }),
 });

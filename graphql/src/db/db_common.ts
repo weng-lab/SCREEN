@@ -2,7 +2,7 @@ import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
-import { Assembly, assaytype, GeBiosample, ChromRange } from '../types';
+import { Assembly, assaytype, GeBiosample, ChromRange, Gene } from '../types';
 import { nearbyGene } from '../resolvers/credetails';
 import { UserInputError } from 'apollo-server-express';
 
@@ -289,7 +289,7 @@ export async function makeBiosamplesMap(assembly): Promise<Record<string, Biosam
     return ret;
 }
 
-export async function genePos(assembly, gene) {
+export async function genePos(assembly: Assembly, gene: string) {
     let ensemblid = gene;
     if (gene.startsWith('ENS') && gene.indexOf('.') !== -1) {
         ensemblid = gene.split('.')[0];
@@ -309,7 +309,7 @@ export async function genePos(assembly, gene) {
         return { pos: undefined, names: undefined };
     }
     return {
-        pos: { chrom: r['chrom'], start: r['start'], end: r['stop'] },
+        pos: { assembly, chrom: r['chrom'], start: r['start'], end: r['stop'] },
         names: [r['approved_symbol'], r['ensemblid_ver']],
     };
 }
@@ -486,7 +486,7 @@ export async function loadNineStateGenomeBrowser(assembly) {
     return ret;
 }
 
-export async function crePos(assembly, accession) {
+export async function crePos(assembly: Assembly, accession: string) {
     const tableName = assembly + '_cre_all';
     const q = `
         SELECT chrom, start, stop
@@ -498,7 +498,7 @@ export async function crePos(assembly, accession) {
         console.log('ERROR: missing', accession);
         return undefined;
     }
-    return { chrom: r['chrom'], start: r['start'], end: r['stop'] };
+    return { assembly, chrom: r['chrom'], start: r['start'], end: r['stop'] };
 }
 
 async function getColsForAccession(assembly, accession, cols) {
@@ -552,7 +552,7 @@ async function getGenes(assembly, accession, allOrPc) {
     return db.any(q, [accession]);
 }
 
-export async function getGenesMany(assembly, accessions: string[], allOrPc): Promise<nearbyGene[][]> {
+export async function getGenesMany(assembly: Assembly, accessions: string[], allOrPc): Promise<nearbyGene[][]> {
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
     const tableTss = assembly + '_tss_info';
@@ -588,12 +588,14 @@ ON gi.ensemblid_ver = tss.ensemblid_ver
                     gene: row.approved_symbol,
                     ensemblid_ver: row.ensemblid_ver,
                     coords: {
+                        assembly,
                         chrom: row.chrom,
                         start: row.start,
                         end: row.stop,
                         strand: row.strand,
                     },
                     tsscoords: {
+                        assembly,
                         chrom: row.tss_chrom,
                         start: row.tss_start,
                         end: row.tss_stop,
@@ -654,13 +656,13 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
     return db.any(q, [geneids]);
 }
 
-export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
+export async function distToNearbyCREs(assembly: Assembly, accession: string, coord: ChromRange, halfWindow: number) {
     const expanded = CoordUtils.expanded(coord, halfWindow);
     const ctmap = await loadCache(assembly).ctmap();
     const cres = await getCreTable(
         assembly,
         ctmap,
-        { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
+        { range: { assembly: expanded.assembly, chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
         {}
     );
     return cres.cres
@@ -672,7 +674,7 @@ export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
         .sort((a, b) => a.distance - b.distance);
 }
 
-export async function intersectingSnps(assembly, accession, coord, halfWindow) {
+export async function intersectingSnps(assembly: Assembly, accession, coord: ChromRange, halfWindow: number) {
     const c = CoordUtils.expanded(coord, halfWindow);
     const tableName = assembly + '_snps';
     const q = `
@@ -689,6 +691,7 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
                 assembly,
                 id: snp.snp,
                 range: {
+                    assembly,
                     chrom: coord.chrom,
                     start: snp.start,
                     end: snp.stop,
@@ -765,13 +768,6 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export type Gene = {
-    assembly: Assembly;
-    gene: string;
-    ensemblid_ver: string;
-    coords: { chrom: string; start: number; end: number };
-    gene_type: string;
-};
 export async function getGene(assembly: Assembly, gene: string): Promise<Gene> {
     const tableName = assembly + '_gene_info';
     const q = `
@@ -785,6 +781,7 @@ export async function getGene(assembly: Assembly, gene: string): Promise<Gene> {
         ensemblid_ver: r.ensemblid_ver,
         gene_type: r.gene_type,
         coords: {
+            assembly,
             chrom: r.chrom,
             start: r.start,
             end: r.stop,
@@ -880,7 +877,7 @@ export async function activeCts(
 }
 
 // TODO: batch these
-export async function exonsfortranscript(assembly: Assembly, transcript_ver: string) {
+export async function exonsfortranscript(assembly: Assembly, transcript_ver: string): Promise<ChromRange[]> {
     const tableName = assembly + '_gene_details';
     const q = `
 SELECT seqname as chrom, startpos as start, endpos as end, strand
@@ -888,10 +885,10 @@ FROM ${tableName}
 WHERE feature = 'exon'
 AND transcript_id = $1
     `;
-    const res = await db.map<{ chrom: string; start: number; end: number; strand: string }>(
+    const res = await db.map<{ assembly: Assembly; chrom: string; start: number; end: number; strand: string }>(
         q,
         [transcript_ver],
-        row => ({ ...row, chrom: row.chrom.trim(), strand: row.strand.trim() })
+        row => ({ ...row, assembly, chrom: row.chrom.trim(), strand: row.strand.trim() })
     );
     return res;
 }
@@ -913,6 +910,7 @@ AND feature = 'transcript'
         gene,
         transcript: row.transcript,
         range: {
+            assembly: gene.assembly,
             chrom: row.chrom,
             start: row.start,
             end: row.end,

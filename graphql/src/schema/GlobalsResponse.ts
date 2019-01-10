@@ -110,7 +110,7 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
             type: CommonTypes.Gene,
             args: {
                 gene: {
-                    type: GraphQLString,
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
             resolve: resolve_globals_assembly_gene,

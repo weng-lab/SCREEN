@@ -18,7 +18,7 @@ const initOptions = {
         Raven.captureException(err, { extra: { query: e.query, params: e.params } });
     },
     query(e) {
-        // console.log('QUERY:', e.query);
+        console.log('QUERY:', e.query);
     },
 };
 

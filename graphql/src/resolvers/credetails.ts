@@ -4,7 +4,7 @@ import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
-import { Assembly } from '../types';
+import { Assembly, ChromRange } from '../types';
 import { UserInputError } from 'apollo-server-express';
 
 const request = require('request-promise-native');
@@ -15,12 +15,14 @@ export type nearbyGene = {
         gene: string;
         ensemblid_ver: string;
         coords: {
+            assembly: Assembly;
             chrom: string;
             start: number;
             end: number;
             strand: string;
         };
         tsscoords: {
+            assembly: Assembly;
             chrom: string;
             start: number;
             end: number;
@@ -33,7 +35,7 @@ export type nearbyGene = {
 export class CREDetails {
     assembly: Assembly;
     accession;
-    _coord: Promise<{ chrom: string; start: number; end: number }>;
+    _coord: Promise<ChromRange>;
     genesAll: nearbyGene[] | null;
     genesPC: nearbyGene[] | null;
 
@@ -112,6 +114,7 @@ export class CREDetails {
             gene: g.approved_symbol,
             ensemblid_ver: g.ensemblid_ver,
             coords: {
+                assembly: this.assembly,
                 chrom: g.chrom,
                 start: g.start,
                 end: g.stop,
@@ -147,7 +150,7 @@ export class CREDetails {
 
 export async function resolve_credetails(source, args, context, info) {
     const accession: string = args.accession;
-    const assembly = getAssemblyFromCre(accession);
+    const assembly = getAssemblyFromCre(accession) as Assembly;
     if (!assembly) {
         throw new UserInputError('Invalid accession: ' + accession);
     }

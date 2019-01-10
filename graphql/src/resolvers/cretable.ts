@@ -3,15 +3,15 @@ import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { UserInputError } from 'apollo-server-express';
-import { Assembly } from '../types';
+import { Assembly, ChromRange } from '../types';
 import { CREDetails } from './credetails';
 
-async function cre_table(data, assembly, pagination) {
+export async function cre_table(data, assembly, pagination) {
     const ctmap = await loadCache(assembly).ctmap();
     const results = await getCreTable(assembly, ctmap, data, pagination);
     return {
         total: results.total,
-        ccREs: results.cres,
+        ccres: results.cres,
     };
 }
 
@@ -46,9 +46,10 @@ export async function resolve_data_nearbygenes(source, args, context) {
     };
 }
 
-export function resolve_data_range(source) {
-    const { chrom, start, end } = source;
+export function resolve_data_range(source): ChromRange {
+    const { assembly, chrom, start, end } = source;
     return {
+        assembly,
         chrom,
         start,
         end,

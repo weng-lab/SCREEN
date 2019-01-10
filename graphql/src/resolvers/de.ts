@@ -4,8 +4,7 @@ import * as DbDe from '../db/db_de';
 import { loadCache } from '../db/db_cache';
 import * as CoordUtils from '../coord_utils';
 import { dbcre } from '../db/db_cre_table';
-import { ChromRange } from '../types';
-import DataLoader from 'dataloader';
+import { ChromRange, Gene } from '../types';
 import { UserInputError } from 'apollo-server-core';
 
 export type DifferentialExpression = {
@@ -13,7 +12,7 @@ export type DifferentialExpression = {
     fc: number | null;
     ct1: string;
     ct2: string;
-    gene: Common.Gene;
+    gene: Gene;
 };
 
 export const convertCtToDect = (ct: string) =>
@@ -179,6 +178,7 @@ async function de(assembly, gene, ct1, ct2) {
     const center = (nearbyDEsmax - nearbyDEsmin) / 2 + nearbyDEsmin;
     const halfWindow = Math.max(de.halfWindow, (nearbyDEsmax - nearbyDEsmin) / 2);
     const range = {
+        assembly,
         chrom: genecoord.chrom,
         start: Math.floor(Math.max(0, center - halfWindow)),
         end: Math.ceil(center + halfWindow), // TODO: chrom max

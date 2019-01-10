@@ -96,6 +96,7 @@ export type cache = {
             ensemblid: string;
             ensemblid_ver: string;
             coords: {
+                assembly: Assembly;
                 chrom: string;
                 start: number;
                 end: number;

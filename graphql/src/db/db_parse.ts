@@ -2,9 +2,9 @@ import { isclose, escapeRegExp } from '../utils';
 import { db } from './db';
 import { Biosample, loadCache } from './db_cache';
 import { biosamplesQuery } from './db_common';
-import { Assembly } from '../types';
+import { Assembly, ChromRange } from '../types';
 
-export async function get_snpcoord(assembly, s) {
+export async function get_snpcoord(assembly: Assembly, s: string) {
     const tableName = assembly + '_snps';
     const q = `
         SELECT chrom, start, stop
@@ -17,6 +17,7 @@ export async function get_snpcoord(assembly, s) {
     }
     return (
         res[0] && {
+            assembly,
             chrom: res[0]['chrom'],
             start: res[0]['start'],
             end: res[0]['stop'],
@@ -44,12 +45,12 @@ export class GeneParse {
     tssDist;
     oname;
     strand;
-    coord;
-    tsscoord;
+    coord: ChromRange;
+    tsscoord: ChromRange;
     approved_symbol;
     sm;
 
-    constructor(assembly, r, s) {
+    constructor(assembly: Assembly, r, s) {
         this.assembly = assembly;
         this.s = s;
 
@@ -58,14 +59,15 @@ export class GeneParse {
 
         if ('+' == this.strand) {
             this.tsscoord = {
+                assembly,
                 chrom: r['altchrom'],
                 start: Math.max(0, parseInt(r['altstart'])),
                 end: r['altstop'],
             };
         } else {
-            this.tsscoord = { chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) };
+            this.tsscoord = { assembly, chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) };
         }
-        this.coord = { chrom: r['chrom'], start: r['start'], end: r['stop'] };
+        this.coord = { assembly, chrom: r['chrom'], start: r['start'], end: r['stop'] };
 
         this.approved_symbol = r['approved_symbol'];
         this.sm = r['sm'];
@@ -76,6 +78,7 @@ export class GeneParse {
             oname: this.oname,
             approved_symbol: this.approved_symbol,
             range: {
+                assembly: this.coord.assembly,
                 chrom: this.coord.chrom,
                 start: this.coord.start,
                 end: this.coord.end,

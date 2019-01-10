@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { Assembly } from '../types';
+import { Assembly, Gene } from '../types';
 import { UserInputError } from 'apollo-server-core';
-import { getGene, Gene, transcriptsForGene } from '../db/db_common';
+import { getGene, transcriptsForGene } from '../db/db_common';
 import { GeneExpArgs } from './geneexp';
 import { DifferentialExpression, convertCtToDect } from './de';
 import { natsorter, removeEnsemblVer } from '../utils';

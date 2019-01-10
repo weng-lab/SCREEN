@@ -25,7 +25,7 @@ function falseOrError(shouldError, errorMessage): false {
     return false;
 }
 
-function checkCoords(assembly: Assembly, coord, shouldError: boolean): boolean {
+export function checkCoords(assembly: Assembly, coord, shouldError: boolean): boolean {
     if (!(coord.chrom in chrom_lengths[assembly])) {
         return falseOrError(shouldError, 'Invalid chromosome ' + coord.chrom);
     }
@@ -43,7 +43,7 @@ function checkCoords(assembly: Assembly, coord, shouldError: boolean): boolean {
     return true;
 }
 
-export function find_coords(assembly, s: string, shouldError: boolean = true, partial: boolean = false) {
+export function find_coords(assembly: Assembly, s: string, shouldError: boolean = true, partial: boolean = false) {
     const s_in = s;
     const coords: Token[] = [];
     const unusedtoks: string[] = [];
@@ -57,6 +57,7 @@ export function find_coords(assembly, s: string, shouldError: boolean = true, pa
             const start = +match_fullrange[2] || 1;
 
             const coord = {
+                assembly,
                 chrom: match_fullrange[1],
                 start: start,
                 end:
@@ -75,6 +76,7 @@ export function find_coords(assembly, s: string, shouldError: boolean = true, pa
             if (match_chr) {
                 for (const chrom of Object.keys(chrom_lengths[assembly])) {
                     const coord = {
+                        assembly,
                         chrom: chrom,
                         start: 1,
                         end: chrom_lengths[assembly][chrom],
@@ -159,6 +161,7 @@ export async function find_snps(assembly, s: string, shouldError: boolean = true
                 const snp_suggestions = await getSNPs(assembly, snp, true);
                 snp_suggestions.forEach(suggestion => {
                     const range = {
+                        assembly,
                         chrom: suggestion.chrom,
                         start: suggestion.start,
                         end: suggestion.stop,
@@ -182,7 +185,12 @@ export async function find_snps(assembly, s: string, shouldError: boolean = true
             if (!coord) {
                 falseOrError(shouldError, 'Invalid snp ' + snp);
             } else {
-                snps.push({ input: snp, sm: 1, assembly, snp: { assembly, id: snp.toLowerCase(), range: coord } });
+                snps.push({
+                    input: snp,
+                    sm: 1,
+                    assembly,
+                    snp: { assembly, id: snp.toLowerCase(), range: { ...coord, assembly } },
+                });
             }
             s = s.replace(snp, '').trim();
             continue;

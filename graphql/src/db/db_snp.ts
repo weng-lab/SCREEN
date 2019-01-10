@@ -36,6 +36,7 @@ export async function snptable(
         assembly,
         id: row['snp'],
         range: {
+            assembly,
             chrom: row['chrom'],
             start: row['start'],
             end: row['stop'],
@@ -100,6 +101,7 @@ limit 5
                 gene: g.approved_symbol,
                 ensemblid_ver: g.ensemblid_ver,
                 coords: {
+                    assembly,
                     chrom: g.chrom,
                     start: g.genestart,
                     end: g.genestop,

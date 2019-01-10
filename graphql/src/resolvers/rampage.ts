@@ -1,5 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbCommon from '../db/db_common';
+import { Gene } from '../types';
 
 const _process = (transcript, ri) => {
     const rampage = Object.keys(transcript.data)
@@ -18,7 +19,7 @@ const _process = (transcript, ri) => {
 };
 
 export const resolve_transcript_rampage: GraphQLFieldResolver<
-    { gene: DbCommon.Gene; transcript: string; rampage_info?: any },
+    { gene: Gene; transcript: string; rampage_info?: any },
     any,
     {}
 > = async source => {

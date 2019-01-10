@@ -1,7 +1,7 @@
 import { Gwas } from './resolvers/gwas';
 
 export type Assembly = 'hg19' | 'mm10';
-export type ChromRange = { chrom: string; start: number; end: number };
+export type ChromRange = { assembly: Assembly; chrom: string; start: number; end: number; strand?: string };
 export type SNP = { assembly: Assembly; id: string; range: ChromRange };
 export type LDBlock = {
     assembly: Assembly;
@@ -25,3 +25,10 @@ export type ctspecificdata = {
 };
 
 export type GeBiosample = { biosample: string; tissue: string };
+export type Gene = {
+    assembly: Assembly;
+    gene: string;
+    ensemblid_ver: string;
+    coords: ChromRange;
+    gene_type: string;
+};
