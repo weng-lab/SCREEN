@@ -84,3 +84,13 @@ export const reduceAsKeys = <T extends string = string, V = any>(array: T[], map
         {} as Record<T, V>
     );
 };
+
+export const ensemblid_nover_regexp = /ENSMUS[GT]\d+/;
+
+export const removeEnsemblVer = (ver_string: string) => {
+    const match = ver_string.match(ensemblid_nover_regexp);
+    if (!match) {
+        throw new Error('No match');
+    }
+    return match[0];
+};

@@ -2,6 +2,7 @@ import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable, dbcre } from './db_cre_table';
 import { loadCache } from './db_cache';
+import { Assembly } from '../types';
 
 export async function getCtMap(assembly) {
     const tableName = assembly + '_de_cts';
@@ -32,7 +33,51 @@ export async function nearbyDEs(assembly, range, ct1, ct2, pval, ctmap) {
         AND int4range(gi.start, gi.stop) && int4range($3, $4)
         and ((de.leftCtId = $5 and de.rightCtId = $6) or (de.leftCtId = $6 and de.rightCtId = $5))
     `;
-    return db.any(q, [range.chrom, pval, range.start, range.end, ct2id, ct1id]);
+    return db.any<{ start: number; stop: number; ensembl: string; log2FoldChange: number }>(q, [
+        range.chrom,
+        pval,
+        range.start,
+        range.end,
+        ct2id,
+        ct1id,
+    ]);
+}
+
+export async function deGenes(
+    assembly: Assembly,
+    ct1: string,
+    ct2: string,
+    ensemblids: string[],
+    ctmap
+): Promise<({ isde: boolean; fc: number | undefined })[]> {
+    const ct1id = ctmap[ct1];
+    const ct2id = ctmap[ct2];
+
+    const tableName = assembly + '_de';
+    const q = `
+SELECT padj,
+	CASE WHEN leftCtId = $1 THEN log2FoldChange
+		WHEN leftCtId = $2 THEN log2FoldChange * -1
+	END as log2FoldChange
+from ${tableName} as de
+JOIN unnest($3) WITH ORDINALITY AS t(gene, ord)
+on de.ensembl = gene
+WHERE ((de.leftCtId = $1 and de.rightCtId = $2) or (de.leftCtId = $2 and de.rightCtId = $1))
+ORDER BY ord ASC
+    `;
+
+    const res = await db.any<{ log2foldchange: number; padj: number }>(q, [ct2id, ct1id, ensemblids]);
+    return res.map(row =>
+        row.padj < 0.05
+            ? {
+                  isde: true,
+                  fc: row.log2foldchange,
+              }
+            : {
+                  isde: false,
+                  fc: undefined,
+              }
+    );
 }
 
 export async function genesInRegion(assembly, chrom, start, stop) {

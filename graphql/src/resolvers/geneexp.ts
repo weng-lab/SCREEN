@@ -6,16 +6,16 @@ import { loadCache } from '../db/db_cache';
 import { Assembly } from '../types';
 import { UserInputError } from 'apollo-server-express';
 
-type GeneExpArgs = {
+export type GeneExpArgs = {
     assembly: Assembly;
-    gene: string | null;
-    biosample: string | null;
-    biosample_types: string[] | null;
-    compartments: string[] | null;
-    experimentaccession: string | null;
-    normalized: boolean | null;
-    pconly: boolean | null;
-    nomitochondrial: boolean | null;
+    gene?: string | null;
+    biosample?: string | null;
+    biosample_types?: string[] | null;
+    compartments?: string[] | null;
+    experimentaccession?: string | null;
+    normalized?: boolean | null;
+    pconly?: boolean | null;
+    nomitochondrial?: boolean | null;
 };
 
 export const resolve_geneexp_items: GraphQLFieldResolver<{ args: GeneExpArgs }, any, {}> = async (

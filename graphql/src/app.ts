@@ -2,10 +2,9 @@ import express from 'express';
 import accepts from 'accepts';
 
 import { ApolloServer, ApolloError } from 'apollo-server-express';
-import { GraphQLError, printSchema, graphql, parse, getIntrospectionQuery } from 'graphql';
+import { printSchema, graphql, parse, getIntrospectionQuery, GraphQLError } from 'graphql';
 
 const Raven = require('raven');
-const { formatError } = require('graphql');
 
 const useRaven = process.env.NODE_ENV === 'production';
 
@@ -47,16 +46,11 @@ const server = new ApolloServer({
     },
     introspection: true,
     playground: true,
-    formatError: error => {
-        useRaven &&
-            Raven.captureException(error, {
-                extra: { source: error.source, originalMessage: error.originalMessage },
-            });
-        if (error instanceof ApolloError) {
-            return error;
-        } else {
-            return new Error('Internal Server Error');
+    formatError: (error: GraphQLError) => {
+        if (!(error.originalError instanceof ApolloError)) {
+            useRaven && Raven.captureException(error.originalError);
         }
+        return { message: error.message, path: error.path };
     },
 });
 

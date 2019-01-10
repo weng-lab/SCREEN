@@ -96,7 +96,7 @@ WHERE
     meta.cellCompartment = ANY ($<compartments>)
     AND meta.biosample_type = ANY ($<biosampletypes>)
     AND r.gene_name = $<gene>
-    ${biosample ? `AND r.celltype = $<biosample>` : ''}
+    ${biosample ? `AND meta.celltype = $<biosample>` : ''}
 GROUP BY ensembl_id, meta.organ, meta.cellType, meta.ageTitle, r.expid, r.gene_name
     `;
 };

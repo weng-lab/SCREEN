@@ -12,7 +12,7 @@ import {
     GraphQLEnumType,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { CreDetailsResponse, NearbyGene } from './CreDetailsResponse';
+import { CreDetailsResponse, NearbyGene, Transcript } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
 import {
@@ -23,6 +23,13 @@ import {
 } from '../resolvers/snp';
 import { GwasStudy, LDBlock, LDBlockSNP } from './GwasResponse';
 import { resolve_gene_exons, resolve_celltypeinfo_ccREActivity } from '../resolvers/common';
+import GeneExpResponse from './GeneExpResponse';
+import {
+    resolve_gene_transcripts,
+    resolve_gene_expression,
+    resolve_gene_differentialexpression,
+} from '../resolvers/gene';
+import { DifferentialExpression } from './DeResponse';
 
 export const Assembly = new GraphQLEnumType({
     name: 'Assembly',
@@ -505,9 +512,52 @@ export const Gene = new GraphQLObjectType({
             type: new GraphQLNonNull(CommonTypes.ChromRange),
             description: 'The coordinates of this gene',
         },
+        gene_type: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The type of gene, from the GENCODE "gene_type" field',
+        },
         exons: {
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChromRange))),
             resolve: resolve_gene_exons,
+        },
+        expression: {
+            description: 'Returns gene expression data for the gene across one or many experiments or biosamples',
+            type: new GraphQLNonNull(GeneExpResponse),
+            args: {
+                biosample: {
+                    type: GraphQLString,
+                    description: 'The biosample to limit gene expression data to.',
+                },
+                biosample_types: {
+                    type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+                    description:
+                        'A list of biosamples types to filter by. By default, will include all available biosample types. Available biosample types can be queried with {globals{byAssembly{geBiosampleTypes}}}',
+                },
+                compartments: {
+                    type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+                    description:
+                        'A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}',
+                },
+                normalized: {
+                    type: GraphQLBoolean,
+                    description: 'Whether or not to return normalized RNA-seq data. Defaults to false.',
+                },
+            },
+            resolve: resolve_gene_expression,
+        },
+        differential_expression: {
+            description: 'Check to see if this gene is differentially expressed between two cell types.',
+            type: DifferentialExpression,
+            args: {
+                ct1: { type: new GraphQLNonNull(GraphQLString) },
+                ct2: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve: resolve_gene_differentialexpression,
+        },
+        transcripts: {
+            description: 'Get all the transcripts for this gene',
+            type: new GraphQLList(new GraphQLNonNull(Transcript)),
+            resolve: resolve_gene_transcripts,
         },
     }),
 });

@@ -2,6 +2,8 @@ import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLE
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
+import { resolve_transcript_exons } from '../resolvers/common';
+import { resolve_transcript_rampage } from '../resolvers/rampage';
 const GraphQLJSON = require('graphql-type-json');
 
 export const AssayValues = new GraphQLObjectType({
@@ -199,18 +201,6 @@ export const FantomCat = new GraphQLObjectType({
     }),
 });
 
-export const RampageGeneData = new GraphQLObjectType({
-    name: 'RampageGeneData',
-    fields: () => ({
-        transcripts: {
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscript))),
-        },
-        gene: {
-            type: new GraphQLNonNull(CommonTypes.Gene),
-        },
-    }),
-});
-
 export const RampageTranscriptData = new GraphQLObjectType({
     name: 'RampageTranscriptData',
     fields: () => ({
@@ -241,20 +231,29 @@ export const RampageTranscriptData = new GraphQLObjectType({
     }),
 });
 
-export const RampageTranscript = new GraphQLObjectType({
-    name: 'RampageTranscript',
+export const Transcript = new GraphQLObjectType({
+    name: 'Transcript',
     fields: () => ({
+        gene: {
+            description: 'The gene this transcript is of',
+            type: new GraphQLNonNull(CommonTypes.Gene),
+        },
         transcript: {
+            description: 'The ensemblid with version of this transcript',
             type: new GraphQLNonNull(GraphQLString),
         },
         range: {
             type: new GraphQLNonNull(CommonTypes.ChromRange),
         },
-        geneinfo: {
-            type: new GraphQLNonNull(GraphQLString),
+        exons: {
+            description: 'The range of each exon of this transcript',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.ChromRange))),
+            resolve: resolve_transcript_exons,
         },
-        items: {
+        rampage: {
+            description: 'Any Rampage data that is available for this transcript',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscriptData))),
+            resolve: resolve_transcript_rampage,
         },
     }),
 });

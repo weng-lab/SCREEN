@@ -101,7 +101,7 @@ export class GeneParse {
     }
 }
 
-async function exactGeneMatch(assembly, s) {
+async function exactGeneMatch(assembly: Assembly, s: string): Promise<GeneParse[]> {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
     const infoTableName = assembly + '_gene_info';
@@ -146,7 +146,7 @@ async function fuzzyGeneMatch(assembly, s) {
     return rows.map(r => new GeneParse(assembly, r, s));
 }
 
-export async function try_find_gene(assembly, s) {
+export async function try_find_gene(assembly: Assembly, s: string) {
     let genes = await exactGeneMatch(assembly, s);
     if (genes.length === 0) {
         genes = await fuzzyGeneMatch(assembly, s);

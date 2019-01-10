@@ -2,7 +2,6 @@ import * as DbCommon from '../db/db_common';
 import { getCreTable } from '../db/db_cre_table';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
-import { getByGene } from './rampage';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';

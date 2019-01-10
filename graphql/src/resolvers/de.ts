@@ -5,6 +5,23 @@ import { loadCache } from '../db/db_cache';
 import * as CoordUtils from '../coord_utils';
 import { dbcre } from '../db/db_cre_table';
 import { ChromRange } from '../types';
+import DataLoader from 'dataloader';
+import { UserInputError } from 'apollo-server-core';
+
+export type DifferentialExpression = {
+    isde: boolean;
+    fc: number | null;
+    ct1: string;
+    ct2: string;
+    gene: Common.Gene;
+};
+
+export const convertCtToDect = (ct: string) =>
+    ct
+        .replace('C57BL/6_', '')
+        .replace('embryo_', '')
+        .replace('_days', '')
+        .replace('postnatal_', '');
 
 class DE {
     assembly;
@@ -42,16 +59,8 @@ class DE {
 
     async nearbyDEs(range: ChromRange) {
         // limb_14.5 from C57BL-6_limb_embryo_14.5_days
-        const ct1 = this.ct1
-            .replace('C57BL/6_', '')
-            .replace('embryo_', '')
-            .replace('_days', '')
-            .replace('postnatal_', '');
-        const ct2 = this.ct2
-            .replace('C57BL/6_', '')
-            .replace('embryo_', '')
-            .replace('_days', '')
-            .replace('postnatal_', '');
+        const ct1 = convertCtToDect(this.ct1);
+        const ct2 = convertCtToDect(this.ct2);
 
         const cd = await this.coord();
         const c = loadCache(this.assembly);
@@ -80,6 +89,8 @@ class DE {
                 isde: !!fc,
                 fc,
                 gene,
+                ct1: this.ct1,
+                ct2: this.ct2,
             };
         });
     }
@@ -169,8 +180,8 @@ async function de(assembly, gene, ct1, ct2) {
     const halfWindow = Math.max(de.halfWindow, (nearbyDEsmax - nearbyDEsmin) / 2);
     const range = {
         chrom: genecoord.chrom,
-        start: Math.max(0, center - halfWindow),
-        end: center + halfWindow, // TODO: chrom max
+        start: Math.floor(Math.max(0, center - halfWindow)),
+        end: Math.ceil(center + halfWindow), // TODO: chrom max
     };
     const diffCREs = await de.diffCREs(range);
 
@@ -192,5 +203,8 @@ export const resolve_de: GraphQLFieldResolver<any, any> = (source, args, context
     const gene = args.gene;
     const ct1 = args.ct1;
     const ct2 = args.ct2;
+    if (assembly === 'hg19') {
+        throw new UserInputError('hg19 does not have differential gene expression data');
+    }
     return de(assembly, gene, ct1, ct2);
 };

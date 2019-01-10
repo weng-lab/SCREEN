@@ -35,11 +35,10 @@ import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
 import { resolve_gb } from '../resolvers/gb';
 import { resolve_ucsc_trackhub_url } from '../resolvers/ucsc_trackhub';
 import { resolve_credetails } from '../resolvers/credetails';
-import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps } from '../resolvers/snp';
-import { RampageGeneData } from './CreDetailsResponse';
+import { resolve_gene } from '../resolvers/gene';
 
 const BaseType = new GraphQLObjectType({
     name: 'BaseType',
@@ -175,15 +174,6 @@ const BaseType = new GraphQLObjectType({
             },
             resolve: resolve_credetails,
         },
-        rampage: {
-            description: 'Get RAMPAGE data for a gene',
-            type: RampageGeneData,
-            args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-                gene: { type: new GraphQLNonNull(GraphQLString) },
-            },
-            resolve: resolve_rampage,
-        },
         bedupload: {
             description: 'Intersect a bed file with ccREs',
             type: BedUploadResponse,
@@ -199,6 +189,7 @@ const BaseType = new GraphQLObjectType({
             resolve: resolve_bedupload,
         },
         snps: {
+            description: 'Get a snp from an id, or many from a range',
             type: new GraphQLList(new GraphQLNonNull(CommonTypes.SNP)),
             args: {
                 assembly: { type: CommonTypes.Assembly },
@@ -206,6 +197,15 @@ const BaseType = new GraphQLObjectType({
                 range: { type: CommonTypes.InputChromRange },
             },
             resolve: resolve_snps,
+        },
+        gene: {
+            description: 'Get information related to a single gene',
+            type: CommonTypes.Gene,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                gene: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve: resolve_gene,
         },
     }),
 });

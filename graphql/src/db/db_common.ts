@@ -2,7 +2,7 @@ import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
-import { Assembly, assaytype, GeBiosample } from '../types';
+import { Assembly, assaytype, GeBiosample, ChromRange } from '../types';
 import { nearbyGene } from '../resolvers/credetails';
 import { UserInputError } from 'apollo-server-express';
 
@@ -765,13 +765,17 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export async function getGene(
-    assembly: Assembly,
-    gene: string
-): Promise<{ gene: string; ensemblid_ver: string; coords: { chrom: string; start: number; end: number } }> {
+export type Gene = {
+    assembly: Assembly;
+    gene: string;
+    ensemblid_ver: string;
+    coords: { chrom: string; start: number; end: number };
+    gene_type: string;
+};
+export async function getGene(assembly: Assembly, gene: string): Promise<Gene> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop
+        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop, gene_type
         FROM ${tableName}
         WHERE approved_symbol = $1
     `;
@@ -779,6 +783,7 @@ export async function getGene(
         assembly,
         gene: r.gene,
         ensemblid_ver: r.ensemblid_ver,
+        gene_type: r.gene_type,
         coords: {
             chrom: r.chrom,
             start: r.start,
@@ -874,24 +879,43 @@ export async function activeCts(
     return Array.from(active);
 }
 
-export async function exons(assembly: Assembly, ensemblid_ver: string) {
+// TODO: batch these
+export async function exonsfortranscript(assembly: Assembly, transcript_ver: string) {
     const tableName = assembly + '_gene_details';
     const q = `
 SELECT seqname as chrom, startpos as start, endpos as end, strand
 FROM ${tableName}
 WHERE feature = 'exon'
-AND transcript_id = (
-    SELECT transcript_id
-    FROM hg19_gene_details
-    WHERE gene_id = $1
-    AND feature = 'exon'
-    LIMIT 1
-)
+AND transcript_id = $1
     `;
     const res = await db.map<{ chrom: string; start: number; end: number; strand: string }>(
         q,
-        [ensemblid_ver],
+        [transcript_ver],
         row => ({ ...row, chrom: row.chrom.trim(), strand: row.strand.trim() })
     );
     return res;
+}
+
+export async function transcriptsForGene(
+    gene: Gene
+): Promise<({ transcript: string; gene: Gene; range: ChromRange })[]> {
+    const tableName = gene.assembly + '_gene_details';
+    const q = `
+SELECT transcript_id as transcript, seqname as chrom, startpos as start, endpos as end
+FROM ${tableName}
+WHERE gene_id = $1
+AND feature = 'transcript'
+    `;
+    const res = await db.any<{ transcript: string; chrom: string; start: number; end: number }>(q, [
+        gene.ensemblid_ver,
+    ]);
+    return res.map(row => ({
+        gene,
+        transcript: row.transcript,
+        range: {
+            chrom: row.chrom,
+            start: row.start,
+            end: row.end,
+        },
+    }));
 }
