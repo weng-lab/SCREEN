@@ -47,7 +47,7 @@ const server = new ApolloServer({
     introspection: true,
     playground: true,
     formatError: (error: GraphQLError) => {
-        console.log(error);
+        // console.log(error);
         if (!(error.originalError instanceof ApolloError)) {
             useRaven && Raven.captureException(error.originalError);
         }

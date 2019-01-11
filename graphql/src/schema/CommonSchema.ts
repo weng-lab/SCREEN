@@ -576,7 +576,7 @@ export const Gene = new GraphQLObjectType({
         },
         transcripts: {
             description: 'Get all the transcripts for this gene',
-            type: new GraphQLList(new GraphQLNonNull(Transcript)),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Transcript))),
             resolve: resolve_gene_transcripts,
         },
     }),

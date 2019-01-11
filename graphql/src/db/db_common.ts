@@ -754,6 +754,37 @@ export async function rampageByGene(assembly, ensemblid_ver) {
     );
 }
 
+export async function rampageByTranscript(assembly: Assembly, transcript: string) {
+    const tableName = assembly + '_rampage';
+    const q = `
+        SELECT *
+        FROM ${tableName}
+        WHERE transcript = $1
+    `;
+    const row = await db.oneOrNone(q, [transcript]);
+    if (!row) {
+        return { data: {}, coords: {} };
+    }
+    const res = Object.keys(row).reduce(
+        (nr, k) => {
+            const v = row[k];
+            if (k.startsWith('encff')) {
+                nr.data[k] = v;
+            } else if (k === 'chrom' || k === 'start' || k === 'strand') {
+                nr.coords[k] = v;
+            } else if (k === 'stop') {
+                nr.coords['end'] = v;
+            } else {
+                nr[k] = v;
+            }
+            return nr;
+        },
+        { data: {}, coords: {} }
+    );
+
+    return res;
+}
+
 export async function rampage_info(assembly) {
     const tableName = assembly + '_rampage_info';
     const q = `
@@ -771,7 +802,7 @@ export async function rampage_info(assembly) {
 export async function getGene(assembly: Assembly, gene: string): Promise<Gene> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop, gene_type
+        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop, strand, gene_type
         FROM ${tableName}
         WHERE approved_symbol = $1
     `;
@@ -785,6 +816,7 @@ export async function getGene(assembly: Assembly, gene: string): Promise<Gene> {
             chrom: r.chrom,
             start: r.start,
             end: r.stop,
+            strand: r.strand,
         },
     }));
 }

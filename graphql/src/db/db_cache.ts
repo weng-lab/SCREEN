@@ -119,6 +119,7 @@ export type cache = {
     biosamples: Record<string, Biosample>;
     de_ctidmap: any;
     gwas_studies: Gwas.DBGwasStudy[];
+    rampage_info: any;
 };
 
 function getCacheMap(assembly): loadablecache {
@@ -165,6 +166,8 @@ function getCacheMap(assembly): loadablecache {
         de_ctidmap: assembly === 'mm10' ? () => De.getCtMap(assembly) : () => Promise.resolve(undefined),
 
         gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve([]),
+
+        rampage_info: assembly === 'hg19' ? () => Common.rampage_info(assembly) : () => Promise.resolve(undefined),
     };
 }
 

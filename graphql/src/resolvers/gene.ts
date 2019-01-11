@@ -10,9 +10,7 @@ import { loadCache } from '../db/db_cache';
 
 export const resolve_gene: GraphQLFieldResolver<any, any, { assembly: Assembly; gene: string }> = async (
     source,
-    args,
-    context,
-    info
+    args
 ) => {
     const assembly = args.assembly;
     const gene = args.gene;
