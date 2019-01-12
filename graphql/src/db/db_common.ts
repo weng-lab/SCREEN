@@ -437,11 +437,12 @@ export async function creBeds(assembly) {
 export async function genemap(assembly) {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid, ensemblid_ver, approved_symbol, approved_symbol as gene, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
+        SELECT ensemblid, ensemblid_ver, approved_symbol, approved_symbol as gene, gene_type, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
         FROM ${tableName}
     `;
     const res = await db.many(q);
     return res.reduce((prev, curr) => {
+        prev[curr.approved_symbol] = curr;
         prev[curr.ensemblid] = curr;
         prev[curr.ensemblid_ver] = curr;
         return prev;
@@ -948,4 +949,24 @@ AND feature = 'transcript'
             end: row.end,
         },
     }));
+}
+
+export async function findGene(assembly: Assembly, gene: string): Promise<Gene | undefined> {
+    const genemap = await loadCache(assembly).ensemblToGene();
+    if (!genemap[gene]) {
+        // TODO: in the future, this could be a fuzzy search
+        const { names } = await genePos(assembly, gene);
+        if (!names) {
+            return undefined;
+        }
+        gene = names[1];
+    }
+    const gene_data = genemap[gene];
+    return {
+        assembly,
+        gene: gene_data.approved_symbol,
+        coords: gene_data.coords,
+        ensemblid_ver: gene_data.ensemblid_ver,
+        gene_type: gene_data.gene_type,
+    };
 }

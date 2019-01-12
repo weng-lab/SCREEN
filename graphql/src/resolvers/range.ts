@@ -1,5 +1,5 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { Assembly } from '../types';
+import { Assembly, Gene } from '../types';
 import { ChromRange } from '../types';
 import { checkCoords } from './search';
 import { cre_table } from './cretable';
@@ -28,11 +28,18 @@ export const resolve_range_ccres: GraphQLFieldResolver<ChromRange, any, {}> = as
     return results.ccres;
 };
 
-export const resolve_range_genes: GraphQLFieldResolver<ChromRange, any, {}> = async source => {
+export const resolve_range_genes: GraphQLFieldResolver<ChromRange, any, {}> = async (source): Promise<Gene[]> => {
     const assembly = source.assembly;
     const ensemblToGene = await loadCache(assembly).ensemblToGene();
     const genes = await genesInRegion(assembly, source.chrom, source.start, source.end);
-    return genes.map(gene => ensemblToGene[gene.ensemblid]);
+    return genes.map(gene => {
+        const egene = ensemblToGene[gene.ensemblid];
+        return {
+            assembly,
+            gene: egene.approved_symbol,
+            ...egene,
+        };
+    });
 };
 
 export const resolve_range_snps: GraphQLFieldResolver<ChromRange, any, {}> = async source => {

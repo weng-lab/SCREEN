@@ -35,6 +35,15 @@ export const DeResponse = new GraphQLObjectType({
     }),
 });
 
+export const DeSearchWindow = new GraphQLObjectType({
+    name: 'DeSearchWindow',
+    description: 'Both the window and queried gene',
+    fields: () => ({
+        gene: { type: new GraphQLNonNull(CommonTypes.Gene) },
+        window: { type: new GraphQLNonNull(CommonTypes.ChromRange) },
+    }),
+});
+
 export const DifferentialExpression = new GraphQLObjectType({
     name: 'DifferentialExpression',
     description: 'Differential expression data for a given gene between two cell types',

@@ -5,8 +5,7 @@ import { getGene, transcriptsForGene } from '../db/db_common';
 import { GeneExpArgs } from './geneexp';
 import { DifferentialExpression, convertCtToDect } from './de';
 import { natsorter, removeEnsemblVer } from '../utils';
-import { deGenes } from '../db/db_de';
-import { loadCache } from '../db/db_cache';
+import { deLoaders } from '../db/db_cache';
 
 export const resolve_gene: GraphQLFieldResolver<any, any, { assembly: Assembly; gene: string }> = async (
     source,
@@ -45,26 +44,20 @@ export const resolve_gene_differentialexpression: GraphQLFieldResolver<
     { ct1: string; ct2: string }
 > = async (source, args) => {
     const assembly = source.assembly;
-    const gene = source.gene;
     const ct1 = args.ct1;
     const ct2 = args.ct2;
     if (assembly === 'hg19') {
         throw new UserInputError('hg19 does not have differential expression data.');
     }
-    const ctmap = await loadCache(assembly).de_ctidmap();
-    const de = await deGenes(
-        assembly,
-        convertCtToDect(ct1),
-        convertCtToDect(ct2),
-        [removeEnsemblVer(source.ensemblid_ver)],
-        ctmap
+    const de = await deLoaders[assembly].load(
+        `${convertCtToDect(ct1)}::${convertCtToDect(ct2)}::${removeEnsemblVer(source.ensemblid_ver)}`
     );
     return {
         gene: source,
         ct1,
         ct2,
-        isde: de[0].isde,
-        fc: de[0].fc,
+        isde: de.isde,
+        fc: de.fc,
     } as DifferentialExpression;
 };
 

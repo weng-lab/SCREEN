@@ -43,19 +43,15 @@ export async function nearbyDEs(assembly, range, ct1, ct2, pval, ctmap) {
     ]);
 }
 
-export async function deGenes(
+export async function deGenesBatch(
     assembly: Assembly,
-    ct1: string,
-    ct2: string,
-    ensemblids: string[],
-    ctmap
+    requested: string[]
 ): Promise<({ isde: boolean; fc: number | undefined })[]> {
-    const ct1id = ctmap[ct1];
-    const ct2id = ctmap[ct2];
+    const ctmap = await loadCache(assembly).de_ctidmap();
 
     const tableName = assembly + '_de';
     const q = `
-SELECT padj,
+SELECT ensembl, padj,
 	CASE WHEN leftCtId = $1 THEN log2FoldChange
 		WHEN leftCtId = $2 THEN log2FoldChange * -1
 	END as log2FoldChange
@@ -66,18 +62,48 @@ WHERE ((de.leftCtId = $1 and de.rightCtId = $2) or (de.leftCtId = $2 and de.righ
 ORDER BY ord ASC
     `;
 
-    const res = await db.any<{ log2foldchange: number; padj: number }>(q, [ct2id, ct1id, ensemblids]);
-    return res.map(row =>
-        row.padj < 0.05
-            ? {
-                  isde: true,
-                  fc: row.log2foldchange,
-              }
-            : {
-                  isde: false,
-                  fc: undefined,
-              }
+    // We need to handle two cases of 'batching' here:
+    // 1) Many genes for the same pair of cts (can be done all in one query)
+    // 2) Many genes for different pairs of cts (must be split up)
+    // Additionally, must make sure we return the data in the same order as received
+    // { ct1::ct2 => { genes: [gene], indices: gene => index } }
+    const ctrequests = requested.reduce(
+        (prev, curr, index) => {
+            const [ct1, ct2, gene] = curr.split('::');
+            const key = `${ct1}::${ct2}`;
+            const keygenes = prev[key] || (prev[key] = { genes: [], indices: {} });
+            keygenes.genes.push(gene);
+            keygenes.indices[gene] = index;
+            return prev;
+        },
+        {} as Record<string, { genes: string[]; indices: Record<string, number> }>
     );
+    // Must fill because if a gene doesn't have de data between two cts, no row will be returned
+    const res = new Array(requested.length).fill({ isde: false, fc: undefined });
+    for (const key of Object.keys(ctrequests)) {
+        const [ct1, ct2] = key.split('::');
+        const requests = ctrequests[key];
+        const ct1id = ctmap[ct1];
+        const ct2id = ctmap[ct2];
+        const db_res = await db.any<{ ensembl: string; log2foldchange: number; padj: number }>(q, [
+            ct2id,
+            ct1id,
+            requests.genes,
+        ]);
+        db_res.forEach(row => {
+            res[requests.indices[row.ensembl]] =
+                row.padj < 0.05
+                    ? {
+                          isde: true,
+                          fc: row.log2foldchange,
+                      }
+                    : {
+                          isde: false,
+                          fc: undefined,
+                      };
+        });
+    }
+    return res;
 }
 
 export async function genesInRegion(assembly, chrom, start, stop) {

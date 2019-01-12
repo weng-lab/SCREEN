@@ -15,7 +15,7 @@ import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
 import SearchToken from './SearchResponse';
 import GlobalsResponse from './GlobalsResponse';
-import DeResponse from './DeResponse';
+import { DeSearchWindow } from './DeResponse';
 import GeneExpResponse from './GeneExpResponse';
 import GwasResponse from './GwasResponse';
 import CartResponse from './CartResponse';
@@ -28,7 +28,7 @@ import BedUploadResponse from './BedUploadResponse';
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_globals } from '../resolvers/globals';
 import { resolve_search, resolve_suggestions } from '../resolvers/search';
-import { resolve_de } from '../resolvers/de';
+import { resolve_de_search_window } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
 import { resolve_gwas } from '../resolvers/gwas';
 import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
@@ -69,16 +69,15 @@ const BaseType = new GraphQLObjectType({
             type: GlobalsResponse,
             resolve: resolve_globals,
         },
-        de_search: {
-            description: 'Search differential expression data',
-            type: DeResponse,
+        de_search_window: {
+            description:
+                'Gets an appropriate window for differential expression based on a queried gene. This window includes fully all genes within 500kb of the queried gene.',
+            type: DeSearchWindow,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) },
-                ct1: { type: new GraphQLNonNull(GraphQLString) },
-                ct2: { type: new GraphQLNonNull(GraphQLString) },
             },
-            resolve: resolve_de,
+            resolve: resolve_de_search_window,
         },
         geneexp: {
             description: 'Get gene expression data',

@@ -29,6 +29,9 @@ const nearbyAllGenesLoader = (assembly: Assembly) =>
     new DataLoader<string, nearbyGene[]>(keys => Common.getGenesMany(assembly, keys, 'all'));
 export const nearbyPcGenesLoaders = reduceAsKeys(assemblies, nearbyPcGenesLoader);
 export const nearbyAllGenesLoaders = reduceAsKeys(assemblies, nearbyAllGenesLoader);
+const deLoader = (assembly: Assembly) =>
+    new DataLoader<string, { isde: boolean; fc: number | undefined }>(keys => De.deGenesBatch(assembly, keys));
+export const deLoaders = reduceAsKeys(assemblies, deLoader);
 
 async function indexFilesTab(assembly) {
     const datasets = await Common.datasets(assembly);
@@ -102,6 +105,7 @@ export type cache = {
                 end: number;
                 strand: string;
             };
+            gene_type: string;
         }
     >;
     nineState: any;
