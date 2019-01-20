@@ -13,7 +13,7 @@ class Autocompleter extends React.Component {
 
  	this.userQueries = {}; // cache
  	this.loadSearch = this.loadSearch.bind(this);
- 	this.searchHg38 = this.searchHg38.bind(this);
+ 	this.searchGRCh38 = this.searchGRCh38.bind(this);
  	this.onEnter = this.onEnter.bind(this);
 	this.onChange = this.onChange.bind(this);
 
@@ -60,12 +60,12 @@ class Autocompleter extends React.Component {
  				  });
     }
 
-    searchHg38() {
- 	this.loadSearch("hg38");
+    searchGRCh38() {
+ 	this.loadSearch("GRCh38");
     }
 
     onEnter(){
- 	this.loadSearch("hg38");
+ 	this.loadSearch("GRCh38");
     }
 
     onChange(value){
@@ -117,7 +117,7 @@ class Autocompleter extends React.Component {
  		    <em>{this.props.examples}</em><br/><br/>
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
-                       onClick={this.searchHg38} role={"button"}>
+                       onClick={this.searchGRCh38} role={"button"}>
 			Search Human<br /><small>(GRCh38)</small>
 		    </a>
  		    <br />

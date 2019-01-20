@@ -31,16 +31,16 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
 
 AgnosticCres = {"5-group": {"hg19": "ENCFF658MYW",
                             "mm10": "ENCFF318XQA",
-                            "hg38": "hg38-ccREs.CTA"},
+                            "GRCh38": "GRCh38-ccREs.CTA"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
                                         "mm10": "ENCFF549SJX",
-                                        "hg38": "hg38-ccREs.H3K4me3.mz.bed.sorted"},
+                                        "GRCh38": "GRCh38-ccREs.H3K4me3.mz.bed.sorted"},
                             "H3K27ac": {"hg19": "ENCFF656QBL",
                                         "mm10": "ENCFF776IAR",
-                                        "hg38": "hg38-ccREs.H3K27ac.mz.bed.sorted"},
+                                        "GRCh38": "GRCh38-ccREs.H3K27ac.mz.bed.sorted"},
                             "CTCF": {"hg19": "ENCFF106AGR",
                                        "mm10": "ENCFF506YHI",
-                                     "hg38": "hg38-ccREs.CTCF.mz.bed.sorted"}}}
+                                     "GRCh38": "GRCh38-ccREs.CTCF.mz.bed.sorted"}}}
 
 def EncodeUrlBigBed(accession, notencode = False):
     if notencode:
@@ -255,14 +255,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         
         cREaccession = AgnosticCres["5-group"][self.assembly]
         t = cRETrack(self.assembly, '', True, cREaccession, superTrackName,
-                     True == show5group, 'general', self.assembly == "hg38").lines(self.priority)
+                     True == show5group, 'general', self.assembly == "GRCh38").lines(self.priority)
         self.priority += 1
         ret += [t]
         
         for assay in ["H3K4me3", "H3K27ac", "CTCF"]:
             cREaccession = AgnosticCres["9-state"][assay][self.assembly]
             t = cRETrack(self.assembly, assay, False, cREaccession, superTrackName,
-                         False == show5group, 'general', self.assembly == "hg38").lines(self.priority)
+                         False == show5group, 'general', self.assembly == "GRCh38").lines(self.priority)
             self.priority += 1
             ret += [t]
 
@@ -290,7 +290,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
             	cREaccession = cREs["5group"]
             	url = EncodeUrlBigBed(cREaccession)
             	t = cRETrack(self.assembly, '', show5group, cREaccession, superTrackName,
-                	         True, ct, self.assembly == "hg38").lines(self.priority)
+                	         True, ct, self.assembly == "GRCh38").lines(self.priority)
             	self.priority += 1
             	ret += [t]
         else:
@@ -300,7 +300,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
                     continue
                 cREaccession = cREs[key]
                 t = cRETrack(self.assembly, assay, show5group, cREaccession, superTrackName,
-                              True, ct, self.assembly == "hg38").lines(self.priority)
+                              True, ct, self.assembly == "GRCh38").lines(self.priority)
                 self.priority += 1
                 ret += [t]
         return ret

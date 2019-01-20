@@ -13,7 +13,7 @@ from utils import AddPath
 AddPath(__file__, "..")
 from config import Config
 
-HG38_CHROM_LENGTHS = {
+GRCH38_CHROM_LENGTHS = {
     "chr1": 248956422,
     "chr2": 242193529,
     "chr3": 198295559,
@@ -528,7 +528,7 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                           "chr18": 78077248, "chr20": 63025520,
                           "chrY": 59373566, "chr19": 59128983,
                           "chr22": 51304566, "chr21": 48129895},
-                 "hg38": HG38_CHROM_LENGTHS,
+                 "GRCh38": GRCH38_CHROM_LENGTHS,
                  "mm10": {"chr1": 195471971, "chr2": 182113224,
                           "chrX": 171031299, "chr3": 160039680,
                           "chr4": 156508116, "chr5": 151834684,
@@ -543,7 +543,7 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
 
 chroms = {"hg19": natsorted(chrom_lengths["hg19"].keys()),
           "mm10": natsorted(chrom_lengths["mm10"].keys()),
-          "hg38": natsorted(chrom_lengths["hg38"].keys())}
+          "GRCh38": natsorted(chrom_lengths["GRCh38"].keys())}
 
 
 class helptext:

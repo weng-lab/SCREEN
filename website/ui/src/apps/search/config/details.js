@@ -286,7 +286,7 @@ const DetailsTabInfo = (assembly) => {
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
 	/* cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
-                               enabled: assembly === "mm10" || assembly === "hg38", f: CistromeIntersectionTab}, */
+                               enabled: assembly === "mm10" || assembly === "GRCh38", f: CistromeIntersectionTab}, */
 	fantom_cat: {title: Render.tabTitle(["FANTOM", "Intersection"]),
 		     enabled: assembly === "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
