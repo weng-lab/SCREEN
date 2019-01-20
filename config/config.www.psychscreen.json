@@ -1,10 +1,10 @@
 {
     "RE": {
 	"version": 12,
-	"db_host": "pg_psychscreen_v1",
+	"db_host": "pg_screen_v10",
 	"db_usr": "postgres",
 	"db_port": 5432,
-	"db": "postgres",
+	"db": "screenv10",
 	"assemblies": ["GRCh38"],
 	"partial_assemblies": [],
 	"minipeaks_ver": 4,
