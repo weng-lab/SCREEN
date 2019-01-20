@@ -36,10 +36,7 @@ def checkAssembly(assembly):
 
 
 def checkCreAssembly(assembly, accession):
-    starts = {
-        "mm10": "em10e",
-        "hg19": "eh37e",
-        "hg38": "eh38e",
-        "GRCh38": "eh38e"
-    }
+    starts = {"mm10": "em10e",
+              "hg19": "eh37e",
+              "GRCh38": "eh38e"}
     return accession.startswith(starts[assembly])

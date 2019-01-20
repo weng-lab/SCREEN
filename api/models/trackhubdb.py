@@ -31,20 +31,16 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
 
 AgnosticCres = {"5-group": {"hg19": "ENCFF658MYW",
                             "mm10": "ENCFF318XQA",
-                            "hg38": "hg38-ccREs.CTA"
-                            "GRCh38": "hg38-ccREs.CTA"},
+                            "GRCh38": "GRCh38-ccREs.CTA"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
                                         "mm10": "ENCFF549SJX",
-                                        "hg38": "hg38-ccREs.H3K4me3.mz.bed.sorted",
-                                        "GRCh38": "hg38-ccREs.H3K4me3.mz.bed.sorted"},
+                                        "GRCh38": "GRCh38-ccREs.H3K4me3.mz.bed.sorted"},
                             "H3K27ac": {"hg19": "ENCFF656QBL",
                                         "mm10": "ENCFF776IAR",
-                                        "hg38": "hg38-ccREs.H3K27ac.mz.bed.sorted",
-                                        "GRCh38": "hg38-ccREs.H3K27ac.mz.bed.sorted"},
+                                        "GRCh38": "GRCh38-ccREs.H3K27ac.mz.bed.sorted"},
                             "CTCF": {"hg19": "ENCFF106AGR",
-                                     "mm10": "ENCFF506YHI",
-                                     "hg38": "hg38-ccREs.CTCF.mz.bed.sorted",
-                                     "GRCh38": "hg38-ccREs.CTCF.mz.bed.sorted"}}}
+                                       "mm10": "ENCFF506YHI",
+                                     "GRCh38": "GRCh38-ccREs.CTCF.mz.bed.sorted"}}}
 
 def EncodeUrlBigBed(accession, notencode = False):
     if notencode:
