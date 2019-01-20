@@ -118,7 +118,7 @@ class Autocompleter extends React.Component {
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
                        onClick={this.searchHg38} role={"button"}>
-			Search Human<br /><small>(hg38)</small>
+			Search Human<br /><small>(GRCh38)</small>
 		    </a>
  		    <br />
  		</div>

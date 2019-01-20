@@ -21,7 +21,7 @@ class NavBarApp extends React.Component {
 		<Navbar.Header>
 		    <Navbar.Brand>
 			<a href={root}>
-			    {"SCREEN"} {this.props.assembly}
+			    {"SCREEN"} GRCh38
 			</a>
 		    </Navbar.Brand>
 		</Navbar.Header>
