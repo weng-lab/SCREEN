@@ -83,7 +83,7 @@ class CachedObjects:
             "peak": self.pgSearch.tfHistCounts(),
             "cistrome": None
         }
-        if self.assembly in ["hg38", "mm10"]:
+        if self.assembly in ["GRCh38", "mm10"]:
             self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset="cistrome")
 
         # self.creBigBeds = self.pgSearch.creBigBeds()

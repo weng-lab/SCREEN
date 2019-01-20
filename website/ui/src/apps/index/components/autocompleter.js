@@ -61,11 +61,11 @@ class Autocompleter extends React.Component {
     }
 
     searchHg38() {
- 	this.loadSearch("hg38");
+ 	this.loadSearch("GRCh38");
     }
 
     onEnter(){
- 	this.loadSearch("hg38");
+ 	this.loadSearch("GRCh38");
     }
 
     onChange(value){

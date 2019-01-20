@@ -99,11 +99,11 @@ class DataWebService():
 
     def global_liftover(self, j, args):
         retval = {"saturation": {self.assembly: self.global_object({"name": "saturation"}, args),
-                                 "hg38": self.external_global_object({"name": "saturation"}, args, "hg38"),
-                                 "hg38_encode_cistrome": self.external_global_object({"name": "saturation_encode_cistrome"}, args, "hg38")},
+                                 "GRCh38": self.external_global_object({"name": "saturation"}, args, "GRCh38"),
+                                 "GRCh38_encode_cistrome": self.external_global_object({"name": "saturation_encode_cistrome"}, args, "GRCh38")},
                   "cistrome_encode": {}}
-        for a in ["hg19", "hg38"]:
-            for b in ["hg19", "hg38"]:
+        for a in ["hg19", "GRCh38"]:
+            for b in ["hg19", "GRCh38"]:
                 retval["%s_%s" % (a, b)] = self.global_object({"name": "liftOver_%s_%s" % (a, b)}, args)
             retval["cistrome_encode_%s" % a] = self.global_object({"name": "encode_cistrome_%s" % a}, args)
         return retval
