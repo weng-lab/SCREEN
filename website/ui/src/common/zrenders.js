@@ -20,11 +20,14 @@ export const exrelink = (assembly, uuid) => (v) => (
 );
 
 export const ctgroup = group => {
-    if (group === "yinactive") return <span style={{color: "#888"}}><strong>inactive</strong></span>;
-    if (group === "zunclassified") return <span style={{color: "#888"}}><strong>unclassified</strong></span>;
-    if (group === "promoter") return <span style={{color: "#f00"}}><strong>promoter-like</strong></span>;
-    if (group === "enhancer") return <span style={{color: "#ffcd00"}}><strong>enhancer-like</strong></span>;
+    group = group.split(',')[0];
+    if (group === "pELS") return <span style={{color: "#ffcd00"}}><strong>proximal enhancer-like signature</strong></span>;
+    if (group === "dELS") return <span style={{color: "#ffcd00"}}><strong>distal enhancer-like signature</strong></span>;
+    if (group === "PLS") return <span style={{color: "#ff0000"}}><strong>promoter-like signature</strong></span>;
+    if (group === "DNase-H3K4me3") return <span style={{color: "#ffaaaa"}}><strong>DNase-H3K4me3</strong></span>;
     if (group === "ctcf") return <span style={{color: "#00b0f0"}}><strong>CTCF bound</strong></span>;
+    if (group === "ylowdnase") return <span style={{color: "#8c8c8c"}}><strong>low DNase</strong></span>;
+    if (group === "zunclassified") return <span style={{color: "#8c8c8c"}}><strong>unclassified</strong></span>;
     return <span style={{color: "#06da93"}}><strong>DNase only</strong></span>;
 };
 
@@ -59,6 +62,10 @@ export const numWithCommas = (x) => {
 export const integer = (d) => (d === 1e12 ? "" : numWithCommas(d.toFixed(0)))
 export const real = (d) => (d.toFixed(2))
 export const z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : d.toFixed(2));
+export const dnase_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#06da93" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const h3k4me3_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#ff0000" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const h3k27ac_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#ffcd00" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const ctcf_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#00b0f0" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
@@ -158,7 +165,7 @@ export const dccLink = (expID) => {
 export const dccLinkFile = (fileID) => {
     const url = 'https://www.encodeproject.org/' + fileID;
     const img = dccImg();
-    return <a target="_blank" href={url}>{img}</a>;
+    return <a target="_blank" href={url}>{img} ({fileID})</a>;
 }
 
 export const gwasLink = (ref) => {
@@ -166,12 +173,15 @@ export const gwasLink = (ref) => {
     if(ref.startsWith("ENCFF")){
 	return dccLink(ref);
     }
-    if(ref.startsWith("PMID:")){
+    if (ref.startsWith("ENCSR")) {
+	return dccLink(ref);
+    }
+    if(ref.startsWith("PMID:") || true){
 	ref = ref.replace('PMID:', '');
 	const url = 'https://www.ncbi.nlm.nih.gov/pubmed/' + ref;
 	const img = <img src={ApiClient.StaticUrl("/logo_pubmed.jpg")}
 			 alt="DCC logo" height="20" />;
-	return <a target="_blank" href={url}>{img}</a>;
+	return <a target="_blank" href={url}>{img} (PMID {ref})</a>;
     }
     return ref;
 }

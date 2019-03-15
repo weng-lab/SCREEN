@@ -34,9 +34,16 @@ class TabMain extends React.Component {
                 </div>
 
                 <div className="row">
-                    <div className="col-md-12">
-                        You may launch SCREEN using the search box below.
+		    <div className="col-md-8">
+                        You may launch SCREEN using the search box below or browse a curated list of
+			SNPs from the NHGRI-EBI Genome Wide Association Study (GWAS) catalog to annotate genetic variants using ccREs.
                     </div>
+                    <div className="col-md-4">
+		        <a className={"btn btn-primary mainButtonGwas"}
+                           href={root + "/gwasApp/?assembly=GRCh38"} role={"button"}>
+		            {"Browse GWAS"}
+		        </a>
+		    </div>
                 </div>
 
         </div>);
