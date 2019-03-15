@@ -55,8 +55,8 @@ export const TopTissuesTables = (globals, assembly) => ({
 	bFilter: false,
 	rank_f: d => Math.log(d["dnase"])
     },
-    withdnase: {
-	title: "Classification in Type A and B biosamples (DNase-seq and at least one other mark)",
+    typea: {
+	title: "Classification in Type A biosamples (all four marks available)",
 	helpkey: "",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -85,8 +85,8 @@ export const TopTissuesTables = (globals, assembly) => ({
 	bFilter: true,
 	rank_f: (d) => (Math.log(d["dnase"]))
     },
-    wodnase: {
-	title: "Classification in Type C and D biosamples (no DNase-seq or only DNase-seq)",
+    withdnase: {
+	title: "Classification in Type B and D biosamples (DNase-seq available)",
 	helpkey: "",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -108,7 +108,30 @@ export const TopTissuesTables = (globals, assembly) => ({
 		render: Render.ctgroup
 	    }
 	],
-	sortCol: ["group", false],
+	sortCol: ["dnase", false],
+	pageLength: 10,
+	paging: true,
+        bLengthChange: true,
+	bFilter: true,
+	rank_f: (d) => (Math.log(d["dnase"]))
+    },
+    typec: {
+	title: "Classification in Type C biosamples (DNase-seq not available)",
+	helpkey: "",
+	cols: [
+	    {title: "cell type", data: "ct", className: "dt-right",
+	     render: Render.cell_type(globals)},
+	    {title: "H3K4me3 Z-score", data: "h3k4me3",
+	     render: Render.h3k4me3_z_score
+	    },
+	    {title: "H3K27ac Z-score", data: "h3k27ac",
+	     render: Render.h3k27ac_z_score
+	    },
+	    {title: "CTCF Z-score", data: "ctcf",
+	     render: Render.ctcf_z_score
+	    }
+	],
+	sortCol: ["ct", false],
 	pageLength: 10,
 	paging: true,
         bLengthChange: true,

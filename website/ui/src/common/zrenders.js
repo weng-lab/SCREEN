@@ -62,6 +62,10 @@ export const numWithCommas = (x) => {
 export const integer = (d) => (d === 1e12 ? "" : numWithCommas(d.toFixed(0)))
 export const real = (d) => (d.toFixed(2))
 export const z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : d.toFixed(2));
+export const dnase_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#06da93">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const h3k4me3_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#ff0000">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const h3k27ac_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#ffcd00">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const ctcf_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#00b0f0">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
@@ -169,7 +173,7 @@ export const gwasLink = (ref) => {
     if(ref.startsWith("ENCFF")){
 	return dccLink(ref);
     }
-    if(ref.startsWith("PMID:")){
+    if(ref.startsWith("PMID:") || true){
 	ref = ref.replace('PMID:', '');
 	const url = 'https://www.ncbi.nlm.nih.gov/pubmed/' + ref;
 	const img = <img src={ApiClient.StaticUrl("/logo_pubmed.jpg")}
