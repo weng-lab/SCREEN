@@ -291,15 +291,15 @@ const DetailsTabInfo = (assembly) => {
 		     enabled: assembly === "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
-        /* rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
+        rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: "mm10" !== assembly,
-                  f: RampageTab}, */
+                  f: RampageTab},
         ortholog: {title: Render.tabTitle(["Linked ccREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
 	groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
-		      enabled: true, f: GroundLevelTab}
-        /* miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
-                     enabled: true, f: MiniPeaks}, */
+		      enabled: true, f: GroundLevelTab},
+        miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
+                     enabled: true, f: MiniPeaks},
 	/* linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
 		      enabled: true, f: LinkedGenesTab} */
     };
