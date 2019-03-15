@@ -309,11 +309,13 @@ WHERE accession = %s
         dnase_max
         h3k4me3_max
         h3k27ac_max
-        ctcf_max""".split('\n')
+        ctcf_max
+        pct""".split('\n')
         cols = [c.strip() for c in cols]
         r = self._getColsForAccession(accession, chrom, cols)
-        cols = [c.split('_')[0] if "max" not in c else c for c in cols]
-        return dict(zip(cols, r))
+        group = r[-1]; r = r[:-1]
+        cols = [c.split('_')[0] if "max" not in c else c for c in cols][:-1]
+        return ( dict(zip(cols, r)), group )
 
     def creMostsimilar(self, acc, assay, threshold=20000):
         if self.assembly == "hg19":

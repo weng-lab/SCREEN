@@ -36,7 +36,7 @@ class DataWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
         def makeDWS(assembly):
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
-        self.assemblies = Config.assemblies
+        self.assemblies = Config.assemblies + ["GRCh38"]
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
     def process(self, j, args, kwargs):

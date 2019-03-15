@@ -66,20 +66,24 @@ ORDER BY trait
             q = """
 SELECT fdr.expID, fdr.cellTypeName, fdr.biosample_summary,
 fdr.{col} as fdr,
-pval.{col} as pval
+pval.{col} as pval,
+fe.{col} as foldenrichment
 FROM {tnfdr} fdr
 INNER JOIN {tnpval} pval
 ON fdr.expid = pval.expid
+INNER JOIN {tnfe} fe
+ON fe.expid = fdr.expid
 ORDER BY fdr DESC, pval
 """.format(tnfdr=self.assembly + "_gwas_enrichment_fdr",
                 tnpval=self.assembly + "_gwas_enrichment_pval",
+           tnfe = self.assembly + "_gwas_fold_enrichment",
                 col=gwas_study)
             try:
                 curs.execute(q)
                 rows = curs.fetchall()
             except:
                 return []
-        cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval"]
+        cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval", "foldenrichment"]
         print("!", file = sys.stderr)
         return [dict(zip(cols, r)) for r in rows]
 

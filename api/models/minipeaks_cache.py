@@ -25,6 +25,7 @@ class MiniPeaksCache:
         self.session.set_keyspace("minipeaks")
 
     def get(self, assay, accessions):
+        return {}
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 

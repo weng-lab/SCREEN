@@ -90,7 +90,7 @@ class CRE:
     def allRanks(self):
         if not self.ranks:
             coord = self.coord()
-            self.ranks = self.pgSearch.creRanks(self.accession, coord.chrom)
+            self.ranks, self.group = self.pgSearch.creRanks(self.accession, coord.chrom)
         return self.ranks
 
     def _ctToTissue(self, ct):
@@ -154,22 +154,32 @@ class CRE:
             v["group"] = self._group(v, proximal)
             rret.append(v)
         iranks = [{ k: v for k, v in maxes.iteritems()}]
-        iranks[0]["group"] = self._group(maxes, proximal)
+        iranks[0]["group"] = self.group # self._group(maxes, proximal)
         iranks[0]["title"] = "cell type agnostic"
-        return {"dnase": rret, "ranks": ranks, "iranks": iranks}
+        hasall = lambda x: x["dnase"] != -11.0 and x["ctcf"] != -11.0 and x["h3k4me3"] != -11.0 and x["h3k27ac"] != -11.0
+        return {
+            "typea": [ x for x in rret if hasall(x) ],
+            "withdnase": [ x for x in rret if x["dnase"] != -11.0 and not hasall(x) ],
+            "typec": [ x for x in rret if x["dnase"] == -11.0 ],
+            "ranks": ranks, "iranks": iranks
+        }
 
     def _group(self, v, p):
+        igroup = self.group.split(',')[0]
         if v["dnase"] <= 1.64 and v["dnase"] != -11.0:
-            return "yinactive"
-        if p:
-            if v["h3k4me3"] > 1.64: return "promoter"
-            if v["h3k27ac"] > 1.64: return "enhancer"
+            return "ylowdnase"
+        if igroup == "PLS":
+            if v["h3k4me3"] > 1.64: return "PLS"
+            if v["h3k27ac"] > 1.64: return "pELS"
+        elif p:
+            if v["h3k27ac"] > 1.64: return "pELS"
+            if v["h3k4me3"] > 1.64: return "DNase-H3K4me3"
         else:
-            if v["h3k27ac"] > 1.64: return "enhancer"
-            if v["h3k4me3"] > 1.64: return "promoter"
+            if v["h3k4me3"] > 1.64: return "dELS"
+            if v["h3k27ac"] > 1.64: return "DNase-H3K4me3"
         if v["ctcf"] > 1.64: return "ctcf"
         if -11.0 == v["dnase"]: return "zunclassified"
-        return "dnase" if v["dnase"] > 1.64 else "yinactive"
+        return "dnase" if v["dnase"] > 1.64 else "ylowdnase"
     
     def peakIntersectCount(self, eset=None):
         coord = self.coord()

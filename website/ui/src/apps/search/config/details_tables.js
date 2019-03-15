@@ -55,8 +55,8 @@ export const TopTissuesTables = (globals, assembly) => ({
 	bFilter: false,
 	rank_f: d => Math.log(d["dnase"])
     },
-    dnase: {
-	title: "Classification in specific biosamples",
+    withdnase: {
+	title: "Classification in biosamples with DNase",
 	helpkey: "",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -84,6 +84,32 @@ export const TopTissuesTables = (globals, assembly) => ({
         bLengthChange: true,
 	bFilter: true,
 	rank_f: (d) => (Math.log(d["dnase"]))
+    },
+    wodnase: {
+	title: "Classification in biosamples without DNase",
+	helpkey: "",
+	cols: [
+	    {title: "cell type", data: "ct", className: "dt-right",
+	     render: Render.cell_type(globals)},
+	    {title: "H3K4me3 Z-score", data: "h3k4me3",
+	     render: Render.z_score
+	    },
+	    {title: "H3K27ac Z-score", data: "h3k27ac",
+	     render: Render.z_score
+	    },
+	    {title: "CTCF Z-score", data: "ctcf",
+	     render: Render.z_score
+	    },
+	    {
+		title: "Group", data: "group",
+		render: Render.ctgroup
+	    }
+	],
+	sortCol: ["group", false],
+	pageLength: 10,
+	paging: true,
+        bLengthChange: true,
+	bFilter: true
     }
 });
 

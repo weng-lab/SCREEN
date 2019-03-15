@@ -23,6 +23,9 @@ from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 from config import Config
 
+from gevent import monkey
+monkey.patch_all()
+
 class WebServerConfig:
     def __init__(self, siteName, production):
         self.siteName = siteName
