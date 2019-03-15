@@ -300,8 +300,8 @@ const DetailsTabInfo = (assembly) => {
 		      enabled: true, f: GroundLevelTab},
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks},
-	/* linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
-		      enabled: true, f: LinkedGenesTab} */
+	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
+		      enabled: true, f: LinkedGenesTab}
     };
 }
 
