@@ -62,10 +62,10 @@ export const numWithCommas = (x) => {
 export const integer = (d) => (d === 1e12 ? "" : numWithCommas(d.toFixed(0)))
 export const real = (d) => (d.toFixed(2))
 export const z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : d.toFixed(2));
-export const dnase_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#06da93">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
-export const h3k4me3_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#ff0000">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
-export const h3k27ac_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#ffcd00">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
-export const ctcf_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span color="#00b0f0">{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const dnase_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#06da93" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const h3k4me3_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#ff0000" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const h3k27ac_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#ffcd00" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
+export const ctcf_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#00b0f0" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
@@ -165,7 +165,7 @@ export const dccLink = (expID) => {
 export const dccLinkFile = (fileID) => {
     const url = 'https://www.encodeproject.org/' + fileID;
     const img = dccImg();
-    return <a target="_blank" href={url}>{img}</a>;
+    return <a target="_blank" href={url}>{img} ({fileID})</a>;
 }
 
 export const gwasLink = (ref) => {
