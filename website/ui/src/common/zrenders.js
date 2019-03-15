@@ -173,12 +173,15 @@ export const gwasLink = (ref) => {
     if(ref.startsWith("ENCFF")){
 	return dccLink(ref);
     }
+    if (ref.startsWith("ENCSR")) {
+	return dccLink(ref);
+    }
     if(ref.startsWith("PMID:") || true){
 	ref = ref.replace('PMID:', '');
 	const url = 'https://www.ncbi.nlm.nih.gov/pubmed/' + ref;
 	const img = <img src={ApiClient.StaticUrl("/logo_pubmed.jpg")}
 			 alt="DCC logo" height="20" />;
-	return <a target="_blank" href={url}>{img}</a>;
+	return <a target="_blank" href={url}>{img} (PMID {ref})</a>;
     }
     return ref;
 }
