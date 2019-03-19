@@ -27,11 +27,13 @@ const cellTypesBox = ({globals, gwas_study, gwas_cell_types, actions}) => {
 	    data={gwas_cell_types}
 	    cols={[
                 {title: "Cell Type", data: "biosample_summary",
-		 width: "50%"},
+		 width: "40%"},
                 {title: "p", data: "pval", 
 		 render: Render.toSciNot, width: "20%"},
                 {title: "FDR", data: "fdr", 
 		 render: Render.toSciNot, width: "20%"},
+		{title: "fold enrichment", data: "foldenrichment", width: "20%",
+		 render: x => x.toFixed(2)},
 		{title: "", data: "cellTypeName", className: "dcc",
 		 render: Render.assayIcon(globals), orderable: false},
                 {title: "", data: "expID", render: Render.dccLink, visible: false,

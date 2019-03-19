@@ -20,8 +20,8 @@ class NavBarApp extends React.Component {
             <Navbar inverse={true}>
 		<Navbar.Header>
 		    <Navbar.Brand>
-			<a href={root}>
-			    {"SCREEN"} GRCh38
+			<a href={root + '/'}>
+			    SCREEN GRCh38
 			</a>
 		    </Navbar.Brand>
 		</Navbar.Header>
