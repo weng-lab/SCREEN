@@ -29,7 +29,7 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "TF ChIP-seq": ["18,98,235", "#1262EB"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
-AgnosticCres = {"5-group": {"hg19": "ENCFF658MYW",
+AgnosticCres = {"7-group": {"hg19": "ENCFF658MYW",
                             "mm10": "ENCFF318XQA",
                             "hg38": "hg38-ccREs.CTA"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
