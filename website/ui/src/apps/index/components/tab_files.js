@@ -35,10 +35,10 @@ const CtaTableColumns = () => {
 	{
 	    title: "Assembly", data: "assembly", className: klassCenter,
 	}, {
-            title: "5 group", data: "5group",
+            title: "7 group", data: "5group",
 	    className: klassCenter, render: dccLink
 	}, {
-            title: "5 group url", data: "5group", visible: false
+            title: "7 group url", data: "5group", visible: false
 	}, {
 	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "9state-H3K27ac",
 	    className: klassCenter, render: dccLink
@@ -72,10 +72,10 @@ const CtsTableColumns = () => {
 	}, {
 	    title: "Biosample", data: "celltypedesc", className: klassCenter,
 	}, {
-            title: "5 group", data: "5group", className: klassCenter,
+            title: "7 group", data: "5group", className: klassCenter,
 	    render: dccLink
 	}, {
-            title: "5 group url", data: "5group", visible: false
+            title: "7 group url", data: "5group", visible: false
 	}, {
             title: <span>9 state high&nbsp;DNase</span>, data: "9state-DNase",
 	    className: klassCenter, render: dccLink
