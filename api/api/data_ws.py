@@ -93,8 +93,8 @@ class DataWebService():
             raise
 
     def _ortholog(self, j, accession):
-        mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession)
-        hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, hg19 = True)
+        mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession, "mm10")
+        hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, "hg19")
         return {accession: {"ortholog": mm10.as_dict(), "hg19": hg19.as_dict()}}
 
     def global_liftover(self, j, args):

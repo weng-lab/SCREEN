@@ -6,19 +6,17 @@ from db_utils import getcursor
 
 
 class Ortholog:
-    def __init__(self, assembly, DBCONN, acc, hg19 = False):
+    def __init__(self, assembly, DBCONN, acc, other):
         self.DBCONN = DBCONN
         self.assembly = assembly
         self.acc = acc
-        self.species = {"ortholog": "mouse" if assembly != "mm10" else "human",
-                        "current": "mouse" if assembly == "mm10" else "human"}
-        self.tablename = "mm10_liftover" if not hg19 else "hg19_liftover"
+        self.tablename = "grch38_liftover_" + other
 
         with getcursor(DBCONN, "ortholog$Ortholog::__init__") as curs:
-            curs.execute("""SELECT chrom, start, stop, {ospecies}Accession, overlap
+            curs.execute("""SELECT chrom, start, stop, otherAccession
                             FROM {tablename}
-                            WHERE {cspecies}Accession = '{acc}'""".format(acc=acc, cspecies=self.species["current"],
-                                                                          ospecies=self.species["ortholog"], tablename=self.tablename))
+                            WHERE thisAccession = '{acc}'""".format(acc=acc,
+                                                                    tablename=self.tablename))
             self.dbresults = curs.fetchall()
 
     def as_dict(self):
@@ -27,5 +25,4 @@ class Ortholog:
         return [{"chrom": dbresult[0],
                  "start": dbresult[1],
                  "stop": dbresult[2],
-                 "accession": dbresult[3],
-                 "overlap": dbresult[4]} for dbresult in self.dbresults]
+                 "accession": dbresult[3]} for dbresult in self.dbresults]
