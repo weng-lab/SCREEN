@@ -175,8 +175,8 @@ class CRE:
             if v["h3k27ac"] > 1.64: return "pELS"
             if v["h3k4me3"] > 1.64: return "DNase-H3K4me3"
         else:
-            if v["h3k4me3"] > 1.64: return "DNase-H3K4me3"
             if v["h3k27ac"] > 1.64: return "dELS"
+            if v["h3k4me3"] > 1.64: return "DNase-H3K4me3"
         if v["ctcf"] > 1.64: return "ctcf"
         if -11.0 == v["dnase"]: return "zunclassified"
         return "dnase" if v["dnase"] > 1.64 else "ylowdnase"
