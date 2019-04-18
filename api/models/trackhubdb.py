@@ -337,7 +337,10 @@ longLabel {tct_long}
         ret = []
 
         cache = self.cacheW[self.assembly if self.assembly != "hg38" else "GRCh38"]
+        alreadydone = set()
         for f in cache.RNAseqFiles(ctn):
+            if f["expID"] + '_' + f["fileID"] in alreadydone: continue
+            alreadydone.add(f["expID"] + '_' + f["fileID"])
             bwt = BigWigTrack(self.assembly, f["expID"], f["fileID"],
                               "RNA-seq", superTrackName, True, ctn)
             desc = ' '.join(["RNA-seq", f["output_type"], "rep", str(f["replicate"]),
