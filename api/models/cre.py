@@ -33,6 +33,23 @@ class CRE:
 
     def vista(self):
         return self.pgSearch.vista(self.accession)
+
+    def nearbyGenesPA(self):
+        coord = self.coord()
+        if not self.genesAll or not self.genesPC:
+            self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
+                                                                 coord.chrom)
+        pcGenes = set([g[0] for g in self.genesPC])
+        retp = []; reta = []
+        for g in self.genesPC:
+            retp.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+        for g in self.genesAll:
+            if g[0] not in pcGenes:
+                reta.append({"name": g[0], "distance": g[1],
+                             "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+        retp.sort(key=lambda g: g["distance"])
+        reta.sort(key=lambda g: g["distance"])
+        return retp, reta
     
     def nearbyGenes(self):
         coord = self.coord()
