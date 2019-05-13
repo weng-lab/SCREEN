@@ -139,9 +139,9 @@ class DataWebService():
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
-        genesp, genesa = CRE(self.pgSearch, j["accession"], self.cache).nearbyGenesPA()
         lookup = self.cache.geneIDsToApprovedSymbol
         for r in results["cres"]:
+            genesp, genesa = CRE(self.pgSearch, r["info"]["accession"], self.cache).nearbyGenesPA()
             r["genesallpc"] = {"all": genesa,
                                "pc": genesp,
                                "accession": r["info"]["accession"]}
