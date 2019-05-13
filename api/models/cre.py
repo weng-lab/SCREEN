@@ -49,7 +49,7 @@ class CRE:
                              "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         retp.sort(key=lambda g: g["distance"])
         reta.sort(key=lambda g: g["distance"])
-        return [ x["name"] for x in retp ], [ x["name"] for x in reta ]
+        return [ x["name"] for x in retp ][:3], [ x["name"] for x in reta ][:3]
     
     def nearbyGenes(self):
         coord = self.coord()
