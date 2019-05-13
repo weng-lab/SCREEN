@@ -44,9 +44,8 @@ class CRE:
         for g in self.genesPC:
             retp.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         for g in self.genesAll:
-            if g[0] not in pcGenes:
-                reta.append({"name": g[0], "distance": g[1],
-                             "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+            reta.append({"name": g[0], "distance": g[1],
+                         "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         retp.sort(key=lambda g: g["distance"])
         reta.sort(key=lambda g: g["distance"])
         return [ x["name"] for x in retp ][:3], [ x["name"] for x in reta ][:3]
