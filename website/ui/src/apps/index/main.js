@@ -52,7 +52,7 @@ class IndexPage extends React.Component {
 
                 {this.title()}
                 <MainTabs
-	      uuid={this.props.uuid}
+	          uuid={this.props.uuid}
                   mainDivId={"mainTabs"}
                   tabUlClass={"nav-pills"}/>
                 {this.footer()}

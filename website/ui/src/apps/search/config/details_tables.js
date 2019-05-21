@@ -141,12 +141,12 @@ export const TopTissuesTables = (globals, assembly) => ({
 
 export const OrthologTable = (globals, assembly, uuid) => ({
     ortholog: {
-	title: "homologous ccREs in mouse (mm10)",
+	title: "homologous cCREs in mouse (mm10)",
 	paging: false,
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No homologous ccREs have been identified for this ccRE.",
+	emptyText: "No homologous cCREs have been identified for this ccRE.",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right"},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
@@ -156,12 +156,12 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	sortCol: ["start", false]
     },
     hg19: {
-	title: "homologous ccREs in hg19",
+	title: "homologous cCREs in hg19",
 	paging: false,
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No homologous ccREs have been identified for this ccRE.",
+	emptyText: "No homologous cCREs have been identified for this ccRE.",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
              render: Render.exrelink("hg19", uuid)},
@@ -175,8 +175,8 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 
 export const FantomCatTable = (globals, assembly, actions) => ({
     fantom_cat_twokb: {
-	title: "Intersecting FANTOM CAT RNAs (ccRE within 2kb of RNA TSS)",
-	emptyText: "This ccRE is not proximal to any FANTOM CAT RNA TSSs",
+	title: "Intersecting FANTOM CAT RNAs (cCRE within 2kb of RNA TSS)",
+	emptyText: "This cCRE is not proximal to any FANTOM CAT RNA TSSs",
 	cols: [
 	    {title: "FANTOM CAT RNA accession", data: "geneid", 
 	     render: fantomcat_link},
@@ -211,8 +211,8 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	bFilter: true
     },
     fantom_cat: {
-	title: "Intersecting FANTOM CAT RNAs (ccRE within entire RNA body)",
-	emptyText: "This ccRE does not intersect any FANTOM CAT RNAs",
+	title: "Intersecting FANTOM CAT RNAs (cCRE within entire RNA body)",
+	emptyText: "This cCRE does not intersect any FANTOM CAT RNAs",
 	cols: [
 	    {title: "FANTOM CAT RNA accession", data: "geneid", 
 	     render: fantomcat_link},
@@ -246,7 +246,7 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     },
     enhancers: {
 	"title": "Intersecting FANTOM enhancers (permissive, FANTOM5 Phases 1 and 2)",
-	emptyText: "This ccRE does not intersect any FANTOM enhancers",
+	emptyText: "This cCRE does not intersect any FANTOM enhancers",
 	cols: [
 	    {title: "chr", data: "chr", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
@@ -275,7 +275,7 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     },
     cage: {
 	"title": "Intersecting FANTOM CAGE peaks (robust, FANTOM5 Phases 1 and 2)",
-	emptyText: "This ccRE does not intersect any FANTOM CAGE peaks",
+	emptyText: "This cCRE does not intersect any FANTOM CAGE peaks",
 	cols: [
 	    {title: "chr", data: "chr", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
@@ -326,7 +326,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    sortCol: ["distance", true]
         },
         nearby_res: {
-	    title: "Nearby ccREs",
+	    title: "Nearby cCREs",
 	    helpkey: "Nearby_cREs",
 	    paging: true,
 	    info: false,
@@ -365,7 +365,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    bFilter: true,
 	    bLengthChange: true,
 	    csv: false,
-	    emptyText: "No VISTA enhancers intersect this ccRE",
+	    emptyText: "No VISTA enhancers intersect this cCRE",
 	    cols: [
 		{title: "VISTA ID", data: "vid", render: _vistalink}
 	    ],
@@ -392,13 +392,13 @@ export const NearbyGenomicTable = (globals, assembly) => {
 		   sortCol: ["name", true]
                },
                re_tads: {
-	           title: "Other ccREs within TAD and <100 kb",
+	           title: "Other cCREs within TAD and <100 kb",
 		   helpkey: "cREsWithinTAD",
 	           paging: true,
 	           info: false,
 	           bFilter: true,
                    bLengthChange: true,
-	           emptyText: "No ccREs within TAD with 100 Kb",
+	           emptyText: "No cCREs within TAD with 100 Kb",
 	           cols: [
 	               {title: "accession", data: "accession",
 	                render: Render.relink(assembly) },
@@ -414,10 +414,10 @@ export const NearbyGenomicTable = (globals, assembly) => {
 
 export const TfIntersectionTable = (globals, assembly) => ({
     "tf": {
-	title: "TFs that bind this ccRE",
+	title: "TFs that bind this cCRE",
         typ: IntersectingAssayTf,
 	helpkey: "Intersecting_transcription_factors",
-	emptyText: "No ENCODE TF ChIP-seq peaks intersect this ccRE",
+	emptyText: "No ENCODE TF ChIP-seq peaks intersect this cCRE",
 	cols: [
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf(assembly) },
@@ -429,10 +429,10 @@ export const TfIntersectionTable = (globals, assembly) => ({
 	sortCol: ["n", false]
     },
     "histone": {
-	title: "Histone Marks at this ccRE",
+	title: "Histone Marks at this cCRE",
 	helpkey: "IntersectingHistoneMarks",
         typ: IntersectingAssayHistone,
-	emptyText: "No ENCODE histone mark ChIP-seq peaks intersect this ccRE",
+	emptyText: "No ENCODE histone mark ChIP-seq peaks intersect this cCRE",
 	cols: [
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
@@ -479,7 +479,7 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
 export const LinkedGenesTable = (globals, assembly) => ({
     "linked_genes": {
 	title: "Linked Genes",
-	emptyText: "No linked genes have been identified for this ccRE using ChIA-PET or eQTL data",
+	emptyText: "No linked genes have been identified for this cCRE using ChIA-PET or eQTL data",
 	cols: [{ title: "gene", data: "gene",
 		 render: Render.geneLink
 	       },{ title: "biosample", data: "celltype",
@@ -495,27 +495,27 @@ export const LinkedGenesTable = (globals, assembly) => ({
 export const GroundLevelTables = (globals, assembly) => ({
     "cdhs": {
 	title: "cDHSs",
-	emptyText: "This ccRE does not intersect any cDHSs.",
+	emptyText: "This cCRE does not intersect any cDHSs.",
 	cols: cDHS_tablecols
     },
     "dnase": {
 	title: "DNase Peaks",
-	emptyText: "No nucleosome-free regions intersect this ccRE.",
+	emptyText: "No nucleosome-free regions intersect this cCRE.",
 	cols: dnase_tablecols
     },
     "histone": {
 	title: "Histone Modifications",
-	emptyText: "No histone mark peaks intersect this ccRE.",
+	emptyText: "No histone mark peaks intersect this cCRE.",
 	cols: histone_tablecols
     },
     "tf": {
 	title: "Transcription Factor Binding Sites",
-	emptyText: "No TF ChIP-seq peaks intersect this ccRE.",
+	emptyText: "No TF ChIP-seq peaks intersect this cCRE.",
 	cols: tf_tablecols
     },
     "3dinteractions": {
 	title: "Long Distance Interactions from ChIA-PET",
-	emptyText: "No long distance interactions intersect this ccRE.",
+	emptyText: "No long distance interactions intersect this cCRE.",
 	cols: interactions_tablecols
     }
 });

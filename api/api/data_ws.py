@@ -93,8 +93,8 @@ class DataWebService():
             raise
 
     def _ortholog(self, j, accession):
-        mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession)
-        hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, hg19 = True)
+        mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession, "mm10")
+        hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, "hg19")
         return {accession: {"ortholog": mm10.as_dict(), "hg19": hg19.as_dict()}}
 
     def global_liftover(self, j, args):
@@ -141,8 +141,9 @@ class DataWebService():
                                          j.get("coord_end", None))
         lookup = self.cache.geneIDsToApprovedSymbol
         for r in results["cres"]:
-            r["genesallpc"] = {"all": [lookup[gid] for gid in r["gene_all_id"][:3]],
-                               "pc": [lookup[gid] for gid in r["gene_pc_id"][:3]],
+            genesp, genesa = CRE(self.pgSearch, r["info"]["accession"], self.cache).nearbyGenesPA()
+            r["genesallpc"] = {"all": genesa,
+                               "pc": genesp,
                                "accession": r["info"]["accession"]}
         if "cellType" in j and j["cellType"]:
             results["rfacets"] = self.pgSearch.rfacets_active(j)

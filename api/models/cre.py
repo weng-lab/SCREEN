@@ -33,6 +33,22 @@ class CRE:
 
     def vista(self):
         return self.pgSearch.vista(self.accession)
+
+    def nearbyGenesPA(self):
+        coord = self.coord()
+        if not self.genesAll or not self.genesPC:
+            self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
+                                                                 coord.chrom)
+        pcGenes = set([g[0] for g in self.genesPC])
+        retp = []; reta = []
+        for g in self.genesPC:
+            retp.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+        for g in self.genesAll:
+            reta.append({"name": g[0], "distance": g[1],
+                         "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+        retp.sort(key=lambda g: g["distance"])
+        reta.sort(key=lambda g: g["distance"])
+        return [ x["name"] for x in retp ][:3], [ x["name"] for x in reta ][:3]
     
     def nearbyGenes(self):
         coord = self.coord()
@@ -175,8 +191,8 @@ class CRE:
             if v["h3k27ac"] > 1.64: return "pELS"
             if v["h3k4me3"] > 1.64: return "DNase-H3K4me3"
         else:
-            if v["h3k4me3"] > 1.64: return "dELS"
-            if v["h3k27ac"] > 1.64: return "DNase-H3K4me3"
+            if v["h3k27ac"] > 1.64: return "dELS"
+            if v["h3k4me3"] > 1.64: return "DNase-H3K4me3"
         if v["ctcf"] > 1.64: return "ctcf"
         if -11.0 == v["dnase"]: return "zunclassified"
         return "dnase" if v["dnase"] > 1.64 else "ylowdnase"

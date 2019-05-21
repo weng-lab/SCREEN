@@ -20,6 +20,7 @@ const myCreateElement = (Component, props) => {
 }
 
 let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
+if (root === '/') root = "";
 
 ReactDOM.render((
     <Router history={browserHistory} createElement={myCreateElement} >

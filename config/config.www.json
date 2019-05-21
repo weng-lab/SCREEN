@@ -5,7 +5,7 @@
 	"db_usr": "postgres",
 	"db_port": 5432,
 	"db": "screenv12",
-	"assemblies": ["GRCh38"],
+	"assemblies": ["GRCh38", "mm10"],
 	"minipeaks_ver": 4,
 	"minipeaks_nbins": 0,
 	"ribbon": "beta",

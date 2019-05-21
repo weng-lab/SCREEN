@@ -18,6 +18,7 @@ class Config:
 
     re = c["RE"]
 
+    partial_assemblies = re["partial_assemblies"] if "partial_assemblies" in re else []
     version = re["version"]
     db_host = re["db_host"]
     db_usr = re["db_usr"]

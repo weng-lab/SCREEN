@@ -149,7 +149,7 @@ query celltypes {
       byAssembly(assembly: hg19) {
         # Cell types with gene expression data
         geBiosamples
-        # Cell types with ccRE data
+        # Cell types with cCRE data
         cellTypeInfoArr {
           name
           value
@@ -189,7 +189,7 @@ class TabAPI extends React.Component {
                 </Row>
                 <Row>
                     <p>
-                        The preferred way to programatically access SCREEN and ccRE data is to use our GraphQL
+                        The preferred way to programatically access SCREEN and cCRE data is to use our GraphQL
                         API. Information on GraphQL can be found {<a href="http://graphql.org/">{' here'}</a>}.
                     </p>
                     <br />
@@ -251,18 +251,18 @@ class TabAPI extends React.Component {
                 </Row>
                 <Row>
                     {makelinkout(
-                        'Search for ccREs by certain parameters',
+                        'Search for cCREs by certain parameters',
                         datarangeexample,
                         datarangevariables
                     )}
                     <br />
-                    {makelinkout('ccRE Details', credetailsexample)}
+                    {makelinkout('cCRE Details', credetailsexample)}
                     <br />
                     {makelinkout('Gene Expression Data', gene_expexample)}
                     <br />
                     {makelinkout('Spike-in Expression Data', spikein_expexample)}
                     <br />
-                    {makelinkout('Available Cell Types for ccREs and Gene Expression', celltypes_examples)}
+                    {makelinkout('Available Cell Types for cCREs and Gene Expression', celltypes_examples)}
                 </Row>
             </Grid>
         );
