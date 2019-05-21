@@ -113,14 +113,14 @@ class ResultsTableContainer extends React.Component {
 	    } else {
 		return (
 		    <span>
-			{"This search is showing ccREs with promoter-like signatures located between the first and last Transcription Start Sites (TSSs) of "}
+			{"This search is showing cCREs with promoter-like signatures located between the first and last Transcription Start Sites (TSSs) of "}
 			{geneTitle}{"."}{click}
 		    </span>);
 	    }
 	}
 	return (
 	    <span>
-		{"This search is showing ccREs overlapping the gene body of "}
+		{"This search is showing cCREs overlapping the gene body of "}
 		{geneTitle}{"."}{click}
 	    </span>);
     }

@@ -256,7 +256,7 @@ class TableWithCart extends React.Component {
 	if(data.length < this.props.total){
 	    tooMany = (
 		<li className={"list-group-item"}>
-		    <em>For performance, SCREEN cannot display more than 1,000 candidate cis-Regulatory Elements (ccREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</em>
+		    <em>For performance, SCREEN cannot display more than 1,000 candidate cis-Regulatory Elements (cCREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</em>
 		</li>);
 	}
 	let failMsg = "";
@@ -272,10 +272,10 @@ class TableWithCart extends React.Component {
 	if(!isCart() && jq && jq.coord_chrom){
 	    meetMsg = (
 		<li className={"list-group-item"}>
-		    <h4>Showing {data.length > 1000 ? 1000 : data.length} matching Candidate cis-Regulatory Elements (ccREs) in the region {jq.coord_chrom}:{jq.coord_start}-{jq.coord_end}.</h4>
+		    <h4>Showing {data.length > 1000 ? 1000 : data.length} matching Candidate cis-Regulatory Elements (cCREs) in the region {jq.coord_chrom}:{jq.coord_start}-{jq.coord_end}.</h4>
 		</li>);
 	}
-	let click = "Click a ccRE accession to view details about the ccRE, including top tissues, nearby genomic features, etc.";
+	let click = "Click a cCRE accession to view details about the ccRE, including top tissues, nearby genomic features, etc.";
 
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";

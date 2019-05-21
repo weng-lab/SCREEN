@@ -199,7 +199,7 @@ class DePlot extends React.Component {
 	   .attr("x", 0)
            .attr("dy", ".71em")
            .style("text-anchor", "end")
-           .text("change in ccRE Z-score")
+           .text("change in cCRE Z-score")
         svg.selectAll(".dot")
            .data(creData)
            .enter().append("circle")

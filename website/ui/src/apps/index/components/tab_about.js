@@ -54,7 +54,7 @@ class TabAbout extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-md-6">
-		        <h3>Classification of ccREs</h3>
+		        <h3>Classification of cCREs</h3>
                     </div>
                 </div>
                 <div className="row">
@@ -66,7 +66,7 @@ class TabAbout extends React.Component {
 		</div>
 		<div className="row">
                     <div className="col-md-6">
-		        <h3>Genomic Footprint of the ccREs</h3>
+		        <h3>Genomic Footprint of the cCREs</h3>
                     </div>
                 </div>
                 <div className="row">
@@ -79,7 +79,7 @@ class TabAbout extends React.Component {
 		</div>
 		<div className="row">
                     <div className="col-md-6">
-			<h3>Comprehensiveness of the Current Registry of ccREs</h3>
+			<h3>Comprehensiveness of the Current Registry of cCREs</h3>
 		    </div>
 		</div>
                 <div className="row">
@@ -121,21 +121,21 @@ class TabAbout extends React.Component {
 		
 		<div className="row">
                     <div className="col-md-6">
-	                <h3>Using ccREs to Interpret GWAS Variants</h3>
+	                <h3>Using cCREs to Interpret GWAS Variants</h3>
 		    </div>
 		</div>
                 <div className="row">
                     <div className="col-md-6">
                         <h4>Curating GWAS Results</h4>
                         {Para.gwas1()}
-                        <h4>Determining Cell Types with ccREs Enriched in GWAS SNPs</h4>
+                        <h4>Determining Cell Types with cCREs Enriched in GWAS SNPs</h4>
                         {Para.gwas2()}
 		    </div>
 		</div>
 		
                 <div className="row">
                     <div className="col-md-6">
-			<h3>How to Cite the ENCODE Encyclopedia, the Registry of ccREs, and SCREEN</h3>
+			<h3>How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN</h3>
 		    </div>
 		</div>
                 <div className="row">

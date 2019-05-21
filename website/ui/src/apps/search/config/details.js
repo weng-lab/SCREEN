@@ -179,7 +179,7 @@ class FantomCatTab extends ReTabBase {
 	    return (
 		<div>
 		  <div style={{fontSize: '12pt', margin: '10px', backgroundColor: 'rgb(255,165,136)'}} className="interpretation panel">
-		      This tab displays the intersection between ccREs and external datasets produced by the&nbsp;
+		      This tab displays the intersection between cCREs and external datasets produced by the&nbsp;
 		      <a href='http://fantom.gsc.riken.jp/' target='_blank' rel="noopener noreferrer">FANTOM Consortium</a>.
 		      For more information on FANTOM data intersected below, see&nbsp;
 		      <a href='https://www.ncbi.nlm.nih.gov/pubmed/28241135' target='_blank' rel="noopener noreferrer">PMID 28241135</a> for RNAs,&nbsp;&nbsp;
@@ -243,7 +243,7 @@ export class RampageTab extends ReTabBase{
             let data = keysAndData.tsss;
 
 	    if(0 === data.length) {
-		return <div><br />{"No RAMPAGE data found for this ccRE"}</div>;
+		return <div><br />{"No RAMPAGE data found for this cCRE"}</div>;
 	    }
 
             return (
@@ -294,7 +294,7 @@ const DetailsTabInfo = (assembly) => {
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: "mm10" !== assembly,
                   f: RampageTab},
-        ortholog: {title: Render.tabTitle(["Linked ccREs in", "other Assemblies"]),
+        ortholog: {title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
 	groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
 		      enabled: true, f: GroundLevelTab},
