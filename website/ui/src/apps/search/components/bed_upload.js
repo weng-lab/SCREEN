@@ -66,8 +66,8 @@ class BedUpload extends React.Component {
     render() {
 	return (
 	    <div>
-		<h2>ccRE intersection</h2>
-		Upload bed files here to be automatically intersected with all available ccREs.
+		<h2>cCRE intersection</h2>
+		Upload bed files here to be automatically intersected with all available cCREs.
 		<br />
 		<div className="dropzone">
 		    <Dropzone onDrop={this.onDrop}>
