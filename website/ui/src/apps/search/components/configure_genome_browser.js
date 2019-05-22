@@ -13,7 +13,7 @@ import Ztable from '../../../common/components/ztable/ztable';
 import DraggableCtList from '../../../common/components/draggable';
 
 class ConfigureGenomeBrowser extends React.Component {
-    state = {"showCombo" : false};
+    state = {"showCombo" : true};
 
     gbclick = (cre, cts, gbrowser) => {
 	const half_window = 7500;
@@ -178,9 +178,6 @@ class ConfigureGenomeBrowser extends React.Component {
 			    </button>
 			</div>
                     </div>
-                    <div className="col-md-4">
-			{options}
-		    </div>
 		</div>
 
 		<br />
