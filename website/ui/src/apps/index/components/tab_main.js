@@ -41,7 +41,7 @@ class TabMain extends React.Component {
                     <div className="col-md-4">
 		        <a className={"btn btn-primary mainButtonGwas"}
                            href={root + "/gwasApp/?assembly=GRCh38"} role={"button"}>
-		            {"Browse GWAS (GRCh38)"}
+		            Browse GWAS<br/>(GRCh38)
 		        </a>
 		    </div>
                 </div>
