@@ -98,7 +98,7 @@ class DataWebService():
             hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, "hg19")
             return {accession: {"ortholog": mm10.as_dict(), "hg19": hg19.as_dict()}}
         hg38 = Ortholog("mm10", self.ps.DBCONN, accession, "GRCh38").as_dict()
-        hg19 = [], hg19accs = set()
+        hg19 = []; hg19accs = set()
         for ortholog in hg38:
             for result in Ortholog("GRCh38", self.ps.DBCONN, ortholog["accession"], "hg19").as_dict():
                 if result["accession"] not in hg19accs:
