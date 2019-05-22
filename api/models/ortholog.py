@@ -10,7 +10,7 @@ class Ortholog:
         self.DBCONN = DBCONN
         self.assembly = assembly
         self.acc = acc
-        self.tablename = "grch38_liftover_" + other
+        self.tablename = assembly + "_liftover_" + other
 
         with getcursor(DBCONN, "ortholog$Ortholog::__init__") as curs:
             curs.execute("""SELECT chrom, start, stop, otherAccession
