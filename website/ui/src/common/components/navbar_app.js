@@ -21,7 +21,7 @@ class NavBarApp extends React.Component {
 		<Navbar.Header>
 		    <Navbar.Brand>
 			<a href={root + '/'}>
-			    SCREEN GRCh38
+			    SCREEN
 			</a>
 		    </Navbar.Brand>
 		</Navbar.Header>
