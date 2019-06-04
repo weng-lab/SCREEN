@@ -160,7 +160,7 @@ class BigWigTrack(object):
 
     def _signalMax(self):
         if "DNase" == self.assay:
-            return "0:150"
+            return "0:30"
         return "0:50"
 
     def _url(self):
