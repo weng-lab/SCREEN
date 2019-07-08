@@ -148,7 +148,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	bLengthChange: false,
 	emptyText: "No homologous cCREs have been identified for this ccRE.",
 	cols: [
-	    {title: "accession", data: "accession", render: Render.relink(assembly === "mm10" ? "hg38" : "mm10", "")},
+	    {title: "accession", data: "accession", render: Render.relink(assembly === "mm10" ? "GRCh38" : "mm10", "")},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
 	    {title: "end", data: "stop", render: Render.integer}
