@@ -31,7 +31,7 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
 
 AgnosticCres = {"7-group": {"hg19": "ENCFF658MYW",
                             "mm10": "ENCFF318XQA",
-                            "hg38": "hg38-ccREs.CTA"},
+                            "hg38": "GRCh38-cCREs.CTA"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
                                         "mm10": "ENCFF549SJX",
                                         "hg38": "hg38-ccREs.H3K4me3.mz.bed.sorted"},
