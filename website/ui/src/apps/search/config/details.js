@@ -297,7 +297,7 @@ const DetailsTabInfo = (assembly) => {
         ortholog: {title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
 	groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
-		      enabled: true, f: GroundLevelTab, enabled: assembly !== "mm10"},
+		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"},
         /* miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks}, */
 	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
