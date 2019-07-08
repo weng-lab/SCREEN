@@ -141,14 +141,14 @@ export const TopTissuesTables = (globals, assembly) => ({
 
 export const OrthologTable = (globals, assembly, uuid) => ({
     ortholog: {
-	title: "homologous cCREs in mouse (mm10)",
+	title: "homologous cCREs in " + (assembly === "mm10" ? " human (GRCh38)" : "mouse (mm10)"),
 	paging: false,
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
 	emptyText: "No homologous cCREs have been identified for this ccRE.",
 	cols: [
-	    {title: "accession", data: "accession", className: "dt-right"},
+	    {title: "accession", data: "accession", render: Render.relink(assembly === "mm10" ? "GRCh38" : "mm10", "")},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
 	    {title: "end", data: "stop", render: Render.integer}
