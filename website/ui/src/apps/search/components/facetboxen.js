@@ -67,7 +67,7 @@ const getTissue = biosample => {
     if (biosample.includes("arm bone")) return "limb";
     if (biosample.includes("aorta") || biosample.includes("artery")) return "blood vessel";
     if (biosample.includes("astrocyte")) return "brain";
-    if (biosample.incldes("CD4") || biosample === "SU-DHL-6") return "blood";
+    if (biosample.includes("CD4") || biosample === "SU-DHL-6") return "blood";
     if (biosample.includes("chorion")) return "chorion";
     if (biosample.includes("colon")) return "colon";
     if (biosample.includes("femur")) return "limb";
