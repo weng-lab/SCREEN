@@ -88,6 +88,7 @@ const getTissue = biosample => {
     if (biosample.includes("placenta")) return "placenta";
     if (biosample.includes("T helper") || biosample.includes("T-helper") || biosample.includes("T cell")) return "blood";
     if (biosample.includes("trophoblast")) return "trophoblast";
+    return "";
 };
 
 const biosamplesBox = ({cellType, actions, globals}) => {
