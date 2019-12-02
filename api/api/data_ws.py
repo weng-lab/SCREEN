@@ -93,7 +93,7 @@ class DataWebService():
         except:
             raise
 
-    def ground_level(self, j):
+    def ground_level(self, j, args):
         results = self.pgSearch.versions()
         r = {}
         for result in results:
