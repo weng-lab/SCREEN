@@ -275,7 +275,7 @@ class TableWithCart extends React.Component {
 		    <h4>Showing {data.length > 1000 ? 1000 : data.length} matching Candidate cis-Regulatory Elements (cCREs) in the region {jq.coord_chrom}:{jq.coord_start}-{jq.coord_end}.</h4>
 		</li>);
 	}
-	let click = "Click a cCRE accession to view details about the ccRE, including top tissues, nearby genomic features, etc.";
+	let click = "Click a cCRE accession to view details about the cCRE, including top tissues, nearby genomic features, etc.";
 
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";

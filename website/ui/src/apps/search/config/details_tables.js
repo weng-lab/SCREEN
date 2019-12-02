@@ -146,7 +146,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No homologous cCREs have been identified for this ccRE.",
+	emptyText: "No homologous cCREs have been identified for this cCRE.",
 	cols: [
 	    {title: "accession", data: "accession", render: Render.relink(assembly === "mm10" ? "GRCh38" : "mm10", "")},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
@@ -161,7 +161,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No homologous cCREs have been identified for this ccRE.",
+	emptyText: "No homologous cCREs have been identified for this cCRE.",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
              render: Render.exrelink("hg19", uuid)},

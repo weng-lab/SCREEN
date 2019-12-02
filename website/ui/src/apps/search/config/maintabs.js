@@ -94,7 +94,7 @@ const MainTabInfo = (parsedQuery, globals) => {
 
     const showRampage = ("mm10" !== assembly) && (!!gene);
 
-    let resultsTitle = isCart() ? "cCREs in Cart" : Render.tabTitle(["ccRE", "Search Results"]);
+    let resultsTitle = isCart() ? "cCREs in Cart" : Render.tabTitle(["cCRE", "Search Results"]);
 
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
 	    /*bedupload : {title: Render.tabTitle(["Bed", "Upload"]),

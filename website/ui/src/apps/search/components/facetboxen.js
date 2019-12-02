@@ -60,6 +60,7 @@ const accessionsBox = ({accessions, actions}) => {
 const getTissue = biosample => {
     if (!biosample || !biosample.includes) return "";
     if (biosample.includes("fibroblast") || biosample.includes("Fibroblast")) return "fibroblast";
+    if (biosample.includes("originated")) return "ESC derived";
     if (biosample.includes("22Rv1") || biosample === "C4-2B" || biosample === "VCaP") return "prostate";
     if (biosample === "ACHN") return "kidney";
     if (biosample.includes("adipose")) return "adipose";
@@ -67,7 +68,7 @@ const getTissue = biosample => {
     if (biosample.includes("arm bone")) return "limb";
     if (biosample.includes("aorta") || biosample.includes("artery")) return "blood vessel";
     if (biosample.includes("astrocyte")) return "brain";
-    if (biosample.incldes("CD4") || biosample === "SU-DHL-6") return "blood";
+    if (biosample.includes("CD4") || biosample === "SU-DHL-6") return "blood";
     if (biosample.includes("chorion")) return "chorion";
     if (biosample.includes("colon")) return "colon";
     if (biosample.includes("femur")) return "limb";
@@ -88,6 +89,10 @@ const getTissue = biosample => {
     if (biosample.includes("placenta")) return "placenta";
     if (biosample.includes("T helper") || biosample.includes("T-helper") || biosample.includes("T cell")) return "blood";
     if (biosample.includes("trophoblast")) return "trophoblast";
+    if (biosample.includes("neurosphere")) return "neurosphere";
+    if (biosample.includes("endoderm")) return "embryonic structure";
+    if (biosample.includes("iPS")) return "iPSC";
+    return "";
 };
 
 const biosamplesBox = ({cellType, actions, globals}) => {
