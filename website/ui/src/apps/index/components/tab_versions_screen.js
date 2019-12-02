@@ -23,12 +23,15 @@ const CtsTableColumns = () => {
         );
     };
 
+    const renderBiosample = biosample => biosample.replace(/b'/g, "").replace(/b"/g, "").substring(0, biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length);
+    
     const dccLinks = experiments => Object.keys(experiments).map(assay => dccLink(assay, experiments[assay]));
 
     return [
         {
             title: 'Biosample',
             data: 'biosample_term_name',
+	    render: renderBiosample
         },
         {
             title: 'Experiments',
