@@ -65,19 +65,25 @@ class TabDataScreen extends React.Component {
 			    (r) => {
 				let versionIDs = Object.keys(r);
 				let versions = {};
+				let totals = {};
 				versionIDs.sort( (a, b) => (a.split("-")[0] === b.split("-")[0] ? +a.split("-")[1] - +b.split("-")[1] : +a.split("-")[0] - +b.split("-")[0]) ).reverse();
 				versionIDs.forEach(id => {
 				    versions[id] = [];
+				    totals[id] = 0;
 				    Object.keys(r[id]).forEach(biosample => {
 					versions[id].push({
 					    biosample_term_name: biosample,
 					    experiments: r[id][biosample]
+					});
+					Object.keys(r[id][biosample]).forEach(assay => {
+					    totals[id] += r[id][biosample][assay].length;
 					});
 				    });
 				});
 				this.setState({versions,
 					       selectedVersion: 0,
 					       versionIDs,
+					       totals,
 					       isFetching: false, isError: false});
 	    },
 	    (err) => {
@@ -94,7 +100,7 @@ class TabDataScreen extends React.Component {
 		    <Tabs defaultActiveKey={1} id="tabset" defaultActiveKey={0}>
  		        { this.state.versionIDs.map( (id, i) => (
    			    <Tab title={id} key={id} eventKey={i}>
-                                <h3>ENCODE and Roadmap Experiments constituting ground level version {id}</h3>
+                                <h3>ENCODE and Roadmap Experiments constituting ground level version {id} ({this.state.totals[id].toLocaleString()} total)</h3>
                                 <Ztable data={this.state.versions[id]} cols={CtsTableColumns()} />
 			    </Tab>
 			))}
