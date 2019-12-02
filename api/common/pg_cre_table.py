@@ -276,7 +276,7 @@ FROM {tn} AS cre
         fields, whereClause = self._buildWhereStatement(j, chrom, start, stop)
         fields = ', '.join(["cre.chrom", "cre.start",
                             "cre.stop",
-                            "cre.accession", "maxZ"])
+                            "cre.accession", "dnase_max"])
 
         q = """
 COPY (
