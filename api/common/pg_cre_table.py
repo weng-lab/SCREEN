@@ -160,12 +160,14 @@ class PGcreTable(object):
 SELECT JSON_AGG(r) from(
 SELECT {fields}, {vtn}.vistaids
 FROM {tn} AS cre
+INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 LEFT JOIN {vtn} ON {vtn}.accession = cre.accession
 {whereClause}
 ORDER BY maxz DESC
 LIMIT 1000) r
 """.format(fields=fields, tn=self.tableName, vtn = self.assembly + "_vista",
-                whereClause=whereClause)
+           ttn = self.assembly + "_ccres_toptier",
+           whereClause=whereClause)
 
             #print("\n", q, "\n")
             if 0:
@@ -280,10 +282,11 @@ FROM {tn} AS cre
 COPY (
 SELECT {fields}
 FROM {tn} AS cre
+INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 {whereClause}
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(fields=fields, tn=self.tableName,
+""".format(fields=fields, tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
            whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
@@ -302,11 +305,12 @@ copy (
 SELECT JSON_AGG(r) from (
 SELECT *
 FROM {tn} AS cre
+INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 {whereClause}
 ) r
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(tn=self.tableName,
+""".format(tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
            whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
