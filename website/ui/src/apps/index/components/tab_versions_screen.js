@@ -59,10 +59,9 @@ class TabDataScreen extends React.Component {
 	}
 	this.setState({isFetching: true});
 	const jq = JSON.stringify({assembly: "hg19"});
-	ApiClient.getByPost(jq, "/dataws/home_inputData",
+	ApiClient.getByPost(jq, "/data/ground_level_versions",
 			    (r) => {
-				this.setState({files: r.files,
-					       version: r.version,
+				this.setState({versions: r,
 					       isFetching: false, isError: false});
 	    },
 	    (err) => {
@@ -73,6 +72,7 @@ class TabDataScreen extends React.Component {
     }
 
     render() {
+	console.log(this.state);
         if("files" in this.state){
 	    return (
 		<div>
