@@ -70,6 +70,7 @@ class DataWebService():
                         "rampage": self.rampage,
                         "gwas_json_download": self.gwas_json_download,
                         "home_inputData": self.home_inputData
+                        "ground_level_versions": self.ground_level
                         }
 
         self.reDetailActions = {
@@ -92,6 +93,16 @@ class DataWebService():
         except:
             raise
 
+    def ground_level(self, j):
+        results = self.pgSearch.versions()
+        r = {}
+        for result in results:
+            if result["version"] not in r: r[result["version"]] = {}
+            if result["biosample"] not in r[result["version"]]: r[result["version"]] = {}
+            if result["assay"] not in r[result["version"]][result["biosample"]]: r[result["version"]][result["biosample"]][result["assay"]] = []
+            r[result["version"]][result["biosample"]][result["assay"]].append(result["accession"])
+        return r
+        
     def _ortholog(self, j, accession):
         if j["assembly"] != "mm10":
             mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession, "mm10")

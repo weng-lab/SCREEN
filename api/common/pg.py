@@ -48,7 +48,13 @@ class PGsearch(object):
         with getcursor(self.pg.DBCONN, "vista") as curs:
             curs.execute("SELECT * from {vtn} WHERE accession = %(acc)s".format(vtn = self.assembly + "_vista"), {"acc": accession})
         return [{ "vid": x[2] } for x in curs.fetchall()]
-        
+
+    def versions(self):
+        q = "SELECT accession, biosample, assay, version FROM {tn}".format(tn = self.assembly + "_ground_level_versions")
+        with getcursor(self.pg.DBCONN, "pg") as curs:
+            curs.execute(q)
+            return curs.fetchall()
+    
     def gwasJson(self, j, json):
         self.pgg.gwasPercentActive(j["gwas_study"], j["cellType"], json)
         
