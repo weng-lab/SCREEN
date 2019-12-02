@@ -69,7 +69,7 @@ class DataWebService():
                         "global_liftover": self.global_liftover,
                         "rampage": self.rampage,
                         "gwas_json_download": self.gwas_json_download,
-                        "home_inputData": self.home_inputData
+                        "home_inputData": self.home_inputData,
                         "ground_level_versions": self.ground_level
                         }
 
