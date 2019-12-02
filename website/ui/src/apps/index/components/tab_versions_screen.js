@@ -65,7 +65,7 @@ class TabDataScreen extends React.Component {
 			    (r) => {
 				let versionIDs = Object.keys(r);
 				let versions = {};
-				versionIDs.sort().reverse();
+				versionIDs.sort( (a, b) => (a.split("-")[0] === b.split("-")[0] ? +a.split("-")[1] - +b.split("-")[1] : +a.split("-")[0] - +b.split("-")[0]) ).reverse();
 				versionIDs.forEach(id => {
 				    versions[id] = [];
 				    Object.keys(r[id]).forEach(biosample => {
@@ -91,9 +91,9 @@ class TabDataScreen extends React.Component {
         if (this.state.versions && this.state.versionIDs)
 	    return (
 		<div>
-		    <Tabs defaultActiveKey={1} id="tabset">
- 		        { this.state.versionIDs.map( id => (
-      		            <Tab title={id} key={id}>
+		    <Tabs defaultActiveKey={1} id="tabset" defaultActiveKey={0}>
+ 		        { this.state.versionIDs.map( (id, i) => (
+   			    <Tab title={id} key={id} eventKey={i}>
                                 <h3>ENCODE and Roadmap Experiments constituting ground level version {id}</h3>
                                 <Ztable data={this.state.versions[id]} cols={CtsTableColumns()} />
 			    </Tab>
