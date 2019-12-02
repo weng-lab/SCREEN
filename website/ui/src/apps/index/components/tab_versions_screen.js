@@ -58,8 +58,8 @@ class TabDataScreen extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-	const jq = JSON.stringify({assembly: "hg19"});
-	ApiClient.getByPost(jq, "/data/ground_level_versions",
+	const jq = JSON.stringify({ assembly: "GRCh38" });
+	ApiClient.getByPost(jq, "/dataws/ground_level_versions",
 			    (r) => {
 				this.setState({versions: r,
 					       isFetching: false, isError: false});
