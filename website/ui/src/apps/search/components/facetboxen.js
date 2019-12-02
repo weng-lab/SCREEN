@@ -60,6 +60,7 @@ const accessionsBox = ({accessions, actions}) => {
 const getTissue = biosample => {
     if (!biosample || !biosample.includes) return "";
     if (biosample.includes("fibroblast") || biosample.includes("Fibroblast")) return "fibroblast";
+    if (biosample.includes("originated")) return "ESC derived";
     if (biosample.includes("22Rv1") || biosample === "C4-2B" || biosample === "VCaP") return "prostate";
     if (biosample === "ACHN") return "kidney";
     if (biosample.includes("adipose")) return "adipose";
@@ -88,6 +89,9 @@ const getTissue = biosample => {
     if (biosample.includes("placenta")) return "placenta";
     if (biosample.includes("T helper") || biosample.includes("T-helper") || biosample.includes("T cell")) return "blood";
     if (biosample.includes("trophoblast")) return "trophoblast";
+    if (biosample.includes("neurosphere")) return "neurosphere";
+    if (biosample.includes("endoderm")) return "embryonic structure";
+    if (biosample.includes("iPS")) return "iPSC";
     return "";
 };
 
