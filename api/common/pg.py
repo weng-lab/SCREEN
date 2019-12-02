@@ -228,7 +228,7 @@ AND isProximal is {isProx}
     def cresInTad(self, accession, chrom, start):
         with getcursor(self.pg.DBCONN, "cresInTad") as curs:
             q = """
-SELECT accession, abs(%s - start) AS distance
+SELECT {cre}.accession AS accession, abs(%s - start) AS distance
 FROM {cre} INNER JOIN {ttn} ON {cre}.accession = {ttn}.accession
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(
