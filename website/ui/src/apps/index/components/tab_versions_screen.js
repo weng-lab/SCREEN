@@ -5,32 +5,32 @@ import loading from '../../../common/components/loading';
 import * as ApiClient from '../../../common/api_client';
 
 const CtsTableColumns = () => {
-    const dccLink = expID => {
-        if ('NA' === expID) {
-            return '';
-        }
-        const url = 'https://encodeproject.org/' + expID;
+    const dccLink = (assay, accs) => {
+        const url = acc => 'https://www.encodeproject.org/experiments/' + acc;
         return (
-            <a key={expID} href={url} target="_blank">
-                {expID}{' '}
-            </a>
+	    <p>
+		<strong>{assay}</strong>:&nbsp;
+                { accs.map( (acc, i) => (
+		    <span key={acc}>
+                        <a href={url(acc)} target="_blank" rel="noopener noreferrer">
+                            {acc}
+                        </a>{ i < accs.length - 1 && ", "}
+   		    </span>
+	        ))}
+	    </p>
         );
     };
 
-    const dccLinks = fileIDs => fileIDs.map(fileID => dccLink(fileID));
+    const dccLinks = experiments => Object.keys(experiments).map(assay => dccLink(assay, experiments[assay]));
 
     return [
-        {
-            title: 'Assembly',
-            data: 'assembly',
-        },
         {
             title: 'Biosample',
             data: 'biosample_term_name',
         },
         {
-            title: 'Files',
-            data: 'fileids',
+            title: 'Experiments',
+            data: 'experiments',
             render: dccLinks,
         },
     ];
@@ -61,7 +61,21 @@ class TabDataScreen extends React.Component {
 	const jq = JSON.stringify({ assembly: "GRCh38" });
 	ApiClient.getByPost(jq, "/dataws/ground_level_versions",
 			    (r) => {
-				this.setState({versions: r,
+				let versionIDs = Object.keys(r);
+				let versions = {};
+				versionIDs.sort().reverse();
+				versionIDs.forEach(id => {
+				    versions[id] = [];
+				    Object.keys(r[id]).forEach(biosample => {
+					versions[id].push({
+					    biosample_term_name: biosample,
+					    experiments: r[id][biosample]
+					});
+				    });
+				});
+				this.setState({versions,
+					       selectedVersion: 0,
+					       versionIDs,
 					       isFetching: false, isError: false});
 	    },
 	    (err) => {
@@ -72,16 +86,13 @@ class TabDataScreen extends React.Component {
     }
 
     render() {
-	console.log(this.state);
-        if("files" in this.state){
+        if (this.state.versions && this.state.versionIDs)
 	    return (
 		<div>
-                    <h3>ENCODE and Roadmap Experiments Used in SCREEN v4.10</h3>
-		    <h4>{this.state.version}</h4>
-                    <Ztable data={this.state.files} cols={CtsTableColumns()} />
+                    <h3>ENCODE and Roadmap Experiments constituting ground level version {this.state.versionIDs[this.state.selectedVersion]}</h3>
+                    <Ztable data={this.state.versions[this.state.versionIDs[this.state.selectedVersion]]} cols={CtsTableColumns()} />
 		</div>
             );
-	}
 	return loading({...this.state})
     }
 }
