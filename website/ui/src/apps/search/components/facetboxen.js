@@ -57,11 +57,43 @@ const accessionsBox = ({accessions, actions}) => {
     return panelize("Accessions", box);
 }
 
+const getTissue = biosample => {
+    if (biosample.includes("fibroblast") || biosample.includes("Fibroblast")) return "fibroblast";
+    if (biosample.includes("22Rv1") || biosample === "C4-2B" || biosample === "VCaP") return "prostate";
+    if (biosample === "ACHN") return "kidney";
+    if (biosample.includes("adipose")) return "adipose";
+    if (biosample === "AG10803") return "fibroblast";
+    if (biosample.includes("arm bone")) return "limb";
+    if (biosample.includes("aorta") || biosample.includes("artery")) return "blood vessel";
+    if (biosample.includes("astrocyte")) return "brain";
+    if (biosample.incldes("CD4") || biosample === "SU-DHL-6") return "blood";
+    if (biosample.includes("chorion")) return "chorion";
+    if (biosample.includes("colon")) return "colon";
+    if (biosample.includes("femur")) return "limb";
+    if (biosample === "EL") return "spleen";
+    if (biosample === "GM08714") return "blood";
+    if (biosample === "HK-2") return "kidney";
+    if (biosample.includes("islet")) return "pancreas";
+    if (biosample.includes("kidney") || biosample.includes("renal")) return "kidney";
+    if (biosample.includes("cardiac")) return "heart";
+    if (biosample.includes("iris")) return "eye";
+    if (biosample.includes("leg bone")) return "limb";
+    if (biosample.includes("lung")) return "lung";
+    if (biosample.includes("LNCAP") || biosample.includes("RWPE")) return "prostate";
+    if (biosample.includes("MCF")) return "breast";
+    if (biosample === "medulloblastoma") return "brain";
+    if (biosample.includes("parathyroid") || biosample.includes("Parathyroid")) return "parathyroid";
+    if (biosample.includes("putamen")) return "brain";
+    if (biosample.includes("placenta")) return "placenta";
+    if (biosample.includes("T helper") || biosample.includes("T-helper") || biosample.includes("T cell")) return "blood";
+    if (biosample.includes("trophoblast")) return "trophoblast";
+};
+
 const biosamplesBox = ({cellType, actions, globals}) => {
     let box = (
 	<LongListFacet
 	    title={""}
-	    data={globals.cellTypeInfoArr}
+	    data={globals.cellTypeInfoArr.map( x => ({ ...x, tissue: x.tissue || getTissue(x) }) )}
 	    cols={[
 		{ title: "", data: "name",
 		  orderable: false,
