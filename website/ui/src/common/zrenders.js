@@ -113,7 +113,7 @@ export const cart_img = (rmv, src_only) => {
     if(src_only){
         return src;
     }
-    const title = (rmv ? "remove cCRE from cart" : "add ccRE to cart");
+    const title = (rmv ? "remove cCRE from cart" : "add cCRE to cart");
     return <img className="rowCart" src={src} title={title} alt="cart" />;
 }
 
