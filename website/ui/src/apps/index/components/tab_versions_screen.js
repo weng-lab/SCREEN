@@ -23,7 +23,7 @@ const CtsTableColumns = () => {
         );
     };
 
-    const renderBiosample = biosample => biosample.replace(/b'/g, "").replace(/b"/g, "").substring(0, biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length);
+    const renderBiosample = biosample => biosample..substring(0, biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length).replace(/b'/g, "").replace(/b"/g, "");
     
     const dccLinks = experiments => Object.keys(experiments).map(assay => dccLink(assay, experiments[assay]));
 
