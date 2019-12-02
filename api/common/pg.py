@@ -55,10 +55,10 @@ class PGsearch(object):
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
         q = """
-SELECT accession, chrom, start, stop
-FROM {tn}
+SELECT {tn}.accession AS accession, chrom, start, stop
+FROM {tn} INNER JOIN {ttn} ON {ttn}.accession = {tn}.accession
 """.format(
-            tn=tableName)
+            tn=tableName, ttn = self.assembly + "_ccres_toptier")
         with getcursor(self.pg.DBCONN, "pg") as curs:
             curs.execute(q)
             r = curs.fetchall()
@@ -196,10 +196,10 @@ AND int4range(start, stop) && int4range(%s, %s)
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_cre_all"
         q = """
-SELECT {cols} FROM {tn}
+SELECT {cols} FROM {tn} INNER JOIN {ttn} ON {tn}.accession = {ttn}.accession
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
-""".format(cols=','.join(cols), tn=tableName)
+""".format(cols=','.join(cols), tn=tableName, ttn = self.assembly + "_ccres_toptier")
 
         if isProximalOrDistal is not None:
             q += """
@@ -211,7 +211,7 @@ AND isProximal is {isProx}
             return curs.fetchall()
 
     def distToNearbyCREs(self, accession, coord, halfWindow):
-        cols = ["start", "stop", "accession"]
+        cols = ["start", "stop", self.assembly + "_cre_all.accession AS accession"]
         cres = self.nearbyCREs(coord, halfWindow, cols, None)
         ret = []
         for c in cres:
@@ -229,7 +229,7 @@ AND isProximal is {isProx}
         with getcursor(self.pg.DBCONN, "cresInTad") as curs:
             q = """
 SELECT accession, abs(%s - start) AS distance
-FROM {cre}
+FROM {cre} INNER JOIN {ttn} ON {cre}.accession = {ttn}.accession
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(
 (SELECT int4range(min(start), max(stop))
@@ -240,6 +240,7 @@ WHERE accession = %s))
 AND abs(%s - start) < 100000
 ORDER BY 2
 """.format(cre=self.assembly + "_cre_all",
+           ttn = self.assembly + "_ccres_toptier",
                 ti=self.assembly + "_tads_info",
                 tads=self.assembly + "_tads")
             curs.execute(q, (start, chrom, accession, start))
