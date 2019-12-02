@@ -58,6 +58,7 @@ const accessionsBox = ({accessions, actions}) => {
 }
 
 const getTissue = biosample => {
+    if (!biosample || !biosample.includes) return "";
     if (biosample.includes("fibroblast") || biosample.includes("Fibroblast")) return "fibroblast";
     if (biosample.includes("22Rv1") || biosample === "C4-2B" || biosample === "VCaP") return "prostate";
     if (biosample === "ACHN") return "kidney";
