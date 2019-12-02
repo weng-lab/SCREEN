@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Tabs, Tab } from 'react-bootstrap';
+
 import Ztable from '../../../common/components/ztable/ztable';
 import loading from '../../../common/components/loading';
 import * as ApiClient from '../../../common/api_client';
@@ -89,8 +91,14 @@ class TabDataScreen extends React.Component {
         if (this.state.versions && this.state.versionIDs)
 	    return (
 		<div>
-                    <h3>ENCODE and Roadmap Experiments constituting ground level version {this.state.versionIDs[this.state.selectedVersion]}</h3>
-                    <Ztable data={this.state.versions[this.state.versionIDs[this.state.selectedVersion]]} cols={CtsTableColumns()} />
+		    <Tabs defaultActiveKey={1} id="tabset">
+ 		        { this.state.versionIDs.map( id => (
+      		            <Tab title={id} key={id}>
+                                <h3>ENCODE and Roadmap Experiments constituting ground level version {id}</h3>
+                                <Ztable data={this.state.versions[id]} cols={CtsTableColumns()} />
+			    </Tab>
+			))}
+		    </Tabs>
 		</div>
             );
 	return loading({...this.state})
