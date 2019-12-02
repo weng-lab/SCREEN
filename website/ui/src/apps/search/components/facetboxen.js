@@ -93,7 +93,7 @@ const biosamplesBox = ({cellType, actions, globals}) => {
     let box = (
 	<LongListFacet
 	    title={""}
-	    data={globals.cellTypeInfoArr.map( x => ({ ...x, tissue: x.tissue || getTissue(x) }) )}
+	    data={globals.cellTypeInfoArr.map( x => ({ ...x, tissue: x.tissue || getTissue(x.name) }) )}
 	    cols={[
 		{ title: "", data: "name",
 		  orderable: false,
