@@ -97,7 +97,7 @@ const figureLegends = [
 	    <span><strong>Figure 4 | Genomic coverage of cCREs.</strong> Percentages of the human GRCh38 genome (left) and mouse mm10 genome (right) comprising cCREs stratified by cCRE group: PLS in red, pELS in orange, dELS in yellow, DNase-H3K4me3 in pink and CTCF-only in blue.</span>
     ),
     () => (
-	<span><strong>Figure 5 | Enrichment of GWAS SNPs in biosample specific cCREs.</strong> SCREEN reports the percentage of LD blocks of a GWAS with at least one SNP overlapping a cCRE. Biosamples are ranked by enrichment of SNP-overlapping cCREs with high H3K27ac signals. Top cell and tissue types are displayed here for each study. 
+	<span><strong>Figure 5 | Enrichment of GWAS SNPs in biosample specific cCREs.</strong> SCREEN reports the percentage of LD blocks of a GWAS with at least one SNP overlapping a cCRE. Biosamples are ranked by enrichment of SNP-overlapping cCREs with high H3K27ac signals. Top cell and tissue types are displayed here for each study.</span>
     )
 ];
 
@@ -105,7 +105,7 @@ export const citation = () => (
     <ul>
         <li>ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M. 2012. An integrated encyclopedia of DNA elements in the human genome. <i>Nature</i> 489: 57–74.</li>
         <li>ENCODE Project Consortium, Myers RM, Stamatoyannopoulos J, Snyder M, Dunham I, Hardison RC, Bernstein BE, Gingeras TR, Kent WJ, Birney E, et al. 2011. A user's guide to the encyclopedia of DNA elements (ENCODE). <i>PLoS Biol</i> 9: e1001046.</li>
-    </ul>)
+	</ul>);
 
 export const figure = (num, alt, style = {}) => {
     const imgSrc = "/about/images/figure" + num + ".png";
