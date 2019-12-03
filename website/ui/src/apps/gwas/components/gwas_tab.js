@@ -10,6 +10,7 @@ import CelltypeView, {ConnAllCTView} from '../components/celltype_view';
 import loading from '../../../common/components/loading';
 import {arrowNote} from '../../../common/utility';
 import Ztable from '../../../common/components/ztable/ztable';
+import Legend from '../../search/components/legend';
 
 class GwasTab extends React.Component{
     constructor(props) {
@@ -93,7 +94,8 @@ class GwasTab extends React.Component{
                 </div>
                 <div className="row">
                     <div className="col-md-6">
-		        {mainTable}
+		{mainTable}
+		<Legend {...this.props} />
                     </div>
                 </div>
                 <div className="row">
