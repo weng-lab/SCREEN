@@ -119,7 +119,7 @@ export const figure = (num, alt, style = {}) => {
 	                 style={style}
                     />
                     <figcaption className={"figure-caption"}>
-                        {figureLegends[num - 1]}
+                        {figureLegends[num - 1]()}
                     </figcaption>
                 </figure>
             </div>
