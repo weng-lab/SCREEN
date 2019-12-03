@@ -41,8 +41,6 @@ const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
     const tz = (name, cts) => cts ? (<span>{name} Z in<br />{cts}</span>) : (<span>{name}<br />max-Z</span>);
     
     return [
-      { title: "", data: "checked", className: "selectcre",
-	      render: ZRender.checkRd},
 	{
 	    title: accHelp, data: "info", sortDataF: (d) => (ZRender.accSorter(d)),
             render: ZRender.creTableAccession(globals)
