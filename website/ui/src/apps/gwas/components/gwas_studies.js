@@ -13,7 +13,7 @@ const make_gwas_friendly = (gwas) => (gwas_study) => {
 }
 
 const render_pubmed_link = (id) => (
-    <a target='_blank' href={"https://www.ncbi.nlm.nih.gov/pubmed/" + id}>{id}</a>);
+    <a target='_blank' rel="noopener noreferrer" href={"https://www.ncbi.nlm.nih.gov/pubmed/" + id}><u>{id}</u></a>);
 
 class SingleStudy  extends React.Component {
     render() {
@@ -22,8 +22,8 @@ class SingleStudy  extends React.Component {
 	    data={this.props.gwas.studies}
 	    cols={[
 		{ title: "Study", data: "trait", width: "25%",
-		}, {title: "Author", data: "author",
-		}, {title: "Pubmed", data: "pubmed",
+		}, {title: "Author", data: "pubmed",
+		}, {title: "Pubmed", data: "author",
 		    className: "pubmed", render: render_pubmed_link},
 		{title: <span>Cell Type<br/>Enrichment</span>, data: "hasenrichment", sortDataF: x => (x ? 'a' : 'b'),
 		 render: x => (x ? <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> : null)}
