@@ -59,7 +59,7 @@ export const additionalProperties = () => (<span>
 </ul>
 <p>
 Details and results from these analyses can be found at our companion website, <a href="http://encyclopedia.wenglab.org/">http://encyclopedia.wenglab.org/</a>.
-    </p></>);
+    </p></span>);
 
 export const groundLevel = () => (
     <p>
@@ -85,16 +85,16 @@ const figureLegends = [
     () => (
 	    <span>
 	    <strong>Figure 1 | Overview of the ENCODE Encyclopedia with a Registry of candidate cis-regulatory elements.</strong> The Encyclopedia consists of ground-level and integrative-level of annotations that use data processed by the uniform processing pipelines. SCREEN integrates all levels of annotations and raw data and allows users to visualize them in the UCSC genome browser.
-	    </>
+	    </span>
     ),
     () => (
-	<span><strong>Figure 2 | Selection and classification of cCREs to build the Registry of candidate cis-regulatory elements.</strong> We begin by filtering and clustering DNase peaks to create representative DHSs (rDHSs). We then select those rDHSs with high DNase signal (maximal Z-score or max-Z across all biosamples with data, see Methods) and high signal for at least one other assay (H3K4me3, H3K27ac or CTCF) to be cCREs. In total, we define 926,535 cCREs in human and 339,815 cCREs in mouse. Based on combinations of signal and genomic context, we classify cCREs into one of these groups: PLS, pELS, dELS, DNase-H3K4me3, or CTCF-only, and their counts are indicated (k: thousand; M: million).</>
+	<span><strong>Figure 2 | Selection and classification of cCREs to build the Registry of candidate cis-regulatory elements.</strong> We begin by filtering and clustering DNase peaks to create representative DHSs (rDHSs). We then select those rDHSs with high DNase signal (maximal Z-score or max-Z across all biosamples with data, see Methods) and high signal for at least one other assay (H3K4me3, H3K27ac or CTCF) to be cCREs. In total, we define 926,535 cCREs in human and 339,815 cCREs in mouse. Based on combinations of signal and genomic context, we classify cCREs into one of these groups: PLS, pELS, dELS, DNase-H3K4me3, or CTCF-only, and their counts are indicated (k: thousand; M: million).</span>
     ),
     () => (
-	    <span><strong>Figure 3 |  Classification of cCREs in GM12878.</strong> <strong>a</strong>, Classification of seven groups of cCREs (PLS, pELS, dELS, DNase-H3K4me3, CTCF-only, DNase-only, or low-DNase) in GM12878 by their states of high or low H3K4me3, H3K27ac, or CTCF Z-scores in GM12878. <strong>b</strong>, Number of each group of GM12878 cCREs.</>
+	    <span><strong>Figure 3 |  Classification of cCREs in GM12878.</strong> <strong>a</strong>, Classification of seven groups of cCREs (PLS, pELS, dELS, DNase-H3K4me3, CTCF-only, DNase-only, or low-DNase) in GM12878 by their states of high or low H3K4me3, H3K27ac, or CTCF Z-scores in GM12878. <strong>b</strong>, Number of each group of GM12878 cCREs.</span>
     ),
     () => (
-	    <span><strong>Figure 4 | Genomic coverage of cCREs.</strong> Percentages of the human GRCh38 genome (left) and mouse mm10 genome (right) comprising cCREs stratified by cCRE group: PLS in red, pELS in orange, dELS in yellow, DNase-H3K4me3 in pink and CTCF-only in blue.</>
+	    <span><strong>Figure 4 | Genomic coverage of cCREs.</strong> Percentages of the human GRCh38 genome (left) and mouse mm10 genome (right) comprising cCREs stratified by cCRE group: PLS in red, pELS in orange, dELS in yellow, DNase-H3K4me3 in pink and CTCF-only in blue.</span>
     ),
     () => (
 	<span><strong>Figure 5 | Enrichment of GWAS SNPs in biosample specific cCREs.</strong> SCREEN reports the percentage of LD blocks of a GWAS with at least one SNP overlapping a cCRE. Biosamples are ranked by enrichment of SNP-overlapping cCREs with high H3K27ac signals. Top cell and tissue types are displayed here for each study. 
