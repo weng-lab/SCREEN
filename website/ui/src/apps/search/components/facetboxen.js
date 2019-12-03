@@ -35,9 +35,7 @@ const rangeBox = (title, range, start, end, action, nohistogram) => {
 const make_ct_friendly = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 const accessionsBox = ({accessions, actions}) => {
-    if(0 === accessions.length){
-        return (<div />);
-    }
+    if (!accessions || !accessions.map || 0 === accessions.length) return <div />;
     let box = (
 	<LongChecklistFacet
 	title={""}

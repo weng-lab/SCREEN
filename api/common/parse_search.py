@@ -91,8 +91,8 @@ class ParseSearch:
 
         ret = {"cellType": None,
                "coord_chrom": None,
-               "coord_start": None,
-               "coord_end": None,
+               "coord_start": 0,
+               "coord_end": 300000000,
                "element_type": None,
                "approved_symbol": None,
                "interpretation": {}}
