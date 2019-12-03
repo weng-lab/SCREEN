@@ -48,7 +48,7 @@ class DE:
         ct1PromoterIdx = rmLookup[self.ct1]
         ct2PromoterIdx = rmLookup[self.ct2]
 
-        cols = ["accession", "start", "stop",
+        cols = [self.assembly + "_cre_all.accession AS accession", "start", "stop",
                 "h3k4me3_zscores[%s]" % ct1PromoterIdx,
                 "h3k4me3_zscores[%s]" % ct2PromoterIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
@@ -66,7 +66,7 @@ class DE:
         ct1EnhancerIdx = rmLookup[self.ct1]
         ct2EnhancerIdx = rmLookup[self.ct2]
 
-        cols = ["accession", "start", "stop",
+        cols = [self.assembly + "_cre_all.accession AS accession", "start", "stop",
                 "h3k27ac_zscores[%s]" % ct1EnhancerIdx,
                 "h3k27ac_zscores[%s]" % ct2EnhancerIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
