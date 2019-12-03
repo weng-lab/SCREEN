@@ -101,9 +101,6 @@ const biosamplesBox = ({cellType, actions, globals}) => {
 	    title={""}
 	    data={globals.cellTypeInfoArr.map( x => ({ ...x, tissue: x.tissue || getTissue(x.name) }) )}
 	    cols={[
-		{ title: "", data: "name",
-		  orderable: false,
-		  render: () => (<input type='radio' />)},
 		{ title: "cell type", data: "name"},
 		{ title: "tissue", data: "tissue"},
 		{ title: "", data: "cellTypeName",
