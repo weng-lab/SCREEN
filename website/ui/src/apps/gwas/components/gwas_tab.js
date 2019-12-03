@@ -95,12 +95,12 @@ class GwasTab extends React.Component{
                 <div className="row">
                     <div className="col-md-6">
 		{mainTable}
-		<Legend {...this.props} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-md-12">
-                        {ctView}
+                {ctView}
+	    		<Legend {...this.props} />
                     </div>
                 </div>
             </div>);

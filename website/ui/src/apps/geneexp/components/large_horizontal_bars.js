@@ -5,7 +5,7 @@ import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
 
 class LargeHorizontalBars extends React.Component {
     render(){
-	try {
+
             if(this.props.isFetching){
 		return loading(this.props);
             }
@@ -35,6 +35,7 @@ class LargeHorizontalBars extends React.Component {
 	    };
 
 	    const items = ds[this.props.sortOrder];
+	    if (!items) return <h3>No expression data is available for the selected criteria. Try adjusting your filters.</h3>;
 	    
 	    return (
 		    <div>
@@ -46,9 +47,7 @@ class LargeHorizontalBars extends React.Component {
 		format={format} />
 		    </div>
 	    );
-	} catch (e) {
-	    return <h3>No expression data is available for the selected criteria. Try adjusting your filters.</h3>
-	}
+
     }
 }
 
