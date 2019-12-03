@@ -23,7 +23,7 @@ class TabMain extends React.Component {
                     <div className="col-md-12">
 		        SCREEN is a web interface for searching and visualizing the Registry of
 			candidate cis-Regulatory Elements (cCREs) derived from <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>.
-		        The Registry contains 1.59M human cCREs in GRCh38 and 500 thousand in mm10,
+		        The Registry contains 926,535 human cCREs in GRCh38 and 339,815 mouse cCREs in mm10,
 			with homologous cCREs cross-referenced across species.  SCREEN presents the data that support
 			biochemical activities of the cCREs and the expression of nearby genes in
 			specific cell and tissue types.

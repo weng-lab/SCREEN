@@ -2,7 +2,6 @@ import React from 'react'
 
 import {Tabs, Tab} from 'react-bootstrap'
 import {tabPanelize} from '../../../common/utility'
-import ASHG from './tab_ashg_2017'
 
 class UTabUCSC extends React.Component {
     render() {
@@ -90,9 +89,6 @@ class TabTutorial extends React.Component {
                   </Tab>
 		  <Tab eventKey={2} title="UCSC Genome Browser">
 		    <UTabUCSC {...this.props} />
-		  </Tab>
-	          <Tab eventKey={3} title="ASHG 2017">
-		    <ASHG {...this.props} />
 		  </Tab>
 		</Tabs>
 	);

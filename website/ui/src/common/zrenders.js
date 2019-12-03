@@ -220,7 +220,8 @@ export const cistromeLink = (acc) => (
     <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc} target='_blank'>{acc}</a>);
 
 export const factorbook_link_tf = (assembly) => (d) => {
-    const lookup = {"hg19": "human",
+    const lookup = {"GRCh38": "human",
+		    "hg19": "human",
 		    "mm10": "mouse"};
     const url = "http://www.factorbook.org/" + lookup[assembly] + "/chipseq/tf/" + d;
     return <a href={url} target="_blank">{d}</a>;
