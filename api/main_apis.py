@@ -6,6 +6,7 @@ import cherrypy
 import jinja2
 import os
 import sys
+import uuid
 
 from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
@@ -91,14 +92,14 @@ class Apis():
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ucsc_trackhub_url(j, j["uuid"])
+        return self.trackhub.ucsc_trackhub_url(j, j["uuid"] if "uuid" in j else str(uuid.uuid4()))
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url_snp(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ucsc_trackhub_url_snp(j, j["uuid"])
+        return self.trackhub.ucsc_trackhub_url_snp(j, j["uuid"] if "uuid" in j else str(uuid.uuid4()))
 
     @cherrypy.expose
     # @cherrypy.config(**{'tools.cors.on': True})
