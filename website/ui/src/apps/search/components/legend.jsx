@@ -6,22 +6,22 @@ export const Legend = props => (
 		<div className="panel-body legendPanel">
 		    <div className="row">
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend(this.props.globals, 'P')}
+			    {Render.sctGroupIconLegend(props.globals, 'P')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend(this.props.globals, 'E')}
+			    {Render.sctGroupIconLegend(props.globals, 'E')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend(this.props.globals, 'C')}
+			    {Render.sctGroupIconLegend(props.globals, 'C')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend(this.props.globals, 'D')}
+			    {Render.sctGroupIconLegend(props.globals, 'D')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend(this.props.globals, 'I')}
+			    {Render.sctGroupIconLegend(props.globals, 'I')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend(this.props.globals, 'U')}
+			    {Render.sctGroupIconLegend(props.globals, 'U')}
 			</div>
 		    </div>
 		    <div className="row">
