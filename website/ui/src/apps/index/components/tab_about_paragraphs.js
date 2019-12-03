@@ -66,7 +66,7 @@ export const groundLevel = () => (
 	In addition to hosting the Registry of cCREs, SCREEN also integrates the ground level Encyclopedia annotations. Under the <em>cCRE Details page</em> for each cCRE are the overlapping ground level annotations with links to their derived experiments. Additionally, some annotations, such as histone mark and TF ChIP-seq peaks, gene expression, and RAMPAGE transcription levels are highlighted further with specific tabs under the <em>cCRE Details</em> page.
     </p>);
 
-export const gwas1 = () => 
+export const gwas1 = () => (
 <p>We downloaded associations reported in the <a href="https://www.ebi.ac.uk/gwas/">NHGRI-EBI genome-wide association studies (GWAS) catalog</a> as of January 1, 2019. Because mixed populations complicate linkage disequilibrium (LD) structures, we only selected studies that were performed on a single population. For each study, we downloaded all reported SNPs (<em>p</em> &lt; 10<sup>-6</sup>), even those that were just under genome wide significance. We then intersected all reported SNPs and SNPs in high LD (<em>r<sup>2</sup></em> &gt; 0.7), with GRCh38 cCREs. These results are available through the SCREEN GWAS app.</p>);
 
 export const gwas2 = () => (
