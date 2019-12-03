@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Render from '../../../common/zrenders';
 
 export const Legend = props => (
 	    <div className="panel panel-default">
