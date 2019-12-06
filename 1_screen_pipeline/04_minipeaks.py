@@ -42,6 +42,8 @@ class ExtractRawPeaks:
         if not os.path.exists(self.bwtool):
             self.bwtool = "/usr/local/bin/bwtool"
         if not os.path.exists(self.bwtool):
+            self.bwtool = "/data/common/tools/bwtool"
+        if not os.path.exists(self.bwtool):
             raise Exception("no bwtool found")
 
         self.bwtoolFilter = os.path.join(os.path.dirname(__file__),
@@ -214,8 +216,8 @@ def parse_args():
     parser.add_argument('--list', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="")
     parser.add_argument('--assay', type=str, default="")
-    parser.add_argument('--ver', type=int, default=4)
-    parser.add_argument('--nbins', type=int, default=0)
+    parser.add_argument('--ver', type=int, default=6)
+    parser.add_argument('--nbins', type=int, default=20)
     args = parser.parse_args()
     return args
 
@@ -223,7 +225,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = ["GRCh38", "mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
