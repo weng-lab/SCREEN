@@ -28,7 +28,8 @@ copy_reg.pickle(types.MethodType, _reduce_method)
 
 
 class ExtractRawPeaks:
-    def __init__(self, assembly, ver, nbins, j):
+    def __init__(self, args, assembly, ver, nbins, j):
+        self.args = args
         self.assembly = assembly
         self.var = ver
         self.nbins = nbins
@@ -46,12 +47,15 @@ class ExtractRawPeaks:
         if not os.path.exists(self.bwtool):
             raise Exception("no bwtool found")
 
-        self.bwtoolFilter = os.path.join(os.path.dirname(__file__),
-                                         'minipeaks/bin/read_json')
+        self.bwtoolFilter = os.path.abspath(
+            os.path.join(os.path.dirname(__file__),
+                         'minipeaks/bin/read_json'))
         if not os.path.exists(self.bwtoolFilter):
             raise Exception("missing C++ bwtool filter; please compile?")
 
         self.masterPeakFnp = os.path.join(self.raw, "cREs.bed")
+        if "GRCh38" == assembly:
+            self.masterPeakFnp = "/data/projects/encode/Registry/V2/GRCh38/GRCh38-ccREs.bed"
         self.numPeaks = numLines(self.masterPeakFnp)
         printt(self.masterPeakFnp, "has", self.numPeaks)
 
@@ -63,14 +67,17 @@ class ExtractRawPeaks:
         self.writeBed()
         self.extractAndDownsamplePeaks()
 
-    def _runBwtool(self, outD, fnp):
+    def _runBwtool(self, outD, fnp, f = None):
         outFnp = os.path.join(outD, os.path.basename(fnp) + ".txt")
         cmds = [self.bwtool, "extract", "bed",
                 self.miniPeaksBedFnp,
                 fnp, "/dev/stdout",
                 '|', self.bwtoolFilter, "--nbars " + str(self.nbins),
                 '>', outFnp]
-        Utils.runCmds(cmds)
+        if self.args.slurm:
+            f.write(' '.join(cmds) + '\n')
+        else: 
+            Utils.runCmds(cmds)
         if self.debug:
             printt("wrote", outFnp)
 
@@ -97,9 +104,16 @@ class ExtractRawPeaks:
 
         if self.debug:
             bfnps = [bfnps[0]]
-        Parallel(n_jobs=self.j)(delayed(self._runBwtool)
-                                (outD, fnp)
-                                for fnp in bfnps)
+        if self.args.slurm:
+            ofnp = os.path.join(self.minipeaks, "create_raw_peaks_slurm.txt")
+            with open(ofnp, 'w') as f:
+                for fnp in bfnps:
+                    self._runBwtool(outD, fnp, f)
+            printWroteNumLines(ofnp)
+        else:
+            Parallel(n_jobs=self.j)(delayed(self._runBwtool)
+                                    (outD, fnp)
+                                    for fnp in bfnps)
 
     def writeBed(self):
         inFnp = self.masterPeakFnp
@@ -214,6 +228,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--list', action="store_true", default=False)
+    parser.add_argument('--slurm', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="")
     parser.add_argument('--assay', type=str, default="")
     parser.add_argument('--ver', type=int, default=6)
@@ -233,12 +248,12 @@ def main():
     ver = args.ver
     for assembly in assemblies:
         if 1:
-            ep = ExtractRawPeaks(assembly, ver, nbins, args.j)
+            ep = ExtractRawPeaks(args, assembly, ver, nbins, args.j)
             ep.run()
-        if 1:
+        if 0:
             mf = MergeFiles(assembly, ver, nbins, args.assay)
             mf.run()
-        if 1:
+        if 0:
             sample(assembly, ver, nbins)
 
     return 0
