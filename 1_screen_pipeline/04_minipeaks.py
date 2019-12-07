@@ -145,6 +145,11 @@ class MergeFiles:
 
         self.minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
 
+        self.raw = paths.path(assembly, "raw")
+        self.masterPeakFnp = os.path.join(self.raw, "cREs.bed")
+        if "GRCh38" == assembly:
+            self.masterPeakFnp = "/data/projects/encode/Registry/V2/GRCh38/GRCh38-ccREs.bed"
+
     def _getFileIDs(self, fn):
         assay = fn.split('-')[0]
         printt("***********************", self.assembly, assay)
@@ -176,7 +181,7 @@ class MergeFiles:
             self.processRankMethod(presentFileIDs, fnps, assay)
 
     def _makeAccesionFile(self, fnp):
-        cmds = [cat(paths.path(self.assembly, "raw", "cREs.bed")),
+        cmds = [cat(self.masterPeakFnp),
                 '|', "awk -v OFS='\t' '{ print($5,$1) }'",
                 '>', fnp]
         Utils.runCmds(cmds)
@@ -247,13 +252,13 @@ def main():
     nbins = args.nbins
     ver = args.ver
     for assembly in assemblies:
-        if 1:
+        if 0:
             ep = ExtractRawPeaks(args, assembly, ver, nbins, args.j)
             ep.run()
-        if 0:
+        if 1:
             mf = MergeFiles(assembly, ver, nbins, args.assay)
             mf.run()
-        if 0:
+        if 1:
             sample(assembly, ver, nbins)
 
     return 0
