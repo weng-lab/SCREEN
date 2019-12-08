@@ -205,16 +205,26 @@ class MergeFiles:
         chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
 
+def makeSubsampledAccessions(assembly, ver, nbins, accessionsFnp):
+    Utils.ensureDir(accessionsFnp)
+
+    minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
+    miniPeaksBedFnp = os.path.join(minipeaks, "miniPeakSites.bed.gz")
+
+    cmds = ["zcat", miniPeaksBedFnp,
+            "| awk '{ print $4 }' ",
+            "| awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}'",
+            ">", accessionsFnp]
+    printt("about to run", " ".join(cmds))
+    Utils.runCmds(cmds)
+    printWroteNumLines(accessionsFnp)
+        
 def sample(assembly, ver, nbins):
     minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
 
     accessionsFnp = paths.fnpCreTsvs(assembly, "sample", "sampled_accessions.txt")
-    fnps = paths.fnpCreTsvs(assembly, "sample", "chr*.tsv.gz")
-    cmds = ["zcat", fnps,
-            '|', "awk '{ print $1 }'",
-            '>', accessionsFnp]
-    Utils.runCmds(cmds)
-    printWroteNumLines(accessionsFnp)
+
+    makeSubsampledAccessions(assembly, ver, nbins, accessionsFnp)
 
     fns = ["dnase-list.txt", "h3k27ac-list.txt", "h3k4me3-list.txt"]
     for fn in fns:
@@ -255,7 +265,7 @@ def main():
         if 0:
             ep = ExtractRawPeaks(args, assembly, ver, nbins, args.j)
             ep.run()
-        if 1:
+        if 0:
             mf = MergeFiles(assembly, ver, nbins, args.assay)
             mf.run()
         if 1:
