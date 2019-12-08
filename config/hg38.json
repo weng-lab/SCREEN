@@ -1,21 +1,28 @@
 {
     "RE": {
-	"version": 12,
+	"version": 13,
 	"db_host": "pg_screen_v10",
 	"db_usr": "postgres",
 	"db_port": 5432,
 	"db": "screenv10",
-	"assemblies": ["GRCh38", "mm10"],
-	"partial_assemblies": [],
-	"minipeaks_ver": 4,
-	"minipeaks_nbins": 0,
+	"assemblies": [
+	    "GRCh38",
+	    "mm10"
+	],
+	"partial_assemblies": [
+	    
+	],
+	"minipeaks_ver": 6,
+	"minipeaks_nbins": 20,
 	"ribbon": "beta",
 	"googleAnalytics": false,
 	"memcache": false,
-	"cassandra": ["pgs_cassandra"],
+	"cassandra": [
+	    "cassandra_v6_13"
+	],
 	"redisHost": "127.0.0.1",
 	"downloadDir": "/app/downloads/",
-        "rnaSeqIsNorm": true
+	"rnaSeqIsNorm": true
     },
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",
@@ -27,6 +34,8 @@
 	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
 	"bed_intersect": "https://api.wenglab.org/screenv10_python_beta/postws/lines",
 	"staticServer": "/assets",
-	"overrides": {}
+	"overrides": {
+	    
+	}
     }
 }

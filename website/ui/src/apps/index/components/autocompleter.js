@@ -5,8 +5,6 @@ import AutocompleteBox from '../../../common/components/autocompletebox';
 import * as ApiClient from '../../../common/api_client';
 import {toParams} from '../../../common/utility';
 
-let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
-
 class Autocompleter extends React.Component {
     constructor(props) {
 	super(props);
@@ -51,7 +49,7 @@ class Autocompleter extends React.Component {
  				      } else {
  					  const params = toParams({q: userQuery,
 								   assembly, uuid});
- 					  const url = root + "/search/?" + params;
+ 					  const url = "/search/?" + params;
  					  window.location.href = url;
  				      }
  				  },
