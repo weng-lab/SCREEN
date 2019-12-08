@@ -6,8 +6,6 @@ import SearchBox from './searchbox'
 import CartImage, {cart_connector} from './cart_image'
 import * as ApiClient from '../api_client';
 
-let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
-
 class NavBarApp extends React.Component {
     render() {
 	var cartimage = "";
@@ -20,7 +18,7 @@ class NavBarApp extends React.Component {
             <Navbar inverse={true}>
 		<Navbar.Header>
 		    <Navbar.Brand>
-			<a href={root + '/'}>
+			<a href={'/'}>
 			    SCREEN
 			</a>
 		    </Navbar.Brand>

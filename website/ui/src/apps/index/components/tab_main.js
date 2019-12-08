@@ -7,8 +7,6 @@ import * as ApiClient from '../../../common/api_client';
 import * as Actions from '../actions';
 import {tabPanelize} from '../../../common/utility'
 
-let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
-
 class TabMain extends React.Component {
     constructor(props) {
 	super(props);
@@ -40,7 +38,7 @@ class TabMain extends React.Component {
                     </div>
                     <div className="col-md-4">
 		        <a className={"btn btn-primary mainButtonGwas"}
-                           href={root + "/gwasApp/?assembly=GRCh38"} role={"button"}>
+                           href={"/gwasApp/?assembly=GRCh38"} role={"button"}>
 		            Browse GWAS<br/>(GRCh38)
 		        </a>
 		    </div>

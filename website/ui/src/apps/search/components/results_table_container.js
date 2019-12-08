@@ -8,8 +8,6 @@ import * as ApiClient from '../../../common/api_client';
 import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin, toParams} from '../../../common/utility';
 
-let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
-
 class ResultsTableContainer extends React.Component {
     state = { cres: [], rfacets: [], total: 0, cts: null,
               isFetching: true, isError: false,
@@ -57,7 +55,7 @@ class ResultsTableContainer extends React.Component {
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){
 	let dists = [1000, 2000, 5000, 10000, 25000, 50000];
 	let distsRefs = orjoin(dists.map((d) => (
-		<a href={root + "/search?promoter&" + toParams({q: gene,
+		<a href={"/search?promoter&" + toParams({q: gene,
 							 tssDist: d,
 							 assembly,
 							 uuid: this.props.uuid})}
@@ -70,7 +68,7 @@ class ResultsTableContainer extends React.Component {
 	if(useTss){
 	    geneBody = (
 		<li key={"geneBody"}>{"overlapping the "}
-		    <a href={root + "/search?" + toParams({q: gene, assembly,
+		    <a href={"/search?" + toParams({q: gene, assembly,
 						    uuid: this.props.uuid})}>
 			gene body
 		    </a>{" of "}{geneTitle}
@@ -79,7 +77,7 @@ class ResultsTableContainer extends React.Component {
 
 	let firstLastTss = (
 	    <li key={"firstLastTss"}>{"located between the "}
-		<a href={root + "/search?tss&promoter&" + toParams({q: gene,assembly,
+		<a href={"/search?tss&promoter&" + toParams({q: gene,assembly,
 							     uuid: this.props.uuid})}>
 		    first and last Transcription Start Sites (TSSs)
 		</a>{" of "}{geneTitle}

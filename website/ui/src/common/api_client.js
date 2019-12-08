@@ -1,8 +1,6 @@
 import Config from '../config.json';
 
-let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
-
-export const StaticServer = root + Config.UI.staticServer;
+export const StaticServer = Config.UI.staticServer;
 export const StaticUrl = (fn) => (StaticServer + fn)
 export const ApiServer = Config.UI.apiServer;
 
