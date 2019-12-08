@@ -215,7 +215,6 @@ def makeSubsampledAccessions(assembly, ver, nbins, accessionsFnp):
             "| awk '{ print $4 }' ",
             "| awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}'",
             ">", accessionsFnp]
-    printt("about to run", " ".join(cmds))
     Utils.runCmds(cmds)
     printWroteNumLines(accessionsFnp)
         
@@ -235,6 +234,7 @@ def sample(assembly, ver, nbins):
         Utils.ensureDir(sampleMiniPeaksFnp)
         cmds = ["grep -f", accessionsFnp, mergedFnp,
                 '>', sampleMiniPeaksFnp]
+        printt("subsampling", mergedFnp)
         Utils.runCmds(cmds)
         printWroteNumLines(sampleMiniPeaksFnp)
 
