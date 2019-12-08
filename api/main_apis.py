@@ -7,6 +7,7 @@ import jinja2
 import os
 import sys
 import uuid
+import requests
 
 from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
@@ -37,6 +38,10 @@ class Apis():
         self.args = args
         self.cache = cache
 
+    @cherrypy.expose
+    def hubs(self, *args, **kwargs):
+        return requests.get("http://gcp.wenglab.org/hubs/" + '/'.join(args)).text
+        
     @cherrypy.expose
     def promoter_like(self, *args, **kwargs):
         return self.category_generic("promoterlike", *args, **kwargs)
