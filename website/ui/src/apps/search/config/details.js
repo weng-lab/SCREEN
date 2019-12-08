@@ -298,8 +298,8 @@ const DetailsTabInfo = (assembly) => {
 	           enabled: true, f: OrthologTab},
 	groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
 		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"},
-        /* miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
-                     enabled: true, f: MiniPeaks}, */
+        miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
+                     enabled: true, f: MiniPeaks},
 	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
 		      enabled: assembly !== "mm10", f: LinkedGenesTab}
     };

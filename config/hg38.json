@@ -31,7 +31,7 @@
     },
     "UI": {
 	"apiServer": "https://api.wenglab.org/screenv10_python_beta",
-	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
+	"minipeakServer": "https://api.wenglab.org/screenv10_python_beta/dataws/re_detail/",
 	"bed_intersect": "https://api.wenglab.org/screenv10_python_beta/postws/lines",
 	"staticServer": "/assets",
 	"overrides": {
