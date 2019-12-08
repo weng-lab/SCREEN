@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 import os
@@ -89,7 +89,7 @@ def run(args, DBCONN):
 
     with open(fnp, 'w') as outF:
         for assembly in assemblies:
-            for ver, nbins in [(3,20), (4,30), (4,0)]:
+            for ver, nbins in [(6,20)]:
                 if not args.yes:
                     s = "(Re)import %s, version %s, %s nbins?" % (assembly, ver, nbins)
                     if not GetYesNoToQuestion.immediate(s):

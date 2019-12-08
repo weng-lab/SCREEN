@@ -10,12 +10,12 @@
 	    "mm10"
 	],
 	"minipeaks_ver": 6,
-	"minipeaks_nbins": 0,
+	"minipeaks_nbins": 20,
 	"ribbon": "beta",
 	"googleAnalytics": false,
 	"memcache": false,
 	"cassandra": [
-	    "pgs_cassandra"
+	    "cassandra_v6_13"
 	],
 	"redisHost": "127.0.0.1",
 	"downloadDir": "/app/downloads/",
