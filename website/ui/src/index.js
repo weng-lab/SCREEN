@@ -19,18 +19,15 @@ const myCreateElement = (Component, props) => {
 					   uuid});
 }
 
-let root = '/' + process.env.PUBLIC_URL.split('/').slice(3).join('/');
-if (root === '/') root = "";
-
 ReactDOM.render((
     <Router history={browserHistory} createElement={myCreateElement} >
-	<Route path={root + "/"} component={IndexPage} />
-	<Route path={root + "/index/:tab"} component={IndexPage} />
-	<Route path={root + "/search(.*)"} component={Search} />
-	<Route path={root + "/search/:maintab(.*)"} component={Search} />
-	<Route path={root + "/search/:maintab/:subtab(.*)"} component={Search} />
-	<Route path={root + "/geApp/"} component={GeneExp} />
-	<Route path={root + "/deApp/"} component={De} />
-	<Route path={root + "/gwasApp/"} component={Gwas} />
+	<Route path={"/"} component={IndexPage} />
+	<Route path={"/index/:tab"} component={IndexPage} />
+	<Route path={"/search(.*)"} component={Search} />
+	<Route path={"/search/:maintab(.*)"} component={Search} />
+	<Route path={"/search/:maintab/:subtab(.*)"} component={Search} />
+	<Route path={"/geApp/"} component={GeneExp} />
+	<Route path={"/deApp/"} component={De} />
+	<Route path={"/gwasApp/"} component={Gwas} />
     </Router>
 ), document.getElementById('root'));
