@@ -30,9 +30,9 @@
 	"mm10bed": "/bed_intersect/mm10.sorted.bed"
     },
     "UI": {
-	"apiServer": "https://api.wenglab.org/screenv10_python_beta",
-	"minipeakServer": "https://api.wenglab.org/screenv10_python_beta/dataws/re_detail/",
-	"bed_intersect": "https://api.wenglab.org/screenv10_python_beta/postws/lines",
+	"apiServer": "https://api.wenglab.org/screenv12_python_beta",
+	"minipeakServer": "https://api.wenglab.org/screenv12_python_beta/dataws/re_detail/",
+	"bed_intersect": "https://api.wenglab.org/screenv12_python_beta/postws/lines",
 	"staticServer": "/assets",
 	"overrides": {
 	    
