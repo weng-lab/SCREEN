@@ -84,7 +84,7 @@ class MiniPeaks extends React.Component {
 	    return "";
 	}
 	// let fileID = dataRaw.fileID; if needed....
-	const mmax = (dr.assay === "dnase") ? 150 : 50;
+	const mmax = (dr.assay === "dnase") ? 10 : 50;
 	const mfactor = ROWHEIGHT / mmax;
 	const data = dr.data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	const color = this._colors[dr.assay];

@@ -12,9 +12,13 @@ class UTabUCSC extends React.Component {
 		<h2>Mega trackhubs</h2>
 		We offer mega trackhubs for human and mouse which provide access to all the ground level data in the ENCODE Encyclopedia. These mega hubs are divided into three hubs for each species: a DNA-based hub, containing assays targeting DNase accessibility, DNA binding by transcription factors, DNA methylation, and other DNA-related features; an RNA-based hub, containing assays targeting RNA expression, RNA binding protein occupancy, and other RNA-related features; and an integrative hub, containing cCREs and the epigenetic data used to derive them. Mouse hubs are available on the mm10 genome; human hubs are available both on hg19 and GRCh38.<br/><br/>
 		You can use the buttons below to access the trackhubs at UCSC:<br/><br/>
-		<h4>Megahub: Human (GRCh38)</h4>
-		<h4>Megahub: Human (hg19)</h4>
-		<h4>Megahub: Mouse (mm10)</h4>
+                		        <a className={"btn btn-primary mainButtonGwas"}
+                           href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/dna/hub.txt"} role={"button"}>
+		            DNA
+	    </a>&nbsp;		        <a className={"btn btn-primary mainButtonGwas"}
+                           href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/rna/hub.txt"} role={"button"}>
+		            RNA
+	    </a>
 		<h2>Custom trackhubs in SCREEN</h2>
 		    <p>Nearly everywhere a genomic feature with genomic coordinates is presented on SCREEN, an accompanying UCSC button is available, which leads to a view of the surrounding genomic neighborhood in the UCSC Genome Browser. Examples of features with associated UCSC Genome Browser buttons include cCREs, genes, RAMPAGE TSSs, and annotations from external datasets such as the FANTOM Consortium’s catalogs. The locations of these UCSC Genome Browser buttons are presented in <strong>Figure 1</strong>.</p>
 		   <em><strong>Figure 1</strong>. Locations of UCSC Genome Browser buttons in the main search table (top left), RNA-seq expression view (top right), RAMPAGE expression view (bottom left), and FANTOM intersection view (bottom right).</em><br/><br/>
@@ -73,7 +77,7 @@ class UTabTutorial extends React.Component {
 		{Iframe("https://www.youtube.com/embed/eunBo1-yF9M")}
 
 	        <h3>Mini-Peaks (cCRE signal profile)</h3>
-		{Iframe("https://www.youtube.com/embed/IMHOTf-rG1Q")}
+		{Iframe("https://www.youtube.com/embed/btBh6x-mh1Q")}
 		
 	    </div>));
     }
