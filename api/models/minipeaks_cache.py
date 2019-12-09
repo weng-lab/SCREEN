@@ -9,7 +9,7 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
 from cassandra import ConsistencyLevel
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from config import Config
 
 
@@ -25,13 +25,14 @@ class MiniPeaksCache:
         self.session.set_keyspace("minipeaks")
 
     def get(self, assay, accessions):
-        return {}
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
-        select_stmt = self.session.prepare("""
+        qstr = """
 SELECT * FROM {tn} WHERE accession IN ?
-""".format(tn=tableName))
+""".format(tn=tableName)
+
+        select_stmt = self.session.prepare(qstr)
 
         rows = list(self.session.execute(select_stmt, (accessions,)))
 
@@ -47,8 +48,8 @@ SELECT * FROM {tn} WHERE accession IN ?
 
 
 if __name__ == "__main__":
-    mpc = MiniPeaksCache("hg19", 0, 4)
-    acc = "EH37E1055372"
+    mpc = MiniPeaksCache("GRCh38", 20, 6)
+    acc = "EH38E1516978"
     ret = mpc.get("DNase", [acc])
     for k, v in ret[acc].iteritems():
         print(k, v)

@@ -89,7 +89,8 @@ class CachedObjects:
         # self.creBigBeds = self.pgSearch.creBigBeds()
         self.creBigBeds = {}
         keys = [ '_', '_', "DNase", "H3K4me3", "H3K27ac", "CTCF" ]
-        with open("/app/SCREENapi/api/GRCh38-Look-Up-Matrix.txt", 'r') as f:
+        lumfnp = os.path.join(os.path.dirname(__file__), "../GRCh38-Look-Up-Matrix.txt")
+        with open(lumfnp, 'r') as f:
             for line in f:
                 line = line.strip().split('\t')
                 self.creBigBeds[line[0]] = {}

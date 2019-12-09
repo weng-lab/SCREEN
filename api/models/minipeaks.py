@@ -78,8 +78,8 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
 
-    assembly = "hg19"
-    acc = "EH37E1055372"
+    assembly = "GRCh38"
+    acc = "EH38E1516978"
 
     pgSearch = PGsearch(ps, assembly)
     cache = CachedObjects(ps, assembly)
