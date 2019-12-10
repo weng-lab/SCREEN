@@ -14,7 +14,7 @@ const MainTabsConfig = () => {
 	    /*files: {title: "Downloads", visible: true, f: TabFiles}, */
 	    versions: {title: "Versions", visible: true, f: TabVersions},
             query: {title: "Query Results", visible: false, f: TabQuery},
-            api: {title: "API", visible: true, f: TabAPI}
+            /*api: {title: "API", visible: true, f: TabAPI}*/
     };
 }
 

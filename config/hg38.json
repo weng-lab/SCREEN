@@ -1,10 +1,10 @@
 {
     "RE": {
 	"version": 13,
-	"db_host": "pg_screen_v10",
+	"db_host": "pg_screen_v13",
 	"db_usr": "postgres",
 	"db_port": 5432,
-	"db": "screenv10",
+	"db": "screenv13",
 	"assemblies": [
 	    "GRCh38",
 	    "mm10"
@@ -18,7 +18,7 @@
 	"googleAnalytics": false,
 	"memcache": false,
 	"cassandra": [
-	    "cassandra_v6_13"
+	    "cassandra_v13"
 	],
 	"redisHost": "127.0.0.1",
 	"downloadDir": "/app/downloads/",
@@ -30,9 +30,9 @@
 	"mm10bed": "/bed_intersect/mm10.sorted.bed"
     },
     "UI": {
-	"apiServer": "https://api.wenglab.org/screenv12_python_beta",
-	"minipeakServer": "https://api.wenglab.org/screenv12_python_beta/dataws/re_detail/",
-	"bed_intersect": "https://api.wenglab.org/screenv12_python_beta/postws/lines",
+	"apiServer": "https://api.wenglab.org/screenv13",
+	"minipeakServer": "https://api.wenglab.org/screen_v13/dataws/re_detail/",
+	"bed_intersect": "https://api.wenglab.org/screen_v13/postws/lines",
 	"staticServer": "/assets",
 	"overrides": {
 	    
