@@ -12,7 +12,7 @@ export const relink = (assembly, uuid) => (v) => (
 );
 
 export const exrelink = (assembly, uuid) => (v) => (
-    <a href={"http://screen-v10.umassmed.edu/search?" + toParams({ assembly, q: v, uuid })} target="_blank">
+    <a href={"http://screen-v10.wenglab.org/search?" + toParams({ assembly, q: v, uuid })} target="_blank">
 	{v}
     </a>
 );
