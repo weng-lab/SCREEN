@@ -4,7 +4,7 @@
 	"db_host": "pg_screen_v13",
 	"db_usr": "postgres",
 	"db_port": 5432,
-	"db": "screenv13",
+	"db": "screen_v13",
 	"assemblies": [
 	    "GRCh38",
 	    "mm10"
