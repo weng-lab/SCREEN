@@ -6,14 +6,13 @@ import * as ApiClient from './api_client';
 import * as Urls from './urls';
 
 export const relink = (assembly, uuid) => (v) => (
-    <a href={"https://screen-beta.wenglab.org/search/?" + toParams({assembly, q: v, uuid})} target="_blank">
+    <a href={"/search/?" + toParams({assembly, q: v, uuid})} target="_blank">
 	{v}
     </a>
 );
 
-/* FIXME: this screen will be dead! */
 export const exrelink = (assembly, uuid) => (v) => (
-    <a href={"http://screen.umassmed.edu/search?" + toParams({ assembly, q: v, uuid })} target="_blank">
+    <a href={"http://screen-v10.umassmed.edu/search?" + toParams({ assembly, q: v, uuid })} target="_blank">
 	{v}
     </a>
 );
