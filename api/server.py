@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+from gevent import monkey
+monkey.patch_all()
+
 import cherrypy
 import os
 import sys
@@ -22,9 +25,6 @@ AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 from config import Config
-
-from gevent import monkey
-monkey.patch_all()
 
 class WebServerConfig:
     def __init__(self, siteName, production):
