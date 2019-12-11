@@ -6,6 +6,7 @@ import cherrypy
 import jinja2
 import os
 import sys
+import requests
 
 from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
@@ -19,6 +20,7 @@ from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
 from api.post_ws import PostWebServiceWrapper
 
+from config import Config
 
 class Apis():
     def __init__(self, args, viewDir, staticDir, ps, cache):
@@ -75,7 +77,10 @@ class Apis():
     @cherrypy.tools.json_out()
     def postws(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.postWS.process(j, args, kwargs)
+        # TODO: why?
+        url = os.path.join(Config.ui["apiServer"], "postws/lines")
+        return requests.post(url, json = j).json()
+        # return self.postWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
