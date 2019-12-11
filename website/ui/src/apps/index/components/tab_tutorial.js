@@ -18,6 +18,9 @@ class UTabUCSC extends React.Component {
 	    </a>&nbsp;		        <a className={"btn btn-primary mainButtonGwas"}
                            href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/rna/hub.txt"} role={"button"}>
 		            RNA
+	    </a>&nbsp;		        <a className={"btn btn-primary mainButtonGwas"}
+                           href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/integrative/hub.txt"} role={"button"}>
+		            Integrative
 	    </a>
 		<h2>Custom trackhubs in SCREEN</h2>
 		    <p>Nearly everywhere a genomic feature with genomic coordinates is presented on SCREEN, an accompanying UCSC button is available, which leads to a view of the surrounding genomic neighborhood in the UCSC Genome Browser. Examples of features with associated UCSC Genome Browser buttons include cCREs, genes, RAMPAGE TSSs, and annotations from external datasets such as the FANTOM Consortium’s catalogs. The locations of these UCSC Genome Browser buttons are presented in <strong>Figure 1</strong>.</p>
