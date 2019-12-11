@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from __future__ import print_function
 
 import sys
 import os
@@ -131,7 +132,7 @@ class ParseSearch:
                                       max(0, coord.start - 2000),
                                       coord.end + 2000)
         except:
-            print("could not parse " + s, file = sys.stderr)
+            pass
 
         genes = []
         if coord is None and not accessions:

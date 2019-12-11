@@ -76,8 +76,7 @@ class MiniPeaks:
             try:
                 results.update(_process_response(fd[i], response.json(), coord, 40))
             except:
-                print("batch %d failed" % i, file = sys.stderr)
-                print(response.text, file = sys.stderr)
+                pass
                      
         lookup = self.cache.datasets.byFileID
         byCts = {}
