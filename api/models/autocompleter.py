@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import sys
 import os
@@ -35,7 +35,7 @@ class AutocompleterWrapper:
 
         results = []
         with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
-            for i in xrange(len(p)):
+            for i in range(len(p)):
                 prefix = " ".join(p[:i])
                 suffix = " ".join(p[i:])
                 results = []

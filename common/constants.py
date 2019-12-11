@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -541,9 +539,9 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                           "chrY": 91744698, "chr18": 90702639,
                           "chr19": 61431566}}
 
-chroms = {"hg19": natsorted(chrom_lengths["hg19"].keys()),
-          "mm10": natsorted(chrom_lengths["mm10"].keys()),
-          "GRCh38": natsorted(chrom_lengths["GRCh38"].keys())}
+chroms = {"hg19": natsorted(list(chrom_lengths["hg19"].keys())),
+          "mm10": natsorted(list(chrom_lengths["mm10"].keys())),
+          "GRCh38": natsorted(list(chrom_lengths["GRCh38"].keys()))}
 
 
 class helptext:

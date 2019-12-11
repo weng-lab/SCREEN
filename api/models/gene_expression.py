@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import sys
 import os
@@ -70,7 +70,7 @@ class GeneExpression:
                 if ret[t]["items"][0][skey] < row[skey]:
                     ret[t]["items"][0] = row
 
-        rows = ret.values()
+        rows = list(ret.values())
 
         def sorter(x):
             return float(x["items"][0][skey])
@@ -81,7 +81,7 @@ class GeneExpression:
             t = row["name"]
             k = str(idx).zfill(3) + '_' + t
             ret[k] = row
-            ret[k]["items"] = map(lambda x: x["rID"], row["items"])
+            ret[k]["items"] = [x["rID"] for x in row["items"]]
         return ret
 
     def sortByExpression(self, rows, key):

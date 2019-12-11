@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import sys
 import os
@@ -251,7 +251,7 @@ ORDER BY 2
                 tads=self.assembly + "_tads")
             curs.execute(q, (start, chrom, accession, start))
             rows = curs.fetchall()
-        frows = filter(lambda x: x[0] != accession, rows)
+        frows = [x for x in rows if x[0] != accession]
         return [{"accession": r[0], "distance": r[1]} for r in frows]
 
     def genesInTad(self, accession, chrom):
@@ -278,7 +278,7 @@ FROM {assembly}_rankcelltypeindexex
             for r in curs.fetchall():
                 _map[r[2]] = [(r[0], r[1])] if r[2] not in _map else _map[r[2]] + [(r[0], r[1])]
         ret = {}
-        for k, v in _map.iteritems():
+        for k, v in _map.items():
             ret[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
             #print(k, ret[k])
         # print(ret.keys())
@@ -322,7 +322,7 @@ WHERE accession = %s
         r = self._getColsForAccession(accession, chrom, cols)
         group = r[-1]; r = r[:-1]
         cols = [c.split('_')[0] if "max" not in c else c for c in cols][:-1]
-        return ( dict(zip(cols, r)), group )
+        return ( dict(list(zip(cols, r))), group )
 
     def creMostsimilar(self, acc, assay, threshold=20000):
         if self.assembly == "hg19":
@@ -334,7 +334,7 @@ WHERE accession = %s
                 _assay = assay.replace("_dnase", "") + "_only"
 
             return " or ".join(["%s_rank[%d] < %d" % (_assay, i + 1, threshold)
-                                for i in xrange(len(r)) if r[i] < threshold])
+                                for i in range(len(r)) if r[i] < threshold])
 
         with getcursor(self.pg.DBCONN, "cre$CRE::mostsimilar") as curs:
             curs.execute("""
@@ -396,9 +396,9 @@ WHERE accession = %s
         if not r:
             return {"tfs": [], "histone": []}
         tfs = [{"name": k, "n": len(set(v)), "total": totals.get(k, -1)}
-               for k, v in r[0].iteritems()]
+               for k, v in r[0].items()]
         histones = [{"name": k, "n": len(set(v)), "total": totals.get(k, -1)}
-                    for k, v in r[1].iteritems()]
+                    for k, v in r[1].items()]
         return {"tf": tfs, "histone": histones}
 
     def tfHistoneDnaseList(self, eset=None):
@@ -564,7 +564,7 @@ ORDER BY start
             curs.execute(q, (chrom, start, stop))
             rows = curs.fetchall()
         fields = ["gene", "start", "stop", "strand"]
-        return [dict(zip(fields, r)) for r in rows]
+        return [dict(list(zip(fields, r))) for r in rows]
 
     def histoneTargetExps(self, accession, target, eset=None):
         peakTn = self.assembly + "_" + self._intersections_tablename(eset=eset)
@@ -624,7 +624,7 @@ WHERE ensemblid_ver = %s
         for r in rows:
             dr = r._asdict()
             nr = {"data": {}}
-            for k, v in dr.iteritems():
+            for k, v in dr.items():
                 if k.startswith("encff"):
                     nr["data"][k] = v
                     continue

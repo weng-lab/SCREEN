@@ -1,11 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from __future__ import print_function
 import os
 import sys
 import time
 import math
-
 
 def screenWidth():
     # http://stackoverflow.com/a/943921

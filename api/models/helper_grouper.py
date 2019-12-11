@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from tissue_colors import TissueColors
+from .tissue_colors import TissueColors
 
 
 class HelperGrouper:
@@ -11,7 +11,7 @@ class HelperGrouper:
         self.tissueColors = TissueColors(cache)
         self.byID = {r["id"]: r for r in self.rows}
 
-        for rid, r in self.byID.iteritems():
+        for rid, r in self.byID.items():
             r["color"] = self.tissueColors.getTissueColor(r["tissue"])
             r["counts"] = float(r["counts"])
 
@@ -33,7 +33,7 @@ class HelperGrouper:
                           "items": []}
             ret[t]["items"].append(row["id"])
 
-        for k, v in ret.iteritems():
+        for k, v in ret.items():
             def sorter(rid): return (self.byID[rid][skey], self.byID[rid]["tissue"])
             ret[k]["items"].sort(key=sorter, reverse=True)
         return ret
@@ -53,7 +53,7 @@ class HelperGrouper:
                 if self.byID[ret[t]["items"][0]][skey] < row[skey]:
                     ret[t]["items"] = [row["id"]]
 
-        rows = ret.values()
+        rows = list(ret.values())
 
         def sorter(rid): return self.byID[rid["items"][0]][skey]
         rows.sort(key=sorter, reverse=True)
