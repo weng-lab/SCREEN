@@ -17,6 +17,8 @@ class AppPageBase extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
+	if (nextProps && nextProps.location && nextProps.location.query && nextProps.location.query.assembly === "hg19")
+	    window.location.href = window.location.protocol + "//screen-v10.wenglab.org" + window.location.pathname;
 	this.search(nextProps);
 	this.globals(nextProps);
     }
