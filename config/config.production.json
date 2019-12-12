@@ -1,9 +1,9 @@
 {
     "RE": {
 	"version": 10,
-	"db_host": "postgresql",
-	"db_usr": "regElmViz_usr",
-	"db": "screenv10",
+	"db_host": "pg_screen_v10",
+	"db_usr": "postgres",
+	"db": "screen_v10",
 	"db_port": 5432,
 	"assemblies": ["hg19", "mm10"],
 	"minipeaks_ver": 3,
