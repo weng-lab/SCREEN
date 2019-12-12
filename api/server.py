@@ -54,13 +54,13 @@ class WebServerConfig:
             },
             '/assets': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.staticDir #,
-                #'tools.cors.on' : True,
+                'tools.staticdir.dir': self.staticDir,
+                'tools.cors.on' : True,
             },
             '/downloads': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.downloadDir #,
-                #'tools.cors.on' : True,
+                'tools.staticdir.dir': self.downloadDir,
+                'tools.cors.on' : True,
             }
         }
 
@@ -102,7 +102,7 @@ def main():
     main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
-    # cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
+    cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': int(args.port),
