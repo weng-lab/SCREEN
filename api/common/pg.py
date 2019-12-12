@@ -279,9 +279,9 @@ FROM {assembly}_rankcelltypeindexex
                 _map[r[2]] = [(r[0], r[1])] if r[2] not in _map else _map[r[2]] + [(r[0], r[1])]
         ret = {}
         for k, v in _map.items():
-            ret[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
+            ret[k] = [x[1] for x in sorted(v, key=lambda a: [0])]
             #print(k, ret[k])
-        # print(ret.keys())
+        #print(ret.keys())
         # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
         return ret
 
