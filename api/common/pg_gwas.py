@@ -84,6 +84,7 @@ ORDER BY fdr DESC, pval
             except:
                 return []
         cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval", "foldenrichment"]
+        print("!", file = sys.stderr)
         return [dict(list(zip(cols, r))) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
