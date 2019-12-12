@@ -105,7 +105,8 @@ def main():
     # cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                            'server.socket_port': int(args.port)})
+                            'server.socket_port': int(args.port),
+                            'tools.encode.text_only': False})
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development",
