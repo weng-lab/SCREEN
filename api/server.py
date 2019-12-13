@@ -54,29 +54,13 @@ class WebServerConfig:
             },
             '/assets': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.staticDir #,
-                #'tools.cors.on' : True,
+                'tools.staticdir.dir': self.staticDir
             },
             '/downloads': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.downloadDir #,
-                #'tools.cors.on' : True,
+                'tools.staticdir.dir': self.downloadDir
             }
         }
-
-
-def cors():
-    # from https://stackoverflow.com/a/28065698
-    if cherrypy.request.method == 'OPTIONS':
-        # preflign request
-        # see http://www.w3.org/TR/cors/#cross-origin-request-with-preflight-0
-        cherrypy.response.headers['Access-Control-Allow-Methods'] = 'POST'
-        cherrypy.response.headers['Access-Control-Allow-Headers'] = 'content-type'
-        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        # tell CherryPy no avoid normal handler
-        return True
-    else:
-        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
 
 
 def parse_args():
@@ -101,8 +85,6 @@ def main():
     wsconfig = WebServerConfig("main", args.production)
     main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
-
-    # cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': int(args.port),
