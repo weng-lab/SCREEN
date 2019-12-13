@@ -51,8 +51,8 @@ class Autocompleter:
         self.assembly = assembly
         self.pgAutocomplete = PGautocomplete(ps, assembly)
 
-    def get_suggestions(self, curs, q):
+    def get_suggestions(self, q):
         uq = q.lower()
         if not uq:
             return []
-        return self.pgAutocomplete.get_suggestions(curs, uq)
+        return self.pgAutocomplete.get_suggestions(uq)
