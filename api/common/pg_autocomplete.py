@@ -20,8 +20,8 @@ from db_utils import getcursor
 
 
 class PGautocomplete(object):
-    def __init__(self, pg, assembly):
-        self.pg = pg
+    def __init__(self, ps, assembly):
+        self.ps = ps
         self.assembly = assembly
 
     def get_suggestions(self, q):
