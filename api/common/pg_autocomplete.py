@@ -24,7 +24,7 @@ class PGautocomplete(object):
         self.pg = pg
         self.assembly = assembly
 
-    def get_suggestions(self, curs, q):
+    def get_suggestions(self, q):
         # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
         with getcursor(self.ps.DBCONN, "Autocomplete::get_suggest") as curs:
             curs.execute("""
