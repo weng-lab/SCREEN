@@ -26,14 +26,15 @@ class PGautocomplete(object):
 
     def get_suggestions(self, curs, q):
         # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
-        curs.execute("""
+        with getcursor(self.ps.DBCONN, "Autocomplete::get_suggest") as curs:
+            curs.execute("""
 SELECT oname
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 5
             """.format(tn=self.assembly + "_autocomplete"), (q,))
-        r = curs.fetchall()
-        if not r:
-            print("no results for %s in %s" % (q, self.assembly))
-            return []
-        return [x[0] for x in r]
+            r = curs.fetchall()
+            if not r:
+                print("no results for %s in %s" % (q, self.assembly))
+                return []
+            return [x[0] for x in r]

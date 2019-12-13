@@ -38,9 +38,8 @@ class AutocompleterWrapper:
             prefix = " ".join(p[:i])
             suffix = " ".join(p[i:])
             results = []
-            with getcursor(self.ps.DBCONN, "Autocomplete::get_suggest") as curs:
-                for assembly in assemblies:
-                    results += self.acs[assembly].get_suggestions(curs, suffix)
+            for assembly in assemblies:
+                results += self.acs[assembly].get_suggestions(suffix)
             if len(results) > 0:
                 results = sorted([prefix + " " + x for x in results])
                 break
