@@ -34,17 +34,17 @@ class AutocompleterWrapper:
         p = q.split(" ")
 
         results = []
-        with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
-            for i in range(len(p)):
-                prefix = " ".join(p[:i])
-                suffix = " ".join(p[i:])
-                results = []
+        for i in range(len(p)):
+            prefix = " ".join(p[:i])
+            suffix = " ".join(p[i:])
+            results = []
+            with getcursor(self.ps.DBCONN, "Autocomplete::get_suggest") as curs:
                 for assembly in assemblies:
                     results += self.acs[assembly].get_suggestions(curs, suffix)
-                if len(results) > 0:
-                    results = sorted([prefix + " " + x for x in results])
-                    break
-            return [q] + results
+            if len(results) > 0:
+                results = sorted([prefix + " " + x for x in results])
+                break
+        return [q] + results
 
 
 class Autocompleter:
