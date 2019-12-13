@@ -617,14 +617,13 @@ WHERE ensemblid_ver = %s
 """.format(tn=self.assembly + "_rampage")
 
         with getcursor(self.pg.DBCONN, "pg::genesInRegion",
-                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
+                       cursor_factory=psycopg2.extras.RealDictCursor) as curs:
             curs.execute(q, (ensemblid_ver, ))
             rows = curs.fetchall()
             ret = []
             for r in rows:
-                dr = r._asdict()
                 nr = {"data": {}}
-                for k, v in dr.items():
+                for k, v in r.items():
                     if k.startswith("encff"):
                         nr["data"][k] = v
                         continue
