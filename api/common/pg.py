@@ -620,18 +620,18 @@ WHERE ensemblid_ver = %s
                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute(q, (ensemblid_ver, ))
             rows = curs.fetchall()
-        ret = []
-        for r in rows:
-            dr = r._asdict()
-            nr = {"data": {}}
-            for k, v in dr.items():
-                if k.startswith("encff"):
-                    nr["data"][k] = v
+            ret = []
+            for r in rows:
+                dr = r._asdict()
+                nr = {"data": {}}
+                for k, v in dr.items():
+                    if k.startswith("encff"):
+                        nr["data"][k] = v
+                        continue
+                    nr[k] = v
+                if not nr["data"]:
                     continue
-                nr[k] = v
-            if not nr["data"]:
-                continue
-            ret.append(nr)
+                ret.append(nr)
         return ret
 
     def rampage_info(self):
