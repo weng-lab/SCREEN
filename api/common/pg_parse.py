@@ -60,6 +60,7 @@ WHERE gi.id = %s
         return rows[0]
 
     def _exactGeneMatch(self, s, usetss, tssDist):
+        r = None
         with getcursor(self.pg.DBCONN, "PGparse$parse") as curs:
             slo = s.lower().strip()
             curs.execute("""
@@ -76,10 +77,10 @@ ORDER BY sm DESC
 LIMIT 50
                 """.format(assembly=self.assembly), (slo, s))
             rows = curs.fetchall()
-        if rows:
-            r = rows[0]
-            if isclose(1, r[7]):  # similarity
-                return [GeneParse(self.assembly, r, s, usetss, tssDist)]
+            if rows:
+                r = rows[0]
+        if isclose(1, r[7]):  # similarity
+            return [GeneParse(self.assembly, r, s, usetss, tssDist)]
         return [] # [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
     def _fuzzyGeneMatch(self, s, usetss, tssDist):
