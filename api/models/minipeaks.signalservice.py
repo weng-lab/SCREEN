@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 import sys
@@ -9,8 +9,8 @@ import json
 import math
 import time
 
-from minipeaks_cache import MiniPeaksCache
-from cre import CRE
+from .minipeaks_cache import MiniPeaksCache
+from .cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import printt
@@ -27,7 +27,7 @@ gquery = """query BigRequests($bigRequests: [BigRequest!]!) {
 
 def _cbin(results, coord, nbins = 20):
     gbin = lambda start: math.floor( nbins * (start - coord["start"]) / (coord["end"] - coord["start"]) )
-    scores = [ 0.0 for x in xrange(nbins) ]
+    scores = [ 0.0 for x in range(nbins) ]
     for result in results:
         ibin = int(gbin(result["start"]))
         if ibin < nbins and ibin >= 0: scores[ibin] += result["value"] * nbins * (result["end"] - result["start"]) / (coord["end"] - coord["start"])
@@ -40,7 +40,7 @@ def _batch_load(accs, coord):
     return { "query": gquery, "variables": treq }
 
 def _process_response(accs, j, coord, nbins = 20):
-    return { accs[i]: _cbin(j["data"]["bigRequests"][i]["data"], coord, nbins = nbins) for i in xrange(len(accs)) }
+    return { accs[i]: _cbin(j["data"]["bigRequests"][i]["data"], coord, nbins = nbins) for i in range(len(accs)) }
 
 class MiniPeaks:
     def __init__(self, assembly, pgSearch, cache, nbins, ver):
@@ -64,11 +64,11 @@ class MiniPeaks:
         coord = { "start": coord.start - 2000, "end": coord.end + 2000, "chrom": coord.chrom }
 
         faccs = []; fd = []; results = {}
-        for assay, elist in self.cache.assaymap.iteritems():
-            for celltype, info in elist.iteritems():
+        for assay, elist in self.cache.assaymap.items():
+            for celltype, info in elist.items():
                 _, facc = info
                 faccs.append( (assay, facc) )
-        for i in xrange(len(faccs) / 20 + 1):
+        for i in range(len(faccs) / 20 + 1):
             fd.append(faccs[i * 20 : (i + 1) * 20])
         requests = ( grequests.post("https://api.staging.wenglab.org/graphql", json = _batch_load(fde, coord))
                      for fde in fd[:8] )
@@ -82,7 +82,7 @@ class MiniPeaks:
         lookup = self.cache.datasets.byFileID
         byCts = {}
         
-        for key, data in results.iteritems():
+        for key, data in results.items():
             assay, fileID = key
             lu = lookup[fileID]
             ctn = lu["cellTypeName"]
@@ -100,7 +100,7 @@ class MiniPeaks:
             byCts[ctn][k] = {"fileID": fileID, "data": data, "assay": assay}
             expID = self.cache.datasets.byFileID[fileID]["expID"]
             byCts[ctn]["expIDs"].append(expID)
-        return byCts.values(), accessions
+        return list(byCts.values()), accessions
 
     def getBigWigRegionsWithSimilar(self, assay, accession, other=None):
         coord = CRE(self.pgSearch, accession, self.cache).coord()

@@ -1,13 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import sys
 import os
 from natsort import natsorted
 from collections import namedtuple
 import gzip
-import cStringIO
+import io
 
 from coord import Coord
 from pg_common import PGcommon
@@ -59,7 +59,7 @@ ORDER BY trait
             rows = curs.fetchall()
         keys = ["value", "author", "pubmed", "trait", "total_ldblocks", "hasenrichment"]
         rows = [ tuple(list(x) + [x[0].lower() in self.wenrichment]) for x in rows ]
-        return [dict(zip(keys, r)) for r in rows]
+        return [dict(list(zip(keys, r))) for r in rows]
 
     def gwasEnrichment(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
@@ -85,7 +85,7 @@ ORDER BY fdr DESC, pval
                 return []
         cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval", "foldenrichment"]
         print("!", file = sys.stderr)
-        return [dict(zip(cols, r)) for r in rows]
+        return [dict(list(zip(cols, r))) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
@@ -130,7 +130,7 @@ where authorPubmedTrait = %s
                   "infoAll.approved_symbol AS geneid", "cre.start", "cre.stop", "cre.chrom",
                   "cre.gene_all_id", "cre.gene_pc_id"]
         groupBy = ["cre.accession", "cre.start", "cre.stop", "cre.chrom", "cre.gene_all_id", "cre.gene_pc_id",
-                   "infoAll.approved_symbol"] + [v for k, v in PGcreTable.infoFields.iteritems()]
+                   "infoAll.approved_symbol"] + [v for k, v in PGcreTable.infoFields.items()]
 
         if ct in self.ctsTable:
             fields.append("cre.creGroupsSpecific[%s] AS cts" %
@@ -170,7 +170,7 @@ GROUP BY {groupBy}
                            groupBy=', '.join(groupBy))
                 curs.execute(q, (gwas_study, ))
                 rows = curs.fetchall()
-                ret = [dict(zip(fieldsOut, r)) for r in rows]
+                ret = [dict(list(zip(fieldsOut, r))) for r in rows]
                 for r in range(len(ret)):
                     ret[r].update({
                         "ctspecifc": {
@@ -197,7 +197,7 @@ GROUP BY {groupBy}
                                                 fields = ', '.join(fields),
                                                 groupBy = ', '.join(groupBy))
                 q = curs.mogrify(q, (gwas_study,))
-                sf = cStringIO.StringIO()
+                sf = io.StringIO()
                 curs.copy_expert(q, sf)
                 sf.seek(0)
                 with open(json, 'w') as f:

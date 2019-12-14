@@ -1,11 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import psycopg2
 import json
 import itertools
 from io import StringIO
-import cStringIO
+import io
 from operator import itemgetter
 
 import sys
@@ -39,7 +39,7 @@ class PGcreTable(object):
     @staticmethod
     def _getInfo():
         pairs = []
-        for k, v in PGcreTable.infoFields.iteritems():
+        for k, v in PGcreTable.infoFields.items():
             pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as info"
 
@@ -64,7 +64,7 @@ class PGcreTable(object):
     def _getCtSpecific(self, useAccs):
         pairs = []
         if not useAccs:
-            for k, v in self.ctSpecifc.iteritems():
+            for k, v in self.ctSpecifc.items():
                 pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as ctSpecifc"
 
@@ -191,7 +191,7 @@ LIMIT 1000) r
         if accs and len(accs) > 0:
             if type(accs[0]) is dict:
                 accs = [x["value"] for x in accs if x["checked"]]
-            accs = filter(lambda x: isaccession(x), accs)
+            accs = [x for x in accs if isaccession(x)]
             if accs:
                 accs = ["'%s'" % x.upper() for x in accs]
                 accsQuery = "cre.accession IN (%s)" % ','.join(accs)
@@ -314,7 +314,7 @@ with DELIMITER E'\t'
            whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
-            sf = cStringIO.StringIO()
+            sf = io.StringIO()
             curs.copy_expert(q, sf)
         sf.seek(0)
         with open(fnp, 'w') as f:

@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 
@@ -142,7 +142,7 @@ class CRE:
         def makeArrRanks(rm1):
             ret = {}
             oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
-            for ct, v in oneAssay.iteritems():
+            for ct, v in oneAssay.items():
                 ret[ct] = {"tissue": self._ctToTissue(ct), rm1.lower(): v}
             return ret
         maxes = {
@@ -157,19 +157,19 @@ class CRE:
                  "ctcf": makeArrRanks("CTCF")
                  }
         ret = {}; rret = []
-        for _, v in ranks.iteritems():
-            for ct, item in v.iteritems():
+        for _, v in ranks.items():
+            for ct, item in v.items():
                 if ct not in ret:
                     ret[ct] = item
                 else:
                     ret[ct].update(item)
-        for ct, v in ret.iteritems():
-            for k, _ in ranks.iteritems():
+        for ct, v in ret.items():
+            for k, _ in ranks.items():
                 if k not in v: v[k] = -11.0
             v["ct"] = ct
             v["group"] = self._group(v, proximal)
             rret.append(v)
-        iranks = [{ k: v for k, v in maxes.iteritems()}]
+        iranks = [{ k: v for k, v in maxes.items()}]
         iranks[0]["group"] = self.group # self._group(maxes, proximal)
         iranks[0]["title"] = "cell type agnostic"
         hasall = lambda x: x["dnase"] != -11.0 and x["ctcf"] != -11.0 and x["h3k4me3"] != -11.0 and x["h3k27ac"] != -11.0

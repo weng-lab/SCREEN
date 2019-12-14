@@ -1,6 +1,6 @@
 from natsort import natsorted
 
-from helper_grouper import HelperGrouper
+from .helper_grouper import HelperGrouper
 
 
 class Rampage:
@@ -20,7 +20,7 @@ class Rampage:
 
         # fold actual data val into each "row"
         items = []
-        for fileID, val in transcript["data"].iteritems():
+        for fileID, val in transcript["data"].items():
             fileID = fileID.upper()
             info = ri[fileID].copy()
             info["counts"] = round(val, 4)
@@ -45,7 +45,7 @@ class Rampage:
             info = self._procees(transcript, ri)
             byTranscript[transcript["transcript"]] = info
 
-        transcripts = natsorted(byTranscript.keys())
+        transcripts = natsorted(list(byTranscript.keys()))
         return {"sortedTranscripts": transcripts,
                 "tsss": byTranscript,
                 "gene": gene}

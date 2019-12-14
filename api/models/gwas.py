@@ -1,8 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
 
-from cre import CRE
+
+from .cre import CRE
 from common.pg_gwas import PGgwas
 
 

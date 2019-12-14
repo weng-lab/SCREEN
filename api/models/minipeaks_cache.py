@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import sys
 import os
 import json
@@ -39,7 +39,7 @@ SELECT * FROM {tn} WHERE accession IN ?
         ret = {}
         for row in rows:
             data = {}
-            for k, v in row.iteritems():
+            for k, v in row.items():
                 if "accession" == k or "chrom" == k:
                     continue
                 data[k.upper()] = [float(x) for x in v[1:-1].split(',')]
@@ -51,5 +51,5 @@ if __name__ == "__main__":
     mpc = MiniPeaksCache("GRCh38", 20, 6)
     acc = "EH38E1516978"
     ret = mpc.get("DNase", [acc])
-    for k, v in ret[acc].iteritems():
+    for k, v in ret[acc].items():
         print(k, v)

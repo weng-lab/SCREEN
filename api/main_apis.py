@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from __future__ import print_function
+
 
 import cherrypy
 import jinja2
@@ -62,7 +62,7 @@ class Apis():
     @cherrypy.tools.json_out()
     def ctlist(self, *args, **kwargs):
         try:
-            return list(set([ x for _, x in self.cache[args[0]].accmap.iteritems() ])) # unique CTs
+            return list(set([ x for _, x in self.cache[args[0]].accmap.items() ])) # unique CTs
         except:
             raise cherrypy.HTTPError(404)
     

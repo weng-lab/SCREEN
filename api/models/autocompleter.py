@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import sys
 import os
@@ -34,13 +34,12 @@ class AutocompleterWrapper:
         p = q.split(" ")
 
         results = []
-        for i in xrange(len(p)):
+        for i in range(len(p)):
             prefix = " ".join(p[:i])
             suffix = " ".join(p[i:])
             results = []
-            with getcursor(self.ps.DBCONN, "Autocomplete::get_suggest") as curs:
-                for assembly in assemblies:
-                    results += self.acs[assembly].get_suggestions(curs, suffix)
+            for assembly in assemblies:
+                results += self.acs[assembly].get_suggestions(suffix)
             if len(results) > 0:
                 results = sorted([prefix + " " + x for x in results])
                 break
@@ -52,8 +51,8 @@ class Autocompleter:
         self.assembly = assembly
         self.pgAutocomplete = PGautocomplete(ps, assembly)
 
-    def get_suggestions(self, curs, q):
+    def get_suggestions(self, q):
         uq = q.lower()
         if not uq:
             return []
-        return self.pgAutocomplete.get_suggestions(curs, uq)
+        return self.pgAutocomplete.get_suggestions(uq)

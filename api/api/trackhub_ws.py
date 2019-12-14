@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-import StringIO
+import io
 import cherrypy
 import json
 import os
