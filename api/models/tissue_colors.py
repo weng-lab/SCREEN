@@ -31,7 +31,7 @@ class TissueColors:
 
     def getTissueColor(self, t):
         if t not in self.tissueToColor:
-            print("missing tissue color for", t)
+            #print("missing tissue color for", t)
             return self.randColor()
         c = self.tissueToColor[t]
         if not c.startswith('#'):
