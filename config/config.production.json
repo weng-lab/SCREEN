@@ -11,9 +11,9 @@
 	"ribbon": "",
 	"googleAnalytics": true,
 	"memcache": false,
-	"cassandra": ["cassandra"],
+	"cassandra": ["cassandra_v10"],
 	"redisHost": "redis",
-	"downloadDir": "/data/cherrypy/git/regElmViz/api/downloads",
+	"downloadDir": "/data/uploads/",
         "rnaSeqIsNorm": false
     },
     "bedupload": {

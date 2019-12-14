@@ -9,14 +9,14 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from constants import paths, PageTitle, chrom_lengths
+from constants import PageTitle, chrom_lengths
 from pg import PGsearch
 from pg_ge import PGge
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from utils import Timer
 from db_utils import getcursor
 

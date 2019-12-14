@@ -4,8 +4,7 @@ import sys
 import os
 import psycopg2.extras
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from db_utils import getcursor
 
 

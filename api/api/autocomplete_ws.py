@@ -8,8 +8,7 @@ import numpy as np
 import cherrypy
 import uuid as uuider
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
 from utils import AddPath
 
 AddPath(__file__, "../models")
