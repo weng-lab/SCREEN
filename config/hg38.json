@@ -21,7 +21,7 @@
 	    "cassandra_v13"
 	],
 	"redisHost": "127.0.0.1",
-	"downloadDir": "/app/downloads/",
+	"downloadDir": "/data/uploads/",
 	"rnaSeqIsNorm": true
     },
     "bedupload": {
