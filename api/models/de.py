@@ -1,6 +1,5 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
 
 from cre import CRE
 from common.pg import PGsearch
@@ -81,7 +80,7 @@ class DE:
         xstart = xdomain[0]
         xstop = xdomain[1]
         ret = self._nearbyPromoters() + self._nearbyEnhancers()
-        ret = filter(lambda x: x["start"] >= xstart and x["stop"] <= xstop, ret)
+        ret = [x for x in ret if x["start"] >= xstart and x["stop"] <= xstop]
         return {"data": ret}
 
     def _genesInRegion(self, start, stop):

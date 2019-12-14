@@ -1,9 +1,6 @@
-#!/usr/bin/env python2
-
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import os
-
 
 class CRE:
     def __init__(self, pgSearch, accession, cache):
@@ -122,7 +119,7 @@ class CRE:
         def makeArrRanks(rm1):
             ret = []
             oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
-            for ct, v in oneAssay.iteritems():
+            for ct, v in oneAssay.items():
                 r = {"tissue": self._ctToTissue(ct), "ct": ct, "one": v}
                 ret.append(r)
             return ret
@@ -131,7 +128,7 @@ class CRE:
             ret = []
             oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
             multiAssay = arrToCtDict(ranks[rm2.lower()], rmToCts[rm2])
-            for ct, v in oneAssay.iteritems():
+            for ct, v in oneAssay.items():
                 r = {"tissue": self._ctToTissue(ct), "ct": ct,
                      "one": v, "two": get_rank(ct, multiAssay)}
                 ret.append(r)

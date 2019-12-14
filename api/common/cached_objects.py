@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -64,7 +64,7 @@ class CachedObjects:
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
-        self.filesList = self.indexFilesTab(self.nineState.values())
+        self.filesList = self.indexFilesTab(list(self.nineState.values()))
 
         self.moreTracks = self.pgSearch.loadMoreTracks()
 
@@ -111,7 +111,7 @@ class CachedObjects:
         for r in rows:
             d = r
             accs = [r["dnase"], r["h3k4me3"], r["h3k27ac"], r["ctcf"]]
-            accs = filter(lambda a: a != "NA", accs)
+            accs = [a for a in accs if a != "NA"]
             fn = '_'.join(accs) + ".cREs.bigBed.bed.gz"
             d["fiveGroup"] = [os.path.join(WWW, fn), fn]
             ret.append(d)
@@ -120,7 +120,7 @@ class CachedObjects:
     def indexFilesTab2(self, rows):
         ret = {"agnostic": [],
                "specific": []}
-        for biosample, typAcc in rows.iteritems():
+        for biosample, typAcc in rows.items():
             celltypedesc = ''
             tissue = ''
             if "_agnostic" != biosample:
@@ -136,7 +136,7 @@ class CachedObjects:
                    "9state-CTCF": "NA",
                    "9state-DNase": "NA"
             }
-            for typ, acc in typAcc.iteritems():
+            for typ, acc in typAcc.items():
                 row[typ] = acc
             if "_agnostic" == biosample:
                 ret["agnostic"].append(row)
@@ -152,12 +152,9 @@ class CachedObjects:
             files = []
 
             for rnaseq in self.rnaseq_exps[bs]:
-                fs = filter(lambda x: "signal of unique reads" == x["output_type"],
-                            rnaseq["signal_files"])
+                fs = [x for x in rnaseq["signal_files"] if "signal of unique reads" == x["output_type"]]
                 if not fs:
-                    fs = filter(lambda x:
-                                "plus strand signal of unique reads" == x["output_type"] or "minus strand signal of unique reads" == x["output_type"] or "signal of unique reads" == x["output_type"],
-                                rnaseq["signal_files"])
+                    fs = [x for x in rnaseq["signal_files"] if "plus strand signal of unique reads" == x["output_type"] or "minus strand signal of unique reads" == x["output_type"] or "signal of unique reads" == x["output_type"]]
                 files += list(fs)
             return files
         
@@ -177,7 +174,7 @@ class CachedObjects:
             
             ret.append(ctr)
 
-        print("loaded", len(self.cellTypeNameToRNAseqs.keys()))
+        print("loaded", len(list(self.cellTypeNameToRNAseqs.keys())))
         self.cellTypeInfoArr = ret
     
     def global_data(self, ver):
@@ -206,7 +203,7 @@ def main():
 
     n = pgSearch.datasets("DNase")
 
-    for k, v in cache.assaymap["dnase"].iteritems():
+    for k, v in cache.assaymap["dnase"].items():
         print(k, v, n[k])
 
 

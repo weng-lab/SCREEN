@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import os
 import sys
@@ -44,6 +44,6 @@ class CartWebService:
 
     def set(self, j, args, kwargs):
         uuid = j["uuid"]
-        accessions = filter(lambda a: isaccession(a), j["accessions"])
+        accessions = [a for a in j["accessions"] if isaccession(a)]
         ret = self.cart.set(uuid, accessions)
         return ret

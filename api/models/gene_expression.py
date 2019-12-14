@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import sys
 import os
@@ -12,10 +12,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from models.tissue_colors import TissueColors
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
-from table_names import GeData, GeMetadata
 from config import Config
+from table_names import GeData, GeMetadata
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
 from db_utils import getcursor
 
 
@@ -70,7 +70,7 @@ class GeneExpression:
                 if ret[t]["items"][0][skey] < row[skey]:
                     ret[t]["items"][0] = row
 
-        rows = ret.values()
+        rows = list(ret.values())
 
         def sorter(x):
             return float(x["items"][0][skey])
@@ -81,7 +81,7 @@ class GeneExpression:
             t = row["name"]
             k = str(idx).zfill(3) + '_' + t
             ret[k] = row
-            ret[k]["items"] = map(lambda x: x["rID"], row["items"])
+            ret[k]["items"] = [x["rID"] for x in row["items"]]
         return ret
 
     def sortByExpression(self, rows, key):
@@ -110,7 +110,7 @@ class GeneExpression:
                 "byExpressionTPM": self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM": self.sortByExpression(rows, "rawFPKM")}
 
-    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected, assay_name = None):
+    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected, assay_name=None):
         a = """
 SELECT chrom, start, stop
 FROM {assembly}_gene_info
@@ -122,7 +122,8 @@ WHERE approved_symbol = %(gene)s
             args = {"gene": gene,
                     "compartments": tuple(compartments),
                     "bts": tuple(biosample_types_selected)}
-            if assay_name is not None: args["an"] = assay_name
+            if assay_name is not None:
+                args["an"] = assay_name
             curs.execute(q, args)
             rows = curs.fetchall()
             curs.execute(a, {"gene": gene})
@@ -158,14 +159,14 @@ WHERE approved_symbol = %(gene)s
         ret = self.process(rows)
         return ret
 
-    def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name = None):
+    def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name=None):
         assayname = ""
         if assay_name is not None:
             assayname = """
 AND {tableNameMetadata}.assay_title = %(an)s
-""".format(assembly = self.assembly,
-           tableNameMetadata = GeMetadata(self.assembly))
-            
+""".format(assembly=self.assembly,
+                tableNameMetadata=GeMetadata(self.assembly))
+
         q = """
 SELECT r.tpm, {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
 r.expid, r.replicate, r.fpkm, {tableNameMetadata}.ageTitle, r.id
@@ -176,20 +177,20 @@ WHERE gene_name = %(gene)s
 AND {tableNameMetadata}.cellCompartment IN %(compartments)s
 AND {tableNameMetadata}.biosample_type IN %(bts)s
 """.format(assembly=self.assembly,
-           tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
-           tableNameMetadata = GeMetadata(self.assembly),
-           assayname = assayname)
-        
+           tableNameData=GeData(self.assembly, Config.rnaSeqIsNorm),
+           tableNameMetadata=GeMetadata(self.assembly),
+           assayname=assayname)
+
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
 
-    def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name = None):
+    def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name=None):
         assayname = ""
         if assay_name is not None:
             assayname = """
 AND {tableNameMetadata}.assay_title = %(an)s
-""".format(assembly = self.assembly,
-           tableNameMetadata = GeMetadata(self.assembly))
-           
+""".format(assembly=self.assembly,
+                tableNameMetadata=GeMetadata(self.assembly))
+
         q = """
 SELECT avg(r.tpm), {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
 r.expid, 'mean' as replicate, avg(r.fpkm), {tableNameMetadata}.ageTitle,
@@ -203,7 +204,7 @@ AND {tableNameMetadata}.biosample_type IN %(bts)s
 GROUP BY {tableNameMetadata}.organ, {tableNameMetadata}.cellType, r.expid,
 {tableNameMetadata}.ageTitle
 """.format(assembly=self.assembly,
-           tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
-           tableNameMetadata = GeMetadata(self.assembly),
-           assayname = assayname)
+           tableNameData=GeData(self.assembly, Config.rnaSeqIsNorm),
+           tableNameMetadata=GeMetadata(self.assembly),
+           assayname=assayname)
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
