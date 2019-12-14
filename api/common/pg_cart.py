@@ -6,8 +6,7 @@ import os
 import json
 from psycopg2.extras import Json
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from db_utils import getcursor
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))

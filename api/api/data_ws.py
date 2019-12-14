@@ -19,7 +19,7 @@ from models.ortholog import Ortholog
 from common.pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from constants import paths, chroms
+from constants import chroms
 from postgres_wrapper import PostgresWrapper
 from cre_utils import checkChrom
 from config import Config
@@ -27,7 +27,7 @@ from pgglobal import GlobalPG
 from pgfantomcat import PGFantomCat
 from pg_home import PGHome
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from utils import Utils, Timer
 from db_utils import getcursor
 
