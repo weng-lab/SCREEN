@@ -217,8 +217,15 @@ def getcursor(DBCONN, query_name, *args, **kwargs):
         raise
     finally:
         #print("releaseing conn...")
-        con.commit()
-        DBCONN.putconn(con, close=False)
+        try:
+            con.commit()
+        except Exception as e:
+            print(e)
+
+        try:
+            DBCONN.putconn(con, close=False)
+        except Exception as e:
+            print(e)
 
         
 def timedQuery(curs, q, *args):
