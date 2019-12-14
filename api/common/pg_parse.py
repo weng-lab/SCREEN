@@ -79,8 +79,9 @@ LIMIT 50
             rows = curs.fetchall()
             if rows:
                 r = rows[0]
-        if isclose(1, r[7]):  # similarity
-            return [GeneParse(self.assembly, r, s, usetss, tssDist)]
+        if r:
+            if isclose(1, r[7]):  # similarity
+                return [GeneParse(self.assembly, r, s, usetss, tssDist)]
         return [] # [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
     def _fuzzyGeneMatch(self, s, usetss, tssDist):
