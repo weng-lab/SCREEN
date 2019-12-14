@@ -12,7 +12,7 @@ from pg_common import PGcommon
 from gene_parse import GeneParse
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
 from utils import AddPath
 from db_utils import getcursor
 
@@ -60,6 +60,7 @@ WHERE gi.id = %s
         return rows[0]
 
     def _exactGeneMatch(self, s, usetss, tssDist):
+        r = None
         with getcursor(self.pg.DBCONN, "PGparse$parse") as curs:
             slo = s.lower().strip()
             curs.execute("""
@@ -76,10 +77,11 @@ ORDER BY sm DESC
 LIMIT 50
                 """.format(assembly=self.assembly), (slo, s))
             rows = curs.fetchall()
-        if rows:
-            r = rows[0]
+            if rows:
+                r = rows[0]
+        if r:
             if isclose(1, r[7]):  # similarity
-                return [GeneParse(self.assembly, r, s, usetss, tssDist)]
+                    return [GeneParse(self.assembly, r, s, usetss, tssDist)]
         return [] # [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
     def _fuzzyGeneMatch(self, s, usetss, tssDist):

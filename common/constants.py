@@ -4,11 +4,7 @@ import sys
 import os
 from natsort import natsorted
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
-from files_and_paths import Dirs
-from utils import AddPath
-
-AddPath(__file__, "..")
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from config import Config
 
 GRCH38_CHROM_LENGTHS = {
@@ -475,43 +471,6 @@ def PageTitle(assembly):
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
 
-DB_COLS = tuple("""accession
-rDHS
-chrom
-start
-stop
-pct
-isProximal
-conservation_signals
-conservation_min
-conservation_max
-ctcf_zscores
-ctcf_min
-ctcf_max
-dnase_zscores
-dnase_min
-dnase_max
-enhancer_zscores
-enhancer_min
-enhancer_max
-h3k27ac_zscores
-h3k27ac_min
-h3k27ac_max
-h3k4me3_zscores
-h3k4me3_min
-h3k4me3_max
-insulator_zscores
-insulator_min
-insulator_max
-promoter_zscores
-promoter_min
-promoter_max
-maxz
-rampage_zscores
-gene_all_distance
-gene_all_id
-gene_pc_distance
-gene_pc_id""".split('\n'))
 
 # exclude chrM
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
@@ -550,61 +509,3 @@ class helptext:
                         "googleapi", "helptext.txt")
 
 
-V4d = os.path.join(Dirs.encyclopedia, "Version-4")
-CreVer = Config.version
-CreVerStr = "ver" + str(CreVer)
-fantomcat = os.path.join(Dirs.encyclopedia, "..", "fantomcat")
-GwasVersion = 7
-
-
-class paths(object):
-    creVer = CreVer
-    creVerStr = CreVerStr
-    v4d = V4d
-    fantomcat = fantomcat
-
-    @staticmethod
-    def path(assembly, *args):
-        return os.path.join(V4d, CreVerStr, assembly, *args)
-
-    def dBase(assembly, *args):
-        return os.path.join(V4d, CreVerStr, assembly, *args)
-
-    @staticmethod
-    def fnpCreTsvs(assembly, *args):
-        return os.path.join(V4d, CreVerStr, assembly, "output", *args)
-
-    @staticmethod
-    def cistrome(*args):
-        return os.path.join(Dirs.cistrome, *args)
-
-    @staticmethod
-    def gwasFnp(assembly, version, fnBase):
-        return os.path.join(V4d, CreVerStr, assembly, "gwas", "h3k27ac",
-                            "GWAS.v" + str(version) + fnBase)
-
-    @staticmethod
-    def geFnp(assembly):
-        return paths.path(assembly, "geneExp", "2017-11-04" + ".tsv.gz")
-
-    cytobands = {
-        "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
-        "mm10": os.path.join(v4d, "ucsc.mm10.cytoBand.txt.gz")}
-
-    hgncFnp = os.path.join(V4d, "hgnc", "hgnc_complete_set.txt")
-
-    gene_files = {
-        "hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff"),
-        "mm10": (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf")}
-
-    gene_files_path = {
-        "hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff"),
-        "mm10": (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gff3.gz"), "gff")}
-
-
-def main():
-    print(chroms)
-
-
-if __name__ == '__main__':
-    sys.exit(main())

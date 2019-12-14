@@ -9,8 +9,7 @@ import psycopg2.extras
 
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
 from utils import AddPath
 from db_utils import getcursor
 

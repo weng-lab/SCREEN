@@ -10,8 +10,7 @@ import tempfile
 
 from common.pg_cart import PGcart
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from utils import Utils
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))

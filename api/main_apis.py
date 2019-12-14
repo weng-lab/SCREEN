@@ -43,56 +43,18 @@ class Apis():
         return requests.get("http://gcp.wenglab.org/hubs/" + '/'.join(args)).text
         
     @cherrypy.expose
-    def promoter_like(self, *args, **kwargs):
-        return self.category_generic("promoterlike", *args, **kwargs)
-
-    @cherrypy.expose
-    def enhancer_like(self, *args, **kwargs):
-        return self.category_generic("enhancerlike", *args, **kwargs)
-
-    @cherrypy.expose
-    def ctcf_only(self, *args, **kwargs):
-        return self.category_generic("ctcfonly", *args, **kwargs)
-
-    @cherrypy.expose
-    def active(self, *args, **kwargs):
-        return self.category_generic("active", *args, **kwargs)
-
-    @cherrypy.expose
     @cherrypy.tools.json_out()
     def ctlist(self, *args, **kwargs):
         try:
             return list(set([ x for _, x in self.cache[args[0]].accmap.items() ])) # unique CTs
         except:
             raise cherrypy.HTTPError(404)
-    
-    def category_generic(self, g, *args, **kwargs):
-        if 0 == len(args):
-            raise cherrypy.HTTPError(404)
-        try:
-            if 1 == len(args):
-                with open(os.path.join(self.args.basedir, "projects", "screen", "Version-4", "ver10", args[0], "CTS_f", "CTA.%s.bed" % g), 'r') as f:
-                    return f.read()
-            testfile = os.path.join(self.args.basedir, "projects", "screen", "Version-4", "ver10", args[0], "CTS_f", "%s.%s.bed" % (args[1], g))
-            if os.path.exists(testfile):
-                with open(testfile, 'r') as f:
-                    return f.read()
-            if args[1] not in self.cache[args[0]].accmap:
-                raise cherrypy.HTTPError(404)
-            testfile = os.path.join(self.args.basedir, "projects", "screen", "Version-4", "ver10", args[0], "CTS_f", "%s.%s.bed" % (self.cache[args[0]].accmap[args[1]], g))
-            if os.path.exists(testfile):
-                with open(testfile, 'r') as f:
-                    return f.read()
-        except:
-            pass
-        raise cherrypy.HTTPError(404)
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
 
     @cherrypy.expose
-    # @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):
