@@ -12,8 +12,7 @@ import psycopg2.pool
 from main_apis import Apis
 from common.cached_objects import CachedObjectsWrapper
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './utils'))
 from templates import Templates
 from utils import Utils, AddPath
 
