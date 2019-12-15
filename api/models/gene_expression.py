@@ -115,14 +115,14 @@ class GeneExpression:
                 "bts": tuple(biosample_types_selected)}
         if assay_name is not None:
             args["an"] = assay_name
-        rows = self.pw.fetchall(q, args)
+        rows = self.pw.fetchall("doComputeHorBars", q, args)
 
         a = """
         SELECT chrom, start, stop
         FROM {assembly}_gene_info
         WHERE approved_symbol = %(gene)s
         """.format(assembly=self.assembly)
-        grows = self.pw.fetchall(a, {"gene": gene})
+        grows = self.pw.fetchall("doComputeHorBars", a, {"gene": gene})
 
         if not rows or not grows:
             return {}
