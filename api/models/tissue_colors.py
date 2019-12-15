@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-
-
 import sys
 import os
 import random
@@ -50,8 +48,8 @@ def main():
     from dbconnect import db_connect
     from cached_objects import CachedObjects
 
-    DBCONN = db_connect(os.path.realpath(__file__))
-    ps = PostgresWrapper(DBCONN)
+    testCONN = db_connect(os.path.realpath(__file__))
+    ps = PostgresWrapper(testCONN)
 
     # GE
     for assembly in ["hg19", "mm10"]:

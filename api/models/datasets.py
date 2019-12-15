@@ -55,9 +55,9 @@ def main():
     from cached_objects import CachedObjects
     from pg_common import PGcommon
 
-    DBCONN = db_connect(os.path.realpath(__file__))
+    testCONN = db_connect(os.path.realpath(__file__))
 
-    ps = PostgresWrapper(DBCONN)
+    ps = PostgresWrapper(testCONN)
     pgSearch = PGsearch(ps, "hg19")
     ds = Datasets("hg19", pgSearch)
 

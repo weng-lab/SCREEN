@@ -75,8 +75,8 @@ def main():
     from dbconnect import db_connect
     from cached_objects import CachedObjects
 
-    DBCONN = db_connect(os.path.realpath(__file__))
-    ps = PostgresWrapper(DBCONN)
+    testCONN = db_connect(os.path.realpath(__file__))
+    ps = PostgresWrapper(testCONN)
 
     assembly = "GRCh38"
     acc = "EH38E1516978"
