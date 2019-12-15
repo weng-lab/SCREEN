@@ -159,10 +159,10 @@ class PGgwas(object):
                            (assay[1], cti))
 
         if not json:
-            return self._gwasPercentActiveRun(gwas_study, json, fields, groupBy)
+            return self._gwasPercentActiveRun(gwas_study, json, fields, groupBy, fieldsOut)
         return self._gwasPercentActiveRunJson(gwas_study, json, fields, groupBy)
 
-    def _gwasPercentActiveRun(self, gwas_study, json, fields, groupBy):
+    def _gwasPercentActiveRun(self, gwas_study, json, fields, groupBy, fieldsOut):
         rows = self.pw.fetchall("_gwasPercentActiveRun", """
         SELECT {fields}
         FROM {assembly}_cre_all as cre,
