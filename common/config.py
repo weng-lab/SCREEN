@@ -38,4 +38,3 @@ class Config:
 
     #peakIntersectionRunDate = re["peakIntersectionRunDate"]
     #cistromePeakIntersectionRunDate = re["cistromePeakIntersectionRunDate"]
-    
