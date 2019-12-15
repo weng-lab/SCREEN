@@ -17,9 +17,6 @@ from config import Config
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom, checkAssembly
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
-from db_utils import getcursor
-
 
 class PGgwasWrapper:
     def __init__(self, pg):

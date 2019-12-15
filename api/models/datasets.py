@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-
-
 import json
 import os
 import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
-from db_utils import getcursor
 
 
 class Datasets:

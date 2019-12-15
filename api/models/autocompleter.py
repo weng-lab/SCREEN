@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 
-
-
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
-from utils import AddPath
-from db_utils import getcursor
-
-AddPath(__file__, "../common")
+sys.path.append(os.path.join(os.path.dirname(__file__),'../common'))
 from pg_autocomplete import PGautocomplete
 
 

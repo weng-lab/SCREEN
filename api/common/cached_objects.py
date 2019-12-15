@@ -18,7 +18,7 @@ from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from utils import Timer
-from db_utils import getcursor
+
 
 Compartments = ["cell", "nucleoplasm", "cytosol",
                 "nucleus", "membrane", "chromatin",
@@ -26,17 +26,17 @@ Compartments = ["cell", "nucleoplasm", "cytosol",
 
 
 class CachedObjectsWrapper:
-    def __init__(self, ps):
-        self.cos = {a: CachedObjects(ps, a) for a in Config.assemblies}
+    def __init__(self, pw):
+        self.cos = {a: CachedObjects(pw, a) for a in Config.assemblies}
 
     def __getitem__(self, assembly):
         return self.cos[assembly]
 
 
 class CachedObjects:
-    def __init__(self, ps, assembly):
-        self.ps = ps
-        self.pgSearch = PGsearch(ps, assembly)
+    def __init__(self, pw, assembly):
+        self.pw = pw
+        self.pgSearch = PGsearch(pw, assembly)
         self.assembly = assembly
 
         with Timer("loaded CachedObjects " + assembly) as t:
@@ -102,7 +102,7 @@ class CachedObjects:
         self.filesList2 = self.indexFilesTab2(self.creBeds)
 
         self.cellTypeNameToRNAseqs = {}
-        self.rnaseq_exps = PGge(self.ps, self.assembly).rnaseq_exps()
+        self.rnaseq_exps = PGge(self.pw, self.assembly).rnaseq_exps()
         self.makeCellTypeInfoArr()
         
     def lookupEnsembleGene(self, s):

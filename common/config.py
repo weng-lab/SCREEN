@@ -35,7 +35,3 @@ class Config:
     bedupload = c["bedupload"]
     downloadDir = re["downloadDir"]
     rnaSeqIsNorm = re["rnaSeqIsNorm"]
-
-    peakIntersectionRunDate = re["peakIntersectionRunDate"]
-    cistromePeakIntersectionRunDate = re["cistromePeakIntersectionRunDate"]
-    

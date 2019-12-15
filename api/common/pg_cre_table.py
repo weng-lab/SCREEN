@@ -22,7 +22,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
-from db_utils import getcursor, timedQuery
 from utils import eprint
 
 
@@ -97,11 +96,17 @@ class PGcreTable(object):
 
     def geneTable(self, j, chrom, start, stop):
         print(self.assembly + '_gene_details')
-        with getcursor(self.pg.DBCONN, "select_gene_table") as curs:
-            curs.execute("""SELECT  * from {tableName} WHERE transcript_id IN (SELECT transcript_id from {tableName}
-             WHERE feature='transcript' AND seqname='{seqname}' AND (int4range({startpos}, {endpos}) &&
-             int4range(startpos, endpos)  ))""".format(tableName=self.assembly + '_gene_details', seqname=chrom, startpos=start, endpos=stop))
-            records = curs.fetchall()
+        records = self.pw.fetchall("select_gene_table", """
+        SELECT  * from {tableName} 
+        WHERE transcript_id IN (
+        SELECT transcript_id from {tableName}
+        WHERE feature='transcript' 
+        AND seqname='{seqname}' 
+        AND (int4range({startpos}, {endpos}) &&
+        int4range(startpos, endpos)  ))
+        """.format(tableName=self.assembly + '_gene_details',
+                   seqname=chrom, startpos=start, endpos=stop))
+
         response = []
         transcript_id = ''
         transcript_id_value = ''
@@ -154,33 +159,28 @@ class PGcreTable(object):
 
         fields, whereClause = self._buildWhereStatement(j, chrom, start, stop)
 
-        with getcursor(self.pg.DBCONN, "_cre_table") as curs:
-            q = """
-SELECT JSON_AGG(r) from(
-SELECT {fields}, {vtn}.vistaids
-FROM {tn} AS cre
-INNER JOIN {ttn} ON {ttn}.accession = cre.accession
-LEFT JOIN {vtn} ON {vtn}.accession = cre.accession
-{whereClause}
-ORDER BY maxz DESC
-LIMIT 1000) r
-""".format(fields=fields, tn=self.tableName, vtn = self.assembly + "_vista",
-           ttn = self.assembly + "_ccres_toptier",
-           whereClause=whereClause)
+        rows = self.pw.fetchall("cre_table", """
+        SELECT JSON_AGG(r) from(
+        SELECT {fields}, {vtn}.vistaids
+        FROM {tn} AS cre
+        INNER JOIN {ttn} ON {ttn}.accession = cre.accession
+        LEFT JOIN {vtn} ON {vtn}.accession = cre.accession
+        {whereClause}
+        ORDER BY maxz DESC
+        LIMIT 1000) r
+        """.format(fields=fields, tn=self.tableName,
+                   vtn = self.assembly + "_vista",
+                   ttn = self.assembly + "_ccres_toptier",
+                   whereClause=whereClause))
 
-            #print("\n", q, "\n")
-            if 0:
-                timedQuery(curs, q)
-            else:
-                curs.execute(q)
-            rows = curs.fetchall()[0][0]
-            if not rows:
-                rows = []
+        r = rows[0][0]
+        if not r:
+            r = []
 
-            total = len(rows)
-            if total >= 1000:  # reached query limit
-                total = self._creTableEstimate(curs, whereClause)
-        return {"cres": rows, "total": total}
+        total = len(rows)
+        if total >= 1000:  # reached query limit
+            total = self._creTableEstimate(curs, whereClause)
+        return {"cres": r, "total": total}
 
     def _accessions(self, j):
         accs = j.get("accessions", [])
@@ -209,16 +209,12 @@ LIMIT 1000) r
 
         # qoute escape from
         # http://stackoverflow.com/a/12320729
-        q = """
-SELECT count(0)
-FROM {tn} AS cre
-{wc}
-""".format(tn=self.tableName, wc=whereClause)
-        if 0:
-            timedQuery(curs, q)
-        else:
-            curs.execute(q)
-        return curs.fetchone()[0]
+        r = self.pw.fetchone("_creTableEstimate", """
+        SELECT count(0)
+        FROM {tn} AS cre
+        {wc}
+        """.format(tn=self.tableName, wc=whereClause))
+        return r[0]
 
     def _notCtSpecific(self, j):
         # use max zscores
@@ -288,7 +284,7 @@ with DELIMITER E'\t'
 """.format(fields=fields, tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
            whereClause=whereClause)
 
-        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
+        with getcursor(self.pw.DBCONN, "_cre_table_bed") as curs:
             with open(fnp, 'w') as f:
                 curs.copy_expert(q, f)
 
@@ -312,7 +308,7 @@ with DELIMITER E'\t'
 """.format(tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
            whereClause=whereClause)
 
-        with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
+        with getcursor(self.pw.DBCONN, "_cre_table_json") as curs:
             sf = io.StringIO()
             curs.copy_expert(q, sf)
         sf.seek(0)

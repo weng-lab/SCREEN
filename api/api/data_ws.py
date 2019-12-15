@@ -29,13 +29,12 @@ from pg_home import PGHome
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from utils import Utils, Timer
-from db_utils import getcursor
 
 
 class DataWebServiceWrapper:
-    def __init__(self, args, ps, cacheW, staticDir):
+    def __init__(self, args, pw, cacheW, staticDir):
         def makeDWS(assembly):
-            return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
+            return DataWebService(args, pw, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies + ["GRCh38"]
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
@@ -48,13 +47,13 @@ class DataWebServiceWrapper:
 
 
 class DataWebService():
-    def __init__(self, args, ps, cache, staticDir, assembly):
+    def __init__(self, args, pw, cache, staticDir, assembly):
         self.args = args
-        self.ps = ps
+        self.pw = pw
         self.cache = cache
         self.staticDir = staticDir
         self.assembly = assembly
-        self.pgSearch = PGsearch(ps, assembly)
+        self.pgSearch = PGsearch(pw, assembly)
         self.pgGlobal = GlobalPG(assembly)
         self.pgFantomCat = PGFantomCat(assembly)
 
@@ -106,13 +105,14 @@ class DataWebService():
         
     def _ortholog(self, j, accession):
         if j["assembly"] != "mm10":
-            mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession, "mm10")
-            hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, "hg19")
+            mm10 = Ortholog(self.pw, self.assembly, accession, "mm10")
+            hg19 = Ortholog(self.pw, self.assembly, accession, "hg19")
             return {accession: {"ortholog": mm10.as_dict(), "hg19": hg19.as_dict()}}
-        hg38 = Ortholog("mm10", self.ps.DBCONN, accession, "GRCh38").as_dict()
+        hg38 = Ortholog(self.pw, "mm10", accession, "GRCh38").as_dict()
         hg19 = []; hg19accs = set()
         for ortholog in hg38:
-            for result in Ortholog("GRCh38", self.ps.DBCONN, ortholog["accession"], "hg19").as_dict():
+            for result in Ortholog(self.pw, "GRCh38",
+                                   ortholog["accession"], "hg19").as_dict():
                 if result["accession"] not in hg19accs:
                     hg19accs.add(result["accession"])
                     hg19.append(result)
@@ -148,7 +148,7 @@ class DataWebService():
         }
 
     def global_object(self, j, args):
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
+        with getcursor(self.pw.DBCONN, "data_ws$DataWebService::global_object") as curs:
             return self.pgGlobal.select(j["name"], curs)
 
     def external_global_object(self, j, args, assembly):

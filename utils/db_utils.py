@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import os
 import sys
-from contextlib import contextmanager
 
 import psycopg2
 from psycopg2 import ProgrammingError
@@ -184,38 +183,6 @@ def arrayLength(curs, tableName, col):
 select array_length({col}, 1) from {tn} limit 1
 """.format(tn=tableName, col=col))
     return curs.fetchone()[0]
-
-
-@contextmanager
-def getcursor(DBCONN, query_name, *args, **kwargs):
-    """ !@brief obtain a cursor from a DB connection pool.
-
-    Preserves autocommit semantics for a cursor obtained from a pool;
-    i.e., rolls back a transaction if an exception is thrown.
-    args and kwargs are passed to psycopg2 cursor creator;
-    see http://initd.org/psycopg/docs/usage.html#with-statement.
-    
-    from https://github.com/loadletter/mu-urlbox/blob/master/server.py
-
-    @param DBCONN connection pool, as psycopg2.pool
-    @param query_name friendly name for the calling script or method
-    @return context manager-wrapped cursor
-    
-    """
-    #print("getting conn...")
-    con = DBCONN.getconn()
-    try:
-        # see http://stackoverflow.com/a/28139640 for use cases
-        yield con.cursor(*args, **kwargs)
-        con.commit()
-    except ProgrammingError as e:
-        print("ProgrammingError while running %s: %s" % (query_name, e.message))
-        raise
-    except:
-        print("%s error while running %s" % (sys.exc_info()[0].__name__, query_name))
-        raise
-    finally:
-        DBCONN.putconn(con, close=False)
 
         
 def timedQuery(curs, q, *args):
