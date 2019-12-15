@@ -10,7 +10,11 @@ class CRE:
         self.pgSearch = pgSearch
         self.accession = accession
         self.cache = cache
+        self.assembly = cache.assembly
         self.pos = None
+        self.genesAll = None
+        self.genesPC = None
+        self.tad = None
         self.ranks = None
         self.intersectCounts = None
 

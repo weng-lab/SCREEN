@@ -11,6 +11,9 @@ from models.datasets import Datasets
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import PageTitle, chrom_lengths
 from pg import PGsearch
+from pg_ge import PGge
+from postgres_wrapper import PostgresWrapper
+from dbconnect import db_connect
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
@@ -44,11 +47,16 @@ class CachedObjects:
         with open(fnp) as f:
             self.colors = json.load(f)
 
+        self.chromCounts = self.pgSearch.chromCounts()
+        self.creHist = self.pgSearch.creHist()
+
+        self.tf_list = self.pgSearch.tfHistoneDnaseList()
+
         self.datasets = Datasets(self.assembly, self.pgSearch)
 
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
-        self.moreTracks = self.pgSearch.loadMoreTracks()
-
+        self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
+        self.biosampleTypes = self.datasets.biosample_types
         self.assaymap = {"dnase": self.pgSearch.datasets("DNase"),
                          "h3k27ac": self.pgSearch.datasets("H3K27ac"),
                          "h3k4me3": self.pgSearch.datasets("H3K4me3"),
@@ -63,6 +71,7 @@ class CachedObjects:
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
         self.filesList = self.indexFilesTab(list(self.nineState.values()))
 
+        self.moreTracks = self.pgSearch.loadMoreTracks()
 
         self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
 

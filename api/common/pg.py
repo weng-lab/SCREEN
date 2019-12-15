@@ -10,10 +10,13 @@ import gzip
 import psycopg2.extras
 
 from coord import Coord
-from config import Config
 from pg_common import PGcommon
+from config import Config
+from pg_cre_table import PGcreTable
+from pg_gwas import PGgwas
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import checkAssembly
+from cre_utils import isaccession, isclose, checkChrom, checkAssembly
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
 from db_utils import getcursor, timedQuery
@@ -373,27 +376,16 @@ ORDER BY similarity DESC LIMIT 10
         return [{"accession": r[0], "chrom": r[2], "start": r[3], "end": r[4]}
                 for r in rr]
 
+    def _intersections_tablename(self, metadata=False, eset=None):
+        if eset not in [None, "cistrome", "peak"]:
+            raise Exception("pg$PGSearch::_intersections_tablename: invalid dataset %s" % eset)
+        if eset is None:
+            eset = "peak"
+        return eset + "Intersections" + ("" if not metadata else "Metadata")
 
-    def nearbyCREs(self, coord, halfWindow, cols, isProximalOrDistal):
-        c = coord.expanded(halfWindow)
-        tableName = self.assembly + "_cre_all"
-        q = """
-SELECT {cols} FROM {tn}
-WHERE chrom = %s
-AND int4range(start, stop) && int4range(%s, %s)
-""".format(cols=','.join(cols), tn=tableName)
-
-        if isProximalOrDistal is not None:
-            q += """
-AND isProximal is {isProx}
-""".format(isProx=str(isProximalOrDistal))
-
-        with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
-            curs.execute(q, (c.chrom, c.start, c.end))
-            return curs.fetchall()
-
-    def rankMethodToCellTypes(self):
-        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
+    def peakIntersectCount(self, accession, chrom, totals, eset=None):
+        tableName = self.assembly + "_" + self._intersections_tablename(eset=eset)
+        with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
             curs.execute("""
 SELECT tf, histone
 FROM {tn}
@@ -408,15 +400,34 @@ WHERE accession = %s
                     for k, v in r[1].items()]
         return {"tf": tfs, "histone": histones}
 
-    def _getColsForAccession(self, accession, chrom, cols):
-        tableName = self.assembly + "_cre_all"
-        with getcursor(self.pg.DBCONN, "_getColsForAccession") as curs:
+    def tfHistoneDnaseList(self, eset=None):
+        tableName = self.assembly + "_" + self._intersections_tablename(metadata=True, eset=eset)
+        with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
             curs.execute("""
-SELECT {cols}
+SELECT distinct label
 FROM {tn}
-WHERE accession = %s
-""".format(cols=','.join(cols), tn=tableName), (accession,))
-            return curs.fetchone()
+""".format(tn=tableName))
+            return sorted([r[0] for r in curs.fetchall()])
+
+    def genePos(self, gene):
+        ensemblid = gene
+        if gene.startswith("ENS") and '.' in gene:
+            ensemblid = gene.split('.')[0]
+        tableName = self.assembly + "_gene_info"
+        with getcursor(self.pg.DBCONN, "cre_pos") as curs:
+            q = """
+SELECT chrom, start, stop, approved_symbol, ensemblid_ver FROM {tn}
+WHERE chrom != ''
+AND (approved_symbol = %s
+OR ensemblid = %s
+OR ensemblid_ver = %s)
+""".format(tn=tableName)
+            curs.execute(q, (gene, ensemblid, gene))
+            r = curs.fetchone()
+        if not r:
+            print("ERROR: missing", gene)
+            return None, None
+        return Coord(r[0], r[1], r[2]), (r[3], r[4])
 
     def allDatasets(self):
         # TODO: fixme!!
@@ -752,4 +763,32 @@ WHERE cre = %s
                     for x in curs.fetchall()]
         return rows
 
+    def creBigBeds(self):
+        tableName = self.assembly + "_dcc_cres"
+        with getcursor(self.pg.DBCONN, "pg$creBigBeds") as curs:
+            curs.execute("""
+            SELECT celltype, dcc_accession, typ
+FROM {tn}
+            """.format(tn=tableName))
+            rows = curs.fetchall()
+        ret = {}
+        for ct, acc, typ in rows:
+            if ct not in ret:
+                ret[ct] = {}
+            ret[ct][typ] = acc
+        return ret
 
+    def creBeds(self):
+        tableName = self.assembly + "_dcc_cres_beds"
+        with getcursor(self.pg.DBCONN, "pg$creBeds") as curs:
+            curs.execute("""
+            SELECT celltype, dcc_accession, typ
+FROM {tn}
+            """.format(tn=tableName))
+            rows = curs.fetchall()
+        ret = {}
+        for ct, acc, typ in rows:
+            if ct not in ret:
+                ret[ct] = {}
+            ret[ct][typ] = acc
+        return ret

@@ -9,12 +9,31 @@ import sys
 import uuid
 import requests
 
-from api.cre_ws import CreDetailsWebServiceWrapper
+from api.autocomplete_ws import AutocompleteWebService
+from api.cart_ws import CartWebServiceWrapper
+from api.data_ws import DataWebServiceWrapper
+from api.de_ws import DeWebServiceWrapper
+from api.gb_ws import GenomeBrowserWebServiceWrapper
+from api.geneexp_ws import GeneExpWebServiceWrapper
+from api.global_data_ws import GlobalDataController
+from api.gwas_ws import GwasWebServiceWrapper
+from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
+from api.post_ws import PostWebServiceWrapper
+
 
 class Apis():
     def __init__(self, args, viewDir, staticDir, ps, cache):
-        self.creDetailsWS = CreDetailsWebServiceWrapper(args, ps, cache, staticDir)
+        self.autoWS = AutocompleteWebService(ps)
+        self.cartWS = CartWebServiceWrapper(ps, cache)
+        self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
+        self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
+        self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
+        self.gbWS = GenomeBrowserWebServiceWrapper(args, ps, cache, staticDir)
+        self.global_data = GlobalDataController(ps, cache)
+        self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
+        self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
+        self.postWS = PostWebServiceWrapper(args, ps, cache, staticDir)
         self.trackhub = TrackhubController(ps, cache)
         self.args = args
         self.cache = cache

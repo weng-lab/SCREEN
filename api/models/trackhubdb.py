@@ -12,16 +12,6 @@ from . import trackhub_helpers as Helpers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
-from coord import Coord
-from pg import PGsearch
-from db_trackhub import DbTrackhub
-from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
-
-import trackhub_helpers as Helpers
-
-from cre import CRE
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
@@ -104,9 +94,8 @@ class cRETrack(object):
 
     def _init(self):
         p = OrderedDict()
-        p["track"] = Helpers.sanitize(self.exp.encodeID + '_' + self.cREaccession)
-        p["parent"] = self.parent.param(self.parent.on)
-        p["subGroups"] = Helpers.unrollEquals(self._subgroups())
+        p["track"] = Helpers.sanitize(self.cREaccession)
+        p["parent"] = self.parent
         p["bigDataUrl"] = self._url()
         p["visibility"] = Helpers.viz("dense", self.active)
         p["type"] = "bigBed 9"
@@ -163,8 +152,8 @@ class BigWigTrack(object):
         p["longLabel"] = Helpers.makeLongLabel(self._desc())
         p["itemRgb"] = "On"
         p["darkerLabels"] = "on"
-        p["metadata"] = Helpers.unrollEquals(self._metadata())
-        p["view"] = self.exp.encodeID
+        p["autoScale"] = "off"
+        p["viewLimits"] = self._signalMax()
         return p
 
     def setDesc(self, d):
@@ -250,8 +239,8 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
-    def getLines(self, accession, j):
-        self.priority = 1
+    def makeTrackDb(self, accession, j):
+        lines = self.getLines(accession, j)
 
         f = io.StringIO()
         for line in lines:
@@ -259,8 +248,8 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
 
         return f.getvalue()
 
-        desc = trackInfo.desc()
-        shortLabel = trackInfo.shortLabel()
+    def getLines(self, accession, j):
+        self.priority = 1
 
         show7group = j["showCombo"]
         self.lines = self.generalCREs(show7group)
@@ -286,9 +275,6 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
                          False == show7group, 'general', self.assembly == "hg38").lines(self.priority)
             self.priority += 1
             #ret += [t]
-
-        for ti in signals:
-            ret.append(self.trackhubExp(ti, stname, hideAll))
 
         return ret
 
@@ -341,10 +327,8 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
             ret += [t]
         return ret
 
-        track = BigBedTrack(desc, self.priority, url, self.mtColor(assay, mt),
-                            stname, True).track(shortLabel)
-        self.priority += 1
-        return track
+    def makeSuperTrack(self, ct, tn):
+        supershow = "on"
 
         return ["""
 track {tn}
