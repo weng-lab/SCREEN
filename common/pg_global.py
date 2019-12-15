@@ -8,7 +8,7 @@ class GlobalPG:
         self.pw = pw
         self._tablename = "_".join((assembly, "global_objects"))
 
-    def drop_and_recreate(self, curs):
+    def drop_and_recreate(self):
         self.pw.execute("drop_and_recreate", """
         DROP TABLE IF EXISTS {tn};
         CREATE TABLE {tn} (
@@ -17,7 +17,7 @@ class GlobalPG:
         obj jsonb
         );""".format(tn=self._tablename))
 
-    def doimport(self, keys, curs):
+    def doimport(self, keys):
         for key, fnp in keys:
             with open(fnp, "rb") as f:
                 self.pw.execute("doimport", """
@@ -26,7 +26,7 @@ class GlobalPG:
                 """.format(tn=self._tablename),
                                 (key, f.read()))
                 
-    def select(self, name, curs):
+    def select(self, name):
         row = self.pw.fetchone("select", """
         SELECT obj FROM {tn} 
         WHERE name = %s
@@ -34,7 +34,7 @@ class GlobalPG:
                                (name,))
         return row[0]
 
-    def select_external(self, name, assembly, curs):
+    def select_external(self, name, assembly):
         checkAssembly(assembly)
 
         row = self.pw.fetchone("select_external", """

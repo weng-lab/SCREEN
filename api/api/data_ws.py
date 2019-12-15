@@ -54,7 +54,7 @@ class DataWebService():
         self.assembly = assembly
         self.pgSearch = PGsearch(pw, assembly)
         self.pgGlobal = GlobalPG(pw, assembly)
-        self.pgFantomCat = PGFantomCat(assembly)
+        self.pgFantomCat = PGFantomCat(pw, assembly)
 
         self.actions = {"cre_table": self.cre_table,
                         "cre_tf_dcc": self.cre_tf_dcc,
@@ -131,8 +131,7 @@ class DataWebService():
     def global_fantomcat(self, j, args):
         return {
             "main": self.global_object({"name": "fantomcat"}, args),
-            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args)  # ,
-            #            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
+            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args)
         }
 
     def ctcf_distr(self, j, args):
@@ -147,13 +146,10 @@ class DataWebService():
         }
 
     def global_object(self, j, args):
-        
-        with getcursor(self.pw.DBCONN, "data_ws$DataWebService::global_object") as curs:
-            return self.pgGlobal.select(j["name"], curs)
+        return self.pgGlobal.select(j["name"])
 
     def external_global_object(self, j, args, assembly):
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
-            return self.pgGlobal.select_external(j["name"], assembly, curs)
+        return self.pgGlobal.select_external(j["name"], assembly)
 
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)
@@ -191,8 +187,7 @@ class DataWebService():
 
     def fantom_cat(self, j, accession):
         def process(key):
-            with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat::process %s" % key) as curs:
-                results = self.pgFantomCat.select_cre_intersections(accession, curs, key)
+            results = self.pgFantomCat.select_cre_intersections(accession, key)
             for result in results:
                 result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
                 if result["aliases"] != "":
@@ -200,13 +195,13 @@ class DataWebService():
                         result["other_names"] += ", "
                     result["other_names"] += ", ".join(result["aliases"].split("|"))
             return results
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat enhancers") as curs:
-            enhancers = [{"chr": a, "start": int(b), "stop": int(c), "score": float(d)}
-                         for a, b, c, d in self.pgFantomCat.select_enhancers(accession, curs)]
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat CAGE") as curs:
-            cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d,
-                     "score": float(e), "tssstart": int(f), "tssstop": int(g)}
-                    for a, b, c, d, e, f, g in self.pgFantomCat.select_cage(accession, curs)]
+        
+        enhancers = [{"chr": a, "start": int(b), "stop": int(c), "score": float(d)}
+                         for a, b, c, d in self.pgFantomCat.select_enhancers(accession)]
+        
+        cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d,
+                 "score": float(e), "tssstart": int(f), "tssstop": int(g)}
+                for a, b, c, d, e, f, g in self.pgFantomCat.select_cage(accession)]
         return {accession: {
             "fantom_cat": process("intersections"),
             "fantom_cat_twokb": process("twokb_intersections"),

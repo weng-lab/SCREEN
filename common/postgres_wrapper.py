@@ -7,7 +7,6 @@ import json
 from contextlib import contextmanager
 import psycopg2
 
-
 @contextmanager
 def Cursor(DBCONN, query_name, *args, **kwargs):
     """ !@brief obtain a cursor from a DB connection pool.
@@ -166,6 +165,16 @@ class PostgresWrapper:
                 return curs.mogrify(q, qvars)
         except:
             print("ERROR: mogrify query was:", name, q, qvars)
+            raise
+
+    def copy_from(self, name, fnp, table, cols):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                with open(fnp, 'r') as f:
+                    curs.copy_from(f, table, cols)
+                    return curs.rowcount
+        except:
+            print("ERROR: copy_from query was:", name, fnp, table, cols)
             raise
 
     def copy_expert(self, name, q, fnp):

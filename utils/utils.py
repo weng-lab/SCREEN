@@ -66,8 +66,8 @@ def pflush(s):
     sys.stdout.flush()
 
 
-def importedNumRows(curs):
-    printt("\tcopied in", "{:,}".format(curs.rowcount), "rows")
+def importedNumRows(numRows):
+    printt("\tcopied in", "{:,}".format(numRows), "rows")
 
 
 def updatedNumRows(curs):
