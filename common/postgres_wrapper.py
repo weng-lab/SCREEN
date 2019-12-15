@@ -5,7 +5,7 @@ import os
 import gzip
 import json
 from contextlib import contextmanager
-from psycopg2 import ProgrammingError
+import psycopg2
 
 
 @contextmanager
@@ -30,7 +30,7 @@ def Cursor(DBCONN, query_name, *args, **kwargs):
         # see http://stackoverflow.com/a/28139640 for use cases
         yield con.cursor(*args, **kwargs)
         con.commit()
-    except ProgrammingError as e:
+    except psycopg2.ProgrammingError as e:
         print("ProgrammingError while running %s: %s" % (query_name, e.message))
         raise
     except:
@@ -93,7 +93,7 @@ class PostgresWrapper:
     def fetchallAsDict(self, name, q, qvars=None):
         try:
             with Cursor(self.DBCONN, name,
-                        psycopg2.extras.RealDictCursor) as curs:
+                        cursor_factory=psycopg2.extras.RealDictCursor) as curs:
                 curs.execute(q, qvars)
                 return curs.fetchall()
         except:

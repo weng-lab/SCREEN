@@ -399,17 +399,15 @@ AND isProximal is {isProx}
         ensemblid = gene
         if gene.startswith("ENS") and '.' in gene:
             ensemblid = gene.split('.')[0]
-        tableName = self.assembly + "_gene_info"
-        with getcursor(self.pw.DBCONN, "cre_pos") as curs:
-            q = """
-SELECT chrom, start, stop, approved_symbol, ensemblid_ver FROM {tn}
-WHERE chrom != ''
-AND (approved_symbol = %s
-OR ensemblid = %s
-OR ensemblid_ver = %s)
-""".format(tn=tableName)
-            curs.execute(q, (gene, ensemblid, gene))
-            r = curs.fetchone()
+
+        r = self.pw.fetchone("cre_pos", """
+        SELECT chrom, start, stop, approved_symbol, ensemblid_ver FROM {tn}
+        WHERE chrom != ''
+        AND (approved_symbol = %s
+        OR ensemblid = %s
+        OR ensemblid_ver = %s)
+        """.format(tn=self.assembly + "_gene_info"),
+                             (gene, ensemblid, gene))
         if not r:
             print("ERROR: missing", gene)
             return None, None
@@ -501,53 +499,48 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
                     "synonyms": r[8]
                     }
 
-        tableName = self.assembly + "_datasets"
         cols = ["assay", "expID", "fileID", "tissue",
                 "biosample_summary", "biosample_type", "cellTypeName",
                 "cellTypeDesc", "synonyms"]
-        with getcursor(self.pw.DBCONN, "datasets") as curs:
-            curs.execute("""
-SELECT {cols} FROM {tn}
-""".format(tn=tableName, cols=','.join(cols)))
-            return [makeDataset(r) for r in curs.fetchall()]
+        rows = self.pw.fetchall("datasets", """
+        SELECT {cols} FROM {tn}
+        """.format(tn=self.assembly + "_datasets",
+                   cols=','.join(cols)))
+
+        return [makeDataset(r) for r in rows]
 
     def datasets(self, assay):
         return self.pgc.datasets(assay)
 
     def genemap(self):
-        with getcursor(self.pw.DBCONN, "pg::genemap") as curs:
-            curs.execute("""
-SELECT ensemblid, approved_symbol, strand
-FROM {tn}
-WHERE strand != ''
-""".format(tn=self.assembly + "_gene_info"))
-            rows = curs.fetchall()
-            toSymbol = {r[0]: r[1] for r in rows}
-            toStrand = {r[0]: r[2] for r in rows}
-            curs.execute("""
-SELECT ensemblid_ver, approved_symbol, strand
-FROM {tn}
-WHERE strand != ''
-""".format(tn=self.assembly + "_gene_info"))
-            rows = curs.fetchall()
-            toSymbol.update({r[0]: r[1] for r in rows})
-            toStrand.update({r[0]: r[2] for r in rows})
+        rows = self.pw.fetchall("pg::genemap", """
+        SELECT ensemblid, approved_symbol, strand
+        FROM {tn}
+        WHERE strand != ''
+        """.format(tn=self.assembly + "_gene_info"))
+        toSymbol = {r[0]: r[1] for r in rows}
+        toStrand = {r[0]: r[2] for r in rows}
+
+        rows = self.pw.fetchall("pg::genemap", """
+        SELECT ensemblid_ver, approved_symbol, strand
+        FROM {tn}
+        WHERE strand != ''
+        """.format(tn=self.assembly + "_gene_info"))
+        toSymbol.update({r[0]: r[1] for r in rows})
+        toStrand.update({r[0]: r[2] for r in rows})
+        
         return toSymbol, toStrand
 
     def genesInRegion(self, chrom, start, stop):
-        tableName = self.assembly + "_gene_info"
         fields = ["approved_symbol", "start", "stop", "strand"]
-        q = """
-SELECT {fields}
-FROM {tn}
-WHERE chrom = %s
-AND int4range(start, stop) && int4range(%s, %s)
-ORDER BY start
-""".format(fields=','.join(fields), tn=tableName)
-
-        with getcursor(self.pw.DBCONN, "pg::genesInRegion") as curs:
-            curs.execute(q, (chrom, start, stop))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("genesinregion", """
+        SELECT {fields}
+        FROM {tn}
+        WHERE chrom = %s
+        AND int4range(start, stop) && int4range(%s, %s)
+        ORDER BY start
+        """.format(fields=','.join(fields), tn=self.assembly + "_gene_info"),
+                                (chrom, start, stop))
         fields = ["gene", "start", "stop", "strand"]
         return [dict(list(zip(fields, r))) for r in rows]
 
@@ -555,21 +548,20 @@ ORDER BY start
         peakTn = self.assembly + "_" + self._intersections_tablename(eset=eset)
         peakMetadataTn = self.assembly + "_" + self._intersections_tablename(metadata=True, eset=eset)
 
-        q = """
-SELECT {eid}fileID, biosample_term_name{tissue}
-FROM {peakMetadataTn}
-WHERE fileID IN (
-SELECT distinct(jsonb_array_elements_text(histone->%s))
-FROM {peakTn}
-WHERE accession = %s
-)
-ORDER BY biosample_term_name
-""".format(eid=("" if eset == "cistrome" else "expID, "), tissue=(", tissue" if eset == "cistrome" else ""),
-           peakTn=peakTn, peakMetadataTn=peakMetadataTn)
-
-        with getcursor(self.pw.DBCONN, "pg::genesInRegion") as curs:
-            curs.execute(q, (target, accession))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("histoneTargetExps", """
+        SELECT {eid}fileID, biosample_term_name{tissue}
+        FROM {peakMetadataTn}
+        WHERE fileID IN (
+        SELECT distinct(jsonb_array_elements_text(histone->%s))
+        FROM {peakTn}
+        WHERE accession = %s
+        )
+        ORDER BY biosample_term_name
+        """.format(eid=("" if eset == "cistrome" else "expID, "),
+                   tissue=(", tissue" if eset == "cistrome" else ""),
+                   peakTn=peakTn,
+                   peakMetadataTn=peakMetadataTn),
+                                (target, accession))
         return [{"expID": r[0] if eset == "cistrome" else (r[0] + ' / ' + r[1]),
                  "biosample_term_name": r[1 if (eset == "cistrome" and r[1] != "None") else 2]} for r in rows]
 
@@ -577,103 +569,83 @@ ORDER BY biosample_term_name
         peakTn = self.assembly + "_" + self._intersections_tablename(metadata=False, eset=eset)
         peakMetadataTn = self.assembly + "_" + self._intersections_tablename(metadata=True, eset=eset)
 
-        q = """
-SELECT {eid}fileID, biosample_term_name
-FROM {peakMetadataTn}
-WHERE fileID IN (
-SELECT distinct(jsonb_array_elements_text(tf->%s))
-FROM {peakTn}
-WHERE accession = %s
-)
-ORDER BY biosample_term_name
-""".format(eid="" if eset == "cistrome" else "expID, ", peakTn=peakTn, peakMetadataTn=peakMetadataTn)
-
-        with getcursor(self.pw.DBCONN, "pg::genesInRegion") as curs:
-            curs.execute(q, (target, accession))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("tfTargetExps", """
+        SELECT {eid}fileID, biosample_term_name
+        FROM {peakMetadataTn}
+        WHERE fileID IN (
+        SELECT distinct(jsonb_array_elements_text(tf->%s))
+        FROM {peakTn}
+        WHERE accession = %s
+        )
+        ORDER BY biosample_term_name
+        """.format(eid="" if eset == "cistrome" else "expID, ",
+                   peakTn=peakTn,
+                   peakMetadataTn=peakMetadataTn),
+                                (target, accession))
         return [{"expID": r[0] if eset == "cistrome" else (r[0] + ' / ' + r[1]),
                  "biosample_term_name": r[1 if eset == "cistrome" else 2]} for r in rows]
 
     def rampageByGene(self, ensemblid_ver):
-        q = """
-SELECT *
-FROM {tn}
-WHERE ensemblid_ver = %s
-""".format(tn=self.assembly + "_rampage")
+        rows = self.pw.fetchallAsDict("rampageByGene", """
+        SELECT *
+        FROM {tn}
+        WHERE ensemblid_ver = %s
+        """.format(tn=self.assembly + "_rampage"),
+                                      (ensemblid_ver, ))
 
-        with getcursor(self.pw.DBCONN, "pg::genesInRegion",
-                       cursor_factory=psycopg2.extras.RealDictCursor) as curs:
-            curs.execute(q, (ensemblid_ver, ))
-            rows = curs.fetchall()
-            ret = []
-            for r in rows:
-                nr = {"data": {}}
-                for k, v in r.items():
-                    if k.startswith("encff"):
-                        nr["data"][k] = v
-                        continue
-                    nr[k] = v
-                if not nr["data"]:
+        ret = []
+        for r in rows:
+            nr = {"data": {}}
+            for k, v in r.items():
+                if k.startswith("encff"):
+                    nr["data"][k] = v
                     continue
-                ret.append(nr)
+                nr[k] = v
+            if not nr["data"]:
+                continue
+            ret.append(nr)
         return ret
 
     def rampage_info(self):
-        q = """
-SELECT *
-FROM {tn}
-""".format(tn=self.assembly + "_rampage_info")
-
-        with getcursor(self.pw.DBCONN, "pg::genesInRegion",
-                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
-            curs.execute(q)
-            rows = curs.fetchall()
+        rows = self.pw.fetchallAsDict("rampageInfo", """
+        SELECT *
+        FROM {tn}
+        """.format(tn=self.assembly + "_rampage_info"))
         ret = {}
         for r in rows:
-            d = r._asdict()
-            ret[d["fileid"]] = d
+            ret[r["fileid"]] = r
         return ret
 
     def rampageEnsemblID(self, gene):
-        q = """
-SELECT ensemblid_ver FROM {assembly}_gene_info
-WHERE approved_symbol = %(gene)s
-        """.format(assembly=self.assembly)
-
-        with getcursor(self.pw.DBCONN, "_gene") as curs:
-            curs.execute(q, {"gene": gene})
-            rows = curs.fetchone()
-            return rows[0]
+        r = self.pw.fetchone("rampageEnsemblID", """
+        SELECT ensemblid_ver 
+        FROM {assembly}_gene_info
+        WHERE approved_symbol = %(gene)s
+        """.format(assembly=self.assembly),
+                             {"gene": gene})
+        return r[0]
 
     def geBiosampleTypes(self):
-        q = """
-SELECT DISTINCT(biosample_type)
-FROM {tn}
-ORDER BY 1
-""".format(tn=self.assembly + "_rnaseq_exps")
-        with getcursor(self.pw.DBCONN, "pg::geBiosampleTypes") as curs:
-            curs.execute(q)
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("geBiosampleTypes", """
+        SELECT DISTINCT(biosample_type)
+        FROM {tn}
+        ORDER BY 1
+        """.format(tn=self.assembly + "_rnaseq_exps"))
         return [r[0] for r in rows]
 
     def geneIDsToApprovedSymbol(self):
-        q = """
-SELECT geneid, approved_symbol
-FROM {gtn}
-ORDER BY 1
-""".format(gtn=self.assembly + "_gene_info")
-        with getcursor(self.pw.DBCONN, "pg::geneIDsToApprovedSymbol") as curs:
-            curs.execute(q)
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("geneIDsToApprovedSymbol", """
+        SELECT geneid, approved_symbol
+        FROM {gtn}
+        ORDER BY 1
+        """.format(gtn=self.assembly + "_gene_info"))
         return {r[0]: r[1] for r in rows}
 
     def getHelpKeys(self):
-        with getcursor(self.pw.DBCONN, "getHelpKeys") as curs:
-            curs.execute("""
-            SELECT key, title, summary
-            FROM helpkeys
-            """)
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("getHelpKeys", """
+        SELECT key, title, summary
+        FROM helpkeys
+        """)
         return {r[0]: {"title": r[1],
                        "summary": r[2]}
                 for r in rows}
@@ -681,36 +653,29 @@ ORDER BY 1
     def tfHistCounts(self, eset=None):
         if eset is None:
             eset = "peak"
-        with getcursor(self.pw.DBCONN, "tfHistCounts") as curs:
-            curs.execute("""
-SELECT COUNT(label), label
-FROM {assembly}_{eset}intersectionsmetadata
-GROUP BY label
-            """.format(assembly=self.assembly, eset=eset))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("tfHistCounts", """
+        SELECT COUNT(label), label
+        FROM {assembly}_{eset}intersectionsmetadata
+        GROUP BY label
+        """.format(assembly=self.assembly, eset=eset))
         return {r[1]: r[0] for r in rows}
 
     def geneExpressionTissues(self):
-        with getcursor(self.pw.DBCONN, "geneExpressionTissues") as curs:
-            curs.execute("""
-SELECT DISTINCT(organ)
-FROM {assembly}_rnaseq_exps
-""".format(assembly=self.assembly))
-            return [r[0] for r in curs.fetchall()]
+        rows = self.pw.fetchall("geneExpressionTissues", """
+        SELECT DISTINCT(organ)
+        FROM {assembly}_rnaseq_exps
+        """.format(assembly=self.assembly))
+        return [r[0] for r in rows]
 
     def loadNineStateGenomeBrowser(self):
-        tableName = self.assembly + "_nine_state"
-        with getcursor(self.pw.DBCONN, "pg$loadNineStateGenomeBrowser",
-                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
-            curs.execute("""
-            SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
-FROM {tn}
-""".format(tn=tableName))
-            rows = curs.fetchall()
+        rows = self.pw.fetchallAsDict("loadNineStateGenomeBrowser", """
+        SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, 
+        h3k27ac, ctcf, assembly, tissue
+        FROM {tn}
+        """.format(tn=self.assembly + "_nine_state"))
+        
         ret = {}
         for r in rows:
-            r = r._asdict()
-
             for k in ["dnase", "h3k4me3", "h3k27ac", "ctcf"]:
                 fileID = r[k]
                 if "NA" == fileID:
@@ -720,43 +685,33 @@ FROM {tn}
                     url = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/" + fn
                 r[k + "_url"] = url
             ret[r["celltypename"]] = r
-
         return ret
 
     def loadMoreTracks(self):
-        tableName = self.assembly + "_more_tracks"
-        with getcursor(self.pw.DBCONN, "pg$loadMoretracks") as curs:
-            curs.execute("""
-SELECT cellTypeName, tracks
-FROM {tn}
-""".format(tn=tableName))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("loadMoreTracks", """
+        SELECT cellTypeName, tracks
+        FROM {tn}
+        """.format(tn=self.assembly + "_more_tracks"))
+
         ret = {}
         for r in rows:
             ret[r[0]] = r[1]
         return ret
 
     def linkedGenes(self, accession):
-        tableName = self.assembly + "_linked_genes"
-        with getcursor(self.pw.DBCONN, "pg$linkedgenes",
-                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
-            curs.execute("""
-            SELECT gene, celltype, method, dccaccession
-FROM {tn}
-WHERE cre = %s
-            """.format(tn=tableName), (accession, ))
-            rows = [{"gene": x[0], "celltype": x[1], "method": x[2], "dccaccession": x[3]}
-                    for x in curs.fetchall()]
+        rows = self.pw.fetchallAsDict("linkedGenes", """
+        SELECT gene, celltype, method, dccaccession
+        FROM {tn}
+        WHERE cre = %s
+        """.format(tn=self.assembly + "_linked_genes"),
+                                          (accession, ))
         return rows
 
     def creBigBeds(self):
-        tableName = self.assembly + "_dcc_cres"
-        with getcursor(self.pw.DBCONN, "pg$creBigBeds") as curs:
-            curs.execute("""
-            SELECT celltype, dcc_accession, typ
-FROM {tn}
-            """.format(tn=tableName))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("creBigBeds", """
+        SELECT celltype, dcc_accession, typ
+        FROM {tn}
+        """.format(tn=self.assembly + "_dcc_cres"))
         ret = {}
         for ct, acc, typ in rows:
             if ct not in ret:
@@ -765,13 +720,11 @@ FROM {tn}
         return ret
 
     def creBeds(self):
-        tableName = self.assembly + "_dcc_cres_beds"
-        with getcursor(self.pw.DBCONN, "pg$creBeds") as curs:
-            curs.execute("""
-            SELECT celltype, dcc_accession, typ
-FROM {tn}
-            """.format(tn=tableName))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("creBeds", """
+        SELECT celltype, dcc_accession, typ
+        FROM {tn}
+        """.format(tn=self.assembly + "_dcc_cres_beds"))
+
         ret = {}
         for ct, acc, typ in rows:
             if ct not in ret:
