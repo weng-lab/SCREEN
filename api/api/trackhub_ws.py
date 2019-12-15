@@ -14,18 +14,18 @@ from common.coord import Coord
 
 
 class TrackhubController:
-    def __init__(self, ps, cacheW):
-        self.ps = ps
+    def __init__(self, pw, cacheW):
+        self.pw = pw
         self.cacheW = cacheW
-        self.db = DbTrackhub(self.ps.DBCONN)
+        self.db = DbTrackhub(self.pw)
 
     def ucsc_trackhub(self, *args, **kwargs):
-        tdb = TrackhubDb(self.ps, self.cacheW, self.db)
+        tdb = TrackhubDb(self.pw, self.cacheW, self.db)
         return tdb.ucsc_trackhub(*args, **kwargs)
 
     def _trackhub_url_info(self, j):
         assembly = self.assembly = j["assembly"]
-        pgSearch = PGsearch(self.ps, assembly)
+        pgSearch = PGsearch(self.pw, assembly)
 
         if "coord_start" not in j:
             cre = CRE(pgSearch, j["accession"], self.cacheW[assembly])
@@ -65,7 +65,7 @@ class TrackhubController:
 
     def ucsc_trackhub_url_snp(self, j, uuid):
         assembly = self.assembly = j["assembly"]
-        pgSearch = PGsearch(self.ps, assembly)
+        pgSearch = PGsearch(self.pw, assembly)
 
         snp = j["snp"]
         c = Coord(snp["chrom"], snp["cre_start"], snp["cre_end"])

@@ -63,8 +63,8 @@ class PGcart:
 
 def main():
     from dbconnect import db_connect
-    DBCONN = db_connect(os.path.realpath(__file__))
-    pw = PostgresWrapper(DBCONN)
+    testCONN = db_connect(os.path.realpath(__file__))
+    pw = PostgresWrapper(testCONN)
 
     for assembly in ["hg19", "mm10"]:
         print("*************", assembly)

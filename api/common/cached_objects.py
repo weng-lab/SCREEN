@@ -211,9 +211,9 @@ class CachedObjects:
 
 
 def main():
-    DBCONN = db_connect(os.path.realpath(__file__))
+    testCONN = db_connect(os.path.realpath(__file__))
 
-    ps = PostgresWrapper(DBCONN)
+    ps = PostgresWrapper(testCONN)
     cache = CachedObjects(ps, "mm10")
     pgSearch = PGsearch(ps, "mm10")
 
