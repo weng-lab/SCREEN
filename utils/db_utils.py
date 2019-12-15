@@ -210,11 +210,9 @@ def getcursor(DBCONN, query_name, *args, **kwargs):
         con.commit()
     except ProgrammingError as e:
         print("ProgrammingError while running %s: %s" % (query_name, e.message))
-        con.rollback()
         raise
     except:
         print("%s error while running %s" % (sys.exc_info()[0].__name__, query_name))
-        con.rollback()
         raise
     finally:
         DBCONN.putconn(con, close=False)
