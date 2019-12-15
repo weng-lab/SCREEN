@@ -49,7 +49,7 @@ class ParseSearch:
 
     def haveresults(self, parsed):
         return parsed["coord_chrom"] or parsed["cellType"] or (
-            parsed["accessions"] and len(parsed["accessions"])) or parsed["gene"]
+            parsed["accessions"] and len(parsed["accessions"])) or ("gene" in parsed and parsed["gene"])
 
     def _find_coord(self, s):
         _p = s.split()
