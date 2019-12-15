@@ -29,6 +29,7 @@ re_coord3 = re.compile("^[cC][hH][rR][0-9XxYy][0-9]?")
 
 class ParseSearch:
     def __init__(self, pw, assembly, kwargs):
+        self.pw = pw
         self.kwargs = kwargs
 
         self.pgParse = PGparse(self.pw, assembly)

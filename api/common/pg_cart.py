@@ -11,17 +11,17 @@ from config import Config
 
 
 class PGcartWrapper:
-    def __init__(self, pg):
+    def __init__(self, pw):
         self.assemblies = Config.assemblies
-        self.pgs = {a: PGcart(pg, a) for a in self.assemblies}
+        self.pgs = {a: PGcart(pw, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
 
 class PGcart:
-    def __init__(self, pg, assembly):
-        self.pg = pg
+    def __init__(self, pw, assembly):
+        self.pw = pw
         self.assembly = assembly
         self.tableName = assembly + "_cart"
 

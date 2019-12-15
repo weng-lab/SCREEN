@@ -41,8 +41,8 @@ class PGcreTable(object):
             pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as info"
 
-    def __init__(self, pg, assembly, ctmap, ctsTable):
-        self.pg = pg
+    def __init__(self, pw, assembly, ctmap, ctsTable):
+        self.pw = pw
         self.assembly = assembly
         self.ctmap = ctmap
         self.ctsTable = ctsTable
