@@ -15,9 +15,9 @@ from pg_cart import PGcart
 
 
 class SearchWebServiceWrapper:
-    def __init__(self, args, ps, cacheW, staticDir):
+    def __init__(self, args, pw, cacheW, staticDir):
         def makeWS(assembly):
-            return SearchWebService(args, ps, cacheW[assembly], staticDir, assembly)
+            return SearchWebService(args, pw, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies
         self.wss = {a: makeWS(a) for a in self.assemblies}
 
@@ -30,9 +30,9 @@ class SearchWebServiceWrapper:
 
 
 class SearchWebService(object):
-    def __init__(self, args, ps, cache, staticDir, assembly):
+    def __init__(self, args, pw, cache, staticDir, assembly):
         self.args = args
-        self.ps = ps
+        self.pw = pw
         self.cache = cache
         self.staticDir = staticDir
         self.assembly = assembly
@@ -53,14 +53,14 @@ class SearchWebService(object):
         
         parsed = ""
         if "q" in j:
-            p = ParseSearch(self.ps.DBCONN, self.assembly, j)
+            p = ParseSearch(self.pw, self.assembly, j)
             parsed = p.parse()
             if j["q"] and not p.haveresults(parsed):
                 ret["failed"] = j["q"]
 
         uuid = j["uuid"]
 
-        cart = PGcart(self.ps, self.assembly)
+        cart = PGcart(self.pw, self.assembly)
         accessions = cart.get(uuid)
 
         parsed["cart_accessions"] = accessions

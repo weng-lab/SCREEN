@@ -9,10 +9,6 @@ from scipy.stats.mstats import mquantiles
 import numpy as np
 import math
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor
-
-
 class GeneInfo:
     def __init__(self, ps, cache, assembly):
         self.ps = ps

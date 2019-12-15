@@ -17,9 +17,6 @@ from postgres_wrapper import PostgresWrapper
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
-from db_utils import getcursor
-
 
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
@@ -31,11 +28,11 @@ re_coord3 = re.compile("^[cC][hH][rR][0-9XxYy][0-9]?")
 
 
 class ParseSearch:
-    def __init__(self, DBCONN, assembly, kwargs):
+    def __init__(self, pw, assembly, kwargs):
+        self.pw = pw
         self.kwargs = kwargs
 
-        self.pg = PostgresWrapper(DBCONN)
-        self.pgParse = PGparse(self.pg, assembly)
+        self.pgParse = PGparse(self.pw, assembly)
 
         self.halfWindow = 7500
         self.userErrMsg = ""
@@ -169,7 +166,7 @@ def main():
 
     assembly = "hg19"
     #assembly = "mm10"
-    ps = PostgresWrapper(DBCONN)
+    pw = PostgresWrapper(DBCONN)
 
     queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
     queries = ["BAP1"]
@@ -180,7 +177,7 @@ def main():
 
     for q in queries:
         print("***************", q)
-        ps = ParseSearch(DBCONN, assembly, {"q": q})
+        ps = ParseSearch(pw, assembly, {"q": q})
 
         output = ps.parse()
         keys = sorted(output.keys())

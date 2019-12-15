@@ -15,13 +15,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
 from table_names import GeData, GeMetadata
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor
-
 
 class GeneExpression:
-    def __init__(self, ps, cache, assembly):
-        self.ps = ps
+    def __init__(self, pw, cache, assembly):
+        self.pw = pw
         self.cache = cache
         self.assembly = assembly
         self.tissueColors = TissueColors(cache)
@@ -110,23 +107,22 @@ class GeneExpression:
                 "byExpressionTPM": self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM": self.sortByExpression(rows, "rawFPKM")}
 
-    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected, assay_name = None):
-        a = """
-SELECT chrom, start, stop
-FROM {assembly}_gene_info
-WHERE approved_symbol = %(gene)s
-""".format(assembly=self.assembly)
-
+    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected,
+                         assay_name = None):
         #print(q, gene)
-        with getcursor(self.ps.DBCONN, "_gene") as curs:
-            args = {"gene": gene,
-                    "compartments": tuple(compartments),
-                    "bts": tuple(biosample_types_selected)}
-            if assay_name is not None: args["an"] = assay_name
-            curs.execute(q, args)
-            rows = curs.fetchall()
-            curs.execute(a, {"gene": gene})
-            grows = curs.fetchall()
+        args = {"gene": gene,
+                "compartments": tuple(compartments),
+                "bts": tuple(biosample_types_selected)}
+        if assay_name is not None:
+            args["an"] = assay_name
+        rows = self.pw.fetchall("doComputeHorBars", q, args)
+
+        a = """
+        SELECT chrom, start, stop
+        FROM {assembly}_gene_info
+        WHERE approved_symbol = %(gene)s
+        """.format(assembly=self.assembly)
+        grows = self.pw.fetchall("doComputeHorBars", a, {"gene": gene})
 
         if not rows or not grows:
             return {}
@@ -158,7 +154,8 @@ WHERE approved_symbol = %(gene)s
         ret = self.process(rows)
         return ret
 
-    def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name = None):
+    def computeHorBars(self, gene, compartments, biosample_types_selected,
+                       assay_name = None):
         assayname = ""
         if assay_name is not None:
             assayname = """
@@ -167,22 +164,24 @@ AND {tableNameMetadata}.assay_title = %(an)s
            tableNameMetadata = GeMetadata(self.assembly))
             
         q = """
-SELECT r.tpm, {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
-r.expid, r.replicate, r.fpkm, {tableNameMetadata}.ageTitle, r.id
-FROM {tableNameData} AS r
-INNER JOIN {tableNameMetadata} ON {tableNameMetadata}.expid = r.expid
-{assayname}
-WHERE gene_name = %(gene)s
-AND {tableNameMetadata}.cellCompartment IN %(compartments)s
-AND {tableNameMetadata}.biosample_type IN %(bts)s
-""".format(assembly=self.assembly,
-           tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
-           tableNameMetadata = GeMetadata(self.assembly),
-           assayname = assayname)
+        SELECT r.tpm, {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
+        r.expid, r.replicate, r.fpkm, {tableNameMetadata}.ageTitle, r.id
+        FROM {tableNameData} AS r
+        INNER JOIN {tableNameMetadata} ON {tableNameMetadata}.expid = r.expid
+        {assayname}
+        WHERE gene_name = %(gene)s
+        AND {tableNameMetadata}.cellCompartment IN %(compartments)s
+        AND {tableNameMetadata}.biosample_type IN %(bts)s
+        """.format(assembly=self.assembly,
+                   tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
+                   tableNameMetadata = GeMetadata(self.assembly),
+                   assayname = assayname)
         
-        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
+        return self.doComputeHorBars(q, gene, compartments,
+                                     biosample_types_selected, assay_name)
 
-    def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name = None):
+    def computeHorBarsMean(self, gene, compartments, biosample_types_selected,
+                           assay_name = None):
         assayname = ""
         if assay_name is not None:
             assayname = """

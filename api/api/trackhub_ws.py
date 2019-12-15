@@ -8,7 +8,7 @@ import os
 
 from models.cre import CRE
 from models.trackhubdb import TrackhubDb
-from common.pg import PGsearch
+from common.pg_search import PGsearch
 from common.db_trackhub import DbTrackhub
 from common.coord import Coord
 

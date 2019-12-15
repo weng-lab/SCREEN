@@ -19,9 +19,9 @@ from parse_search import ParseSearch
 
 
 class AutocompleteWebService:
-    def __init__(self, ps):
-        self.ps = ps
-        self.ac = AutocompleterWrapper(ps)
+    def __init__(self, pw):
+        self.pw = pw
+        self.ac = AutocompleterWrapper(pw)
 
         self.actions = {"suggestions": self.suggestions,
                         "search": self.search}
@@ -51,7 +51,7 @@ class AutocompleteWebService:
 
         uuid = j.get("uuid", uuider.uuid4().hex)
 
-        p = ParseSearch(self.ps.DBCONN, assembly, {"q": userQuery})
+        p = ParseSearch(self.pw, assembly, {"q": userQuery})
         ret = {}
         try:
             ret = p.parse()

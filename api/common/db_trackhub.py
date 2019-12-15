@@ -5,30 +5,20 @@ import sys
 import json
 import psycopg2
 import argparse
-
 from psycopg2.extras import Json
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from dbconnect import db_connect
-from utils import Utils
-from dbs import DBS
-from db_utils import getcursor
-
-
 class DbTrackhub:
-    def __init__(self, DBCONN):
-        self.DBCONN = DBCONN
+    def __init__(self, pw):
+        self.pw = pw
         self.tableSearch = "search"
 
     def get(self, uid):
-        with getcursor(self.DBCONN, "get") as curs:
-            curs.execute("""
-            SELECT reAccession, assembly, hubNum, j
-FROM {search}
-WHERE uid = %(uid)s
-""".format(search=self.tableSearch), {"uid": uid})
-            row = curs.fetchone()
+        row = self.pw.fetchone("db_trackhub$get", """
+        SELECT reAccession, assembly, hubNum, j
+        FROM {search}
+        WHERE uid = %(uid)s
+        """.format(search=self.tableSearch), {"uid": uid})
+
         if not row:
             return None
         return {"reAccession": row[0],
@@ -37,43 +27,43 @@ WHERE uid = %(uid)s
                 "j": row[3]}
 
     def insertOrUpdate(self, assembly, reAccession, uid, j):
-        with getcursor(self.DBCONN, "insertOrUpdate") as curs:
-            curs.execute("""
-SELECT id FROM search
-WHERE uid = %(uid)s
-""", {"uid": uid})
-            if (curs.rowcount > 0):
-                curs.execute("""
-UPDATE search
-SET
-reAccession = %(reAccession)s,
-assembly = %(assembly)s,
-hubNum = hubNum + 1,
-j = %(j)s
-WHERE uid = %(uid)s
-RETURNING hubNum;
-""", {"reAccession": reAccession,
-                    "assembly": assembly,
-                    "uid": uid,
-                    "j": Json(j)
-      })
-                hubNum = curs.fetchone()[0]
-            else:
-                curs.execute("""
-INSERT INTO search
-                (reAccession, assembly, uid, hubNum, j)
-VALUES (
-%(reAccession)s,
-%(assembly)s,
-%(uid)s,
-%(hubNum)s,
-%(j)s
-) RETURNING hubNum;
-""", {"reAccession": reAccession,
-                    "assembly": assembly,
-                    "uid": uid,
-                    "hubNum": 0,
-                    "j": Json(j)
-      })
-                hubNum = curs.fetchone()[0]
+        num = self.pw.rowcount("insertOrUpdate", """
+        SELECT id FROM search
+        WHERE uid = %(uid)s
+        """, {"uid": uid})
+        if num > 0:
+            r = self.pw.updateReturning("insertOrUpdate", """
+            UPDATE search
+            SET
+            reAccession = %(reAccession)s,
+            assembly = %(assembly)s,
+            hubNum = hubNum + 1,
+            j = %(j)s
+            WHERE uid = %(uid)s
+            RETURNING hubNum;
+            """, {"reAccession": reAccession,
+                  "assembly": assembly,
+                  "uid": uid,
+                  "j": Json(j)
+            })
+            hubNum = r[0]
+            return hubNum
+        
+        r = self.pw.insertReturning("insertOrUpdate", """
+        INSERT INTO search
+        (reAccession, assembly, uid, hubNum, j)
+        VALUES (
+        %(reAccession)s,
+        %(assembly)s,
+        %(uid)s,
+        %(hubNum)s,
+        %(j)s
+        ) RETURNING hubNum;
+        """, {"reAccession": reAccession,
+              "assembly": assembly,
+              "uid": uid,
+              "hubNum": 0,
+              "j": Json(j)
+        })
+        hubNum = r[0]
         return hubNum

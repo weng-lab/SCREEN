@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-
-
 from .cre import CRE
-from common.pg import PGsearch
+from common.pg_search import PGsearch
 from common.pg_de import PGde
 
 
