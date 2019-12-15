@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import sys
 import os
 import json
@@ -18,6 +18,7 @@ class Config:
 
     re = c["RE"]
 
+    partial_assemblies = re["partial_assemblies"] if "partial_assemblies" in re else []
     version = re["version"]
     db_host = re["db_host"]
     db_usr = re["db_usr"]

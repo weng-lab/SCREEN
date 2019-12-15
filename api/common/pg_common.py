@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -9,8 +9,7 @@ import psycopg2.extras
 
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
 from utils import AddPath
 from db_utils import getcursor
 
@@ -59,7 +58,7 @@ FROM {tn}
                 "Insulator": "Insulator"
                 }
         rmInfo = self.rankMethodToIDxToCellType()
-        return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
+        return {amap[k]: v for k, v in rmInfo.items() if k in amap}
 
     def makeCTStable(self):
         tableName = self.assembly + "_cre_groups_cts"

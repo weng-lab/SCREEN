@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import sys
 import os
 import json
@@ -28,16 +28,18 @@ class MiniPeaksCache:
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
-        select_stmt = self.session.prepare("""
+        qstr = """
 SELECT * FROM {tn} WHERE accession IN ?
-""".format(tn=tableName))
+""".format(tn=tableName)
+
+        select_stmt = self.session.prepare(qstr)
 
         rows = list(self.session.execute(select_stmt, (accessions,)))
 
         ret = {}
         for row in rows:
             data = {}
-            for k, v in row.iteritems():
+            for k, v in row.items():
                 if "accession" == k or "chrom" == k:
                     continue
                 data[k.upper()] = [float(x) for x in v[1:-1].split(',')]
@@ -46,8 +48,8 @@ SELECT * FROM {tn} WHERE accession IN ?
 
 
 if __name__ == "__main__":
-    mpc = MiniPeaksCache("hg19", 0, 4)
-    acc = "EH37E1055372"
+    mpc = MiniPeaksCache("GRCh38", 20, 6)
+    acc = "EH38E1516978"
     ret = mpc.get("DNase", [acc])
-    for k, v in ret[acc].iteritems():
+    for k, v in ret[acc].items():
         print(k, v)

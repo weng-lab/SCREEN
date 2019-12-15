@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 import sys
 
-from minipeaks_cache import MiniPeaksCache
-from cre import CRE
+from .minipeaks_cache import MiniPeaksCache
+from .cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import printt
@@ -33,9 +33,9 @@ class MiniPeaks:
         lookup = self.cache.datasets.byFileID
 
         byCts = {}
-        for assay, accsAndData in byAssay.iteritems():
-            for accession, fileIdToData in accsAndData.iteritems():
-                for fileID, data in fileIdToData.iteritems():
+        for assay, accsAndData in byAssay.items():
+            for accession, fileIdToData in accsAndData.items():
+                for fileID, data in fileIdToData.items():
                     lu = lookup[fileID]
                     ctn = lu["cellTypeName"]
                     if ctn not in byCts:
@@ -52,7 +52,7 @@ class MiniPeaks:
                     byCts[ctn][k] = {"fileID": fileID, "data": data, "assay": assay}
                     expID = self.cache.datasets.byFileID[fileID]["expID"]
                     byCts[ctn]["expIDs"].append(expID)
-        return byCts.values(), accessions
+        return list(byCts.values()), accessions
 
     def getBigWigRegionsWithSimilar(self, assay, accession, other=None):
         coord = CRE(self.pgSearch, accession, self.cache).coord()
@@ -78,8 +78,8 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
 
-    assembly = "hg19"
-    acc = "EH37E1055372"
+    assembly = "GRCh38"
+    acc = "EH38E1516978"
 
     pgSearch = PGsearch(ps, assembly)
     cache = CachedObjects(ps, assembly)

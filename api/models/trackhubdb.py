@@ -1,15 +1,16 @@
 #!/usr/bin/python
 
+from config import Config
+from utils import AddPath
 import sys
 import cherrypy
 import os
-import StringIO
+import io
 from collections import OrderedDict
 
-import trackhub_helpers as Helpers
+from . import trackhub_helpers as Helpers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from utils import AddPath
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
 from coord import Coord
@@ -22,7 +23,6 @@ import trackhub_helpers as Helpers
 from cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from config import Config
 
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "RNA-seq": ["0,170,0", "", "#00aa00"],
@@ -39,29 +39,67 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "TF ChIP-seq": ["18,98,235", "#1262EB"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
-AgnosticCres = {"5-group": {"hg19": "ENCFF658MYW",
-                            "mm10": "ENCFF318XQA"},
+AgnosticCres = {"7-group": {"hg19": "ENCFF658MYW",
+                            "mm10": "ENCFF318XQA",
+                            "hg38": "GRCh38-ccREs.CTA"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
-                                        "mm10": "ENCFF549SJX"},
+                                        "mm10": "ENCFF549SJX",
+                                        "hg38": "hg38-ccREs.H3K4me3.mz.bed.sorted"},
                             "H3K27ac": {"hg19": "ENCFF656QBL",
-                                        "mm10": "ENCFF776IAR"},
+                                        "mm10": "ENCFF776IAR",
+                                        "hg38": "hg38-ccREs.H3K27ac.mz.bed.sorted"},
                             "CTCF": {"hg19": "ENCFF106AGR",
-                                       "mm10": "ENCFF506YHI"}}}
+                                     "mm10": "ENCFF506YHI",
+                                     "hg38": "hg38-ccREs.CTCF.mz.bed.sorted"}}}
 
-def EncodeUrlBigBed(accession):
+
+def EncodeUrlBigBed(accession, notencode=False):
+    if notencode:
+        if accession.startswith("http:"):
+            return accession
+        return os.path.join("http://users.wenglab.org/pratth/",
+                            accession + ".bigBed")
     return os.path.join("https://www.encodeproject.org/files/",
                         accession,
                         "@@download/",
                         accession + ".bigBed?proxy=true")
 
+
+def EncodeUrlBigWig(accession):
+    return os.path.join("https://www.encodeproject.org/files/",
+                        accession,
+                        "@@download/",
+                        accession + ".bigWig?proxy=true")
+
+
+def outputLines(d, indentLevel, extras={}):
+    prefix = '\t' * indentLevel
+    for k, v in d.items():
+        if v:
+            yield prefix + k + " " + str(v) + '\n'
+    for k, v in extras.items():
+        if v:
+            yield prefix + k + " " + str(v) + '\n'
+    yield '\n'
+
+
+def colorize(assay):
+    c = "227,184,136"
+    if assay in AssayColors:
+        c = AssayColors[assay][0]
+    return c
+
+
 class cRETrack(object):
-    def __init__(self, assembly, exp, stateType, cREaccession, parent, active):
-        self.assembly = assembly
-        self.exp = exp
-        self.stateType = stateType
+    def __init__(self, assembly, assay, show7group, cREaccession, parent, active, ct, notencode=False):
+        self.assembly = assembly if assembly != "GRCh38" else "hg38"
+        self.assay = assay
+        self.show7group = show7group
         self.cREaccession = cREaccession
         self.parent = parent
         self.active = active
+        self.ct = ct
+        self.notencode = notencode
         self.p = self._init()
 
     def _init(self):
@@ -74,20 +112,20 @@ class cRETrack(object):
         p["type"] = "bigBed 9"
 
         if 'general' == self.ct:
-            if self.show5group:
-                shortLabel = ["general 5g cREs"]
-                longLabel = ["general 5-group cREs"]
+            if self.show7group:
+                shortLabel = ["general 7g ccREs"]
+                longLabel = ["general 7-group ccREs"]
             else:
                 shortLabel = ["9s", self.ct]
-                longLabel =  ["general cREs", "with high", self.assay, '(9 state)']
+                longLabel = ["general ccREs", "with high", self.assay, '(9 state)']
         else:
-            if self.show5group:
-                shortLabel = ["5g", self.ct]
-                longLabel = ["cREs in", self.ct, '(5 group)']
+            if self.show7group:
+                shortLabel = ["7g", self.ct]
+                longLabel = ["ccREs in", self.ct, '(7 group)']
             else:
                 shortLabel = ["9s", self.assay, self.ct]
-                longLabel =  ["cREs in", self.ct, "with high", self.assay, '(9 state)']
-            
+                longLabel = ["ccREs in", self.ct, "with high", self.assay, '(9 state)']
+
         p["shortLabel"] = Helpers.makeShortLabel(*shortLabel)
         p["longLabel"] = Helpers.makeLongLabel(*longLabel)
         p["itemRgb"] = "On"
@@ -95,11 +133,11 @@ class cRETrack(object):
         return p
 
     def _url(self):
-        return EncodeUrlBigBed(self.cREaccession)
-    
+        return EncodeUrlBigBed(self.cREaccession, self.notencode)
+
     def lines(self, priority):
         return ''.join([x for x in outputLines(self.p, 1, {"priority": priority})])
-        
+
 
 class BigWigTrack(object):
     def __init__(self, assembly, expID, fileID, assay, parent, active, ct):
@@ -131,7 +169,7 @@ class BigWigTrack(object):
 
     def setDesc(self, d):
         self.trackDesc = d
-        
+
     def _desc(self):
         if self.trackDesc:
             return self.trackDesc
@@ -139,12 +177,12 @@ class BigWigTrack(object):
 
     def _signalMax(self):
         if "DNase" == self.assay:
-            return "0:150"
+            return "0:30"
         return "0:50"
 
     def _url(self):
         return EncodeUrlBigWig(self.fileID)
-    
+
     def lines(self, priority):
         p = self._init()
         return ''.join([x for x in outputLines(p, 1, {"priority": priority})])
@@ -166,6 +204,8 @@ class TrackhubDb:
             return "error: couldn't find uuid"
 
         self.assembly = info["assembly"]
+        if self.assembly == "GRCh38":
+            self.assembly = "hg38"
 
         if 2 == len(args):
             loc = args[1]
@@ -192,11 +232,12 @@ class TrackhubDb:
 
     def makeGenomes(self):
         return """genome\t{assembly}
-trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
-                                                   hubNum=self.hubNum)
+trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
+                                                    assemblya=self.assembly if self.assembly != "hg38" else "GRCh38",
+                                                    hubNum=self.hubNum)
 
     def makeHub(self):
-        f = StringIO.StringIO()
+        f = io.StringIO()
         t = "ENCODE Candidate Regulatory Elements " + self.assembly
         if Config.ribbon:
             t += " (%s)" % Config.ribbon
@@ -212,198 +253,119 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
     def getLines(self, accession, j):
         self.priority = 1
 
-        self.lines = [self.generalCREs(j["showCombo"])]
-
-        #self._addSignalFiles(accession, j)
-
-        return filter(lambda x: x, self.lines)
-
-    def generalCREs(self, fiveGroup):
-        if fiveGroup:
-            url = EncodeUrlBigBed(AgnosticCres["5-group"][self.assembly])
-            t = PredictionTrack("general cREs (5 group)",
-                                self.priority, url, True).track("general cREs (5 group)")
-            self.priority += 1
-        else:
-            t = ""
-            for stateType in ["H3K4me3", "H3K27ac", "CTCF"]:
-                url = EncodeUrlBigBed(AgnosticCres["9-state"][stateType][self.assembly])
-                desc = stateType + " 9-state cREs"
-                t += PredictionTrack(desc,
-                                     self.priority, url,
-                                     True).track(desc)
-                t += "\n\n"
-                self.priority += 1
-        return t
-
-        f = StringIO.StringIO()
-        map(lambda line: f.write(line + "\n"), lines)
+        f = io.StringIO()
+        for line in lines:
+            f.write(line + "\n")
 
         return f.getvalue()
 
         desc = trackInfo.desc()
         shortLabel = trackInfo.shortLabel()
 
-        if self.browser in [UCSC, ENSEMBL]:
-            track = BigWigTrack(desc, self.priority, url,
-                                trackInfo.color(), stname,
-                                trackInfo.signalMax(), hide=hideAll).track(shortLabel)
-        else:
-            track = BigWigTrack(desc, self.priority, url,
-                                trackInfo.color(), hide=hideAll).track_washu()
-        self.priority += 1
-        return track
+        show7group = j["showCombo"]
+        self.lines = self.generalCREs(show7group)
 
-    def _getCreTracks(self, cts):
-        assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
-        cache = self.cacheW[self.assembly]
-        assaymap = cache.assaymap
+        for ct in j["cellTypes"]:
+            self.lines += self._add_ct(ct, show7group)
 
-        ret = OrderedDict()
-        for tct in cts:
-            ct = tct["ct"]
-            ret[ct] = {}
-            ctInfos = cache.datasets.byCellType[ct]  # one per assay
-            displayCT = ctInfos[0].get("cellTypeDesc")
-            if not displayCT:
-                displayCT = ctInfos[0]["cellTypeName"]
-            displayCT = displayCT[:50]
+        return [x for x in self.lines if x]
 
-            # else JSON will be invalid for WashU
-            ctwu = ct.replace("'", "_").replace('"', '_')
-            tissue = tct["tissue"]
-            fileIDs = []
-            ret[ct]["signal"] = []
-            ret[ct]["9state"] = []
-            for assay in assays:
-                if assay in assaymap:
-                    if ct in assaymap[assay]:
-                        expBigWigID = assaymap[assay][ct]
-                        expID = expBigWigID[0]
-                        fileID = expBigWigID[1]
-                        fileIDs.append(fileID)
-                        ti = TrackInfo(cache, displayCT, tissue[:50],
-                                       assay, expID, fileID)
-                        ret[ct]["signal"].append(ti)
-                        fn = fileID + ".bigBed"
-                        url = os.path.join(WWW, "9-State", fn)
-                        ret[ct]["9state"].append((assay, displayCT, url))
-            fn = '_'.join(fileIDs) + ".cREs.bigBed"
-            ret[ct]["cts"] = []
-            url = os.path.join(WWW, fn)
-            ret[ct]["cts"].append((fileID, displayCT, url))
-        return ret
+    def generalCREs(self, show7group):
+        superTrackName = Helpers.sanitize("super_" + 'general ccREs')
+        ret = self.makeSuperTrack('general ccREs', superTrackName)
 
-    def _addSignalFiles(self, accession, j):
-        pgSearch = PGsearch(self.ps, self.assembly)
-
-        cache = self.cacheW[self.assembly]
-        cre = CRE(pgSearch, accession, cache)
-
-        if "version" not in j:
-            ct = j.get("cellType", None)
-            if not ct:
-                topN = 5
-                topCellTypes = cre.topTissues()["dnase"]
-                tcts = sorted(topCellTypes, key=lambda x: x["one"],
-                              reverse=True)[:topN]
-            else:
-                tcts = [{"ct": ct, "tissue": ct}]
-        else:
-            if 2 == j["version"]:
-                tcts = []
-                for ct in j["cellTypes"]:
-                    tcts.append({"ct": ct, "tissue": ct})
-
-        tracksByCt = self._getCreTracks(tcts)
-
-        for ct, tracksByType in tracksByCt.iteritems():
-            for fileID, tct, url in tracksByType["cts"]:
-                if self.browser in [UCSC, ENSEMBL]:
-                    self.lines += self.makeSuperTracks(cache, fileID, tct, url,
-                                                       j["showCombo"],
-                                                       tracksByType["signal"],
-                                                       tracksByType["9state"])
-
-    def makeSuperTracks(self, cache, fileID, tct, url, showCombo,
-                        signals, nineState, moreTracks=True, hideAll=False,
-                        signalOnly=False):
-        tn = tct.replace(" ", "_")
-        stname = "super_" + tn
-
-        supershow = "on show"
-        if hideAll:
-            supershow = "on"
-
-        ret = ["""
-track {stname}
-superTrack {supershow}
-group regulation
-shortLabel {tct_short}
-longLabel {tct_long}
-        """.format(supershow=supershow,
-                   stname=stname,
-                   tct_short=tct[:17],
-                   tct_long=tct[:80])]
-
-        shortLabel = "cREs in " + tct
-        title = ' '.join(["cREs in", tct, '(5 group)'])
-        t = PredictionTrack(title, self.priority, url, showCombo).track()
+        cREaccession = AgnosticCres["7-group"][self.assembly]
+        t = cRETrack(self.assembly, '', True, cREaccession, superTrackName,
+                     True == show7group, 'general', self.assembly == "hg38").lines(self.priority)
         self.priority += 1
         ret += [t]
-        
+
         for assay in ["H3K4me3", "H3K27ac", "CTCF"]:
             cREaccession = AgnosticCres["9-state"][assay][self.assembly]
             t = cRETrack(self.assembly, assay, False, cREaccession, superTrackName,
-                         False == show5group, 'general').lines(self.priority)
+                         False == show7group, 'general', self.assembly == "hg38").lines(self.priority)
             self.priority += 1
-            ret += [t]
+            #ret += [t]
 
         for ti in signals:
             ret.append(self.trackhubExp(ti, stname, hideAll))
 
         return ret
 
-    def _add_ct(self, ct, show5group):
+    def _add_ct(self, ct, show7group):
         superTrackName = Helpers.sanitize("super_" + ct)
 
         ret = self.makeSuperTrack(ct, superTrackName)
-        ret += self._add_ct_cREs(ct, show5group, superTrackName)
-        ret += self._add_ct_bigWigs(ct, show5group, superTrackName)
-        ret += self._add_ct_rnaseq_bigWigs(ct, show5group, superTrackName)
+        ret += self._add_ct_cREs(ct, show7group, superTrackName)
+        ret += self._add_ct_bigWigs(ct, show7group, superTrackName)
+        ret += self._add_ct_rnaseq_bigWigs(ct, show7group, superTrackName)
         return ret
 
-    def _add_ct_cREs(self, ct, show5group, superTrackName):
-        #cRE biosample-specific tracks
+    def _add_ct_cREs(self, ct, show7group, superTrackName):
+        # cRE biosample-specific tracks
         ret = []
 
-        track = BigWigTrack(desc, self.priority, url, self.mtColor(assay, mt),
-                            stname, "0:50", True).track(shortLabel)
-        self.priority += 1
-        return track
+        cache = self.cacheW[self.assembly if self.assembly != "hg38" else "GRCh38"]
+        cREs = cache.creBigBeds[ct] if ct in cache.creBigBeds else {}
+        if show7group:
+            if "7group" not in cREs:
+                print(("missing 7group for ", cREs))
+            else:
+                cREaccession = cREs["7group"]
+                url = EncodeUrlBigBed(cREaccession)
+                t = cRETrack(self.assembly, '', show7group, cREaccession, superTrackName,
+                             True, ct, self.assembly == "hg38").lines(self.priority)
+                self.priority += 1
+                ret += [t]
+        else:
+            for assay in ["DNase", "H3K4me3", "H3K27ac", "CTCF"]:
+                key = "9state-" + assay
+                if key not in cREs:
+                    continue
+                cREaccession = cREs[key]
+                t = cRETrack(self.assembly, assay, show7group, cREaccession, superTrackName,
+                             True, ct, self.assembly == "hg38").lines(self.priority)
+                self.priority += 1
+                ret += [t]
+        return ret
 
-    def mtTrackBed(self, tct, mt, bw, stname):
-        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigBed?proxy=true".format(e=bw)
+    def _add_ct_bigWigs(self, ct, show7group, superTrackName):
+        # bigWig signal tracks
+        ret = []
 
-        assay = mt["assay_term_name"]
-        desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
-                         mt["tf"], tct])
-        shortLabel = desc[:17]
+        cache = self.cacheW[self.assembly if self.assembly != "hg38" else "GRCh38"]
+        for expInfo in cache.datasets.byCellType[ct]:
+            t = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
+                            expInfo["assay"], superTrackName, True, ct).lines(self.priority)
+            self.priority += 1
+            ret += [t]
+        return ret
 
         track = BigBedTrack(desc, self.priority, url, self.mtColor(assay, mt),
                             stname, True).track(shortLabel)
         self.priority += 1
         return track
 
-    def makeTrackDb(self, accession, j):
-        lines = self.getLines(accession, j)
+        return ["""
+track {tn}
+superTrack on show
+shortLabel {tct_short}
+longLabel {tct_long}
+        """.format(tn=tn,
+                   supershow=supershow,
+                   tct_short=Helpers.makeShortLabel(ct),
+                   tct_long=Helpers.makeLongLabel(ct))]
 
-    def _add_ct_rnaseq_bigWigs(self, ctn, show5group, superTrackName):
+    def _add_ct_rnaseq_bigWigs(self, ctn, show7group, superTrackName):
         # rnaseq bigWig signal tracks
         ret = []
 
-        cache = self.cacheW[self.assembly]
+        cache = self.cacheW[self.assembly if self.assembly != "hg38" else "GRCh38"]
+        alreadydone = set()
         for f in cache.RNAseqFiles(ctn):
+            if f["expID"] + '_' + f["fileID"] in alreadydone:
+                continue
+            alreadydone.add(f["expID"] + '_' + f["fileID"])
             bwt = BigWigTrack(self.assembly, f["expID"], f["fileID"],
                               "RNA-seq", superTrackName, True, ctn)
             desc = ' '.join(["RNA-seq", f["output_type"], "rep", str(f["replicate"]),
@@ -413,4 +375,3 @@ longLabel {tct_long}
             self.priority += 1
             ret += [t]
         return ret
-

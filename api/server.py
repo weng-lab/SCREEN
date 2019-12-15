@@ -1,4 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
+
+from gevent import monkey
+monkey.patch_all()
 
 import cherrypy
 import os
@@ -12,8 +15,7 @@ import psycopg2.pool
 from main_apis import Apis
 from common.cached_objects import CachedObjectsWrapper
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../utils"))
 from templates import Templates
 from utils import Utils, AddPath
 
@@ -50,29 +52,13 @@ class WebServerConfig:
             },
             '/assets': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.staticDir,
-                'tools.cors.on' : True,
+                'tools.staticdir.dir': self.staticDir
             },
             '/downloads': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.downloadDir,
-                'tools.cors.on' : True,
+                'tools.staticdir.dir': self.downloadDir
             }
         }
-
-
-def cors():
-    # from https://stackoverflow.com/a/28065698
-    if cherrypy.request.method == 'OPTIONS':
-        # preflign request
-        # see http://www.w3.org/TR/cors/#cross-origin-request-with-preflight-0
-        cherrypy.response.headers['Access-Control-Allow-Methods'] = 'POST'
-        cherrypy.response.headers['Access-Control-Allow-Headers'] = 'content-type'
-        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        # tell CherryPy no avoid normal handler
-        return True
-    else:
-        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
 
 
 def parse_args():
@@ -98,10 +84,9 @@ def main():
     main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     app = cherrypy.tree.mount(main, '/screen10', wsconfig.getRootConfig())
 
-    cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
-
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                            'server.socket_port': int(args.port)})
+                            'server.socket_port': int(args.port),
+                            'tools.encode.text_only': False})
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development",

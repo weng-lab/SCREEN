@@ -22,7 +22,15 @@ def getDbs(script):
 
 
 def db_connect(script):
-    return psycopg2.pool.ThreadedConnectionPool(1, 32, **getDbs(script))
+    args = getDbs(script)
+
+    try:
+        return psycopg2.pool.ThreadedConnectionPool(1, 32, **args)
+    except:
+        print("vars where:")
+        for k, v in args.items():
+            print(k, v)
+        raise
 
 
 def db_connect_single(script):

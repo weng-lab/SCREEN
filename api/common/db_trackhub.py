@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -8,7 +8,7 @@ import argparse
 
 from psycopg2.extras import Json
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from dbconnect import db_connect
 from utils import Utils
