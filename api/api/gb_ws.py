@@ -2,7 +2,7 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from common.pg import PGsearch
+from common.pg_search import PGsearch
 from cre_utils import checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))

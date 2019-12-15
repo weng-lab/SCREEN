@@ -6,12 +6,7 @@ import os
 import json
 from psycopg2.extras import Json
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
-from db_utils import getcursor
-
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from dbconnect import db_connect
-from postgres_wrapper import PostgresWrapper
 from config import Config
 
 
@@ -31,47 +26,49 @@ class PGcart:
         self.tableName = assembly + "_cart"
 
     def get(self, uuid):
-        with getcursor(self.pg.DBCONN, "getCart") as curs:
-            curs.execute("""
-            SELECT accessions
-            FROM {tn}
-            WHERE uuid = %s
-            """.format(tn=self.tableName), (uuid,))
-            r = curs.fetchall()
-        if r:
-            return list(r[0][0])
+        rows = self.pw.fetchall("getCart", """
+        SELECT accessions
+        FROM {tn}
+        WHERE uuid = %s
+        """.format(tn=self.tableName),
+                                (uuid,))
+        if rows:
+            return list(rows[0][0]) # FIXME?
         return None
 
     def set(self, uuid, accessions):
         accessions = list(accessions)
-        with getcursor(self.pg.DBCONN, "setCart") as curs:
-            curs.execute("""
-            SELECT accessions
-            FROM {tn}
+        rows = self.pw.fetchall("setCart", """
+        SELECT accessions
+        FROM {tn}
+        WHERE uuid = %s
+        """.format(tn=self.tableName),
+                                (uuid,))
+        
+        if (len(rows) > 0):
+            self.pw.update("setCart", """
+            UPDATE {tn}
+            SET accessions = %s
             WHERE uuid = %s
-            """.format(tn=self.tableName), (uuid,))
-
-            if (curs.rowcount > 0):
-                curs.execute("""
-                UPDATE {tn}
-                SET accessions = %s
-                WHERE uuid = %s
-                """.format(tn=self.tableName), (Json(accessions), uuid))
-            else:
-                curs.execute("""
-                INSERT into {tn} (uuid, accessions)
-                VALUES (%s, %s)
-                """.format(tn=self.tableName), (uuid, Json(accessions)))
+            """.format(tn=self.tableName),
+                            (Json(accessions), uuid))
+        else:
+            self.pw.insert("setCart", """
+            INSERT into {tn} (uuid, accessions)
+            VALUES (%s, %s)
+            """.format(tn=self.tableName),
+                           (uuid, Json(accessions)))
         return {"status": "ok"}
 
 
 def main():
+    from dbconnect import db_connect
     DBCONN = db_connect(os.path.realpath(__file__))
-    ps = PostgresWrapper(DBCONN)
+    pw = PostgresWrapper(DBCONN)
 
     for assembly in ["hg19", "mm10"]:
         print("*************", assembly)
-        cart = PGcart(ps, assembly)
+        cart = PGcart(pw, assembly)
 
         uuid = "test"
         j = {"a": [1, 2, 3]}

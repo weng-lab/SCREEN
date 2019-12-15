@@ -9,11 +9,7 @@ import psycopg2.extras
 
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
-from utils import AddPath
-from db_utils import getcursor
-
-AddPath(__file__, "../../common")
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from cre_utils import isaccession, isclose, checkChrom
 from config import Config
 
@@ -29,23 +25,23 @@ class PGcommonWrapper:
 
 
 class PGcommon(object):
-    def __init__(self, pg, assembly):
-        self.pg = pg
+    def __init__(self, pw, assembly):
+        self.pw = pw
         self.assembly = assembly
 
     def rankMethodToIDxToCellType(self):
-        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
-            curs.execute("""
-SELECT idx, celltype, rankmethod
-FROM {tn}
-""".format(tn=self.assembly + "_rankcelltypeindexex"))
-            ret = {}
-            for r in curs.fetchall():
-                rank_method = r[2]
-                if rank_method not in ret:
-                    ret[rank_method] = {}
-                ret[rank_method][r[0]] = r[1]
-                ret[rank_method][r[1]] = r[0]
+        rows = self.pw.fetchall("pg$getRanIdxToCellType", """
+        SELECT idx, celltype, rankmethod
+        FROM {tn}
+        """.format(tn=self.assembly + "_rankcelltypeindexex"))
+
+        ret = {}
+        for r in rows:
+            rank_method = r[2]
+            if rank_method not in ret:
+                ret[rank_method] = {}
+            ret[rank_method][r[0]] = r[1]
+            ret[rank_method][r[1]] = r[0]
         return ret
 
     def makeCtMap(self):
@@ -61,42 +57,36 @@ FROM {tn}
         return {amap[k]: v for k, v in rmInfo.items() if k in amap}
 
     def makeCTStable(self):
-        tableName = self.assembly + "_cre_groups_cts"
-        with getcursor(self.pg.DBCONN, "pg$makeCTStable") as curs:
-            curs.execute("""
-SELECT cellTypeName, pgidx
-FROM {tn}
-""".format(tn=tableName))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("pg$makeCTStable", """
+        SELECT cellTypeName, pgidx
+        FROM {tn}
+        """.format(tn=self.assembly + "_cre_groups_cts"))
+        
         return {r[0]: r[1] for r in rows}
 
     def datasets(self, assay):
-        with getcursor(self.pg.DBCONN, "datasets") as curs:
-            q = """
-SELECT cellTypeName, expID, fileID
-FROM {tn}
-where assay = %s
-""".format(tn=self.assembly + "_datasets")
-            curs.execute(q, (assay, ))
-            rows = curs.fetchall()
-            if 0 == curs.rowcount:
-                raise Exception("no rows found--bad assay? " + assay)
+        rows = self.pw.fetchall("datasets", """
+        SELECT cellTypeName, expID, fileID
+        FROM {tn}
+        where assay = %s
+        """.format(tn=self.assembly + "_datasets"),
+                                (assay, ))
+
+        if 0 == len(rows):
+            raise Exception("no rows found--bad assay? " + assay)
         return {r[0]: (r[1], r[2]) for r in rows}
 
     def datasets_multi(self, assay):
-        with getcursor(self.pg.DBCONN, "datasets",
-                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
-            q = """
-SELECT *
-FROM {tn}
-where assays = %s
-""".format(tn=self.assembly + "_datasets_multi")
-            curs.execute(q, (assay, ))
-            rows = curs.fetchall()
-            if 0 == curs.rowcount:
-                raise Exception("no rows found--bad assay? " + assay)
+        rows = self.pw.fetchallAsDict("datasets", """
+        SELECT *
+        FROM {tn}
+        where assays = %s
+        """.format(tn=self.assembly + "_datasets_multi"),
+                                             (assay, ))
+        if 0 == len(rows):
+            raise Exception("no rows found--bad assay? " + assay)
+        
         ret = {}
         for r in rows:
-            r = r._asdict()
             ret[r["celltypename"]] = r
         return ret

@@ -16,26 +16,24 @@ from models.rampage import Rampage
 from models.minipeaks import MiniPeaks
 from models.ortholog import Ortholog
 
-from common.pg import PGsearch
+from common.pg_search import PGsearch
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
+from utils import Utils, Timer
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import chroms
 from postgres_wrapper import PostgresWrapper
 from cre_utils import checkChrom
 from config import Config
-from pgglobal import GlobalPG
-from pgfantomcat import PGFantomCat
+from pg_global import GlobalPG
+from pg_fantomcat import PGFantomCat
 from pg_home import PGHome
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
-from utils import Utils, Timer
-from db_utils import getcursor
-
-
 class DataWebServiceWrapper:
-    def __init__(self, args, ps, cacheW, staticDir):
+    def __init__(self, args, pw, cacheW, staticDir):
         def makeDWS(assembly):
-            return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
+            return DataWebService(args, pw, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies + ["GRCh38"]
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
@@ -48,15 +46,15 @@ class DataWebServiceWrapper:
 
 
 class DataWebService():
-    def __init__(self, args, ps, cache, staticDir, assembly):
+    def __init__(self, args, pw, cache, staticDir, assembly):
         self.args = args
-        self.ps = ps
+        self.pw = pw
         self.cache = cache
         self.staticDir = staticDir
         self.assembly = assembly
-        self.pgSearch = PGsearch(ps, assembly)
-        self.pgGlobal = GlobalPG(assembly)
-        self.pgFantomCat = PGFantomCat(assembly)
+        self.pgSearch = PGsearch(pw, assembly)
+        self.pgGlobal = GlobalPG(pw, assembly)
+        self.pgFantomCat = PGFantomCat(pw, assembly)
 
         self.actions = {"cre_table": self.cre_table,
                         "cre_tf_dcc": self.cre_tf_dcc,
@@ -106,13 +104,14 @@ class DataWebService():
         
     def _ortholog(self, j, accession):
         if j["assembly"] != "mm10":
-            mm10 = Ortholog(self.assembly, self.ps.DBCONN, accession, "mm10")
-            hg19 = Ortholog(self.assembly, self.ps.DBCONN, accession, "hg19")
+            mm10 = Ortholog(self.pw, self.assembly, accession, "mm10")
+            hg19 = Ortholog(self.pw, self.assembly, accession, "hg19")
             return {accession: {"ortholog": mm10.as_dict(), "hg19": hg19.as_dict()}}
-        hg38 = Ortholog("mm10", self.ps.DBCONN, accession, "GRCh38").as_dict()
+        hg38 = Ortholog(self.pw, "mm10", accession, "GRCh38").as_dict()
         hg19 = []; hg19accs = set()
         for ortholog in hg38:
-            for result in Ortholog("GRCh38", self.ps.DBCONN, ortholog["accession"], "hg19").as_dict():
+            for result in Ortholog(self.pw, "GRCh38",
+                                   ortholog["accession"], "hg19").as_dict():
                 if result["accession"] not in hg19accs:
                     hg19accs.add(result["accession"])
                     hg19.append(result)
@@ -132,8 +131,7 @@ class DataWebService():
     def global_fantomcat(self, j, args):
         return {
             "main": self.global_object({"name": "fantomcat"}, args),
-            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args)  # ,
-            #            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
+            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args)
         }
 
     def ctcf_distr(self, j, args):
@@ -148,12 +146,10 @@ class DataWebService():
         }
 
     def global_object(self, j, args):
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
-            return self.pgGlobal.select(j["name"], curs)
+        return self.pgGlobal.select(j["name"])
 
     def external_global_object(self, j, args, assembly):
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
-            return self.pgGlobal.select_external(j["name"], assembly, curs)
+        return self.pgGlobal.select_external(j["name"], assembly)
 
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)
@@ -191,8 +187,7 @@ class DataWebService():
 
     def fantom_cat(self, j, accession):
         def process(key):
-            with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat::process %s" % key) as curs:
-                results = self.pgFantomCat.select_cre_intersections(accession, curs, key)
+            results = self.pgFantomCat.select_cre_intersections(accession, key)
             for result in results:
                 result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
                 if result["aliases"] != "":
@@ -200,13 +195,13 @@ class DataWebService():
                         result["other_names"] += ", "
                     result["other_names"] += ", ".join(result["aliases"].split("|"))
             return results
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat enhancers") as curs:
-            enhancers = [{"chr": a, "start": int(b), "stop": int(c), "score": float(d)}
-                         for a, b, c, d in self.pgFantomCat.select_enhancers(accession, curs)]
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat CAGE") as curs:
-            cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d,
-                     "score": float(e), "tssstart": int(f), "tssstop": int(g)}
-                    for a, b, c, d, e, f, g in self.pgFantomCat.select_cage(accession, curs)]
+        
+        enhancers = [{"chr": a, "start": int(b), "stop": int(c), "score": float(d)}
+                         for a, b, c, d in self.pgFantomCat.select_enhancers(accession)]
+        
+        cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d,
+                 "score": float(e), "tssstart": int(f), "tssstop": int(g)}
+                for a, b, c, d, e, f, g in self.pgFantomCat.select_cage(accession)]
         return {accession: {
             "fantom_cat": process("intersections"),
             "fantom_cat_twokb": process("twokb_intersections"),
