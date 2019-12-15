@@ -49,6 +49,8 @@ class SearchWebService(object):
     def search(self, j, args, kwargs):
         chrom = checkChrom(self.assembly, j)
 
+        ret = {}
+        
         parsed = ""
         if "q" in j:
             p = ParseSearch(self.ps.DBCONN, self.assembly, j)
