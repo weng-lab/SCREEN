@@ -95,8 +95,8 @@ class PGcreTable(object):
         return fields, ret
 
     def geneTable(self, j, chrom, start, stop):
-        print(self.assembly + '_gene_details')
-        records = self.pw.fetchall("select_gene_table", """
+        # print(self.assembly + '_gene_details')
+        rows = self.pw.fetchall("select_gene_table", """
         SELECT  * from {tableName} 
         WHERE transcript_id IN (
         SELECT transcript_id from {tableName}
@@ -110,7 +110,7 @@ class PGcreTable(object):
         response = []
         transcript_id = ''
         transcript_id_value = ''
-        for row in records:
+        for row in rows:
             response.append({
                 'transcript_id': row[9],
                 'seqid': row[1].rstrip(),
@@ -281,12 +281,12 @@ INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 {whereClause}
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(fields=fields, tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
+""".format(fields=fields,
+           tn=self.tableName,
+           ttn = self.assembly + "_ccres_toptier",
            whereClause=whereClause)
 
-        with getcursor(self.pw.DBCONN, "_cre_table_bed") as curs:
-            with open(fnp, 'w') as f:
-                curs.copy_expert(q, f)
+        self.pw.copy_expert("_cre_table_bed", q, fnp)
 
     def creTableDownloadJson(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
@@ -307,10 +307,9 @@ INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 with DELIMITER E'\t'
 """.format(tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
            whereClause=whereClause)
-
-        with getcursor(self.pw.DBCONN, "_cre_table_json") as curs:
-            sf = io.StringIO()
-            curs.copy_expert(q, sf)
+        
+        sf = io.StringIO()
+        self.pw.copy_expert_file_handle("_cre_table_json", q, sf)
         sf.seek(0)
         with open(fnp, 'w') as f:
             for line in sf.readlines():

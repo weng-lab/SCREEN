@@ -149,5 +149,30 @@ class PostgresWrapper:
                 curs.execute(q, qvars)
                 return curs.description
         except:
-            print("ERROR: exists query was:", name, q, qvars)
+            print("ERROR: description query was:", name, q, qvars)
+            raise
+
+    def mogrify(self, name, q, qvars):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                return curs.mogrify(q, qvars)
+        except:
+            print("ERROR: mogrify query was:", name, q, qvars)
+            raise
+
+    def copy_expert(self, name, q, fnp):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                with open(fnp, 'w') as f:
+                    curs.copy_expert(q, f)
+        except:
+            print("ERROR: copy_expert query was:", name, q, fnp)
+            raise
+
+    def copy_expert_file_handle(self, name, q, fh):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                curs.copy_expert(q, fh)
+        except:
+            print("ERROR: copy_expert_file_handle query was:", name, q, fh)
             raise

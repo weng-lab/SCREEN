@@ -52,87 +52,87 @@ class PGgwas(object):
             self.wenrichment = { x[0]: True for x in cols }
 
     def gwasStudies(self):
-        with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
-            q = """
-SELECT authorpubmedtrait, author, pubmed, trait, numLDblocks
-FROM {tn}
-ORDER BY trait
-""".format(tn=self.assembly + "_gwas_studies")
-            curs.execute(q)
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("gwasStudies", """
+        SELECT authorpubmedtrait, author, pubmed, trait, numLDblocks
+        FROM {tn}
+        ORDER BY trait
+        """.format(tn=self.assembly + "_gwas_studies"))
+
         keys = ["value", "author", "pubmed", "trait", "total_ldblocks", "hasenrichment"]
         rows = [ tuple(list(x) + [x[0].lower() in self.wenrichment]) for x in rows ]
         return [dict(list(zip(keys, r))) for r in rows]
 
     def gwasEnrichment(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
-            q = """
-SELECT fdr.expID, fdr.cellTypeName, fdr.biosample_summary,
-fdr.{col} as fdr,
-pval.{col} as pval,
-fe.{col} as foldenrichment
-FROM {tnfdr} fdr
-INNER JOIN {tnpval} pval
-ON fdr.expid = pval.expid
-INNER JOIN {tnfe} fe
-ON fe.expid = fdr.expid
-ORDER BY fdr DESC, pval
-""".format(tnfdr=self.assembly + "_gwas_enrichment_fdr",
-                tnpval=self.assembly + "_gwas_enrichment_pval",
-           tnfe = self.assembly + "_gwas_fold_enrichment",
-                col=gwas_study)
-            try:
-                curs.execute(q)
-                rows = curs.fetchall()
-            except:
-                return []
-        cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval", "foldenrichment"]
+        try:
+            rows = self.pw.fetchall("gwasEnrichment", """
+            SELECT 
+            fdr.expID, 
+            fdr.cellTypeName, 
+            fdr.biosample_summary,
+            fdr.{col} as fdr,
+            pval.{col} as pval,
+            fe.{col} as foldenrichment
+            FROM {tnfdr} fdr
+            INNER JOIN {tnpval} pval
+            ON fdr.expid = pval.expid
+            INNER JOIN {tnfe} fe
+            ON fe.expid = fdr.expid
+            ORDER BY fdr DESC, pval
+            """.format(tnfdr=self.assembly + "_gwas_enrichment_fdr",
+                       tnpval=self.assembly + "_gwas_enrichment_pval",
+                       tnfe = self.assembly + "_gwas_fold_enrichment",
+                       col=gwas_study))
+        except:
+            return []
+
+        cols = ["expID", "cellTypeName", "biosample_summary",
+                "fdr", "pval", "foldenrichment"]
         print("!", file = sys.stderr)
         return [dict(list(zip(cols, r))) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT COUNT(DISTINCT(ldblock))
-FROM {assembly}_gwas as gwas,
-{assembly}_cre_all as cre,
-{assembly}_gwas_overlap as over
-WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
-AND cre.accession = over.accession
-AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-AND gwas.authorPubmedTrait = %s
-""".format(assembly=self.assembly)
-            curs.execute(q, (gwas_study, ))
-            return curs.fetchone()[0]
+        row = self.pw.fetchone("numLdBlocksOverlap", """
+        SELECT COUNT(DISTINCT(ldblock))
+        FROM {assembly}_gwas as gwas,
+        {assembly}_cre_all as cre,
+        {assembly}_gwas_overlap as over
+        WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
+        AND cre.accession = over.accession
+        AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
+        AND gwas.authorPubmedTrait = %s
+        """.format(assembly=self.assembly),
+                                (gwas_study, ))
+        return row[0]
 
     def gwasAccessions(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT accession
-FROM {tn}
-where authorPubmedTrait = %s
-""".format(tn=self.assembly + "_gwas_overlap")
-            curs.execute(q, (gwas_study, ))
-            return [r[0] for r in curs.fetchall()]
+        rows = self.pw.fetchall("gwasAccessions", """
+        SELECT accession
+        FROM {tn}
+        where authorPubmedTrait = %s
+        """.format(tn=self.assembly + "_gwas_overlap"),
+                                (gwas_study, ))
+        return [r[0] for r in rows]
 
     def numCresOverlap(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT count(0)
-FROM (
-SELECT DISTINCT ACCESSION
-FROM {tn}
-where authorPubmedTrait = %s
-) accessions
-""".format(tn=self.assembly + "_gwas_overlap")
-            curs.execute(q, (gwas_study, ))
-            return [r[0] for r in curs.fetchall()]
+        rows = self.pw.fetchall("numCresOverlap", """
+        SELECT count(0)
+        FROM (
+        SELECT DISTINCT ACCESSION
+        FROM {tn}
+        where authorPubmedTrait = %s
+        ) accessions
+        """.format(tn=self.assembly + "_gwas_overlap"),
+                                (gwas_study, ))
+        return [r[0] for r in rows]
 
     def gwasPercentActive(self, gwas_study, ct, json = None):
-        fields = ["cre.accession", "array_agg(snp)", PGcreTable._getInfo(),
-                  "infoAll.approved_symbol AS geneid", "cre.start", "cre.stop", "cre.chrom",
+        fields = ["cre.accession", "array_agg(snp)",
+                  PGcreTable._getInfo(),
+                  "infoAll.approved_symbol AS geneid",
+                  "cre.start", "cre.stop", "cre.chrom",
                   "cre.gene_all_id", "cre.gene_pc_id"]
-        groupBy = ["cre.accession", "cre.start", "cre.stop", "cre.chrom", "cre.gene_all_id", "cre.gene_pc_id",
+        groupBy = ["cre.accession", "cre.start", "cre.stop",
+                   "cre.chrom", "cre.gene_all_id", "cre.gene_pc_id",
                    "infoAll.approved_symbol"] + [v for k, v in PGcreTable.infoFields.items()]
 
         if ct in self.ctsTable:
@@ -143,7 +143,8 @@ where authorPubmedTrait = %s
         else:
             fields.append("0::int AS cts")
 
-        fieldsOut = ["accession", "snps", "info", "geneid", "start", "stop", "chrom", "gene_all_id", "gene_pc_id", "cts"]
+        fieldsOut = ["accession", "snps", "info", "geneid",
+                     "start", "stop", "chrom", "gene_all_id", "gene_pc_id", "cts"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3"),
                       ("enhancer", "h3k27ac"),
@@ -157,52 +158,56 @@ where authorPubmedTrait = %s
             groupBy.append("cre.%s_zscores[%d]" %
                            (assay[1], cti))
 
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            if not json:
-                q = """
-SELECT {fields}
-FROM {assembly}_cre_all as cre,
-{assembly}_gwas_overlap as over,
-{assembly}_gene_info as infoAll
-WHERE cre.gene_all_id[1] = infoAll.geneid
-AND cre.accession = over.accession
-AND over.authorPubmedTrait = %s
-GROUP BY {groupBy}
-                """.format(assembly=self.assembly,
-                           fields=', '.join(fields),
-                           groupBy=', '.join(groupBy))
-                curs.execute(q, (gwas_study, ))
-                rows = curs.fetchall()
-                ret = [dict(list(zip(fieldsOut, r))) for r in rows]
-                for r in range(len(ret)):
-                    ret[r].update({
-                        "ctspecifc": {
-                            "%s_zscore" % x: ret[r]["%s zscore" % x] if "%s zscore" % x in ret[r] else None
-                            for x in ["dnase", "promoter", "enhancer", "ctcf"]
-                        }
-                    })
-                return ret, fieldsOut
-            else:
-                q = """
-                copy (
-                SELECT JSON_AGG(r) from (
-                SELECT {fields}
-                FROM {assembly}_cre_all as cre,
-                {assembly}_gwas_overlap as over,
-                {assembly}_gene_info as infoAll
-                WHERE cre.gene_all_id[1] = infoAll.geneid
-                AND cre.accession = over.accession
-                AND over.authorPubmedTrait = %s
-                GROUP BY {groupBy}
-                ) r
-                ) to STDOUT
-                with DELIMITER E'\t' """.format(assembly = self.assembly,
-                                                fields = ', '.join(fields),
-                                                groupBy = ', '.join(groupBy))
-                q = curs.mogrify(q, (gwas_study,))
-                sf = io.StringIO()
-                curs.copy_expert(q, sf)
-                sf.seek(0)
-                with open(json, 'w') as f:
-                    for line in sf.readlines():
-                        f.write(line.replace(b'\\n', b''))
+        if not json:
+            return self._gwasPercentActiveRun(gwas_study, json, fields, groupBy)
+        return self._gwasPercentActiveRunJson(gwas_study, json, fields, groupBy)
+
+    def _gwasPercentActiveRun(self, gwas_study, json, fields, groupBy):
+        rows = self.pw.fetchall("_gwasPercentActiveRun", """
+        SELECT {fields}
+        FROM {assembly}_cre_all as cre,
+        {assembly}_gwas_overlap as over,
+        {assembly}_gene_info as infoAll
+        WHERE cre.gene_all_id[1] = infoAll.geneid
+        AND cre.accession = over.accession
+        AND over.authorPubmedTrait = %s
+        GROUP BY {groupBy}
+        """.format(assembly=self.assembly,
+                   fields=', '.join(fields),
+                   groupBy=', '.join(groupBy)),
+                                (gwas_study, ))
+        ret = [dict(list(zip(fieldsOut, r))) for r in rows]
+        for r in range(len(ret)):
+            ret[r].update({
+                "ctspecifc": {
+                    "%s_zscore" % x: ret[r]["%s zscore" % x] if "%s zscore" % x in ret[r] else None
+                    for x in ["dnase", "promoter", "enhancer", "ctcf"]
+                }
+            })
+        return ret, fieldsOut
+            
+    def _gwasPercentActiveRunJson(self, gwas_study, json, fields, groupBy):
+        q = self.pw.mogrify("_gwasPercentActiveRunJson", """
+        copy (
+        SELECT JSON_AGG(r) from (
+        SELECT {fields}
+        FROM {assembly}_cre_all as cre,
+        {assembly}_gwas_overlap as over,
+        {assembly}_gene_info as infoAll
+        WHERE cre.gene_all_id[1] = infoAll.geneid
+        AND cre.accession = over.accession
+        AND over.authorPubmedTrait = %s
+        GROUP BY {groupBy}
+        ) r
+        ) to STDOUT
+        with DELIMITER E'\t' """.format(assembly = self.assembly,
+                                        fields = ', '.join(fields),
+                                        groupBy = ', '.join(groupBy)),
+                            (gwas_study,))
+        sf = io.StringIO()
+        self.pw.copy_expert_file_handle(q, sf)
+        sf.seek(0)
+        with open(json, 'w') as f:
+            for line in sf.readlines():
+                f.write(line.replace(b'\\n', b''))
+                
