@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
+from __future__ import print_function
 
 import sys
 import os
@@ -69,7 +70,7 @@ def main():
         ri = pgSearch.rampage_info()
         tissueToColor = cache.colors["tissues"]
 
-        for fileID, info in ri.items():
+        for fileID, info in ri.iteritems():
             t = info["tissue"]
             if t not in tissueToColor:
                 print("missing", t)

@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
+from __future__ import print_function
 
 import json
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from db_utils import getcursor
 
 
@@ -31,7 +32,7 @@ class Datasets:
 
         # used by trees
         self.biosampleTypeToCellTypes = {}
-        for ctn, r in self.globalCellTypeInfo.items():
+        for ctn, r in self.globalCellTypeInfo.iteritems():
             bt = r["biosample_type"]
             if bt not in self.biosampleTypeToCellTypes:
                 self.biosampleTypeToCellTypes[bt] = []
@@ -39,7 +40,7 @@ class Datasets:
 
         # used by CellTypes facet
         self.globalCellTypeInfoArr = []
-        for k, v in self.globalCellTypeInfo.items():
+        for k, v in self.globalCellTypeInfo.iteritems():
             self.globalCellTypeInfoArr.append(v)
         self.globalCellTypeInfoArr.sort(key=lambda v: v["value"].lower())
 
@@ -65,7 +66,7 @@ def main():
     pgSearch = PGsearch(ps, "hg19")
     ds = Datasets("hg19", pgSearch)
 
-    for ctn, vs in ds.byCellType.items():
+    for ctn, vs in ds.byCellType.iteritems():
         for v in vs:
             print(ctn, v)
 

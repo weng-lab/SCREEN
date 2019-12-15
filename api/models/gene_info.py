@@ -1,4 +1,4 @@
-
+from __future__ import print_function
 
 import sys
 import os
@@ -9,7 +9,7 @@ from scipy.stats.mstats import mquantiles
 import numpy as np
 import math
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 
 

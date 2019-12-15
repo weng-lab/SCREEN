@@ -20,7 +20,7 @@ class Rampage:
 
         # fold actual data val into each "row"
         items = []
-        for fileID, val in transcript["data"].items():
+        for fileID, val in transcript["data"].iteritems():
             fileID = fileID.upper()
             info = ri[fileID].copy()
             info["counts"] = round(val, 4)
@@ -45,7 +45,7 @@ class Rampage:
             info = self._procees(transcript, ri)
             byTranscript[transcript["transcript"]] = info
 
-        transcripts = natsorted(list(byTranscript.keys()))
+        transcripts = natsorted(byTranscript.keys())
         return {"sortedTranscripts": transcripts,
                 "tsss": byTranscript,
                 "gene": gene}

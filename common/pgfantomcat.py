@@ -1,4 +1,4 @@
-
+from __future__ import print_function
 
 import sys
 import os
@@ -108,7 +108,7 @@ WHERE i.geneid = g.geneid AND i.cre = %(acc)s
 """.format(intersections=self._tables[key], genes=self._tables["genes"],
            fields=",".join([("g." + x) for x in PGFantomCat.GENEFIELDS[1:]])), {"acc": acc})
         return [{PGFantomCat.GENEFIELDS[i + 1]: v[i] if i < 10 or not math.isnan(v[i]) else "--"
-                 for i in range(len(v))} for v in curs.fetchall()]
+                 for i in xrange(len(v))} for v in curs.fetchall()]
 
     def select_rna_intersections(self, gid, curs, key="intersections"):
         if key not in self._tables:

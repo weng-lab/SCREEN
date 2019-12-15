@@ -1,15 +1,17 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
+
+from __future__ import print_function
 
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
-from pg_autocomplete import PGautocomplete
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
-from db_utils import getcursor
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '../../../metadata/utils/'))
 from utils import AddPath
+from db_utils import getcursor
 
+AddPath(__file__, "../common")
+from pg_autocomplete import PGautocomplete
 
 
 def _second_onward(arr):
@@ -33,7 +35,7 @@ class AutocompleterWrapper:
 
         results = []
         with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
-            for i in range(len(p)):
+            for i in xrange(len(p)):
                 prefix = " ".join(p[:i])
                 suffix = " ".join(p[i:])
                 results = []

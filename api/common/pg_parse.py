@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
-
+from __future__ import print_function
 import sys
 import os
 from natsort import natsorted
@@ -130,7 +130,7 @@ AND int4range(start, stop) && int4range(%s, %s)
         p = q.split()
         interpretation = None
 
-        for i in range(len(p)):
+        for i in xrange(len(p)):
             s = " ".join(p[:len(p) - i]) if not rev else " ".join(p[i:])
             with getcursor(self.pg.DBCONN, "pg_parse::_find_celltype") as curs:
                 curs.execute("""

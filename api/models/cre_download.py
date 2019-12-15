@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
+from __future__ import print_function
 
 import os
 import sys
 import time
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
 
 

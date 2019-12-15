@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 import sys
 import os
@@ -58,7 +58,7 @@ FROM {tn}
                 "Insulator": "Insulator"
                 }
         rmInfo = self.rankMethodToIDxToCellType()
-        return {amap[k]: v for k, v in rmInfo.items() if k in amap}
+        return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
 
     def makeCTStable(self):
         tableName = self.assembly + "_cre_groups_cts"
