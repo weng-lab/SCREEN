@@ -36,6 +36,6 @@ class Config:
     downloadDir = re["downloadDir"]
     rnaSeqIsNorm = re["rnaSeqIsNorm"]
 
-    peakIntersectionRunDate = re["peakIntersectionRunDate"]
-    cistromePeakIntersectionRunDate = re["cistromePeakIntersectionRunDate"]
+    #peakIntersectionRunDate = re["peakIntersectionRunDate"]
+    #cistromePeakIntersectionRunDate = re["cistromePeakIntersectionRunDate"]
     
