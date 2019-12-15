@@ -170,7 +170,11 @@ LIMIT 1000) r
             if 0:
                 timedQuery(curs, q)
             else:
-                curs.execute(q)
+                try:
+                    curs.execute(q)
+                except:
+                    print("bad query:", q)
+                    raise
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
