@@ -4,7 +4,7 @@ import os
 
 from models.cre import CRE
 from models.gene_expression import GeneExpression
-from common.pg import PGsearch
+from common.pg_search import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config

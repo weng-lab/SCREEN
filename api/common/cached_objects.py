@@ -10,7 +10,7 @@ from models.datasets import Datasets
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import PageTitle, chrom_lengths
-from pg import PGsearch
+from pg_search import PGsearch
 from pg_ge import PGge
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect

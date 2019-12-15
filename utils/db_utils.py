@@ -4,7 +4,6 @@ import os
 import sys
 
 import psycopg2
-from psycopg2 import ProgrammingError
 from dbs import DBS
 from utils import printt, eprint
 

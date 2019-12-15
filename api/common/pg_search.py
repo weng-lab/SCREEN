@@ -23,74 +23,67 @@ from utils import eprint
 
 
 class PGsearchWrapper:
-    def __init__(self, pg):
+    def __init__(self, pw):
         self.assemblies = Config.assemblies
-        self.pgs = {a: PGsearch(pg, a) for a in self.assemblies}
+        self.pgs = {a: PGsearch(pw, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
 
 class PGsearch(object):
-    def __init__(self, pg, assembly):
-        self.pg = pg
+    def __init__(self, pw, assembly):
+        self.pw = pw
         checkAssembly(assembly)
         self.assembly = assembly
 
-        self.pgc = PGcommon(self.pg, self.assembly)
-        self.pgg = PGgwas(self.pg, self.assembly)
+        self.pgc = PGcommon(self.pw, self.assembly)
+        self.pgg = PGgwas(self.pw, self.assembly)
         self.ctmap = self.pgc.makeCtMap()
         self.ctsTable = self.pgc.makeCTStable()
 
     def vista(self, accession):
-        with getcursor(self.pg.DBCONN, "vista") as curs:
-            curs.execute("SELECT * from {vtn} WHERE accession = %(acc)s".format(vtn = self.assembly + "_vista"), {"acc": accession})
-        return [{ "vid": x[2] } for x in curs.fetchall()]
+        rows = self.pw.fetchall("vista", """
+        SELECT * from {vtn} 
+        WHERE accession = %(acc)s""".format(vtn = self.assembly + "_vista"),
+                                {"acc": accession})
+        return [{ "vid": x[2] } for x in rows]
 
     def versions(self):
-        q = "SELECT accession, biosample, assay, version FROM {tn}".format(tn = self.assembly + "_ground_level_versions")
-        with getcursor(self.pg.DBCONN, "pg") as curs:
-            curs.execute(q)
-            return curs.fetchall()
+        rows = self.pw.fetchall("versions", """
+        SELECT accession, biosample, assay, version 
+        FROM {tn}""".format(tn = self.assembly + "_ground_level_versions"))
+        return rows
     
     def gwasJson(self, j, json):
         self.pgg.gwasPercentActive(j["gwas_study"], j["cellType"], json)
         
     def allCREs(self):
-        tableName = self.assembly + "_cre_all"
-        q = """
-SELECT {tn}.accession AS accession, chrom, start, stop
-FROM {tn} INNER JOIN {ttn} ON {ttn}.accession = {tn}.accession
-""".format(
-            tn=tableName, ttn = self.assembly + "_ccres_toptier")
-        with getcursor(self.pg.DBCONN, "pg") as curs:
-            curs.execute(q)
-            r = curs.fetchall()
+        rows = self.pw.fetchall("allCREs", """
+        SELECT {tn}.accession AS accession, chrom, start, stop
+        FROM {tn} 
+        INNER JOIN {ttn} ON {ttn}.accession = {tn}.accession
+        """.format(tn = self.assembly + "_cre_all",
+                   ttn = self.assembly + "_ccres_toptier"))
         return [{"accession": e[0],
                  "chrom": e[1],
                  "start": e[2],
-                 "end": e[3]} for e in r]
-
+                 "end": e[3]} for e in rows]
+    
     def chromCounts(self):
-        tableName = self.assembly + "_cre_all_nums"
-        q = """SELECT chrom, count from {tn}""".format(
-            tn=tableName)
-        with getcursor(self.pg.DBCONN, "pg") as curs:
-            curs.execute(q)
-            r = curs.fetchall()
-        arr = [(e[0], e[1]) for e in r]
+        rows = self.pw.fetchall("chromCounts", """
+        SELECT chrom, count from {tn}
+        """.format(tn=self.assembly + "_cre_all_nums"))
+        arr = [(e[0], e[1]) for e in rows]
         return natsorted(arr, key=lambda y: y[0])
 
     def creHist(self):
-        tableName = self.assembly + "_cre_bins"
-        q = """SELECT chrom, buckets, numBins, binMax from {tn}""".format(
-            tn=tableName)
-        with getcursor(self.pg.DBCONN, "pg") as curs:
-            curs.execute(q)
-            r = curs.fetchall()
+        rows = self.pw.fetchall("creHist", """
+        SELECT chrom, buckets, numBins, binMax from {tn}
+        """.format(tn = self.assembly + "_cre_bins"))
         return {e[0]: {"bins": e[1],
                        "numBins": e[2],
-                       "binMax": e[3]} for e in r}
+                       "binMax": e[3]} for e in rows}
 
     def rfacets_active(self, j):
         present = []
@@ -110,79 +103,74 @@ FROM {tn} INNER JOIN {ttn} ON {ttn}.accession = {tn}.accession
         return ret
 
     def creTable(self, j, chrom, start, stop):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pw, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTable(j, chrom, start, stop)
 
     def geneTable(self, j, chrom, start, stop):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pw, self.assembly, self.ctmap, self.ctsTable)
         return pct.geneTable(j, chrom, start, stop)
 
     def creTableDownloadBed(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pw, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTableDownloadBed(j, fnp)
 
     def creTableDownloadJson(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pw, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTableDownloadJson(j, fnp)
 
     def crePos(self, accession):
-        with getcursor(self.pg.DBCONN, "cre_pos") as curs:
-            curs.execute("""
-SELECT chrom, start, stop
-FROM {tn}
-WHERE accession = %s
-""".format(tn=self.assembly + "_cre_all"), (accession, ))
-            r = curs.fetchone()
+        r = self.pw.fetchone("cre_pos", """
+        SELECT chrom, start, stop
+        FROM {tn}
+        WHERE accession = %s
+        """.format(tn=self.assembly + "_cre_all"), (accession, ))
         if not r:
             print("ERROR: missing", accession)
             return None
         return Coord(r[0], r[1], r[2])
 
-    def _getGenes(self, accession, chrom, curs, allOrPc):
-        curs.execute("""
-SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop
-FROM
-(SELECT UNNEST(gene_{allOrPc}_id) geneid,
-UNNEST(gene_{allOrPc}_distance) distance
-FROM {tn} WHERE accession = %s) AS g
-INNER JOIN {gtn} AS gi
-ON g.geneid = gi.geneid
-""".format(tn=self.assembly + "_cre_all",
-           gtn=self.assembly + "_gene_info",
-           allOrPc=allOrPc), (accession, ))
-        return curs.fetchall()
+    def _getGenes(self, accession, chrom, allOrPc):
+        rows = self.pw.fetchall("_getGenes", """
+        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, 
+        gi.chrom, gi.start, gi.stop
+        FROM
+        (SELECT UNNEST(gene_{allOrPc}_id) geneid,
+        UNNEST(gene_{allOrPc}_distance) distance
+        FROM {tn} WHERE accession = %s) AS g
+        INNER JOIN {gtn} AS gi
+        ON g.geneid = gi.geneid
+        """.format(tn=self.assembly + "_cre_all",
+                   gtn=self.assembly + "_gene_info",
+                   allOrPc=allOrPc), (accession, ))
+        return rows
 
     def creGenes(self, accession, chrom):
-        with getcursor(self.pg.DBCONN, "cre_genes") as curs:
-            return (self._getGenes(accession, chrom, curs, "all"),
-                    self._getGenes(accession, chrom, curs, "pc"))
+        return (self._getGenes(accession, chrom, "all"),
+                self._getGenes(accession, chrom, "pc"))
 
     def geneInfo(self, gene):
-        with getcursor(self.pg.DBCONN, "pg$geneInfo",
-                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
-            curs.execute("""
-SELECT *
-FROM {gtn}
-WHERE approved_symbol = %s
-OR ensemblid = %s
-OR ensemblid_ver = %s
-            """.format(gtn=self.assembly + "_gene_info"),
-                (gene, gene, gene))
-            return curs.fetchone()
+        r = self.pw.fetchoneAsNamedTuples("pg$geneInfo", """
+        SELECT *
+        FROM {gtn}
+        WHERE approved_symbol = %s
+        OR ensemblid = %s
+        OR ensemblid_ver = %s
+        """.format(gtn=self.assembly + "_gene_info"),
+                                          (gene, gene, gene))
+        return r
 
     def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
-        tableName = self.assembly + "_snps"
-        with getcursor(self.pg.DBCONN, "intersectingSnps") as curs:
-            curs.execute("""
-SELECT start, stop, snp
-FROM {tn}
-WHERE chrom = %s
-AND int4range(start, stop) && int4range(%s, %s)
-""".format(tn=tableName), (c.chrom, c.start, c.end))
-            snps = curs.fetchall()
+        rows = self.pw.fetchall("intersectingSnps", """
+        SELECT start, stop, snp
+        FROM {tn}
+        WHERE chrom = %s
+        AND int4range(start, stop) && int4range(%s, %s)
+        """.format(tn=self.assembly + "_snps"),
+                                (c.chrom, c.start, c.end))
+
         ret = []
-        for snp in snps:
+        for snp in rows:
             start = snp[0]
             end = snp[1]
             ret.append({"chrom": c.chrom,
@@ -198,24 +186,28 @@ AND int4range(start, stop) && int4range(%s, %s)
 
     def nearbyCREs(self, coord, halfWindow, cols, isProximalOrDistal):
         c = coord.expanded(halfWindow)
+        
         tableName = self.assembly + "_cre_all"
         q = """
 SELECT {cols} FROM {tn} INNER JOIN {ttn} ON {tn}.accession = {ttn}.accession
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
-""".format(cols=','.join(cols), tn=tableName, ttn = self.assembly + "_ccres_toptier")
+""".format(cols=','.join(cols),
+           tn=tableName,
+           ttn = self.assembly + "_ccres_toptier")
 
         if isProximalOrDistal is not None:
             q += """
 AND isProximal is {isProx}
 """.format(isProx=str(isProximalOrDistal))
 
-        with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
-            curs.execute(q, (c.chrom, c.start, c.end))
-            return curs.fetchall()
+        rows = self.pw.fetchall("nearbyCREs",
+                                q, (c.chrom, c.start, c.end))
+        return rows
 
     def distToNearbyCREs(self, accession, coord, halfWindow):
-        cols = ["start", "stop", self.assembly + "_cre_all.accession AS accession"]
+        cols = ["start", "stop",
+                self.assembly + "_cre_all.accession AS accession"]
         cres = self.nearbyCREs(coord, halfWindow, cols, None)
         ret = []
         for c in cres:
@@ -230,51 +222,46 @@ AND isProximal is {isProx}
         return ret
 
     def cresInTad(self, accession, chrom, start):
-        with getcursor(self.pg.DBCONN, "cresInTad") as curs:
-            q = """
-SELECT {cre}.accession AS accession, abs(%s - start) AS distance
-FROM {cre} INNER JOIN {ttn} ON {cre}.accession = {ttn}.accession
-WHERE chrom = %s
-AND int4range(start, stop) && int4range(
-(SELECT int4range(min(start), max(stop))
-FROM {ti} ti
-inner join {tads} tads
-on ti.tadname = tads.tadname
-WHERE accession = %s))
-AND abs(%s - start) < 100000
-ORDER BY 2
-""".format(cre=self.assembly + "_cre_all",
-           ttn = self.assembly + "_ccres_toptier",
-                ti=self.assembly + "_tads_info",
-                tads=self.assembly + "_tads")
-            curs.execute(q, (start, chrom, accession, start))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("cresInTad", """
+        SELECT {cre}.accession AS accession, abs(%s - start) AS distance
+        FROM {cre} INNER JOIN {ttn} ON {cre}.accession = {ttn}.accession
+        WHERE chrom = %s
+        AND int4range(start, stop) && int4range(
+        (SELECT int4range(min(start), max(stop))
+        FROM {ti} ti
+        inner join {tads} tads
+        on ti.tadname = tads.tadname
+        WHERE accession = %s))
+        AND abs(%s - start) < 100000
+        ORDER BY 2
+        """.format(cre=self.assembly + "_cre_all",
+                   ttn = self.assembly + "_ccres_toptier",
+                   ti=self.assembly + "_tads_info",
+                   tads=self.assembly + "_tads"),
+                                (start, chrom, accession, start))
         frows = [x for x in rows if x[0] != accession]
         return [{"accession": r[0], "distance": r[1]} for r in frows]
 
     def genesInTad(self, accession, chrom):
-        with getcursor(self.pg.DBCONN, "genesInTad") as curs:
-            curs.execute("""
-SELECT geneIDs
-FROM {tn}
-WHERE accession = %s
-""".format(tn=self.assembly + "_tads"), (accession, ))
-            rows = curs.fetchall()
+        rows = self.pw.fetchall("genesInTad", """
+        SELECT geneIDs
+        FROM {tn}
+        WHERE accession = %s
+        """.format(tn=self.assembly + "_tads"), (accession, ))
         return rows
 
     def rankMethodToIDxToCellType(self):
-        pg = PGcommon(self.pg, self.assembly)
+        pg = PGcommon(self.pw, self.assembly)
         return pg.rankMethodToIDxToCellType()
 
     def rankMethodToCellTypes(self):
-        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
-            curs.execute("""
-SELECT idx, celltype, rankmethod
-FROM {assembly}_rankcelltypeindexex
-""".format(assembly=self.assembly))
-            _map = {}
-            for r in curs.fetchall():
-                _map[r[2]] = [(r[0], r[1])] if r[2] not in _map else _map[r[2]] + [(r[0], r[1])]
+        rows = self.pw.fetchall("pg$getRanIdxToCellType", """
+        SELECT idx, celltype, rankmethod
+        FROM {assembly}_rankcelltypeindexex
+        """.format(assembly=self.assembly))
+        _map = {}
+        for r in rows:
+            _map[r[2]] = [(r[0], r[1])] if r[2] not in _map else _map[r[2]] + [(r[0], r[1])]
         ret = {}
         for k, v in _map.items():
             ret[k] = [x[1] for x in sorted(v, key=lambda a: a[0])]
@@ -284,14 +271,13 @@ FROM {assembly}_rankcelltypeindexex
         return ret
 
     def _getColsForAccession(self, accession, chrom, cols):
-        tableName = self.assembly + "_cre_all"
-        with getcursor(self.pg.DBCONN, "_getColsForAccession") as curs:
-            curs.execute("""
-SELECT {cols}
-FROM {tn}
-WHERE accession = %s
-""".format(cols=','.join(cols), tn=tableName), (accession,))
-            return curs.fetchone()
+        row = self.pw.fetchone("_getColsForAccession", """
+        SELECT {cols}
+        FROM {tn}
+        WHERE accession = %s
+        """.format(cols=','.join(cols),
+                   tn=self.assembly + "_cre_all"), (accession,))
+        return row
 
     def creRanksPromoter(self, accession, chrom):
         cols = ["promoter_zscores"]
@@ -334,46 +320,49 @@ WHERE accession = %s
             return " or ".join(["%s_rank[%d] < %d" % (_assay, i + 1, threshold)
                                 for i in range(len(r)) if r[i] < threshold])
 
-        with getcursor(self.pg.DBCONN, "cre$CRE::mostsimilar") as curs:
-            curs.execute("""
-SELECT {assay}_rank
-FROM {assembly}_cre_all
-WHERE accession = %s
-""".format(assay=assay,
-                assembly=self.assembly), acc)
-            r = curs.fetchone()
-            if not r:
-                if 0:
-                    print("cre$CRE::mostsimilar WARNING: no results for accession",
-                          acc, " -- returning empty set")
-                return []
-            whereclause = whereclause(r[0])
-            if len(whereclause.split(" or ")) > 200:
-                if 0:
-                    print("cre$CRE::mostsimilar", "NOTICE:", acc,
-                          "is active in too many cell types",
-                          len(whereclause.split(" or ")),
-                          "returning empty set")
-                return []
+        r = self.pw.fetchone("cre$CRE::mostsimilar", """
+        SELECT {assay}_rank
+        FROM {assembly}_cre_all
+        WHERE accession = %s
+        """.format(assay=assay,
+                   assembly=self.assembly), acc)
 
-            if not whereclause:
-                if 0:
-                    print("cre$CRE::mostsimilar NOTICE:", acc,
-                          "not active in any cell types; returning empty set")
-                return []
+        if not r:
+            if 0:
+                print("cre$CRE::mostsimilar WARNING: no results for accession",
+                      acc, " -- returning empty set")
+            return []
+        
+        whereclause = whereclause(r[0])
+        
+        if len(whereclause.split(" or ")) > 200:
+            if 0:
+                print("cre$CRE::mostsimilar", "NOTICE:", acc,
+                      "is active in too many cell types",
+                      len(whereclause.split(" or ")),
+                      "returning empty set")
+            return []
 
-            curs.execute("""
-SELECT accession,
-intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity,
-chrom, start, stop
-FROM {assembly}_cre_all
-WHERE {whereclause}
-ORDER BY similarity DESC LIMIT 10
-""".format(assay=assay, assembly=self.assembly,
-                threshold=threshold, whereclause=whereclause), {"r": r})
-            rr = curs.fetchall()
+        if not whereclause:
+            if 0:
+                print("cre$CRE::mostsimilar NOTICE:", acc,
+                      "not active in any cell types; returning empty set")
+            return []
+
+        rows = self.pw.fetchall("pg_search", """
+        SELECT accession,
+        intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity,
+        chrom, start, stop
+        FROM {assembly}_cre_all
+        WHERE {whereclause}
+        ORDER BY similarity DESC LIMIT 10
+        """.format(assay=assay,
+                   assembly=self.assembly,
+                   threshold=threshold,
+                   whereclause=whereclause), {"r": r})
+
         return [{"accession": r[0], "chrom": r[2], "start": r[3], "end": r[4]}
-                for r in rr]
+                for r in rows]
 
     def _intersections_tablename(self, metadata=False, eset=None):
         if eset not in [None, "cistrome", "peak"]:
@@ -383,14 +372,13 @@ ORDER BY similarity DESC LIMIT 10
         return eset + "Intersections" + ("" if not metadata else "Metadata")
 
     def peakIntersectCount(self, accession, chrom, totals, eset=None):
-        tableName = self.assembly + "_" + self._intersections_tablename(eset=eset)
-        with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
-            curs.execute("""
-SELECT tf, histone
-FROM {tn}
-WHERE accession = %s
-""".format(tn=tableName), (accession,))
-            r = curs.fetchone()
+        r = self.pw.fetchone("peakIntersectCount", """
+        SELECT tf, histone
+        FROM {tn}
+        WHERE accession = %s
+        """.format(tn=self.assembly + "_" +
+                   self._intersections_tablename(eset=eset)),
+                             (accession,))
         if not r:
             return {"tfs": [], "histone": []}
         tfs = [{"name": k, "n": len(set(v)), "total": totals.get(k, -1)}
@@ -400,20 +388,19 @@ WHERE accession = %s
         return {"tf": tfs, "histone": histones}
 
     def tfHistoneDnaseList(self, eset=None):
-        tableName = self.assembly + "_" + self._intersections_tablename(metadata=True, eset=eset)
-        with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
-            curs.execute("""
-SELECT distinct label
-FROM {tn}
-""".format(tn=tableName))
-            return sorted([r[0] for r in curs.fetchall()])
+        rows = self.pw.fetchall("peakIntersectCount", """
+        SELECT distinct label
+        FROM {tn}
+        """.format(tn=self.assembly + "_" +
+                   self._intersections_tablename(metadata=True, eset=eset)))
+        return sorted([r[0] for r in rows])
 
     def genePos(self, gene):
         ensemblid = gene
         if gene.startswith("ENS") and '.' in gene:
             ensemblid = gene.split('.')[0]
         tableName = self.assembly + "_gene_info"
-        with getcursor(self.pg.DBCONN, "cre_pos") as curs:
+        with getcursor(self.pw.DBCONN, "cre_pos") as curs:
             q = """
 SELECT chrom, start, stop, approved_symbol, ensemblid_ver FROM {tn}
 WHERE chrom != ''
@@ -518,7 +505,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
         cols = ["assay", "expID", "fileID", "tissue",
                 "biosample_summary", "biosample_type", "cellTypeName",
                 "cellTypeDesc", "synonyms"]
-        with getcursor(self.pg.DBCONN, "datasets") as curs:
+        with getcursor(self.pw.DBCONN, "datasets") as curs:
             curs.execute("""
 SELECT {cols} FROM {tn}
 """.format(tn=tableName, cols=','.join(cols)))
@@ -528,7 +515,7 @@ SELECT {cols} FROM {tn}
         return self.pgc.datasets(assay)
 
     def genemap(self):
-        with getcursor(self.pg.DBCONN, "pg::genemap") as curs:
+        with getcursor(self.pw.DBCONN, "pg::genemap") as curs:
             curs.execute("""
 SELECT ensemblid, approved_symbol, strand
 FROM {tn}
@@ -558,7 +545,7 @@ AND int4range(start, stop) && int4range(%s, %s)
 ORDER BY start
 """.format(fields=','.join(fields), tn=tableName)
 
-        with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
+        with getcursor(self.pw.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (chrom, start, stop))
             rows = curs.fetchall()
         fields = ["gene", "start", "stop", "strand"]
@@ -580,7 +567,7 @@ ORDER BY biosample_term_name
 """.format(eid=("" if eset == "cistrome" else "expID, "), tissue=(", tissue" if eset == "cistrome" else ""),
            peakTn=peakTn, peakMetadataTn=peakMetadataTn)
 
-        with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
+        with getcursor(self.pw.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (target, accession))
             rows = curs.fetchall()
         return [{"expID": r[0] if eset == "cistrome" else (r[0] + ' / ' + r[1]),
@@ -601,7 +588,7 @@ WHERE accession = %s
 ORDER BY biosample_term_name
 """.format(eid="" if eset == "cistrome" else "expID, ", peakTn=peakTn, peakMetadataTn=peakMetadataTn)
 
-        with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
+        with getcursor(self.pw.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (target, accession))
             rows = curs.fetchall()
         return [{"expID": r[0] if eset == "cistrome" else (r[0] + ' / ' + r[1]),
@@ -614,7 +601,7 @@ FROM {tn}
 WHERE ensemblid_ver = %s
 """.format(tn=self.assembly + "_rampage")
 
-        with getcursor(self.pg.DBCONN, "pg::genesInRegion",
+        with getcursor(self.pw.DBCONN, "pg::genesInRegion",
                        cursor_factory=psycopg2.extras.RealDictCursor) as curs:
             curs.execute(q, (ensemblid_ver, ))
             rows = curs.fetchall()
@@ -637,7 +624,7 @@ SELECT *
 FROM {tn}
 """.format(tn=self.assembly + "_rampage_info")
 
-        with getcursor(self.pg.DBCONN, "pg::genesInRegion",
+        with getcursor(self.pw.DBCONN, "pg::genesInRegion",
                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute(q)
             rows = curs.fetchall()
@@ -653,7 +640,7 @@ SELECT ensemblid_ver FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
         """.format(assembly=self.assembly)
 
-        with getcursor(self.pg.DBCONN, "_gene") as curs:
+        with getcursor(self.pw.DBCONN, "_gene") as curs:
             curs.execute(q, {"gene": gene})
             rows = curs.fetchone()
             return rows[0]
@@ -664,7 +651,7 @@ SELECT DISTINCT(biosample_type)
 FROM {tn}
 ORDER BY 1
 """.format(tn=self.assembly + "_rnaseq_exps")
-        with getcursor(self.pg.DBCONN, "pg::geBiosampleTypes") as curs:
+        with getcursor(self.pw.DBCONN, "pg::geBiosampleTypes") as curs:
             curs.execute(q)
             rows = curs.fetchall()
         return [r[0] for r in rows]
@@ -675,13 +662,13 @@ SELECT geneid, approved_symbol
 FROM {gtn}
 ORDER BY 1
 """.format(gtn=self.assembly + "_gene_info")
-        with getcursor(self.pg.DBCONN, "pg::geneIDsToApprovedSymbol") as curs:
+        with getcursor(self.pw.DBCONN, "pg::geneIDsToApprovedSymbol") as curs:
             curs.execute(q)
             rows = curs.fetchall()
         return {r[0]: r[1] for r in rows}
 
     def getHelpKeys(self):
-        with getcursor(self.pg.DBCONN, "getHelpKeys") as curs:
+        with getcursor(self.pw.DBCONN, "getHelpKeys") as curs:
             curs.execute("""
             SELECT key, title, summary
             FROM helpkeys
@@ -694,7 +681,7 @@ ORDER BY 1
     def tfHistCounts(self, eset=None):
         if eset is None:
             eset = "peak"
-        with getcursor(self.pg.DBCONN, "tfHistCounts") as curs:
+        with getcursor(self.pw.DBCONN, "tfHistCounts") as curs:
             curs.execute("""
 SELECT COUNT(label), label
 FROM {assembly}_{eset}intersectionsmetadata
@@ -704,7 +691,7 @@ GROUP BY label
         return {r[1]: r[0] for r in rows}
 
     def geneExpressionTissues(self):
-        with getcursor(self.pg.DBCONN, "geneExpressionTissues") as curs:
+        with getcursor(self.pw.DBCONN, "geneExpressionTissues") as curs:
             curs.execute("""
 SELECT DISTINCT(organ)
 FROM {assembly}_rnaseq_exps
@@ -713,7 +700,7 @@ FROM {assembly}_rnaseq_exps
 
     def loadNineStateGenomeBrowser(self):
         tableName = self.assembly + "_nine_state"
-        with getcursor(self.pg.DBCONN, "pg$loadNineStateGenomeBrowser",
+        with getcursor(self.pw.DBCONN, "pg$loadNineStateGenomeBrowser",
                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
             SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
@@ -738,7 +725,7 @@ FROM {tn}
 
     def loadMoreTracks(self):
         tableName = self.assembly + "_more_tracks"
-        with getcursor(self.pg.DBCONN, "pg$loadMoretracks") as curs:
+        with getcursor(self.pw.DBCONN, "pg$loadMoretracks") as curs:
             curs.execute("""
 SELECT cellTypeName, tracks
 FROM {tn}
@@ -751,7 +738,7 @@ FROM {tn}
 
     def linkedGenes(self, accession):
         tableName = self.assembly + "_linked_genes"
-        with getcursor(self.pg.DBCONN, "pg$linkedgenes",
+        with getcursor(self.pw.DBCONN, "pg$linkedgenes",
                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
             SELECT gene, celltype, method, dccaccession
@@ -764,7 +751,7 @@ WHERE cre = %s
 
     def creBigBeds(self):
         tableName = self.assembly + "_dcc_cres"
-        with getcursor(self.pg.DBCONN, "pg$creBigBeds") as curs:
+        with getcursor(self.pw.DBCONN, "pg$creBigBeds") as curs:
             curs.execute("""
             SELECT celltype, dcc_accession, typ
 FROM {tn}
@@ -779,7 +766,7 @@ FROM {tn}
 
     def creBeds(self):
         tableName = self.assembly + "_dcc_cres_beds"
-        with getcursor(self.pg.DBCONN, "pg$creBeds") as curs:
+        with getcursor(self.pw.DBCONN, "pg$creBeds") as curs:
             curs.execute("""
             SELECT celltype, dcc_accession, typ
 FROM {tn}

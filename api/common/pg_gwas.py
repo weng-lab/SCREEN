@@ -19,30 +19,37 @@ from cre_utils import isaccession, isclose, checkChrom, checkAssembly
 
 
 class PGgwasWrapper:
-    def __init__(self, pg):
+    def __init__(self, pw):
         self.assemblies = ["hg19"]  # Config.assemblies
-        self.pgs = {a: PGgwas(pg, a) for a in self.assemblies}
+        self.pws = {a: PGgwas(pw, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
 
 class PGgwas(object):
-    def __init__(self, pg, assembly):
-        self.pg = pg
+    def __init__(self, pw, assembly):
+        self.pw = pw
         checkAssembly(assembly)
         self.assembly = assembly
 
-        pg = PGcommon(self.pg, self.assembly)
+        pg = PGcommon(self.pw, self.assembly)
         self.ctmap = pg.makeCtMap()
         self.ctsTable = pg.makeCTStable()
 
-        with getcursor(self.pg.DBCONN, "__init__") as curs:
-            try:
-                curs.execute("SELECT * FROM {tn} LIMIT 0".format(tn = assembly + "_gwas_enrichment_fdr"))
-                self.wenrichment = { x[0]: True for x in curs.description }
-            except:
-                self.wenrichment = {}
+        # does does gwas_enrichment_fdr table exist for this assembly?
+        self.wenrichment = {}
+
+        tn = assembly + "_gwas_enrichment_fdr"
+        hasTable = self.pw.exists("PGgwas", """
+        SELECT EXISTS(
+        SELECT * FROM information_schema.tables 
+        WHERE table_name=%s)""", (tn,))
+
+        if hasTable:
+            cols = self.pw.description("PGgwas", """
+            SELECT * FROM {tn} LIMIT 0""".format(tn=tn))
+            self.wenrichment = { x[0]: True for x in cols }
 
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
@@ -199,31 +206,3 @@ GROUP BY {groupBy}
                 with open(json, 'w') as f:
                     for line in sf.readlines():
                         f.write(line.replace(b'\\n', b''))
-                        
-
-'''
-
-            q = """
-SELECT {fields}
-FROM {assembly}_cre_all as cre,
-{assembly}_gwas_overlap as over,
-{assembly}_gene_info as infoAll
-WHERE cre.gene_all_id[1] = infoAll.geneid
-AND cre.accession = over.accession
-AND over.authorPubmedTrait = %s
-GROUP BY {groupBy}
-""".format(assembly=self.assembly,
-                fields=', '.join(fields),
-                groupBy=', '.join(groupBy))
-            curs.execute(q, (gwas_study, ))
-            rows = curs.fetchall()
-        ret = [dict(zip(fieldsOut, r)) for r in rows]
-        for r in range(len(ret)):
-            ret[r].update({
-                "ctspecifc": {
-                    "%s_zscore" % x: ret[r]["%s zscore" % x] if "%s zscore" % x in ret[r] else None
-                    for x in ["dnase", "promoter", "enhancer", "ctcf"]
-                }
-            })
-        return ret, fieldsOut
-'''

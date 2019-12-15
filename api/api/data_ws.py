@@ -16,7 +16,10 @@ from models.rampage import Rampage
 from models.minipeaks import MiniPeaks
 from models.ortholog import Ortholog
 
-from common.pg import PGsearch
+from common.pg_search import PGsearch
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
+from utils import Utils, Timer
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import chroms
@@ -26,10 +29,6 @@ from config import Config
 from pgglobal import GlobalPG
 from pgfantomcat import PGFantomCat
 from pg_home import PGHome
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../utils"))
-from utils import Utils, Timer
-
 
 class DataWebServiceWrapper:
     def __init__(self, args, pw, cacheW, staticDir):

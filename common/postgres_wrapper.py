@@ -5,11 +5,8 @@ import os
 import gzip
 import json
 from contextlib import contextmanager
+from psycopg2 import ProgrammingError
 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
-#from utils import Utils
-
-#from dbs import DBS
 
 @contextmanager
 def Cursor(DBCONN, query_name, *args, **kwargs):
@@ -48,7 +45,17 @@ class PostgresWrapper:
 
     def fetchone(self, name, q, qvars=None):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
+                curs.execute(q, qvars)
+                return curs.fetchone()
+        except:
+            print("ERROR: query was:", name, q, qvars)
+            raise
+
+    def fetchoneAsNamedTuples(self, name, q, qvars=None):
+        try:
+            with Cursor(self.DBCONN, name,
+                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
                 curs.execute(q, qvars)
                 return curs.fetchone()
         except:
@@ -57,7 +64,7 @@ class PostgresWrapper:
 
     def fetchall(self, name, q, qvars=None):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
                 curs.execute(q, qvars)
                 return curs.fetchall()
         except:
@@ -66,7 +73,7 @@ class PostgresWrapper:
 
     def rowcount(self, name, q, qvars=None):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
                 curs.execute(q, qvars)
                 return curs.rowcount
         except:
@@ -95,7 +102,7 @@ class PostgresWrapper:
 
     def update(self, name, q, qvars):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
                 curs.execute(q, qvars)
         except:
             print("ERROR: update query was:", name, q, qvars)
@@ -103,7 +110,7 @@ class PostgresWrapper:
 
     def updateReturning(self, name, q, qvars):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
                 curs.execute(q, qvars)
                 return curs.fetchone()
         except:
@@ -112,7 +119,7 @@ class PostgresWrapper:
 
     def insert(self, name, q, qvars):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
                 curs.execute(q, qvars)
         except:
             print("ERROR: insert query was:", name, q, qvars)
@@ -120,9 +127,27 @@ class PostgresWrapper:
 
     def insertReturning(self, name, q, qvars):
         try:
-            with getcursor(self.DBCONN, name) as curs:
+            with Cursor(self.DBCONN, name) as curs:
                 curs.execute(q, qvars)
                 return curs.fetchone()
         except:
             print("ERROR: insert query was:", name, q, qvars)
+            raise
+
+    def exists(self, name, q, qvars):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                curs.execute(q, qvars)
+                return curs.fetchone()[0]
+        except:
+            print("ERROR: exists query was:", name, q, qvars)
+            raise
+
+    def description(self, name, q, qvars):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                curs.execute(q, qvars)
+                return curs.description
+        except:
+            print("ERROR: exists query was:", name, q, qvars)
             raise
