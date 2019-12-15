@@ -26,8 +26,8 @@ from constants import chroms
 from postgres_wrapper import PostgresWrapper
 from cre_utils import checkChrom
 from config import Config
-from pgglobal import GlobalPG
-from pgfantomcat import PGFantomCat
+from pg_global import GlobalPG
+from pg_fantomcat import PGFantomCat
 from pg_home import PGHome
 
 class DataWebServiceWrapper:
@@ -53,7 +53,7 @@ class DataWebService():
         self.staticDir = staticDir
         self.assembly = assembly
         self.pgSearch = PGsearch(pw, assembly)
-        self.pgGlobal = GlobalPG(assembly)
+        self.pgGlobal = GlobalPG(pw, assembly)
         self.pgFantomCat = PGFantomCat(assembly)
 
         self.actions = {"cre_table": self.cre_table,
@@ -147,6 +147,7 @@ class DataWebService():
         }
 
     def global_object(self, j, args):
+        
         with getcursor(self.pw.DBCONN, "data_ws$DataWebService::global_object") as curs:
             return self.pgGlobal.select(j["name"], curs)
 

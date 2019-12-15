@@ -43,6 +43,14 @@ class PostgresWrapper:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
 
+    def execute(self, name, q, qvars=None):
+        try:
+            with Cursor(self.DBCONN, name) as curs:
+                curs.execute(q, qvars)
+        except:
+            print("ERROR: execute: query was:", name, q, qvars)
+            raise
+
     def fetchone(self, name, q, qvars=None):
         try:
             with Cursor(self.DBCONN, name) as curs:
