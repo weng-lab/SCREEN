@@ -4,7 +4,6 @@ import { Router, Route, browserHistory} from 'react-router';
 import uuider from 'react-native-uuid';
 import Loadable from 'react-loadable';
 
-import loading from './common/components/loading';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
@@ -15,29 +14,43 @@ const addUuid = (Component, props) => {
 					   uuid});
 }
 
+class Loading extends React.Component {
+    render() {
+	let msg = this.props.message;
+	if (!msg) {
+	    msg = "";
+	}
+	return (
+		<div className={"loading"} style={{"display": "block"}}>
+		Loading... {msg}
+		<i className="fa fa-refresh fa-spin" style={{fontSize: "24px"}} />
+		</div>);
+    }
+};
+
 const LoadableIndex = Loadable({
     loader: () => import('./apps/index/main'),
-    loading: loading("Index"),
+    loading: Loading,
 });
 
 const LoadableSearch = Loadable({
     loader: () => import('./apps/search/main'),
-    loading: loading("search"),
+    loading: Loading
 });
 
 const LoadableGeneExp = Loadable({
     loader: () => import('./apps/geneexp/main'),
-    loading: loading("gene expression"),
+    loading: Loading,
 });
 
 const LoadableDe = Loadable({
     loader: () => import('./apps/de/main'),
-    loading: loading("DE"),
+    loading: Loading,
 });
 
 const LoadableGwas = Loadable({
     loader: () => import('./apps/gwas/main'),
-    loading: loading("GWAS"),
+    loading: Loading
 });
 
 ReactDOM.render((
