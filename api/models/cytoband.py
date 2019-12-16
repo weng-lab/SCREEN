@@ -1,6 +1,5 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
 
 import os
 import sys
@@ -34,7 +33,7 @@ def main():
 
     cb = Cytoband(fnp)
 
-    for chrom, bands in cb.bands.iteritems():
+    for chrom, bands in cb.bands.items():
         print(chrom, len(bands), bands[0])
 
 

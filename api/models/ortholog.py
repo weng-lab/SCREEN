@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.realpath(__file__), "../../../metadata/utils"))
+sys.path.append(os.path.join(os.path.realpath(__file__), "../../utils"))
 from db_utils import getcursor
 
 

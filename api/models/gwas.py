@@ -1,6 +1,5 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
 
 from cre import CRE
 from common.pg_gwas import PGgwas
@@ -62,7 +61,8 @@ class Gwas:
         vcols = {}
         for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
             vcols[f] = f not in hiddenFields
-        if ct is None: ct = "_all"
+        if ct is None:
+            ct = "_all"
         return {ct: {"accessions": activeCres,
                      "vcols": vcols}}
 
