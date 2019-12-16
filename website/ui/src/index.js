@@ -4,6 +4,7 @@ import { Router, Route, browserHistory} from 'react-router';
 import uuider from 'react-native-uuid';
 import Loadable from 'react-loadable';
 
+import loading from './common/components/loading';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
@@ -14,35 +15,29 @@ const addUuid = (Component, props) => {
 					   uuid});
 }
 
-class Loading extends React.Component {
-    render() {
-	return "HI!";
-    }
-};
-
 const LoadableIndex = Loadable({
     loader: () => import('./apps/index/main'),
-    loading: Loading,
+    loading: loading("Index"),
 });
 
 const LoadableSearch = Loadable({
     loader: () => import('./apps/search/main'),
-    loading: Loading,
+    loading: loading("search"),
 });
 
 const LoadableGeneExp = Loadable({
     loader: () => import('./apps/geneexp/main'),
-    loading: Loading,
+    loading: loading("gene expression"),
 });
 
 const LoadableDe = Loadable({
     loader: () => import('./apps/de/main'),
-    loading: Loading,
+    loading: loading("DE"),
 });
 
 const LoadableGwas = Loadable({
     loader: () => import('./apps/gwas/main'),
-    loading: Loading,
+    loading: loading("GWAS"),
 });
 
 ReactDOM.render((
