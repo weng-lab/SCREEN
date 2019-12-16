@@ -1,6 +1,5 @@
 import React from 'react'
 
-import {Tabs, Tab} from 'react-bootstrap'
 import {tabPanelize} from '../../../common/utility'
 
 class UTabUCSC extends React.Component {

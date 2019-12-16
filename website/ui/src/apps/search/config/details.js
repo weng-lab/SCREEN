@@ -13,7 +13,7 @@ import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
         TfIntersectionTable, OrthologTable, FantomCatTable,
-	CistromeIntersectionTable, GroundLevelTables} from './details_tables';
+	GroundLevelTables} from './details_tables';
 
 import loading from '../../../common/components/loading';
 
@@ -214,15 +214,6 @@ class TfIntersectionTab extends ReTabBase{
     }
 }
 
-class CistromeIntersectionTab extends ReTabBase {
-    constructor(props) {
-	super(props, "cistromeIntersection");
-	this.doRender = (globals, assembly, data) => {
-	    return tabEles(globals, data, CistromeIntersectionTable(globals, assembly), 2);
-	}
-    }
-}
-
 class GeTab extends ReTabBase{
     constructor(props) {
 	super(props, "ge");
@@ -276,8 +267,6 @@ class GroundLevelTab extends ReTabBase {
 }
 
 const DetailsTabInfo = (assembly) => {
-    const otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
-    
     return {
         topTissues : {title: Render.tabTitle(["In Specific", "Biosamples"]),
                       enabled: true, f: TopTissuesTab},
@@ -297,7 +286,7 @@ const DetailsTabInfo = (assembly) => {
         ortholog: {title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
 	groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
-		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"},
+		      enabled: assembly !== "mm10", f: GroundLevelTab,},
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks},
 	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
