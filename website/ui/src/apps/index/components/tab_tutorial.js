@@ -61,6 +61,10 @@ class UTabTutorial extends React.Component {
 	return (tabPanelize(
             <div>
                 <h2>Tutorials</h2>
+
+	    	<h3>Mini-Peaks (cCRE signal profile)</h3>
+		{Iframe("https://www.youtube.com/embed/btBh6x-mh1Q")}
+	    
                 <h3>Main Search</h3>
                 {Iframe("https://www.youtube.com/embed/gOS7Eyi0xvM")}
 
@@ -78,9 +82,6 @@ class UTabTutorial extends React.Component {
 
 	        <h3>GWAS</h3>
 		{Iframe("https://www.youtube.com/embed/eunBo1-yF9M")}
-
-	        <h3>Mini-Peaks (cCRE signal profile)</h3>
-		{Iframe("https://www.youtube.com/embed/btBh6x-mh1Q")}
 		
 	    </div>));
     }
