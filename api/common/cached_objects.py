@@ -94,7 +94,7 @@ class CachedObjects:
             for line in f:
                 line = line.strip().split('\t')
                 self.creBigBeds[line[0]] = {}
-                self.creBigBeds[line[0]]["7group"] = "https://gcp.wenglab.org/hubs/integrative1/data/seven-group/%s.7group.bigBed" % ("_".join([ x for x in line[2:] if x != 'NA' ]))
+                self.creBigBeds[line[0]]["7group"] = "http://gcp.wenglab.org/hubs/integrative1/data/seven-group/%s.7group.bigBed" % ("_".join([ x for x in line[2:] if x != 'NA' ]))
                 for i in range(2, len(keys)):
                     if line[i] == "NA": continue
                     self.creBigBeds[line[0]]["9state-%s" % keys[i]] = "http://gcp.wenglab.org/hubs/integrative1/data/nine-state/%s.9state.bigBed" % line[i]
