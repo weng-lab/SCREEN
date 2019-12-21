@@ -1,0 +1,41 @@
+version: '3.3'
+
+services:
+
+    pg_screen_v13:
+        image: postgres:10.1
+        secrets:
+          - psql_password
+        environment:
+          POSTGRES_PASSWORD_FILE: /run/secrets/psql_password
+        volumes:
+          - /tank/dockers/postgresql/screen_v13:/var/lib/postgresql/data
+          - ./config/postgresql.8gb.conf:/var/lib/postgresql/data/postgresql.conf
+
+    api:
+      build:
+        context: .
+        dockerfile: Dockerfile.api
+      volumes:
+        - ./config/pgpass:/root/.pgpass:ro
+        - /data:/data
+      depends_on:
+        - pg_screen_v13
+
+    www:
+      build:
+        context: .
+        dockerfile: Dockerfile.ui
+      depends_on:
+        - api
+
+    cassandra_v13:
+      image: cassandra:3.11
+      volumes:
+        - /tank/dockers/cassandra/cassandra_v13:/var/lib/cassandra
+      environment:
+        - CASSANDRA_WRITE_REQUEST_TIMEOUT_IN_MS=20000
+
+secrets:
+  psql_password:
+    file: ./config/psql_password.txt
