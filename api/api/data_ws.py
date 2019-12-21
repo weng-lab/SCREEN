@@ -95,7 +95,7 @@ class DataWebService():
         results = self.pgSearch.versions()
         r = {}
         for result in results:
-            result = { "accession": result[0].decode('ascii'), "biosample": result[1].decode('ascii'), "assay": result[2].decode('ascii'), "version": result[3].decode('ascii') }
+            result = { "accession": result[0], "biosample": result[1], "assay": result[2], "version": result[3] }
             if result["version"] not in r: r[result["version"]] = {}
             if result["biosample"] not in r[result["version"]]: r[result["version"]][result["biosample"]] = {}
             if result["assay"] not in r[result["version"]][result["biosample"]]: r[result["version"]][result["biosample"]][result["assay"]] = []
