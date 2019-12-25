@@ -1,6 +1,17 @@
 version: '3.3'
 
 services:
+    dev_env_purcaro:
+      image: dev_env_mjp:002
+      volumes:
+#        - /data:/data:ro
+        - /home/mjp/docker_ubuntu:/home/mjp
+        - ./config/pgdg.list:/etc/apt/sources.list.d/pgdg.list
+        - ./config/pgpass:/home/mjp/.pgpass:ro
+      command: tail -f /dev/null
+      user: "1000"
+      depends_on:
+        - pg_screen_v13
 
     pg_screen_v13:
         image: postgres:10.1
