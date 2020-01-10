@@ -105,7 +105,7 @@ class DE:
 
         cd = self.coord()
 
-        pg = PGde(self.pgSearch.pg, self.assembly)
+        pg = PGde(self.pgSearch.pw, self.assembly)
         nearbyDEs = pg.nearbyDEs(cd, self.halfWindow, ct1, ct2, 0.05)
 
         if not nearbyDEs:
