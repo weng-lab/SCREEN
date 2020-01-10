@@ -313,4 +313,4 @@ with DELIMITER E'\t'
         sf.seek(0)
         with open(fnp, 'w') as f:
             for line in sf.readlines():
-                f.write(line.replace(b'\\n', b''))
+                f.write(line.replace("\\n", ""))
