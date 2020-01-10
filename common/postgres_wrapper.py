@@ -30,7 +30,7 @@ def Cursor(DBCONN, query_name, *args, **kwargs):
         yield con.cursor(*args, **kwargs)
         con.commit()
     except psycopg2.ProgrammingError as e:
-        print("ProgrammingError while running %s: %s" % (query_name, e.message))
+        print("ProgrammingError while running %s: %s" % (query_name, e.pgerror))
         raise
     except:
         print("%s error while running %s" % (sys.exc_info()[0].__name__, query_name))
