@@ -41,14 +41,11 @@ class PGgwas(object):
         self.wenrichment = {}
 
         tn = assembly + "_gwas_enrichment_fdr"
-        hasTable = self.pw.exists("PGgwas", """
-        SELECT EXISTS(
-        SELECT * FROM information_schema.tables 
-        WHERE table_name=%s)""", (tn,))
+        hasTable = assembly == "GRCh38"
 
         if hasTable:
             cols = self.pw.description("PGgwas", """
-            SELECT * FROM {tn} LIMIT 0""".format(tn=tn))
+            SELECT * FROM {tn} LIMIT 0""".format(tn=tn), {})
             self.wenrichment = { x[0]: True for x in cols }
 
     def gwasStudies(self):
