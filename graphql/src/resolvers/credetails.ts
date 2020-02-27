@@ -32,21 +32,21 @@ export type nearbyGene = {
 
 export class CREDetails {
     assembly: Assembly;
-    accession;
-    _coord: Promise<{ chrom: string; start: number; end: number }>;
-    genesAll: nearbyGene[] | null;
-    genesPC: nearbyGene[] | null;
+    accession: string;
+    _coord: Promise<{ chrom: string; start: number; end: number }> | undefined;
+    genesAll: nearbyGene[] | null | undefined;
+    genesPC: nearbyGene[] | null | undefined;
 
     constructor(assembly: Assembly, accession: string) {
         this.assembly = assembly;
         this.accession = accession;
     }
 
-    async coord() {
+    async coord(): Promise<{ chrom: string; start: number; end: number }> {
         if (!this._coord) {
             this._coord = DbCommon.crePos(this.assembly, this.accession) as any;
         }
-        return await this._coord;
+        return await this._coord!;
     }
 
     static getCtData = (ctvalue, ctmap, key, ranks) =>

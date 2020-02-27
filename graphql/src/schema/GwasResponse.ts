@@ -30,7 +30,7 @@ export const GwasCellType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLFloat),
         },
         ct: {
-            type: new GraphQLNonNull(CommonTypes.CellTypeInfo),
+            type: new GraphQLNonNull(CommonTypes.CellTypeInfo as any),
         },
     }),
 });

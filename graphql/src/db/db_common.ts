@@ -87,10 +87,12 @@ export async function geneIDsToApprovedSymbol(assembly) {
         ORDER BY 1
     `;
     const res = await db.many(q);
-    return res.filter(o => o.geneid !== -1).reduce((obj, r) => {
-        obj[r['geneid']] = r['approved_symbol'];
-        return obj;
-    }, {});
+    return res
+        .filter(o => o.geneid !== -1)
+        .reduce((obj, r) => {
+            obj[r['geneid']] = r['approved_symbol'];
+            return obj;
+        }, {});
 }
 
 export async function getHelpKeys() {
@@ -162,13 +164,10 @@ export async function makeCtMap(assembly): Promise<Record<assaytype, Record<cell
     const rmInfo = await rankMethodToIDxToCellType(assembly);
     const ret = Object.keys(rmInfo)
         .filter(k => k in amap)
-        .reduce(
-            (obj, k) => {
-                obj[amap[k]] = rmInfo[k];
-                return obj;
-            },
-            {} as Record<assaytype, Record<celltype, ctindex>>
-        );
+        .reduce((obj, k) => {
+            obj[amap[k]] = rmInfo[k];
+            return obj;
+        }, {} as Record<assaytype, Record<celltype, ctindex>>);
     return ret;
 }
 
@@ -248,21 +247,18 @@ export async function makeBiosamplesMap(assembly): Promise<Record<string, Biosam
         id: string[];
         synonyms: string[][];
     }>(q);
-    const ret = res.reduce(
-        (prev, curr) => {
-            prev[curr.biosample_term_name] = {
-                name: curr.biosample_term_name,
-                celltypevalue: curr.values.filter(v => !!v)[0] || curr.biosample_term_name,
-                count: curr.count,
-                is_ninestate: curr.type.includes('ninestate'),
-                is_intersection_peak: curr.type.includes('peak'),
-                is_intersection_cistrome: curr.type.includes('cistrome'),
-                is_rnaseq: curr.type.includes('rnaseq'),
-            };
-            return prev;
-        },
-        {} as Record<string, Biosample>
-    );
+    const ret = res.reduce((prev, curr) => {
+        prev[curr.biosample_term_name] = {
+            name: curr.biosample_term_name,
+            celltypevalue: curr.values.filter(v => !!v)[0] || curr.biosample_term_name,
+            count: curr.count,
+            is_ninestate: curr.type.includes('ninestate'),
+            is_intersection_peak: curr.type.includes('peak'),
+            is_intersection_cistrome: curr.type.includes('cistrome'),
+            is_rnaseq: curr.type.includes('rnaseq'),
+        };
+        return prev;
+    }, {} as Record<string, Biosample>);
     return ret;
 }
 
@@ -388,13 +384,13 @@ export async function datasets(assembly) {
     return ret;
 }
 
-async function beds(assembly, tableName) {
+async function beds(assembly, tableName): Promise<Record<string, Record<string, string>>> {
     const q = `
         SELECT celltype, dcc_accession, typ
         FROM ${tableName}
     `;
     const res = await db.many(q);
-    const ret: any = {};
+    const ret: Record<string, Record<string, string>> = {};
     for (const { celltype: ct, dcc_accession: acc, typ: typ } of res) {
         (ret[ct] = ret[ct] || {})[typ] = acc;
     }
@@ -501,14 +497,11 @@ h3k4me3_zscores`
     if (!r) {
         throw new UserError(`Invalid accession (${accession})`);
     }
-    return cols.reduce(
-        (obj, k) => {
-            const assay = k.split('_')[0];
-            obj[assay] = r[k];
-            return obj;
-        },
-        {} as Record<assaytype, number[]>
-    );
+    return cols.reduce((obj, k) => {
+        const assay = k.split('_')[0];
+        obj[assay] = r[k];
+        return obj;
+    }, {} as Record<assaytype, number[]>);
 }
 
 async function getGenes(assembly, accession, allOrPc) {
@@ -529,19 +522,16 @@ async function getGenes(assembly, accession, allOrPc) {
     return db.any(q, [accession]);
 }
 
-export async function getGenesMany(assembly, accessions: string[], allOrPc): Promise<nearbyGene[][]> {
+export async function getGenesMany(assembly, accessions: readonly string[], allOrPc): Promise<nearbyGene[][]> {
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
     const tableTss = assembly + '_tss_info';
     // accession => index
     // Need to ensure that we return data in the same order that we were asked
-    const requests = accessions.reduce(
-        (prev, accession, index) => {
-            prev[accession] = index;
-            return prev;
-        },
-        {} as Record<string, number>
-    );
+    const requests = accessions.reduce((prev, accession, index) => {
+        prev[accession] = index;
+        return prev;
+    }, {} as Record<string, number>);
     const q = `
 SELECT g.accession, gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
 FROM (
@@ -555,41 +545,35 @@ INNER JOIN ${tableTss} as tss
 ON gi.ensemblid_ver = tss.ensemblid_ver
     `;
     const res = await db.any(q, [accessions]);
-    const map: Record<string, nearbyGene[]> = res.reduce(
-        (prev, row) => {
-            prev[row.accession] = prev[row.accession] || [];
+    const map: Record<string, nearbyGene[]> = res.reduce((prev, row) => {
+        prev[row.accession] = prev[row.accession] || [];
 
-            prev[row.accession].push({
-                gene: {
-                    gene: row.approved_symbol,
-                    ensemblid_ver: row.ensemblid_ver,
-                    coords: {
-                        chrom: row.chrom,
-                        start: row.start,
-                        end: row.stop,
-                        strand: row.strand,
-                    },
-                    tsscoords: {
-                        chrom: row.tss_chrom,
-                        start: row.tss_start,
-                        end: row.tss_stop,
-                        strand: row.strand,
-                    },
+        prev[row.accession].push({
+            gene: {
+                gene: row.approved_symbol,
+                ensemblid_ver: row.ensemblid_ver,
+                coords: {
+                    chrom: row.chrom,
+                    start: row.start,
+                    end: row.stop,
+                    strand: row.strand,
                 },
-                distance: row.distance,
-            });
-            return prev;
-        },
-        {} as Record<string, nearbyGene[]>
-    );
-    return Object.keys(map).reduce(
-        (prev, accession) => {
-            const index = requests[accession];
-            prev[index] = map[accession];
-            return prev;
-        },
-        Array.from(Array(requests.length)) as nearbyGene[][]
-    );
+                tsscoords: {
+                    chrom: row.tss_chrom,
+                    start: row.tss_start,
+                    end: row.tss_stop,
+                    strand: row.strand,
+                },
+            },
+            distance: row.distance,
+        });
+        return prev;
+    }, {} as Record<string, nearbyGene[]>);
+    return Object.keys(map).reduce((prev, accession) => {
+        const index = requests[accession];
+        prev[index] = map[accession];
+        return prev;
+    }, Array.from(Array(requests.length)) as nearbyGene[][]);
 }
 
 export async function getTadOfCRE(assembly, accession) {

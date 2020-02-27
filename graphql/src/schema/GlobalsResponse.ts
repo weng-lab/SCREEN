@@ -25,74 +25,75 @@ const GraphQLJSON = require('graphql-type-json');
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     name: 'AssemblySpecificGlobals',
     description: 'Assembly-specific global data',
-    fields: () => ({
-        tfs: {
-            description: 'A list of all transcription factors used',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-            resolve: resolve_globals_assembly_tfs,
-        },
-        cellCompartments: {
-            description: 'A list of cell compartments',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-            resolve: resolve_globals_assembly_cellCompartments,
-        },
-        cellTypeInfoArr: {
-            description: 'Get info on all cell types used and assays used for ccRE data',
-            type: new GraphQLList(new GraphQLNonNull(CommonTypes.CellTypeInfo)),
-            resolve: resolve_globals_assembly_cellTypeInfoArr,
-        },
-        ctinfo: {
-            description: 'Gets the info for a specific cell type. Can use "none" to return nothing.',
-            type: CommonTypes.CellTypeInfo,
-            args: {
-                cellType: {
-                    description: 'The cellType to get info for',
-                    type: new GraphQLNonNull(GraphQLString),
-                },
+    fields: () =>
+        ({
+            tfs: {
+                description: 'A list of all transcription factors used',
+                type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+                resolve: resolve_globals_assembly_tfs,
             },
-            resolve: resolve_ctinfo,
-        },
-        chromCounts: {
-            description: 'Returns the numbers of ccREs keyed by chromosome',
-            type: GraphQLJSON,
-            resolve: resolve_globals_assembly_chromCounts,
-        },
-        chromLens: {
-            description: 'Returns the length of each chromosome',
-            type: GraphQLJSON,
-            resolve: resolve_globals_assembly_chromLens,
-        },
-        creHistBins: {
-            description: 'Returns the numbers of ccREs in each bin of a chromosome',
-            type: GraphQLJSON,
-            resolve: resolve_globals_assembly_creHistBins,
-        },
-        geBiosampleTypes: {
-            description: 'Returns biosample types available in gene expression',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-            resolve: resolve_globals_assembly_geBiosampleTypes,
-        },
-        geBiosamples: {
-            description: 'Returns biosamples available in gene expression',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-            resolve: resolve_globals_assembly_geBiosamples,
-        },
-        creBigBedsByCellType: {
-            description: 'Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE',
-            type: GraphQLJSON,
-            resolve: resolve_globals_assembly_creBigBedsByCellType,
-        },
-        creFiles: {
-            description: 'Returns info on the data used to create ccREs',
-            type: GraphQLJSON,
-            resolve: resolve_globals_assembly_creFiles,
-        },
-        inputData: {
-            description: 'Returns info on the data used for SCREEN',
-            type: GraphQLJSON,
-            resolve: resolve_globals_assembly_inputData,
-        },
-    }),
+            cellCompartments: {
+                description: 'A list of cell compartments',
+                type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+                resolve: resolve_globals_assembly_cellCompartments,
+            },
+            cellTypeInfoArr: {
+                description: 'Get info on all cell types used and assays used for ccRE data',
+                type: new GraphQLList(new GraphQLNonNull(CommonTypes.CellTypeInfo as any)),
+                resolve: resolve_globals_assembly_cellTypeInfoArr,
+            },
+            ctinfo: {
+                description: 'Gets the info for a specific cell type. Can use "none" to return nothing.',
+                type: CommonTypes.CellTypeInfo,
+                args: {
+                    cellType: {
+                        description: 'The cellType to get info for',
+                        type: new GraphQLNonNull(GraphQLString),
+                    },
+                },
+                resolve: resolve_ctinfo,
+            },
+            chromCounts: {
+                description: 'Returns the numbers of ccREs keyed by chromosome',
+                type: GraphQLJSON,
+                resolve: resolve_globals_assembly_chromCounts,
+            },
+            chromLens: {
+                description: 'Returns the length of each chromosome',
+                type: GraphQLJSON,
+                resolve: resolve_globals_assembly_chromLens,
+            },
+            creHistBins: {
+                description: 'Returns the numbers of ccREs in each bin of a chromosome',
+                type: GraphQLJSON,
+                resolve: resolve_globals_assembly_creHistBins,
+            },
+            geBiosampleTypes: {
+                description: 'Returns biosample types available in gene expression',
+                type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+                resolve: resolve_globals_assembly_geBiosampleTypes,
+            },
+            geBiosamples: {
+                description: 'Returns biosamples available in gene expression',
+                type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+                resolve: resolve_globals_assembly_geBiosamples,
+            },
+            creBigBedsByCellType: {
+                description: 'Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE',
+                type: GraphQLJSON,
+                resolve: resolve_globals_assembly_creBigBedsByCellType,
+            },
+            creFiles: {
+                description: 'Returns info on the data used to create ccREs',
+                type: GraphQLJSON,
+                resolve: resolve_globals_assembly_creFiles,
+            },
+            inputData: {
+                description: 'Returns info on the data used for SCREEN',
+                type: GraphQLJSON,
+                resolve: resolve_globals_assembly_inputData,
+            },
+        } as any),
 });
 
 export const HelpKeys = new GraphQLObjectType({

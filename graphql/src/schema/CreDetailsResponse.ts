@@ -10,7 +10,7 @@ export const AssayValues = new GraphQLObjectType({
     description: 'Gets specific values for an assay',
     fields: () => ({
         ct: {
-            type: new GraphQLNonNull(CommonTypes.CellTypeInfo),
+            type: new GraphQLNonNull(CommonTypes.CellTypeInfo as any),
         },
         one: {
             type: GraphQLFloat,
@@ -26,7 +26,7 @@ export const CTAssayData = new GraphQLObjectType({
     description: 'The celltype-specific z-scores for this ccRE',
     fields: () => ({
         ct: {
-            type: new GraphQLNonNull(CommonTypes.CellTypeInfo),
+            type: new GraphQLNonNull(CommonTypes.CellTypeInfo as any),
         },
         dnase: {
             type: GraphQLFloat,

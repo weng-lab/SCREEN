@@ -289,23 +289,20 @@ export async function getCreTable(
     return { cres: res, total: total };
 }
 
-export async function getCtSpecificData(assembly: Assembly, requested: string[]): Promise<ctspecificdata[]> {
+export async function getCtSpecificData(assembly: Assembly, requested: readonly string[]): Promise<ctspecificdata[]> {
     const table = assembly + '_cre_all';
     // ct => { ccres, indices }
     // Need to ensure that we return data in the same order that we were asked
-    const ctrequests = requested.reduce(
-        (prev, curr, index) => {
-            const [ccre, ct] = curr.split('::');
-            const obj = (prev[ct] = prev[ct] || {
-                ccres: [],
-                indices: {},
-            });
-            obj.ccres.push(ccre);
-            obj.indices[ccre] = index;
-            return prev;
-        },
-        {} as Record<string, { ccres: string[]; indices: Record<string, number> }>
-    );
+    const ctrequests = requested.reduce((prev, curr, index) => {
+        const [ccre, ct] = curr.split('::');
+        const obj = (prev[ct] = prev[ct] || {
+            ccres: [],
+            indices: {},
+        });
+        obj.ccres.push(ccre);
+        obj.indices[ccre] = index;
+        return prev;
+    }, {} as Record<string, { ccres: string[]; indices: Record<string, number> }>);
 
     const ctresults: Record<string, (ctspecificdata & { accession: string })[]> = {};
     for (const [ct, { ccres, indices }] of Object.entries(ctrequests)) {
@@ -346,15 +343,12 @@ export async function getCtSpecificData(assembly: Assembly, requested: string[])
         });
         ctresults[ct] = res;
     }
-    return Object.keys(ctresults).reduce(
-        (prev, ct) => {
-            const indices = ctrequests[ct].indices;
-            const results = ctresults[ct];
-            results.forEach((result, index) => {
-                prev[indices[result.accession]] = result;
-            });
-            return prev;
-        },
-        Array.from(Array(requested.length)) as ctspecificdata[]
-    );
+    return Object.keys(ctresults).reduce((prev, ct) => {
+        const indices = ctrequests[ct].indices;
+        const results = ctresults[ct];
+        results.forEach((result, index) => {
+            prev[indices[result.accession]] = result;
+        });
+        return prev;
+    }, Array.from(Array(requested.length)) as ctspecificdata[]);
 }

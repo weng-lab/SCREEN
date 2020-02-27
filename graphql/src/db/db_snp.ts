@@ -110,8 +110,8 @@ limit 5
         }))
         .sort((a, b) => a.distance - b.distance);
     const seen: any = {};
-    const nodups = withdups.filter(
-        item => (seen.hasOwnProperty(item.gene.gene) ? false : (seen[item.gene.gene] = true))
+    const nodups = withdups.filter(item =>
+        seen.hasOwnProperty(item.gene.gene) ? false : (seen[item.gene.gene] = true)
     );
     return nodups.slice(0, 5);
 }

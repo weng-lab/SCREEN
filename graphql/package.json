@@ -1,75 +1,35 @@
 {
-  "name": "SCREENgraphql",
+  "name": "screenapi",
   "version": "0.0.1",
   "description": "Graphql API for SCREEN",
+  "main": "index.js",
   "license": "ISC",
   "scripts": {
-    "start": "npm run build && npm run watch",
-    "build": "npm run build-ts && npm run tslint && npm run copy-static",
-    "serve": "nodemon --delay 1 dist/app.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve\"",
-    "test": "jest --forceExit",
-    "build-ts": "tsc --strictNullChecks",
-    "watch-ts": "tsc -w --strictNullChecks",
-    "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "debug": "npm run build && npm run watch-debug",
-    "serve-debug": "nodemon --delay 1 --inspect dist/app.js",
-    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
-    "copy-static": "node copyStatic.js",
-    "prettier": "./node_modules/.bin/prettier --write \"./src/**/*.{js,jsx,ts*}\"",
-    "precommit": "yarn prettier && yarn build-ts"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
-      }
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
-    },
-    "testMatch": [
-      "**/test/**/*.test.(ts|js)"
-    ],
-    "testEnvironment": "node"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest --detectOpenHandles",
+    "debug": "node --inspect dist/server.js",
+    "prettier": "prettier --write ./src/**/*.ts",
+    "precommit": "yarn prettier"
   },
   "dependencies": {
-    "apollo-engine": "^1.1.2",
-    "apollo-server-express": "^1.3.6",
-    "dataloader": "^1.4.0",
-    "express": "^4.15.4",
-    "express-graphql": "^0.6.11",
-    "graphql": "^0.13",
-    "graphql-errors": "^2.1.0",
-    "graphql-type-json": "^0.1.4",
-    "pg-promise": "^7.3.3",
-    "raven": "^2.4.2",
-    "request": "^2.83.0",
-    "request-promise-native": "^1.0.5",
+    "apollo-server-express": "^2.10.0",
+    "dataloader": "^2.0.0",
+    "express": "^4.16.0",
+    "graphql": "^14.0.0",
+    "pg-promise": "^8.5.0",
     "uuid": "^3.2.1",
     "uuid-validate": "^0.0.2"
   },
   "devDependencies": {
-    "@types/express": "^4.0.35",
-    "@types/express-graphql": "^0.0.35",
-    "@types/graphql": "^0.13",
+    "@types/express": "^4.16.0",
     "@types/jest": "^21.1.5",
     "@types/node": "^9.3.0",
-    "concurrently": "^3.4.0",
     "husky": "^0.14.3",
     "jest": "^21.2.1",
-    "nodemon": "^1.11.0",
     "prettier": "^1.12.1",
-    "shelljs": "^0.7.7",
-    "ts-jest": "^21.1.4",
-    "tslint": "^5.8.0",
-    "typescript": "^2.4.0"
+    "typescript": "^3.8.0"
   },
-  "peerDependencies": {},
   "prettier": {
     "printWidth": 120,
     "tabWidth": 4,

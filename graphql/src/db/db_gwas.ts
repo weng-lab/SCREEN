@@ -164,7 +164,7 @@ const mapldblocksnps = (assembly: Assembly, gwas_obj: Gwas) => (rows: DBLDBlockS
             study: {
                 study_name: row.authorpubmedtrait,
                 gwas_obj,
-                ...gwas_obj.byStudy[row.authorpubmedtrait],
+                ...gwas_obj.byStudy![row.authorpubmedtrait],
             },
             taggedsnp: tagged,
         },

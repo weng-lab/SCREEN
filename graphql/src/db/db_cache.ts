@@ -1,10 +1,7 @@
-import * as Path from 'path';
 import * as Common from './db_common';
 import * as De from './db_de';
 import * as Gwas from './db_gwas';
-import { GwasCellType } from '../schema/GwasResponse';
-import * as DataLoader from 'dataloader';
-import { TypeMap } from 'mime';
+import DataLoader from 'dataloader';
 import { Assembly, assaytype, ctspecificdata } from '../types';
 import { getCtSpecificData } from './db_cre_table';
 import { nearbyGene } from '../resolvers/credetails';
@@ -204,13 +201,10 @@ function getCache<C>(
     cacheKeys: Array<keyof C>,
     cacheLoader: DataLoader<keyof C, any>
 ): ByFunction<Promisify<Record<keyof C, any>>> {
-    return cacheKeys.reduce(
-        (prev, key) => {
-            prev[key] = () => cacheLoader.load(key);
-            return prev;
-        },
-        {} as ByFunction<Promisify<Record<keyof C, any>>>
-    );
+    return cacheKeys.reduce((prev, key) => {
+        prev[key] = () => cacheLoader.load(key);
+        return prev;
+    }, {} as ByFunction<Promisify<Record<keyof C, any>>>);
 }
 
 let caches: Record<Assembly, loadablecache> = undefined as any;
