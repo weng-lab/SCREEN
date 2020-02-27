@@ -1,11 +1,7 @@
-import * as Common from './db_common';
 import { db } from './db';
-import { buildWhereStatement, dbcre, getCreTable } from './db_cre_table';
+import { buildWhereStatement, dbcre } from './db_cre_table';
 import { Assembly, SNP, LDBlockSNP } from '../types';
-import { LDBlock } from '../schema/GwasResponse';
 import { Gwas } from '../resolvers/gwas';
-import { loadCache, ccRECtspecificLoaders } from './db_cache';
-import { snptable } from './db_snp';
 
 export type DBGwasStudy = { name: string; author: string; pubmed: string; trait: string; totalLDblocks: number };
 export async function gwasStudies(assembly): Promise<DBGwasStudy[]> {
