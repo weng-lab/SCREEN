@@ -237,6 +237,15 @@ export const typeDefs = gql`
         globals: GlobalsResponse
         "Search differential expression data"
         de_search(assembly: Assembly!, gene: String!, ct1: String!, ct2: String!): DeResponse
+        "Get gene expression data"
+        geneexp_search(
+            assembly: Assembly!
+            gene: String!
+            "A list of biosamples types to filter by. By default, will include all available biosample types. Available biosample types can be queried with {globals{byAssembly{geBiosampleTypes}}}"
+            biosample_types: [String!]
+            "A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}"
+            compartments: [String!]
+        ): GeneExpResponse
     }
 
     enum Assembly {
@@ -432,6 +441,54 @@ export const typeDefs = gql`
         isde: Boolean!
         fc: Float
         gene: DeGene!
+    }
+
+    "Gene expression data"
+    type GeneExpResponse {
+        "Info on the gene queried. If the gene does not exist (like for spike-ins), this will be null."
+        gene_info: GeneExpGene
+        "All experimental data for this gene"
+        items: [ExperimentData!]!
+    }
+
+    "Gene info for gene expression"
+    type GeneExpGene {
+        "The coordinates of this gene"
+        coords: ChromRange!
+        "The gene name"
+        gene: String!
+        "The ensembl id and ver of the gene"
+        ensemblid_ver: String!
+    }
+
+    "Gene exp data for an experiment"
+    type ExperimentData {
+        "The tissue this experiment is from"
+        tissue: String!
+        "The cell type this experiment is from"
+        cellType: String!
+        "The ENCODE accession of this experiment"
+        expID: String!
+        "The age title for this experiment"
+        ageTitle: String!
+        "All replicate data (including mean) for this experiment"
+        reps: [ReplicateData!]!
+    }
+
+    "Gene exp data for a replicate in an experiment"
+    type ReplicateData {
+        "The replicate number or 'mean'"
+        replicate: String!
+        "The raw TPM value of the current gene for this replicate"
+        rawTPM: Float!
+        "The log2 TPM value of the current gene for this replicate"
+        logTPM: Float!
+        "The raw FPKM value of the current gene for this replicate"
+        rawFPKM: Float!
+        "The log2 FPKM value of the current gene for this replicate"
+        logFPKM: Float!
+        "The internal id to identify this replicate"
+        rID: String!
     }
 `;
 
