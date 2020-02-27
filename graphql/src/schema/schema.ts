@@ -251,6 +251,9 @@ export const typeDefs = gql`
         credetails(accession: String!): cCRE
         "Get RAMPAGE data for a gene"
         rampage(assembly: Assembly!, gene: String!): RampageGeneData
+        "Get gene expression by biosample"
+        genetop(assembly: Assembly!, biosample: String!): [TopGenesReplicateData!]
+        snps(assembly: Assembly, id: String, range: InputChromRange): [SNP!]
     }
 
     enum Assembly {
@@ -609,6 +612,20 @@ export const typeDefs = gql`
         tissue: String!
         strand: String!
         counts: Float!
+    }
+
+    type TopGenesReplicateData {
+        tissue: String!
+        cellType: String!
+        gene_name: String!
+        expID: String!
+        ageTitle: String!
+        rID: String!
+        replicate: String!
+        rawTPM: Float!
+        logTPM: Float!
+        rawFPKM: Float!
+        logFPKM: Float!
     }
 `;
 
