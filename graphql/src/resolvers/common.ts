@@ -10,12 +10,9 @@ export const resolve_gene_exons: GraphQLFieldResolver<any, any> = async source =
     return exons(assembly, ensemblid_ver);
 };
 
-export const resolve_celltypeinfo_ccREActivity: GraphQLFieldResolver<{ value: string }, any, { ccre: string }> = (
-    source,
-    args
-) => {
+export const resolve_celltypeinfo_ccREActivity: GraphQLFieldResolver<{ value: string }, any, any> = (source, args) => {
     const ct = source.value;
-    const ccre = args.ccre;
+    const ccre: string = args.ccre;
     const assembly = getAssemblyFromCre(ccre);
     if (!assembly) {
         throw new Error('Invalid accession: ' + ccre);

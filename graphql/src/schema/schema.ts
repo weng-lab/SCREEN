@@ -19,20 +19,61 @@ import * as UCSCTrackhub from './UCSCTrackhubSchema';
 import BedUploadResponse from './BedUploadResponse';
 import { TopGenesReplicateData } from './GeneTopResponse';
 
-import { resolve_data } from '../resolvers/cretable';
-import { resolve_globals } from '../resolvers/globals';
+import {
+    resolve_data,
+    resolve_data_range,
+    resolve_data_ctspecific,
+    resolve_data_nearbygenes,
+} from '../resolvers/cretable';
+import {
+    resolve_globals,
+    resolve_globals_inputData,
+    resolve_globals_files,
+    resolve_globals_assembly,
+    resolve_globals_assembly_tfs,
+    resolve_globals_assembly_cellCompartments,
+    resolve_globals_assembly_cellTypeInfoArr,
+    resolve_ctinfo,
+    resolve_globals_assembly_chromCounts,
+    resolve_globals_assembly_chromLens,
+    resolve_globals_assembly_creHistBins,
+    resolve_globals_assembly_geBiosampleTypes,
+    resolve_globals_assembly_geBiosamples,
+    resolve_globals_assembly_creBigBedsByCellType,
+    resolve_globals_assembly_creFiles,
+    resolve_globals_assembly_inputData,
+} from '../resolvers/globals';
 import { resolve_search, resolve_suggestions } from '../resolvers/search';
 import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
-import { resolve_gwas } from '../resolvers/gwas';
+import {
+    resolve_gwas,
+    resolve_gwas_study,
+    resolve_gwas_studies,
+    resolve_gwas_snps,
+    resolve_gwas_study_numCresOverlap,
+    resolve_gwas_study_numLdBlocksOverlap,
+    resolve_gwas_study_allSNPs,
+    resolve_gwas_study_topCellTypes,
+    resolve_gwas_study_cres,
+} from '../resolvers/gwas';
 import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
 import { resolve_gb } from '../resolvers/gb';
 import { resolve_ucsc_trackhub_url } from '../resolvers/ucsc_trackhub';
-import { resolve_credetails } from '../resolvers/credetails';
+import { resolve_credetails, resolve_details } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
-import { resolve_snps } from '../resolvers/snp';
+import {
+    resolve_snps,
+    resolve_snps_ldblocks,
+    resolve_snps_nearbygenes,
+    resolve_snps_overlapping_ccRE,
+    resolve_snps_relatedstudies,
+    resolve_gwas_ldblock_snps,
+    resolve_gwas_ldblock_leadsnp,
+} from '../resolvers/snp';
+import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
 import { RampageGeneData } from './CreDetailsResponse';
 
 const BaseType = new GraphQLObjectType({
@@ -631,7 +672,68 @@ export const typeDefs = gql`
 
 export const resolvers: GraphQLResolverMap = {
     Query: {
-        data: () => new Error(),
+        data: resolve_data,
+        globals: resolve_globals,
+        de_search: resolve_de,
+        geneexp_search: resolve_geneexp,
+        gwas: resolve_gwas,
+        credetails: resolve_credetails,
+        rampage: resolve_rampage,
+        genetop: resolve_genetop,
+        snps: resolve_snps,
+    },
+    GlobalsResponse: {
+        files: resolve_globals_files,
+        inputData: resolve_globals_inputData,
+        byAssembly: resolve_globals_assembly,
+    },
+    AssemblySpecificGlobalsResponse: {
+        tfs: resolve_globals_assembly_tfs,
+        cellCompartments: resolve_globals_assembly_cellCompartments,
+        cellTypeInfoArr: resolve_globals_assembly_cellTypeInfoArr,
+        ctinfo: resolve_ctinfo,
+        chromCounts: resolve_globals_assembly_chromCounts,
+        chromLens: resolve_globals_assembly_chromLens,
+        creHistBins: resolve_globals_assembly_creHistBins,
+        geBiosampleTypes: resolve_globals_assembly_geBiosampleTypes,
+        geBiosamples: resolve_globals_assembly_geBiosamples,
+        creBigBedsByCellType: resolve_globals_assembly_creBigBedsByCellType,
+        creFiles: resolve_globals_assembly_creFiles,
+        inputData: resolve_globals_assembly_inputData,
+    },
+    cCRE: {
+        range: resolve_data_range,
+        ctspecific: resolve_data_ctspecific,
+        nearbygenes: resolve_data_nearbygenes,
+        details: resolve_details,
+    },
+    CellTypeInfo: {
+        cCREActivity: resolve_celltypeinfo_ccREActivity,
+    },
+    GwasResponse: {
+        studies: resolve_gwas_studies,
+        study: resolve_gwas_study,
+        snps: resolve_gwas_snps,
+    },
+    GwasStudy: {
+        numLdBlocksOverlap: resolve_gwas_study_numLdBlocksOverlap,
+        numCresOverlap: resolve_gwas_study_numCresOverlap,
+        allSNPs: resolve_gwas_study_allSNPs,
+        topCellTypes: resolve_gwas_study_topCellTypes,
+        ccres: resolve_gwas_study_cres,
+    },
+    SNP: {
+        ldblocks: resolve_snps_ldblocks,
+        related_studies: resolve_snps_relatedstudies,
+        overlapping_cCRE: resolve_snps_overlapping_ccRE,
+        nearbygenes: resolve_snps_nearbygenes,
+    },
+    LDBlock: {
+        leadsnp: resolve_gwas_ldblock_leadsnp,
+        snps: resolve_gwas_ldblock_snps,
+    },
+    CommonGene: {
+        exons: resolve_gene_exons,
     },
 };
 
