@@ -8,7 +8,6 @@ import {
     GraphQLBoolean,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-const GraphQLJSON = require('graphql-type-json');
 
 export const DeGene = new GraphQLObjectType({
     name: 'DeGene',

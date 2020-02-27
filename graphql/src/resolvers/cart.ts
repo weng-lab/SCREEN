@@ -3,8 +3,6 @@ import * as Utils from '../utils';
 import { loadCache } from '../db/db_cache';
 import { getCreTable } from '../db/db_cre_table';
 
-const { UserError } = require('graphql-errors');
-
 const getCresForAssembly = async (assembly, accessions) => {
     if (accessions.length === 0) {
         return { cres: [], total: 0 };
@@ -32,7 +30,7 @@ export async function resolve_cart_set(source, args, context) {
     const accessions = args.accessions;
     const notaccesions = accessions.filter(a => !Utils.isaccession(a));
     if (notaccesions.length > 0) {
-        throw new UserError('The following are not accessions: ' + notaccesions.join(', '));
+        throw new Error('The following are not accessions: ' + notaccesions.join(', '));
     }
     const cres = await Cart.set(uuid, accessions);
     return getCres(cres);

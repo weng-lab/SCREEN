@@ -1,21 +1,20 @@
 import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull } from 'graphql';
 import { resolve_gb_genetable, resolve_gb_trackhubs } from '../resolvers/gb';
 import { InputChromRange } from './CommonSchema';
-const GraphQLJSON = require('graphql-type-json');
 
 export const GbResponse = new GraphQLObjectType({
     name: 'Gb',
     description: 'Genome browser data',
     fields: () => ({
         genetable: {
-            type: GraphQLJSON,
+            type: GraphQLString, // JSON
             args: {
                 range: { type: new GraphQLNonNull(InputChromRange) },
             },
             resolve: resolve_gb_genetable,
         },
         trackhubs: {
-            type: new GraphQLList(new GraphQLNonNull(GraphQLJSON)),
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString)), // JSON
             resolve: resolve_gb_trackhubs,
         },
     }),

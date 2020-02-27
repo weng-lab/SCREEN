@@ -7,13 +7,12 @@ import { Assembly } from '../types';
 const uuidv4 = require('uuid/v4');
 
 const exec = util.promisify(require('child_process').exec);
-const config = require('../config.json');
 // "/home/purcarom/intersect/incoming"
-const incomingDir = config.bedupload.incomingDir;
+const incomingDir = process.env['BEDUPLOAD_DIR'];
 // "/home/purcarom/intersect/hg19.sorted.bed"
-const hg19bed = config.bedupload.hg19bed;
+const GRCh38bed = process.env['BEDUPLOAD_GRCH38BED'];
 // "/home/purcarom/intersect/mm10.sorted.bed"
-const mm10bed = config.bedupload.mm10bed;
+const mm10bed = process.env['BEDUPLOAD_MM10BED'];
 
 async function intersect(uuid: string, assembly: string, lines: [string]) {
     const tempfile = incomingDir + '/' + uuid;
@@ -26,7 +25,7 @@ async function intersect(uuid: string, assembly: string, lines: [string]) {
     stream.end();
 
     const cres = {
-        hg19: hg19bed,
+        GRCh38: GRCh38bed,
         mm10: mm10bed,
     };
 

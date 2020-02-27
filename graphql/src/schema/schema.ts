@@ -1,15 +1,8 @@
-import {
-    GraphQLBoolean,
-    GraphQLList,
-    GraphQLString,
-    GraphQLInt,
-    GraphQLFloat,
-    GraphQLInputObjectType,
-    GraphQLObjectType,
-    GraphQLSchema,
-    GraphQLID,
-    GraphQLNonNull,
-} from 'graphql';
+import { gql } from 'apollo-server-express';
+import { GraphQLResolverMap } from 'apollo-graphql';
+import { buildFederatedSchema } from '@apollo/federation';
+
+import { GraphQLBoolean, GraphQLList, GraphQLString, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql';
 import { UUID } from './uuid';
 import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
@@ -41,9 +34,6 @@ import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps } from '../resolvers/snp';
 import { RampageGeneData } from './CreDetailsResponse';
-
-const json = require('../../data.json');
-const search_json = require('../../search.json');
 
 const BaseType = new GraphQLObjectType({
     name: 'BaseType',
@@ -238,3 +228,126 @@ const schema = new GraphQLSchema({
 });
 
 export default schema;
+
+export const typeDefs = gql`
+    type Query {
+        "Get cCRE data"
+        data(assembly: Assembly!, data: DataParameters, pagination: PaginationParameters): DataResponse
+    }
+
+    enum Assembly {
+        GRCh38
+        mm10
+    }
+
+    "Parameters to define what ccREs should be returned from a DataResponse"
+    input DataParameters {
+        "A list of accessions to return"
+        accessions: [String!]
+        range: InputChromRange
+        "Only return ccREs with max zscores for all available experiments that fall within specific ranges"
+        expmaxs: InputExpMax
+        "Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type"
+        ctexps: InputCtExps
+    }
+
+    "Represents a range on a chromomsome."
+    input InputChromRange {
+        "Chromosome"
+        chrom: String!
+        "Start position or null if full chromosome"
+        start: Int
+        "End position or null if full chromosome"
+        end: Int
+    }
+
+    input InputExpMax {
+        TODO: String
+    }
+
+    input InputCtExps {
+        TODO: String
+    }
+
+    "ADVANCED - you probably do not need this. offset + limit <= 10000; limit <= 1000; to access more data, refine your search"
+    input PaginationParameters {
+        "Default 0. Instead of starting at the first ccRE, return ccREs offsetted."
+        offset: Int
+        "Default 1000. Change the limit to the number of ccREs returned."
+        limit: Int
+        "The field to order by. If an ct-specific orderby is passed, but is not applicable to the ct (i.e. no data), then maxz will be used instead."
+        orderBy: OrderBy
+    }
+
+    input OrderBy {
+        TODO: String
+    }
+
+    type DataResponse {
+        "Returns the total number of ccREs that match the parameters. However, for speed, only up to the top 1000 will be displayed"
+        total: Int!
+        "Returns the ccREs that match the parameters"
+        ccres: [cCRE!]!
+    }
+
+    type cCRE {
+        "Assembly the ccRE is defined of"
+        assembly: Assembly!
+        "Accession of this ccRE"
+        accession: String!
+        "The range of the ccRE"
+        range: ChromRange!
+        "The max zscore from any experiment in any celltype"
+        maxz: Float!
+        "Max dnase zscore of all experiments"
+        dnasemax: Float!
+        "Max ctcf zscore of all experiments"
+        ctcfmax: Float!
+        "Max k27ac zscore of all experiments"
+        k27acmax: Float!
+        "Max k4me3 zscore of all experiments"
+        k4me3max: Float!
+        "Does this ccRE have an ortholog in other assemblies"
+        concordant: Boolean!
+        "Is ccRE +/- 2kb of TSS"
+        isproximal: Boolean!
+        "celltype-specific zscores"
+        ctspecifc(ct: String!): CtSpecific
+        "Nearby genes"
+        nearbygenes: Genes!
+        "Get details about this ccRE"
+        details: CreDetails!
+    }
+
+    "Represents a range on a chromomsome. May optionally specify a strand."
+    type ChromRange {
+        "Chromosome"
+        chrom: String!
+        "Start position or null if full chromosome"
+        start: Int
+        "End position or null if full chromosome"
+        end: Int
+        "Strand of this range or null if not defined"
+        strand: String
+    }
+
+    type CtSpecific {
+        TODO: String
+    }
+
+    type Genes {
+        TODO: String
+    }
+
+    type CreDetails {
+        TODO: String
+    }
+`;
+
+export const resolvers: GraphQLResolverMap = {
+    Query: {
+        data: () => new Error(),
+    },
+};
+
+export const generatedSchema = buildFederatedSchema([{ typeDefs }]);

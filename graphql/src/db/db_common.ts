@@ -4,7 +4,6 @@ import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
 import { Assembly, assaytype } from '../types';
 import { nearbyGene } from '../resolvers/credetails';
-import { UserError } from 'graphql-errors';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -495,7 +494,7 @@ h3k4me3_zscores`
 
     const r = await getColsForAccession(assembly, accession, cols);
     if (!r) {
-        throw new UserError(`Invalid accession (${accession})`);
+        throw new Error(`Invalid accession (${accession})`);
     }
     return cols.reduce((obj, k) => {
         const assay = k.split('_')[0];

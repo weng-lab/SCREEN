@@ -11,7 +11,6 @@ import {
 } from '../resolvers/gwas';
 import * as CommonTypes from './CommonSchema';
 import { resolve_gwas_ldblock_leadsnp, resolve_gwas_ldblock_snps } from '../resolvers/snp';
-const GraphQLJSON = require('graphql-type-json');
 
 export const GwasCellType = new GraphQLObjectType({
     name: 'GwasCellType',

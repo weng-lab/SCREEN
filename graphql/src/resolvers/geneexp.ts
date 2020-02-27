@@ -4,8 +4,6 @@ import * as DbGene from '../db/db_geneexp';
 
 import { loadCache, Compartments } from '../db/db_cache';
 
-const { UserError } = require('graphql-errors');
-
 async function geneexp(assembly, gene, biosample_types, compartments, normalized) {
     const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
 
@@ -13,7 +11,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
     if (!biosample_types) {
         biosample_types = available_biosamples;
     } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new Error(
             'invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(',')
         );
     }
@@ -22,14 +20,14 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
     if (!compartments) {
         compartments = available_compartments;
     } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
-        throw new UserError(
+        throw new Error(
             'invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(',')
         );
     }
 
     const rows = await Common.geneInfo(assembly, gene);
     let gene_info: any = Promise.resolve(
-        new UserError(
+        new Error(
             gene + ' is not a valid gene. This may not be an error if you are searching for a spike-in, for example.'
         )
     );

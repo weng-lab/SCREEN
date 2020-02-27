@@ -3,8 +3,6 @@ import * as DbGwas from '../db/db_gwas';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { Assembly, ctspecificdata } from '../types';
 
-const { UserError } = require('graphql-errors');
-
 export class Gwas {
     assembly: Assembly;
     studies: DbGwas.DBGwasStudy[] | undefined;
@@ -81,7 +79,7 @@ export const resolve_gwas_study: GraphQLFieldResolver<any, any> = (source, args)
     const g: Gwas = source.gwas_obj;
     const studyarg = args.study;
     if (!g.checkStudy(studyarg)) {
-        throw new UserError('invalid gwas study');
+        throw new Error('invalid gwas study');
     }
     return {
         study_name: studyarg,

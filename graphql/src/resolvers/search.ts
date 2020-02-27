@@ -1,10 +1,6 @@
-import { checkChrom, checkCreAssembly } from '../utils';
-import { GraphQLFieldResolver } from 'graphql';
-import { UserError } from 'graphql-errors';
+import { checkCreAssembly } from '../utils';
 import * as Parse from '../db/db_parse';
-import { GeneParse } from '../db/db_parse';
 import { getAccessions, getSNPs } from '../db/db_suggestions';
-import { loadCache } from '../db/db_cache';
 import { Assembly, SNP } from '../types';
 
 const re_fullrange = /^(chr[\dxy]\d?)[\s]*[\:]?[\s]*([0-9,\.]+)?[\s\-]*([0-9,\.]+)?/i;
@@ -20,7 +16,7 @@ const chrom_lengths = require('../constants').chrom_lengths;
 
 function falseOrError(shouldError, errorMessage): false {
     if (shouldError) {
-        throw new UserError(errorMessage);
+        throw new Error(errorMessage);
     }
     return false;
 }

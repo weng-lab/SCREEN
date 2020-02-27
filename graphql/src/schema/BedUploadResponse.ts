@@ -1,8 +1,6 @@
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList } from 'graphql';
 import { Assembly, cRE } from '../schema/CommonSchema';
 
-const GraphQLJSON = require('graphql-type-json');
-
 export const BedUploadResponse = new GraphQLObjectType({
     name: 'BedUploadResponse',
     description: 'Bed intersections',

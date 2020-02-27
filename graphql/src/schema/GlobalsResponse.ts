@@ -20,7 +20,6 @@ import {
     resolve_globals_files,
     resolve_globals_inputData,
 } from '../resolvers/globals';
-const GraphQLJSON = require('graphql-type-json');
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     name: 'AssemblySpecificGlobals',
@@ -55,17 +54,17 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
             },
             chromCounts: {
                 description: 'Returns the numbers of ccREs keyed by chromosome',
-                type: GraphQLJSON,
+                type: GraphQLString, // JSON
                 resolve: resolve_globals_assembly_chromCounts,
             },
             chromLens: {
                 description: 'Returns the length of each chromosome',
-                type: GraphQLJSON,
+                type: GraphQLString, // JSON
                 resolve: resolve_globals_assembly_chromLens,
             },
             creHistBins: {
                 description: 'Returns the numbers of ccREs in each bin of a chromosome',
-                type: GraphQLJSON,
+                type: GraphQLString, // JSON
                 resolve: resolve_globals_assembly_creHistBins,
             },
             geBiosampleTypes: {
@@ -80,17 +79,17 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
             },
             creBigBedsByCellType: {
                 description: 'Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE',
-                type: GraphQLJSON,
+                type: GraphQLString, // JSON
                 resolve: resolve_globals_assembly_creBigBedsByCellType,
             },
             creFiles: {
                 description: 'Returns info on the data used to create ccREs',
-                type: GraphQLJSON,
+                type: GraphQLString, // JSON
                 resolve: resolve_globals_assembly_creFiles,
             },
             inputData: {
                 description: 'Returns info on the data used for SCREEN',
-                type: GraphQLJSON,
+                type: GraphQLString, // JSON
                 resolve: resolve_globals_assembly_inputData,
             },
         } as any),
@@ -99,7 +98,7 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
 export const HelpKeys = new GraphQLObjectType({
     name: 'HelpKeys',
     fields: () => ({
-        all: { type: GraphQLJSON },
+        all: { type: GraphQLString }, // JSON
         helpKey: {
             description: 'Provides the help text for a single helpKey',
             args: {
@@ -129,15 +128,15 @@ export const GlobalsResponse = new GraphQLObjectType({
             resolve: resolve_globals_helpKeys,
         },
         colors: {
-            type: new GraphQLNonNull(GraphQLJSON),
+            type: new GraphQLNonNull(GraphQLString), // JSON
             resolve: resolve_globals_colors,
         },
         files: {
-            type: GraphQLJSON,
+            type: GraphQLString, // JSON
             resolve: resolve_globals_files,
         },
         inputData: {
-            type: GraphQLJSON,
+            type: GraphQLString, // JSON
             resolve: resolve_globals_inputData,
         },
         byAssembly: {

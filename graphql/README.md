@@ -1,10 +1,4 @@
 # Quick Start
-To begin, clone to git repository. Set up the config as follows:
-
-    cp config/config.dev.json graphql/src/config.json
-
-Edit the "DB" property of the newly created config.json to point to the SCREEN db. Then, navigate to the *graphql* folder.
-
 To setup and start the server:
 
     yarn

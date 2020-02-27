@@ -3,8 +3,7 @@ import * as CommonDb from '../db/db_common';
 import * as TrackhubsDb from '../db/db_trackhubs';
 import * as CoordUtils from '../coord_utils';
 
-const config = require('../config.json');
-const host = config.trackhubs.host;
+const host = process.env['TRACKHUB_HOST'];
 
 async function trackhub_url_info(info) {
     const assembly = info['assembly'];

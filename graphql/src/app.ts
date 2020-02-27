@@ -1,12 +1,11 @@
 import { ApolloServer } from "apollo-server-express";
 import express, { Request, Response } from "express";
-import * as bodyParser from 'body-parser';
-import schema from './schema/schema';
+import { generatedSchema } from './schema/schema';
 
 const port = process.env.PORT || 3000;
 const isPlaygroundActive = true || process.env.NODE_ENV !== "production";
 const apolloServer = new ApolloServer({
-    schema,
+    schema: generatedSchema,
     playground: isPlaygroundActive
 });
 

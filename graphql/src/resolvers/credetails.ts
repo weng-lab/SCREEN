@@ -7,9 +7,6 @@ import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';
 
-const request = require('request-promise-native');
-const { UserError } = require('graphql-errors');
-
 export type nearbyGene = {
     gene: {
         gene: string;
@@ -146,13 +143,13 @@ export async function resolve_credetails(source, args, context, info) {
     const accession: string = args.accession;
     const assembly = getAssemblyFromCre(accession);
     if (!assembly) {
-        throw new UserError('Invalid accession: ' + accession);
+        throw new Error('Invalid accession: ' + accession);
     }
 
     const ctmap = await loadCache(assembly as Assembly).ctmap();
     const res = await getCreTable(assembly, ctmap, { accessions: [accession] }, {});
     if (res.total === 0) {
-        throw new UserError('Invalid accession: ' + accession);
+        throw new Error('Invalid accession: ' + accession);
     }
 
     return res.cres[0];
@@ -161,7 +158,7 @@ export async function resolve_credetails(source, args, context, info) {
 function incrementAndCheckDetailsCount(context) {
     const count = context.detailsresolvecount || 0;
     if (count >= 5) {
-        throw new UserError(
+        throw new Error(
             'Requesting details of a ccRE is only allowed for a maximum of 5 ccREs per query, for performance.'
         );
     }
@@ -233,7 +230,7 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
         return results;
     };
     if (cre.assembly === 'mm10') {
-        throw new UserError('mm10 does not have FANTOM CAT data available.');
+        throw new Error('mm10 does not have FANTOM CAT data available.');
     }
     return {
         fantom_cat: await process('intersection'),
@@ -288,6 +285,7 @@ export async function resolve_cre_miniPeaks(source, args, context, info) {
         },
         json: true,
     };
-    const res = await request(options);
-    return res[accession].rows;
+    throw new Error('not implemented');
+    //const res = await request(options);
+    //return res[accession].rows;
 }

@@ -1,10 +1,7 @@
-import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
-import { db, pgp } from './db';
-import { loadablecache, loadCache } from './db_cache';
+import { db } from './db';
+import { loadCache } from './db_cache';
 import { ChromRange, Assembly, ctspecificdata } from '../types';
-
-const { UserError } = require('graphql-errors');
 
 const accessions = (wheres, params, j: { accessions?: string[] }) => {
     const accs: Array<string> = j['accessions'] || [];

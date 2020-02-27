@@ -7,8 +7,6 @@ import { getCtSpecificData } from './db_cre_table';
 import { nearbyGene } from '../resolvers/credetails';
 import { reduceAsKeys } from '../utils';
 
-const Raven = require('raven');
-
 const assemblies: Assembly[] = ['hg19', 'mm10'];
 
 const cacheLoader = (cacheMap: loadablecache) =>
@@ -233,7 +231,6 @@ export function prepareCache() {
         caches = undefined as any;
         globalcache = undefined as any;
         console.error('Error when loading cache.', e);
-        Raven.captureException(e);
         throw new Error(e);
     }
 }

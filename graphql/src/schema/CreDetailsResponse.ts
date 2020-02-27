@@ -3,7 +3,6 @@ import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
 import { GeneExpGene } from './GeneExpResponse';
-const GraphQLJSON = require('graphql-type-json');
 
 export const AssayValues = new GraphQLObjectType({
     name: 'AssayValues',
@@ -381,7 +380,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         miniPeaks: {
             description: 'Returns signal profile data',
-            type: GraphQLJSON,
+            type: GraphQLString, // JSON
             resolve: CreDetailsResolver.resolve_cre_miniPeaks,
         },
     }),
