@@ -246,6 +246,7 @@ export const typeDefs = gql`
             "A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}"
             compartments: [String!]
         ): GeneExpResponse
+        gwas(assembly: Assembly!): GwasResponse
     }
 
     enum Assembly {
@@ -489,6 +490,97 @@ export const typeDefs = gql`
         logFPKM: Float!
         "The internal id to identify this replicate"
         rID: String!
+    }
+
+    "GWAS data"
+    type GwasResponse {
+        studies: [GwasStudy!]!
+        study(study: String!): GwasStudy!
+        snps(search: String!): [SNP!]!
+    }
+
+    "GWAS study data"
+    type GwasStudy {
+        "Study name"
+        name: String!
+        "Study author"
+        author: String!
+        "Pubmed id"
+        pubmed: String!
+        "Study trait"
+        trait: String!
+        "Total number of LD blocks"
+        totalLDblocks: Int!
+        "Total number of LD blocks that overlap ccREs"
+        numLdBlocksOverlap: Int!
+        "Total number of ccRE that overlap"
+        numCcresOver: Int!
+        allSNPS: [LDBlockSNP!]!
+        topCellTypes: [GwasCellType!]
+        ccres("The cell type to get cres for. If null, will get cres for all cell types" cellType: String): [GwasCCRE!]!
+    }
+
+    type SNP {
+        "The SNP assembly"
+        assembly: Assembly!
+        "The SNP id"
+        id: String!
+        "The range of this SNP"
+        range: ChromRange!
+        "Data related to LD blocks that this SNP belongs to. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array."
+        ldblocks: [LDBlockSNP!]!
+        "GWAS studies containing this SNP. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array."
+        related_studies: [GwasStudy!]!
+        "Returns the ccRE that overlaps this SNP, if one exists"
+        overlapping_cCRE: cCRE
+        nearbygenes: [GeneAndDistance!]!
+    }
+
+    "A SNP in an LD Block in a study"
+    type LDBlockSNP {
+        snp: SNP!
+        r2: Float!
+        ldblock: LDBlock!
+    }
+
+    "A single LD Block from a study"
+    type LDBlock {
+        name: String!
+        study: GwasStudy!
+        leadsnp: SNP!
+        snps: [LDBlockSNP!]!
+    }
+
+    "Data about a specific cell type in a GWAS study"
+    type GwasCellType {
+        biosample_summary: String!
+        expID: String!
+        fdr: Float!
+        pval: Float!
+        ct: CellTypeInfo!
+    }
+
+    type GwasCCRE {
+        cCRE: cCRE!
+        geneid: String!
+        snps: [String!]!
+    }
+
+    type GeneAndDistance {
+        distance: Int!
+        gene: CommonGene!
+    }
+
+    "Gene info for gene expression"
+    type CommonGene {
+        assembly: Assembly!
+        "The gene name"
+        gene: String!
+        "The ensembl id and ver of the gene"
+        ensemblid_ver: String!
+        "The coordinates of this gene"
+        coords: ChromRange!
+        exons: [ChromRange!]!
     }
 `;
 
