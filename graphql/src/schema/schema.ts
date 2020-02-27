@@ -233,6 +233,10 @@ export const typeDefs = gql`
     type Query {
         "Get cCRE data"
         data(assembly: Assembly!, data: DataParameters, pagination: PaginationParameters): DataResponse
+        "Get global data"
+        globals: GlobalsResponse
+        "Search differential expression data"
+        de_search(assembly: Assembly!, gene: String!, ct1: String!, ct2: String!): DeResponse
     }
 
     enum Assembly {
@@ -290,6 +294,49 @@ export const typeDefs = gql`
         ccres: [cCRE!]!
     }
 
+    scalar Files
+    scalar InputData
+
+    type GlobalsResponse {
+        files: Files
+        inputData: InputData
+        byAssembly(assembly: Assembly!): AssemblySpecificGlobalsResponse!
+    }
+
+    scalar ChromCounts
+    scalar ChromLens
+    scalar CreHistBins
+    scalar CreBigBedsByCellType
+    scalar CreFiles
+    scalar AssemblyInputData
+
+    type AssemblySpecificGlobalsResponse {
+        "A list of all transcription factors used"
+        tfs: [String!]!
+        "A list of cell compartments"
+        cellCompartments: [String!]!
+        "Get info on all cell types used and assays used for ccRE data"
+        cellTypeInfoArr: [CellTypeInfo!]
+        "Gets the info for a specific cell type. Can use 'none' to return nothing."
+        ctinfo(cellType: String!): CellTypeInfo
+        "Returns the numbers of ccREs keyed by chromosome"
+        chromCounts: ChromCounts
+        "Returns the length of each chromosome"
+        chromLens: ChromLens
+        "Returns the numbers of ccREs in each bin of a chromosome"
+        creHistBins: CreHistBins
+        "Returns biosample types available in gene expression"
+        geBiosampleTypes: [String!]!
+        "Returns biosamples available in gene expression"
+        geBiosamples: [String!]!
+        "Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE"
+        creBigBedsByCellType: CreBigBedsByCellType
+        "Returns info on the data used to create ccREs"
+        creFiles: CreFiles
+        "Returns info on the data used for SCREEN"
+        inputData: AssemblyInputData
+    }
+
     type cCRE {
         "Assembly the ccRE is defined of"
         assembly: Assembly!
@@ -341,6 +388,50 @@ export const typeDefs = gql`
 
     type CreDetails {
         TODO: String
+    }
+
+    type CellTypeInfo {
+        name: String
+        value: String!
+        tissue: String!
+        displayName: String!
+        isde: Boolean!
+        synonyms: [String!]
+        assays: [String!]
+        cCREActivity(ccre: String!): CtSpecific
+    }
+
+    "Differential expression data"
+    type DeResponse {
+        gene: DeGene!
+        diffcCREs: [DiffcCRE!]!
+        "Null if there are no de genes"
+        nearbyGenes: [DiffGene!]
+        min: Int!
+        max: Int!
+    }
+
+    "Gene info for de"
+    type DeGene {
+        "The coordinates of this gene"
+        coords: ChromRange!
+        "The gene name"
+        gene: String!
+        "The ensembl id and ver of the gene"
+        ensemblid_ver: String!
+    }
+
+    type DiffcCRE {
+        center: Float!
+        value: Float!
+        typ: String!
+        cCRE: cCRE!
+    }
+
+    type DiffGene {
+        isde: Boolean!
+        fc: Float
+        gene: DeGene!
     }
 `;
 
