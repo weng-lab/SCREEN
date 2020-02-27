@@ -247,6 +247,10 @@ export const typeDefs = gql`
             compartments: [String!]
         ): GeneExpResponse
         gwas(assembly: Assembly!): GwasResponse
+        "Get details for a specific cCREs"
+        credetails(accession: String!): cCRE
+        "Get RAMPAGE data for a gene"
+        rampage(assembly: Assembly!, gene: String!): RampageGeneData
     }
 
     enum Assembly {
@@ -581,6 +585,30 @@ export const typeDefs = gql`
         "The coordinates of this gene"
         coords: ChromRange!
         exons: [ChromRange!]!
+    }
+
+    "Rampage data for a specific gene"
+    type RampageGeneData {
+        transcripts: [RampageTranscript!]!
+        gene: GeneExpGene!
+    }
+
+    type RampageTranscript {
+        transcript: String!
+        range: ChromRange!
+        geneinfo: String!
+        items: [RampageTranscriptData!]!
+    }
+
+    type RampageTranscriptData {
+        expid: String!
+        fileid: String!
+        biosample_term_name: String!
+        biosample_type: String!
+        biosample_summary: String!
+        tissue: String!
+        strand: String!
+        counts: Float!
     }
 `;
 
