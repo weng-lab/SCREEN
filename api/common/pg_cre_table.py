@@ -75,7 +75,7 @@ class PGcreTable(object):
 
     def _buildWhereStatement(self, j, chrom, start, stop):
         useAccs = self._accessions(j)
-        if useAccs:
+        if useAccs and False:
             self._notCtSpecific(j)
         else:
             ct = j.get("cellType", None)
