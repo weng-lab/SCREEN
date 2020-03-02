@@ -1,6 +1,7 @@
 import { Gwas } from './resolvers/gwas';
+import { dbcre } from './db/db_cre_table';
 
-export type Assembly = 'hg19' | 'mm10';
+export type Assembly = 'grch38' | 'mm10';
 export type ChromRange = { chrom: string; start: number; end: number };
 export type SNP = { assembly: Assembly; id: string; range: ChromRange };
 export type LDBlock = {
@@ -22,4 +23,9 @@ export type ctspecificdata = {
     h3k27ac_zscore: number;
     ctcf_zscore: number;
     maxz: number;
+};
+
+export type NearbyRE = {
+    distance: number;
+    cCRE: dbcre;
 };

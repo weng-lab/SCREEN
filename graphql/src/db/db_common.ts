@@ -1,14 +1,14 @@
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
-import { getCreTable } from './db_cre_table';
+import { getCreTable, dbcre } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
-import { Assembly, assaytype } from '../types';
+import { Assembly, assaytype, NearbyRE } from '../types';
 import { nearbyGene } from '../resolvers/credetails';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
     const q = `SELECT chrom, count from ${tableName}`;
-    const res = await db.many(q);
+    const res = await db.any(q);
     const ret = res.reduce((obj, e) => {
         return { ...obj, [e['chrom']]: +e['count'] };
     }, {});
@@ -18,7 +18,7 @@ export async function chromCounts(assembly) {
 export async function creHist(assembly) {
     const tableName = assembly + '_cre_bins';
     const q = `SELECT chrom, buckets, numBins, binMax from ${tableName}`;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce(
         (obj, e) => ({
             ...obj,
@@ -49,7 +49,7 @@ export async function tfHistoneDnaseList(assembly, eset) {
         SELECT distinct label
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res
         .map(r => r['label'])
         .slice()
@@ -63,7 +63,7 @@ export async function geBiosampleTypes(assembly) {
         FROM ${tableName}
         ORDER BY 1
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.map(r => r['biosample_type']);
 }
 
@@ -74,7 +74,7 @@ export async function geBiosamples(assembly) {
         FROM ${tableName}
         ORDER BY celltype
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.map(r => r['biosample']);
 }
 
@@ -85,7 +85,7 @@ export async function geneIDsToApprovedSymbol(assembly) {
         FROM ${tableName}
         ORDER BY 1
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res
         .filter(o => o.geneid !== -1)
         .reduce((obj, r) => {
@@ -99,7 +99,7 @@ export async function getHelpKeys() {
         SELECT key, title, summary
         FROM helpkeys
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce(
         (obj, r) => ({
             ...obj,
@@ -143,7 +143,7 @@ export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMe
             FROM ${table}
         `;
 
-    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod }> = await db.many(q);
+    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod }> = await db.any(q);
     const ret = {} as Record<RankMethod, Record<celltype, ctindex>>;
     for (const r of res) {
         const rank_method = r.rankmethod;
@@ -176,7 +176,7 @@ export async function makeCTStable(assembly) {
         SELECT cellTypeName, pgidx
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx'] }), {});
 }
 // TODO: add de
@@ -317,7 +317,7 @@ async function allDatasets(assembly, dectmap) {
     const q = `
         SELECT ${cols.join(',')} FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.map(makeDataset);
 }
 
@@ -388,7 +388,7 @@ async function beds(assembly, tableName): Promise<Record<string, Record<string, 
         SELECT celltype, dcc_accession, typ
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     const ret: Record<string, Record<string, string>> = {};
     for (const { celltype: ct, dcc_accession: acc, typ: typ } of res) {
         (ret[ct] = ret[ct] || {})[typ] = acc;
@@ -396,12 +396,12 @@ async function beds(assembly, tableName): Promise<Record<string, Record<string, 
     return ret;
 }
 
-export async function creBigBeds(assembly) {
+export async function ccreBigBeds(assembly) {
     const tableName = assembly + '_dcc_cres';
     return beds(assembly, tableName);
 }
 
-export async function creBeds(assembly) {
+export async function ccreBeds(assembly) {
     const tableName = assembly + '_dcc_cres_beds';
     return beds(assembly, tableName);
 }
@@ -412,7 +412,7 @@ export async function genemap(assembly) {
         SELECT ensemblid, ensemblid_ver, approved_symbol, approved_symbol as gene, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce((prev, curr) => {
         prev[curr.ensemblid] = curr;
         prev[curr.ensemblid_ver] = curr;
@@ -476,9 +476,9 @@ export async function crePos(assembly, accession) {
 async function getColsForAccession(assembly, accession, cols) {
     const tableName = assembly + '_cre_all';
     const q = `
-        SELECT ${cols.join(',')}
-        FROM ${tableName}
-        WHERE accession = $1
+SELECT ${cols.join(',')}
+FROM ${tableName}
+WHERE accession = $1
     `;
     return db.oneOrNone(q, [accession]);
 }
@@ -525,12 +525,6 @@ export async function getGenesMany(assembly, accessions: readonly string[], allO
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
     const tableTss = assembly + '_tss_info';
-    // accession => index
-    // Need to ensure that we return data in the same order that we were asked
-    const requests = accessions.reduce((prev, accession, index) => {
-        prev[accession] = index;
-        return prev;
-    }, {} as Record<string, number>);
     const q = `
 SELECT g.accession, gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
 FROM (
@@ -568,11 +562,8 @@ ON gi.ensemblid_ver = tss.ensemblid_ver
         });
         return prev;
     }, {} as Record<string, nearbyGene[]>);
-    return Object.keys(map).reduce((prev, accession) => {
-        const index = requests[accession];
-        prev[index] = map[accession];
-        return prev;
-    }, Array.from(Array(requests.length)) as nearbyGene[][]);
+    console.log(map);
+    return accessions.map(accession => map[accession] || new Error(`BUG: nearby genes missing for ${accession}`));
 }
 
 export async function getTadOfCRE(assembly, accession) {
@@ -589,16 +580,16 @@ export async function getTadOfCRE(assembly, accession) {
     return db.oneOrNone(gettadboundaries, [accession]);
 }
 
-export async function cresInTad(assembly, accession, chrom, start, end, tadInfo) {
+export async function cresInTad(assembly, accession, chrom, start, end, tadInfo): Promise<NearbyRE[]> {
     const ctmap = loadCache(assembly).ctmap();
     const cres = await getCreTable(assembly, ctmap, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
-    return cres.cres
+    return cres.ccres
         .map(cre => ({
             distance: Math.min(Math.abs(end - cre.end), Math.abs(start - cre.start)),
-            ccRE: cre,
+            cCRE: cre,
         }))
         .filter(cre => cre.distance < 100000)
-        .filter(cre => cre.ccRE.accession !== accession)
+        .filter(cre => cre.cCRE.accession !== accession)
         .sort((a, b) => a.distance - b.distance);
 }
 
@@ -613,7 +604,7 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
     return db.any(q, [geneids]);
 }
 
-export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
+export async function distToNearbyCREs(assembly, accession, coord, halfWindow): Promise<NearbyRE[]> {
     const expanded = CoordUtils.expanded(coord, halfWindow);
     const ctmap = await loadCache(assembly).ctmap();
     const cres = await getCreTable(
@@ -622,10 +613,10 @@ export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
         { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
         {}
     );
-    return cres.cres
+    return cres.ccres
         .filter(cre => cre.accession !== accession)
         .map(cre => ({
-            ccRE: cre,
+            cCRE: cre,
             distance: Math.min(Math.abs(coord.end - cre.end), Math.abs(coord.start - cre.start)),
         }))
         .sort((a, b) => a.distance - b.distance);
@@ -657,7 +648,7 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
         .sort((a, b) => a.distance - b.distance);
 }
 
-export async function peakIntersectCount(assembly, accession, totals, eset) {
+export async function peakIntersectCount(assembly, accession, totals, eset): Promise<{ tf: any[]; histone: any[] }> {
     const tableName = assembly + '_' + _intersections_tablename(eset);
     const q = `
         SELECT tf, histone
@@ -666,19 +657,19 @@ export async function peakIntersectCount(assembly, accession, totals, eset) {
     `;
     const res = await db.oneOrNone(q, [accession]);
     if (!res) {
-        return { tfs: [], histone: [] };
+        return { tf: [], histone: [] };
     }
-    const tfs = Object.keys(res['tf']).map(k => ({
+    const tf = Object.keys(res['tf']).map(k => ({
         name: k,
         n: Array.from(new Set(res['tf'][k])).length,
         total: totals[k] || -1,
     }));
-    const histones = Object.keys(res['histone']).map(k => ({
+    const histone = Object.keys(res['histone']).map(k => ({
         name: k,
         n: Array.from(new Set(res['histone'][k])).length,
         total: totals[k] || -1,
     }));
-    return { tf: tfs, histone: histones };
+    return { tf, histone };
 }
 
 export async function rampageByGene(assembly, ensemblid_ver) {
@@ -785,12 +776,12 @@ export async function tfTargetExps(assembly, accession, target, eset) {
     return targetExps(assembly, accession, target, eset, 'tf');
 }
 
-export async function tfHistCounts(assembly, eset) {
+export async function tfHistCounts(assembly, eset: 'peak' | 'cistrome') {
     const tableName = assembly + '_' + eset + 'intersectionsmetadata';
     const q = `
-        SELECT COUNT(label), label
-        FROM ${tableName}
-        GROUP BY label
+SELECT COUNT(label), label
+FROM ${tableName}
+GROUP BY label
     `;
     const rows = await db.any(q);
     return rows.reduce((obj, r) => ({ ...obj, [r['label']]: +r['count'] }), {});
@@ -840,7 +831,7 @@ FROM ${tableName}
 WHERE feature = 'exon'
 AND transcript_id = (
     SELECT transcript_id
-    FROM hg19_gene_details
+    FROM grch38_gene_details
     WHERE gene_id = $1
     AND feature = 'exon'
     LIMIT 1

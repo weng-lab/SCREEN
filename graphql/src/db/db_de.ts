@@ -8,7 +8,7 @@ export async function getCtMap(assembly) {
     const q = `
         SELECT id, deCtName FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     const ctsToId = res.reduce((obj, r) => ({ ...obj, [r['dectname']]: r['id'] }), {});
     return ctsToId;
 }
@@ -45,7 +45,7 @@ export async function genesInRegion(assembly, chrom, start, stop) {
         ORDER BY start
     `;
 
-    return db.many(q, [chrom, start, stop]);
+    return db.any(q, [chrom, start, stop]);
 }
 
 export async function nearbyCREs(
@@ -53,9 +53,9 @@ export async function nearbyCREs(
     range,
     cols,
     isProximalOrDistal
-): Promise<Array<dbcre & { zscore_1: number; zscore_2: number }>> {
+): Promise<(dbcre & { zscore_1: number; zscore_2: number })[]> {
     const ctmap = await loadCache(assembly).ctmap();
     const wheres = [`isProximal is ${isProximalOrDistal}`];
     const cres = await getCreTable(assembly, ctmap, { range }, {}, { fields: cols, wheres });
-    return cres.cres as any[];
+    return cres.ccres as any;
 }

@@ -17,7 +17,7 @@ export async function orthologs(assembly, accession) {
     const otherspecies = assembly != 'mm10' ? 'mouse' : 'human';
     const tablename = 'mm10_liftover';
     const q = `
-        SELECT jsonb_build_object('chrom', chrom, 'start', start, 'end', stop) as hg19range, ${otherspecies}Accession as accession, overlap
+        SELECT jsonb_build_object('chrom', chrom, 'start', start, 'end', stop) as grch38range, ${otherspecies}Accession as accession, overlap
         FROM ${tablename}
         WHERE ${currentspecies}Accession = $1
     `;

@@ -7,7 +7,7 @@ import { getCtSpecificData } from './db_cre_table';
 import { nearbyGene } from '../resolvers/credetails';
 import { reduceAsKeys } from '../utils';
 
-const assemblies: Assembly[] = ['hg19', 'mm10'];
+const assemblies: Assembly[] = ['grch38', 'mm10'];
 
 const cacheLoader = (cacheMap: loadablecache) =>
     new DataLoader<keyof cache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
@@ -27,7 +27,7 @@ export const nearbyAllGenesLoaders = reduceAsKeys(assemblies, nearbyAllGenesLoad
 
 async function indexFilesTab(assembly) {
     const datasets = await Common.datasets(assembly);
-    const creBeds = await Common.creBeds(assembly);
+    const creBeds = await Common.ccreBeds(assembly);
     const ret = {
         agnostic: [] as any[],
         specific: [] as any[],
@@ -44,7 +44,7 @@ async function indexFilesTab(assembly) {
             celltypedesc: celltypedesc,
             tissue: tissue,
             assembly: assembly,
-            '5group': 'NA',
+            '7group': 'NA',
             '9state-H3K27ac': 'NA',
             '9state-H3K4me3': 'NA',
             '9state-CTCF': 'NA',
@@ -81,7 +81,7 @@ export type cache = {
     chromCounts: Record<string, number>;
     creHist: any;
     tf_list: any;
-    datasets: any;
+    datasets: { globalCellTypeInfoArr: { name: string; value: string }[]; byCellTypeValue: Record<string, string> };
     rankMethodToCellTypes: any;
     rankMethodToIDxToCellType: any;
     ensemblToGene: Record<
@@ -105,7 +105,7 @@ export type cache = {
     geBiosamples: any;
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
-    creBigBeds: any;
+    ccreBeds: any;
     ctmap: Record<assaytype, Record<Common.celltype, Common.ctindex>>;
     ctsTable: any;
     biosamples: Record<string, Biosample>;
@@ -144,7 +144,7 @@ function getCacheMap(assembly): loadablecache {
                 });
             }),
 
-        creBigBeds: () => Common.creBigBeds(assembly),
+        ccreBeds: () => Common.ccreBeds(assembly),
 
         ctmap: () => Common.makeCtMap(assembly),
         ctsTable: () => Common.makeCTStable(assembly),
@@ -153,7 +153,7 @@ function getCacheMap(assembly): loadablecache {
 
         de_ctidmap: assembly === 'mm10' ? () => De.getCtMap(assembly) : () => Promise.resolve(undefined),
 
-        gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve([]),
+        gwas_studies: assembly === 'grch38' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve([]),
     };
 }
 
@@ -175,22 +175,22 @@ function getGlobalCacheMap(): loadableglobalcache {
             }),
         files: () =>
             new Promise(async resolve => {
-                const hg19cache = loadCache('hg19');
+                const GRCh38cache = loadCache('grch38');
                 const mm10cache = loadCache('mm10');
-                const hg19filelist = await hg19cache.filesList();
+                const GRCh38filelist = await GRCh38cache.filesList();
                 const mm10filelist = await mm10cache.filesList();
                 resolve({
-                    agnostic: [].concat(hg19filelist.agnostic).concat(mm10filelist.agnostic),
-                    specific: [].concat(hg19filelist.specific).concat(mm10filelist.specific),
+                    agnostic: [].concat(GRCh38filelist.agnostic).concat(mm10filelist.agnostic),
+                    specific: [].concat(GRCh38filelist.specific).concat(mm10filelist.specific),
                 });
             }),
         inputData: () =>
             new Promise(async resolve => {
-                const hg19cache = loadCache('hg19');
+                const GRCh38cache = loadCache('grch38');
                 const mm10cache = loadCache('mm10');
-                const hg19inputData = await hg19cache.inputData();
+                const GRCh38inputData = await GRCh38cache.inputData();
                 const mm10inputData = await mm10cache.inputData();
-                resolve([].concat(hg19inputData).concat(mm10inputData));
+                resolve([].concat(GRCh38inputData).concat(mm10inputData));
             }),
     };
 }
@@ -212,13 +212,13 @@ export function prepareCache() {
         return;
     }
     try {
-        const hg19map = getCacheMap('hg19');
+        const GRCh38map = getCacheMap('grch38');
         const mm10map = getCacheMap('mm10');
-        const hg19 = getCache<loadablecache>(Object.keys(hg19map) as (keyof cache)[], cacheLoader(hg19map));
+        const grch38 = getCache<loadablecache>(Object.keys(GRCh38map) as (keyof cache)[], cacheLoader(GRCh38map));
         const mm10 = getCache<loadablecache>(Object.keys(mm10map) as (keyof cache)[], cacheLoader(mm10map));
         caches = {
-            hg19: hg19,
-            mm10: mm10,
+            grch38,
+            mm10,
         };
         const globalmap = getGlobalCacheMap();
         globalcache = getCache<loadableglobalcache>(
@@ -236,7 +236,7 @@ export function prepareCache() {
 }
 
 export function loadCache(assembly: Assembly): loadablecache {
-    return caches[assembly];
+    return caches[assembly.toLowerCase()];
 }
 
 export function loadGlobalCache(): loadableglobalcache {

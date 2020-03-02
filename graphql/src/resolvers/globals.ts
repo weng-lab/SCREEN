@@ -12,7 +12,7 @@ export const resolve_globals_files = () => loadGlobalCache().files();
 export const resolve_globals_inputData = () => loadGlobalCache().inputData();
 
 export const resolve_globals_assembly: GraphQLFieldResolver<any, any> = (source, args) => {
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
     return {
         assembly,
     };
@@ -37,7 +37,7 @@ export const resolve_globals_assembly_geBiosampleTypes = source => loadCache(sou
 
 export const resolve_globals_assembly_geBiosamples = source => loadCache(source.assembly).geBiosamples();
 
-export const resolve_globals_assembly_creBigBedsByCellType = source => loadCache(source.assembly).creBigBeds();
+export const resolve_globals_assembly_cCREBedsByCellType = source => loadCache(source.assembly).ccreBeds();
 
 export const resolve_globals_assembly_creFiles = source => loadCache(source.assembly).filesList();
 

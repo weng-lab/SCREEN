@@ -1,19 +1,17 @@
-import { getCreTable } from '../db/db_cre_table';
+import { GraphQLFieldResolver } from 'graphql';
+import { getCreTable, dbcre } from '../db/db_cre_table';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { Assembly } from '../types';
 import { CREDetails } from './credetails';
 
-async function cre_table(data, assembly, pagination) {
-    const ctmap = await loadCache(assembly).ctmap();
-    const results = await getCreTable(assembly, ctmap, data, pagination);
-    return results;
-}
-
-export async function resolve_data(source, inargs, context, info) {
-    const assembly = inargs.assembly;
-    const data = inargs.data ? inargs.data : {};
-    const limit = (inargs.pagination && inargs.pagination.limit) || 1000;
-    const offset = (inargs.pagination && inargs.pagination.offset) || 0;
+export const resolve_data: GraphQLFieldResolver<{}, {}, { assembly: string; data: any; pagination: any }> = async (
+    _,
+    args
+): Promise<{ ccres: dbcre[]; total: number }> => {
+    const assembly = args.assembly.toLowerCase() as Assembly;
+    const data = args.data ? args.data : {};
+    const limit = (args.pagination && args.pagination.limit) || 1000;
+    const offset = (args.pagination && args.pagination.offset) || 0;
     if (limit > 1000) {
         throw new Error('Cannot have a limit greater than 1000 in pagination parameters.');
     }
@@ -23,11 +21,13 @@ export async function resolve_data(source, inargs, context, info) {
     if (limit < 0 || offset < 0) {
         throw new Error('Offset and limit must both be greater than or equal to 0.');
     }
-    const results = cre_table(data, assembly, { ...(inargs.pagination || {}), limit, offset });
-    return results;
-}
 
-export async function resolve_data_nearbygenes(source, args, context) {
+    const ctmap = await loadCache(assembly).ctmap();
+    const results = await getCreTable(assembly, ctmap, data, { ...(args.pagination || {}), limit, offset });
+    return results;
+};
+
+export async function resolve_data_nearbygenes(source: dbcre) {
     const assembly: Assembly = source.assembly;
     const accession: string = source.accession;
     const cre = new CREDetails(assembly, accession);
@@ -50,7 +50,7 @@ export function resolve_data_range(source) {
 }
 
 export function resolve_data_ctspecific(source, args) {
-    const assembly: Assembly = source.assembly;
+    const assembly: Assembly = source.assembly.toLowerCase();
     const accession: string = source.accession;
     const ct: string = args.ct;
     return ccRECtspecificLoaders[assembly].load(`${accession}::${ct}`);

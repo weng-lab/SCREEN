@@ -11,7 +11,6 @@ import {
 import {
     resolve_globals,
     resolve_globals_inputData,
-    resolve_globals_files,
     resolve_globals_assembly,
     resolve_globals_assembly_tfs,
     resolve_globals_assembly_cellCompartments,
@@ -22,8 +21,6 @@ import {
     resolve_globals_assembly_creHistBins,
     resolve_globals_assembly_geBiosampleTypes,
     resolve_globals_assembly_geBiosamples,
-    resolve_globals_assembly_creBigBedsByCellType,
-    resolve_globals_assembly_creFiles,
     resolve_globals_assembly_inputData,
 } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
@@ -44,13 +41,11 @@ import {
     resolve_details,
     resolve_cre_topTissues,
     resolve_cre_nearbyGenomic,
-    resolve_cre_fantomCat,
     resolve_cre_ortholog,
     resolve_cre_tfIntersection,
     resolve_cre_cistromeIntersection,
     resolve_cre_linkedGenes,
     resolve_cre_target_data,
-    resolve_cre_miniPeaks,
     resolve_cre_nearbyGenomic_nearbyGenes,
     resolve_cre_nearbyGenomic_genesInTad,
     resolve_cre_nearbyGenomic_re_tads,
@@ -69,6 +64,60 @@ import {
     resolve_gwas_ldblock_leadsnp,
 } from '../resolvers/snp';
 import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
+
+// For when these come back
+/*
+    scalar Minipeaks
+
+    type cCreDetailsResponse {
+        "Returns intersecting FANTOM CAT RNAs"
+        fantom_cat: FantomCat!
+        "Returns signal profile data"
+        miniPeaks: Minipeaks
+    }
+
+    type FantomCat {
+        fantom_cat: [FantomCatData!]!
+        fantom_cat_twok: [FantomCatData!]!
+    }
+
+    type FantomCatData {
+        id: Int!
+        range: ChromRange!
+        geneid: String!
+        genename: String!
+        aliases: String!
+        geneclass: String!
+        dhssupport: String!
+        genecategory: String!
+        tirconservation: Float
+        exonconservation: Float
+        traitdfr: Float
+        eqtlcoexpr: Float
+        dynamicexpr: Float
+        other_names: String!
+    }
+
+    enum IntersectionSource {
+        CISTROME
+    }
+
+    scalar Files
+    scalar cCREBedsByCellType
+    scalar cCREFiles
+
+    type GlobalsResponse {
+        files: Files
+    }
+
+    type AssemblySpecificGlobalsResponse {
+        "Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE"
+        cCREBedsByCellType: cCREBedsByCellType
+        "Returns info on the data used to create ccREs"
+        cCREFiles: cCREFiles
+    }
+
+*/
 
 export const typeDefs = gql`
     type Query {
@@ -207,16 +256,13 @@ export const typeDefs = gql`
     scalar InputData
 
     type GlobalsResponse {
-        files: Files
         inputData: InputData
         byAssembly(assembly: Assembly!): AssemblySpecificGlobalsResponse!
     }
 
     scalar ChromCounts
     scalar ChromLens
-    scalar CreHistBins
-    scalar CreBigBedsByCellType
-    scalar CreFiles
+    scalar cCREHistBins
     scalar AssemblyInputData
 
     type AssemblySpecificGlobalsResponse {
@@ -233,15 +279,11 @@ export const typeDefs = gql`
         "Returns the length of each chromosome"
         chromLens: ChromLens
         "Returns the numbers of ccREs in each bin of a chromosome"
-        creHistBins: CreHistBins
+        cCREHistBins: cCREHistBins
         "Returns biosample types available in gene expression"
         geBiosampleTypes: [String!]!
         "Returns biosamples available in gene expression"
         geBiosamples: [String!]!
-        "Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE"
-        creBigBedsByCellType: CreBigBedsByCellType
-        "Returns info on the data used to create ccREs"
-        creFiles: CreFiles
         "Returns info on the data used for SCREEN"
         inputData: AssemblyInputData
     }
@@ -268,7 +310,7 @@ export const typeDefs = gql`
         "Is ccRE +/- 2kb of TSS"
         isproximal: Boolean!
         "celltype-specific zscores"
-        ctspecifc(ct: String!): CtSpecific
+        ctspecific(ct: String!): CtSpecific
         "Nearby genes"
         nearbygenes: Genes!
         "Get details about this ccRE"
@@ -321,16 +363,14 @@ export const typeDefs = gql`
         pc: Boolean!
     }
 
-    scalar Minipeaks
-
     "Get details of various experiments related to this cCRE."
     type cCreDetailsResponse {
         "Returns celltype-specific experiment data"
         topTissues: [CTAssayData!]!
         "Returns nearby genomic elements"
         nearbyGenomic: NearbyGenomic!
-        "Returns intersecting FANTOM CAT RNAs"
-        fantom_cat: FantomCat!
+        #"Returns intersecting FANTOM CAT RNAs"
+        #fantom_cat: FantomCat!
         "Returns orthologous cCREs"
         ortholog: [OrthologouscCRE!]!
         "Returns intersection counts for transcription factor and histone modification ChIP-seq data"
@@ -345,8 +385,6 @@ export const typeDefs = gql`
             target_type: ChIPSeqTargetType!
             eset: IntersectionSource!
         ): [ChIPSeqIntersectionData!]!
-        "Returns signal profile data"
-        miniPeaks: Minipeaks
     }
 
     "The celltype-specific z-scores for this ccRE"
@@ -379,28 +417,6 @@ export const typeDefs = gql`
         distance: Int!
         "The SNP"
         snp: SNP!
-    }
-
-    type FantomCat {
-        fantom_cat: [FantomCatData!]!
-        fantom_cat_twok: [FantomCatData!]!
-    }
-
-    type FantomCatData {
-        id: Int!
-        range: ChromRange!
-        geneid: String!
-        genename: String!
-        aliases: String!
-        geneclass: String!
-        dhssupport: String!
-        genecategory: String!
-        tirconservation: Float
-        exonconservation: Float
-        traitdfr: Float
-        eqtlcoexpr: Float
-        dynamicexpr: Float
-        other_names: String!
     }
 
     type OrthologouscCRE {
@@ -568,8 +584,8 @@ export const typeDefs = gql`
         "Total number of LD blocks that overlap ccREs"
         numLdBlocksOverlap: Int!
         "Total number of ccRE that overlap"
-        numCcresOver: Int!
-        allSNPS: [LDBlockSNP!]!
+        numcCREsOverlap: Int!
+        allSNPs: [LDBlockSNP!]!
         topCellTypes: [GwasCellType!]
         ccres("The cell type to get cres for. If null, will get cres for all cell types" cellType: String): [GwasCCRE!]!
     }
@@ -676,7 +692,15 @@ export const typeDefs = gql`
     }
 `;
 
-export const resolvers: GraphQLResolverMap = {
+export const resolvers = ({
+    Assembly: {
+        GRCh38: 'grch38',
+        mm10: 'mm10',
+    },
+    IntersectionSource: {
+        ENCODE: 'peak',
+        CISTROME: 'cistrome',
+    },
     Query: {
         data: resolve_data,
         globals: resolve_globals,
@@ -689,7 +713,7 @@ export const resolvers: GraphQLResolverMap = {
         snps: resolve_snps,
     },
     GlobalsResponse: {
-        files: resolve_globals_files,
+        //files: resolve_globals_files,
         inputData: resolve_globals_inputData,
         byAssembly: resolve_globals_assembly,
     },
@@ -700,11 +724,11 @@ export const resolvers: GraphQLResolverMap = {
         ctinfo: resolve_ctinfo,
         chromCounts: resolve_globals_assembly_chromCounts,
         chromLens: resolve_globals_assembly_chromLens,
-        creHistBins: resolve_globals_assembly_creHistBins,
+        cCREHistBins: resolve_globals_assembly_creHistBins,
         geBiosampleTypes: resolve_globals_assembly_geBiosampleTypes,
         geBiosamples: resolve_globals_assembly_geBiosamples,
-        creBigBedsByCellType: resolve_globals_assembly_creBigBedsByCellType,
-        creFiles: resolve_globals_assembly_creFiles,
+        //cCREBedsByCellType: resolve_globals_assembly_cCREBedsByCellType,
+        //cCREFiles: resolve_globals_assembly_creFiles,
         inputData: resolve_globals_assembly_inputData,
     },
     cCRE: {
@@ -716,13 +740,13 @@ export const resolvers: GraphQLResolverMap = {
     cCreDetailsResponse: {
         topTissues: resolve_cre_topTissues,
         nearbyGenomic: resolve_cre_nearbyGenomic,
-        fantom_cat: resolve_cre_fantomCat,
+        //fantom_cat: resolve_cre_fantomCat,
         ortholog: resolve_cre_ortholog,
         tfIntersection: resolve_cre_tfIntersection,
         cistromeIntersection: resolve_cre_cistromeIntersection,
         linkedGenes: resolve_cre_linkedGenes,
         ccre_target_data: resolve_cre_target_data,
-        miniPeaks: resolve_cre_miniPeaks,
+        //miniPeaks: resolve_cre_miniPeaks,
     },
     CellTypeInfo: {
         cCREActivity: resolve_celltypeinfo_ccREActivity,
@@ -734,7 +758,7 @@ export const resolvers: GraphQLResolverMap = {
     },
     GwasStudy: {
         numLdBlocksOverlap: resolve_gwas_study_numLdBlocksOverlap,
-        numCresOverlap: resolve_gwas_study_numCresOverlap,
+        numcCREsOverlap: resolve_gwas_study_numCresOverlap,
         allSNPs: resolve_gwas_study_allSNPs,
         topCellTypes: resolve_gwas_study_topCellTypes,
         ccres: resolve_gwas_study_cres,
@@ -759,6 +783,6 @@ export const resolvers: GraphQLResolverMap = {
         nearby_res: resolve_cre_nearbyGenomic_nearbyCREs,
         overlaping_snps: resolve_cre_nearbyGenomic_snps,
     },
-};
+} as any) as GraphQLResolverMap;
 
-export const generatedSchema = buildFederatedSchema([{ typeDefs }]);
+export const generatedSchema = buildFederatedSchema([{ typeDefs, resolvers }]);

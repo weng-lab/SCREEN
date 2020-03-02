@@ -1,8 +1,6 @@
 import * as DbCommon from '../db/db_common';
-import { getCreTable } from '../db/db_cre_table';
-import { natsort, getAssemblyFromCre } from '../utils';
-import HelperGrouper from '../helpergrouper';
-import { getByGene } from './rampage';
+import { getCreTable, dbcre } from '../db/db_cre_table';
+import { getAssemblyFromCre } from '../utils';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';
@@ -53,9 +51,9 @@ export class CREDetails {
         const c = loadCache(this.assembly);
         const ctmap = await c.ctmap();
         const datasets = await c.datasets();
-        const coord = await this.coord();
         // ['h3k4me3', 'h3k27ac', 'dnase', 'ctcf']
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
+        console.log(ranks);
         const data = datasets.globalCellTypeInfoArr.map(ct => {
             const dnase = CREDetails.getCtData(ct.value, ctmap, 'dnase', ranks);
             const h3k4me3 = CREDetails.getCtData(ct.value, ctmap, 'h3k4me3', ranks);
@@ -125,11 +123,11 @@ export class CREDetails {
         return DbCommon.intersectingSnps(this.assembly, this.accession, await this.coord(), halfWindow);
     }
 
-    async distToNearbyCREs(halfWindow) {
+    async distToNearbyCREs(halfWindow): Promise<{ distance: number; cCRE: dbcre }[]> {
         return DbCommon.distToNearbyCREs(this.assembly, this.accession, await this.coord(), halfWindow);
     }
 
-    async peakIntersectCount(eset) {
+    async peakIntersectCount(eset: 'peak' | 'cistrome') {
         const tfHistCounts = await loadCache(this.assembly).tfHistCounts();
         return DbCommon.peakIntersectCount(this.assembly, this.accession, tfHistCounts[eset], eset);
     }
@@ -151,15 +149,16 @@ export async function resolve_credetails(source, args, context, info) {
     if (res.total === 0) {
         throw new Error('Invalid accession: ' + accession);
     }
+    console.log(res);
 
-    return res.cres[0];
+    return res.ccres[0];
 }
 
 function incrementAndCheckDetailsCount(context) {
     const count = context.detailsresolvecount || 0;
     if (count >= 5) {
         throw new Error(
-            'Requesting details of a ccRE is only allowed for a maximum of 5 ccREs per query, for performance.'
+            'Requesting details of a cCRE is only allowed for a maximum of 5 cCREs per query, for performance.'
         );
     }
     context.detailsresolvecount = count + 1;
@@ -173,7 +172,7 @@ export async function resolve_details(source, args, context, info) {
     return { details };
 }
 
-export async function resolve_cre_topTissues(source, args, context, info) {
+export async function resolve_cre_topTissues(source: dbcre & { details: CREDetails }) {
     const cre: CREDetails = source.details;
     return cre.topTissues();
 }
@@ -192,7 +191,7 @@ export async function resolve_cre_nearbyGenomic_snps(source, args) {
     return cre.intersectingSnps(10000); // 10 KB
 }
 
-export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args) {
+export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args): Promise<{ distance: number; cCRE: dbcre }[]> {
     const cre: CREDetails = source.cre;
     return cre.distToNearbyCREs(1000000); // 1 MB
 }
@@ -238,23 +237,26 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
     };
 }
 
-export async function resolve_cre_ortholog(source, args, context, info) {
+export async function resolve_cre_ortholog(source) {
     const cre: CREDetails = source.details;
     const ortholog = await orthologs(cre.assembly, cre.accession);
     return ortholog;
 }
 
-export async function resolve_cre_tfIntersection(source, args, context, info) {
+export async function resolve_cre_tfIntersection(source: dbcre & { details: CREDetails }) {
     const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('peak');
 }
 
-export async function resolve_cre_cistromeIntersection(source, args, context, info) {
+export async function resolve_cre_cistromeIntersection(source: dbcre & { details: CREDetails }) {
+    if (source.assembly !== 'mm10') {
+        throw new Error('Cistrome instersection only available on mm10.');
+    }
     const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('cistrome');
 }
 
-export async function resolve_cre_linkedGenes(source, args, context, info) {
+export async function resolve_cre_linkedGenes(source) {
     const cre: CREDetails = source.details;
     if ('mm10' === cre.assembly) {
         return [];

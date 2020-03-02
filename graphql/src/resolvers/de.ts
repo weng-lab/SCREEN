@@ -157,7 +157,10 @@ async function de(assembly, gene, ct1, ct2) {
 }
 
 export const resolve_de: GraphQLFieldResolver<any, any> = (source, args, context) => {
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
+    if (assembly !== 'mm10') {
+        throw new Error('Differential expression data only available for mm10 currently.');
+    }
     const gene = args.gene;
     const ct1 = args.ct1;
     const ct2 = args.ct2;

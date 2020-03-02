@@ -129,7 +129,7 @@ export const resolve_gwas_snps: GraphQLFieldResolver<any, any> = async (source, 
 };
 
 export const resolve_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
     const g = new Gwas(assembly);
     return g.awaitStudies().then(r => ({ gwas_obj: g }));
 };

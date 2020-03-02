@@ -1,7 +1,7 @@
 import { db } from './db';
 
 export async function topGenes(assembly, biosample, normalized) {
-    const tableNameData = assembly + (normalized ? '_rnaseq_expression_norm' : '_rnaseq_expression_unnorm');
+    const tableNameData = assembly + (normalized ? '_rnaseq_expression_norm' : '_rnaseq_expression');
     const tableNameMetadata = assembly + '_rnaseq_metadata';
 
     const q = `

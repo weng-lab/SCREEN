@@ -1,9 +1,10 @@
 import { chroms } from './constants';
+import { Assembly } from './types';
 
 const starts = {
     mm10: 'em10e',
     hg19: 'eh37e',
-    hg38: 'eh38e',
+    GRCh38: 'eh38e',
 };
 export const isaccession = (s: string) => {
     if (s.length != 12) {
@@ -23,7 +24,7 @@ export const natsort = array => {
     return array.slice().sort(natsorter);
 };
 
-const assemblies = ['hg19', 'mm10'];
+const assemblies = ['GRCh38', 'mm10'];
 export const checkAssembly = j => {
     const assembly = j['assembly'];
     if (!assembly) {
@@ -35,16 +36,14 @@ export const checkAssembly = j => {
     return assembly;
 };
 
-export const checkCreAssembly = (assembly, accession) => accession.startsWith(starts[assembly]);
+export const checkCreAssembly = (assembly: Assembly, accession: string) => accession.toLowerCase().startsWith(starts[assembly]);
 
-export const getAssemblyFromCre = accession => {
+export const getAssemblyFromCre = (accession): Assembly | undefined => {
     const cre = accession.toLowerCase();
-    if (cre.startsWith('eh37e')) {
-        return 'hg19';
-    } else if (cre.startsWith('em10e')) {
+    if (cre.startsWith('em10e')) {
         return 'mm10';
     } else if (cre.startsWith('eh38e')) {
-        return 'hg38';
+        return 'grch38';
     }
     return undefined;
 };

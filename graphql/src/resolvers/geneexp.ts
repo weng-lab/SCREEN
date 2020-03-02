@@ -56,7 +56,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
 }
 
 export const resolve_geneexp: GraphQLFieldResolver<any, any> = (source, args, context) => {
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
     const gene = args.gene;
     const biosample_types = args.biosample_types;
     const compartments = args.compartments;

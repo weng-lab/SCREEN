@@ -227,7 +227,7 @@ query suggestions($suggestionSearch: String!, $assemblies: [Assembly]){
 }
 
 query geneexp_search {
-  geneexp_search(assembly: hg19, gene: "GAPDH", biosample_types: ["tissue"], compartments: ["cell"]) {
+  geneexp_search(assembly: GRCh38, gene: "GAPDH", biosample_types: ["tissue"], compartments: ["cell"]) {
     coords {
       chrom
       start
@@ -243,7 +243,7 @@ query geneexp_search {
 }
 
 query gwas {
-  gwas(assembly: hg19){
+  gwas(assembly: GRCh38){
 		gwas,
     study(study: "Lesch_18839057_ADHD"),
     cres(study: "Lesch_18839057_ADHD", cellType: "angular_gyrus_female_adult_75_years")
@@ -301,7 +301,7 @@ fragment allcredata on Data {
 }
     
 query gb($gbrange: InputChromRange!) {
-  gb(assembly: hg19) {
+  gb(assembly: GRCh38) {
     trackhubs,
     genetable(range: $gbrange)
   }
@@ -334,7 +334,7 @@ query globals($assembly: Assembly!) {
 Query Variables (below Document):
 ```
 {
-  "assembly": "hg19",
+  "assembly": "GRCh38",
   "uuid": "59060ce0-6462-4498-990a-4e0e48844163",
   "dataRange": {
     "range": {
@@ -373,7 +373,7 @@ Query Variables (below Document):
   },
   "info": {
     "accession": "EH37E1090133",
-    "assembly": "hg19",
+    "assembly": "GRCh38",
     "cellTypes": [
       "A549"
     ],

@@ -224,7 +224,7 @@ async function creTableEstimate(table, where, params) {
 }
 
 export type dbcre = {
-    assembly: string;
+    assembly: Assembly;
     chrom: string;
     start: number;
     end: number;
@@ -251,7 +251,7 @@ export async function getCreTable(
     j: { ctexps?: any; accessions?: string[]; range?: Partial<ChromRange> },
     pagination,
     extra?: { wheres: string[]; fields: string[] }
-): Promise<{ total: number; cres: dbcre[] }> {
+): Promise<{ total: number; ccres: dbcre[] }> {
     const chrom = j.range && checkChrom(assembly, j.range.chrom);
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
@@ -269,12 +269,12 @@ export async function getCreTable(
     const offset = pagination.offset;
     const limit = pagination.limit;
     const query = `
-        SELECT ${fields}
-        FROM ${table} AS cre
-        ${where}
-        ORDER BY ${orderBy} DESC
-        ${offset && offset !== 0 ? `OFFSET ${offset}` : ''}
-        ${!!limit ? `LIMIT ${limit}` : ``}
+SELECT ${fields}
+FROM ${table} AS cre
+${where}
+ORDER BY ${orderBy} DESC
+${offset && offset !== 0 ? `OFFSET ${offset}` : ''}
+${!!limit ? `LIMIT ${limit}` : ``}
     `;
 
     const res = await db.any(query, params);
@@ -283,7 +283,7 @@ export async function getCreTable(
         // reached query limit
         total = await creTableEstimate(table, where, params);
     }
-    return { cres: res, total: total };
+    return { ccres: res, total: total };
 }
 
 export async function getCtSpecificData(assembly: Assembly, requested: readonly string[]): Promise<ctspecificdata[]> {
