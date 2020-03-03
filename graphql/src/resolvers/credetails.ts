@@ -1,6 +1,6 @@
 import * as DbCommon from '../db/db_common';
 import { getCreTable, dbcre } from '../db/db_cre_table';
-import { getAssemblyFromCre } from '../utils';
+import { getAssemblyFromCre, assemblies } from '../utils';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';
@@ -149,7 +149,6 @@ export async function resolve_credetails(source, args, context, info) {
     if (res.total === 0) {
         throw new Error('Invalid accession: ' + accession);
     }
-    console.log(res);
 
     return res.ccres[0];
 }
@@ -237,10 +236,28 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
     };
 }
 
-export async function resolve_cre_ortholog(source) {
+export async function resolve_cre_ortholog(
+    source: dbcre & { details: CREDetails },
+    args: { assembly: string }
+): Promise<
+    { assembly: string; accession: string; range: { chrom: string; start: number; end: number } }[] | undefined
+> {
     const cre: CREDetails = source.details;
-    const ortholog = await orthologs(cre.assembly, cre.accession);
-    return ortholog;
+    const assembly = args.assembly;
+    return orthologs(cre.assembly, cre.accession, assembly);
+}
+
+export async function resolve_cre_ortholog_cCRE(source: {
+    assembly: string;
+    accession: string;
+    range: { chrom: string; start: number; end: number };
+}) {
+    if (!assemblies.includes(source.assembly)) {
+        return undefined;
+    }
+    const ctmap = await loadCache(source.assembly as Assembly).ctmap();
+    const res = await getCreTable(source.assembly, ctmap, { accessions: [source.accession] }, {});
+    return res.ccres[0];
 }
 
 export async function resolve_cre_tfIntersection(source: dbcre & { details: CREDetails }) {

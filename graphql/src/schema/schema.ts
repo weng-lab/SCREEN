@@ -51,6 +51,7 @@ import {
     resolve_cre_nearbyGenomic_re_tads,
     resolve_cre_nearbyGenomic_nearbyCREs,
     resolve_cre_nearbyGenomic_snps,
+    resolve_cre_ortholog_cCRE,
 } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_genetop } from '../resolvers/genetop';
@@ -372,7 +373,10 @@ export const typeDefs = gql`
         #"Returns intersecting FANTOM CAT RNAs"
         #fantom_cat: FantomCat!
         "Returns orthologous cCREs"
-        ortholog: [OrthologouscCRE!]!
+        ortholog(
+            "The assembly to check for an ortholog in. Since there may not be data for the other assembly, it is a String not an 'Assembly'"
+            assembly: String!
+        ): [OrthologouscCRE!]
         "Returns intersection counts for transcription factor and histone modification ChIP-seq data"
         tfIntersection: ChIPSeqIntersections!
         "Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data"
@@ -419,10 +423,16 @@ export const typeDefs = gql`
         snp: SNP!
     }
 
+    "Represents an orthologous cCRE. It may be to an older assembly (e.g. hg19) or to a separate species (e.g. mm10)."
     type OrthologouscCRE {
+        "The assembly of the orthologous cCRE. Since this may be assembly for which there is no data, it is not an 'Assembly'"
+        assembly: String!
+        "The accession of the orthologous cCRE"
         accession: String!
-        overlap: Int!
-        GRCh38range: ChromRange!
+        "The location of the orthologous cCRE"
+        range: ChromRange!
+        "If there is data available for the orthologus cCRE (e.g. mm10), then the cCRE object. Otherwise, (e.g. hg19) null."
+        cCRE: cCRE
     }
 
     type ChIPSeqIntersections {
@@ -747,6 +757,9 @@ export const resolvers = ({
         linkedGenes: resolve_cre_linkedGenes,
         ccre_target_data: resolve_cre_target_data,
         //miniPeaks: resolve_cre_miniPeaks,
+    },
+    OrthologouscCRE: {
+        cCRE: resolve_cre_ortholog_cCRE,
     },
     CellTypeInfo: {
         cCREActivity: resolve_celltypeinfo_ccREActivity,

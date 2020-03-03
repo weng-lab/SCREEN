@@ -1,5 +1,6 @@
 import { Client } from 'pg';
 import { db } from './db';
+import { Assembly } from '../types';
 
 export async function select_cre_intersections(assembly, acc, key) {
     const tableintersections = assembly + '_fantomcat_' + key;
@@ -12,14 +13,35 @@ export async function select_cre_intersections(assembly, acc, key) {
     return await db.any(q, [acc]);
 }
 
-export async function orthologs(assembly, accession) {
-    const currentspecies = assembly == 'mm10' ? 'mouse' : 'human';
-    const otherspecies = assembly != 'mm10' ? 'mouse' : 'human';
-    const tablename = 'mm10_liftover';
+const orthoAssemblies = {
+    grch38: ['hg19', 'mm10'],
+    mm10: ['grch38', 'hg19'],
+};
+
+export async function orthologs(
+    thisassembly: Assembly,
+    thisaccession: string,
+    otherassembly: string
+): Promise<
+    { assembly: string; accession: string; range: { chrom: string; start: number; end: number } }[] | undefined
+> {
+    if (!orthoAssemblies[thisassembly].includes(otherassembly)) {
+        return undefined;
+    }
+    const tablename = `${thisassembly}_liftover_${otherassembly}`;
     const q = `
-        SELECT jsonb_build_object('chrom', chrom, 'start', start, 'end', stop) as grch38range, ${otherspecies}Accession as accession, overlap
-        FROM ${tablename}
-        WHERE ${currentspecies}Accession = $1
+SELECT chrom, start, stop, otheraccession
+FROM ${tablename}
+WHERE thisaccession = $1
     `;
-    return db.any(q, [accession]);
+    const res = await db.any(q, [thisaccession]);
+    return res.map(r => ({
+        assembly: otherassembly,
+        accession: r.otheraccession,
+        range: {
+            chrom: r.chrom,
+            start: r.start,
+            end: r.stop,
+        },
+    }));
 }

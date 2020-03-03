@@ -1,6 +1,8 @@
 import { chroms } from './constants';
 import { Assembly } from './types';
 
+export const assemblies = ['grch38', 'mm10'];
+
 const starts = {
     mm10: 'em10e',
     hg19: 'eh37e',
@@ -22,18 +24,6 @@ export const natsorter = natsortcollator.compare;
 
 export const natsort = array => {
     return array.slice().sort(natsorter);
-};
-
-const assemblies = ['GRCh38', 'mm10'];
-export const checkAssembly = j => {
-    const assembly = j['assembly'];
-    if (!assembly) {
-        throw new Error('assembly not defined');
-    }
-    if (!(assembly in assemblies)) {
-        throw new Error('invalid assembly ' + assembly);
-    }
-    return assembly;
 };
 
 export const checkCreAssembly = (assembly: Assembly, accession: string) => accession.toLowerCase().startsWith(starts[assembly]);
