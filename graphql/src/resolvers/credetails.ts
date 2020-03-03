@@ -5,23 +5,19 @@ import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';
 
-export type nearbyGene = {
-    gene: {
-        gene: string;
-        ensemblid_ver: string;
-        coords: {
-            chrom: string;
-            start: number;
-            end: number;
-            strand: string;
-        };
-        tsscoords: {
-            chrom: string;
-            start: number;
-            end: number;
-            strand: string;
-        };
+export type Gene = {
+    assembly: Assembly;
+    gene: string;
+    ensemblid_ver: string;
+    coords: {
+        chrom: string;
+        start: number;
+        end: number;
+        strand: string;
     };
+};
+export type nearbyGene = {
+    gene: Gene;
     distance: number;
 };
 

@@ -1,10 +1,10 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
 import * as DbGene from '../db/db_geneexp';
-
 import { loadCache, Compartments } from '../db/db_cache';
+import { Assembly } from '../types';
 
-async function geneexp(assembly, gene, biosample_types, compartments, normalized) {
+async function geneexp(assembly: Assembly, gene, biosample_types, compartments) {
     const geBiosampleTypes = await loadCache(assembly).geBiosampleTypes();
 
     const available_biosamples = geBiosampleTypes;
@@ -37,6 +37,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
         name = gi.approved_symbol;
         const strand = gi.strand;
         gene_info = {
+            assembly,
             gene: name,
             ensemblid_ver: gi.ensemblid_ver,
             coords: {
@@ -48,7 +49,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
         };
     }
 
-    const items = await DbGene.computeHorBarsAll(assembly, name, compartments, biosample_types, normalized);
+    const items = await DbGene.computeHorBarsAll(assembly, name, compartments, biosample_types);
     return {
         gene_info,
         items,
@@ -60,6 +61,5 @@ export const resolve_geneexp: GraphQLFieldResolver<any, any> = (source, args, co
     const gene = args.gene;
     const biosample_types = args.biosample_types;
     const compartments = args.compartments;
-    const normalized = args.normalized !== null ? args.normalized : true;
-    return geneexp(assembly, gene, biosample_types, compartments, normalized);
+    return geneexp(assembly, gene, biosample_types, compartments);
 };

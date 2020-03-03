@@ -55,8 +55,8 @@ const makeEntry = row => {
     };
 };
 
-export const computeHorBarsAll = async (assembly, gene, compartments, biosample_types, normalized) => {
-    const tableNameData = assembly + (normalized ? '_rnaseq_expression_norm' : '_rnaseq_expression');
+export const computeHorBarsAll = async (assembly, gene, compartments, biosample_types) => {
+    const tableNameData = assembly + '_rnaseq_expression';
     const tableNameMetadata = assembly + '_rnaseq_metadata';
     const q = `
         SELECT

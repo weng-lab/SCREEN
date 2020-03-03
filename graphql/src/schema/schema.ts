@@ -359,7 +359,7 @@ export const typeDefs = gql`
         "The distance to the cCRE"
         distance: Int!
         "The gene"
-        gene: GeneExpGene!
+        gene: CommonGene!
         "Whether or not this gene is protein coding"
         pc: Boolean!
     }
@@ -402,7 +402,7 @@ export const typeDefs = gql`
 
     type NearbyGenomic {
         nearby_genes: [NearbyGene!]!
-        tads: [GeneExpGene!]!
+        tads: [CommonGene!]!
         re_tads: [NearbyRE!]!
         nearby_res: [NearbyRE!]!
         overlapping_snps: [NearbySNP!]!
@@ -527,19 +527,9 @@ export const typeDefs = gql`
     "Gene expression data"
     type GeneExpResponse {
         "Info on the gene queried. If the gene does not exist (like for spike-ins), this will be null."
-        gene_info: GeneExpGene
+        gene_info: CommonGene
         "All experimental data for this gene"
         items: [ExperimentData!]!
-    }
-
-    "Gene info for gene expression"
-    type GeneExpGene {
-        "The coordinates of this gene"
-        coords: ChromRange!
-        "The gene name"
-        gene: String!
-        "The ensembl id and ver of the gene"
-        ensemblid_ver: String!
     }
 
     "Gene exp data for an experiment"
@@ -666,7 +656,7 @@ export const typeDefs = gql`
     "Rampage data for a specific gene"
     type RampageGeneData {
         transcripts: [RampageTranscript!]!
-        gene: GeneExpGene!
+        gene: CommonGene!
     }
 
     type RampageTranscript {

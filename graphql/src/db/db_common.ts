@@ -3,7 +3,7 @@ import { db } from './db';
 import { getCreTable, dbcre } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
 import { Assembly, assaytype, NearbyRE } from '../types';
-import { nearbyGene } from '../resolvers/credetails';
+import { Gene, nearbyGene } from '../resolvers/credetails';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -521,7 +521,11 @@ async function getGenes(assembly, accession, allOrPc) {
     return db.any(q, [accession]);
 }
 
-export async function getGenesMany(assembly, accessions: readonly string[], allOrPc): Promise<nearbyGene[][]> {
+export async function getGenesMany(
+    assembly: Assembly,
+    accessions: readonly string[],
+    allOrPc
+): Promise<nearbyGene[][]> {
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
     const tableTss = assembly + '_tss_info';
@@ -543,18 +547,13 @@ ON gi.ensemblid_ver = tss.ensemblid_ver
 
         prev[row.accession].push({
             gene: {
+                assembly,
                 gene: row.approved_symbol,
                 ensemblid_ver: row.ensemblid_ver,
                 coords: {
                     chrom: row.chrom,
                     start: row.start,
                     end: row.stop,
-                    strand: row.strand,
-                },
-                tsscoords: {
-                    chrom: row.tss_chrom,
-                    start: row.tss_start,
-                    end: row.tss_stop,
                     strand: row.strand,
                 },
             },
@@ -715,23 +714,22 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export async function rampageEnsemblID(
-    assembly: Assembly,
-    gene: string
-): Promise<{ gene: string; ensemblid_ver: string; coords: { chrom: string; start: number; end: number } }> {
+export async function geneByApprovedSymbol(assembly: Assembly, gene: string): Promise<Gene> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop
+        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop, strand
         FROM ${tableName}
         WHERE approved_symbol = $1
     `;
     return await db.one(q, [gene], r => ({
+        assembly,
         gene: r.gene,
         ensemblid_ver: r.ensemblid_ver,
         coords: {
             chrom: r.chrom,
             start: r.start,
             end: r.stop,
+            strand: r.strand,
         },
     }));
 }
