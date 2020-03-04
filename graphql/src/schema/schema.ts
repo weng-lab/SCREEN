@@ -2,12 +2,7 @@ import { gql } from 'apollo-server-express';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { buildFederatedSchema } from '@apollo/federation';
 
-import {
-    resolve_data,
-    resolve_data_range,
-    resolve_data_ctspecific,
-    resolve_data_nearbygenes,
-} from '../resolvers/cretable';
+import { resolve_ccres, cCREResolvers } from '../resolvers/cretable';
 import {
     resolve_globals,
     resolve_globals_inputData,
@@ -112,9 +107,9 @@ import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolv
     }
 
     type AssemblySpecificGlobalsResponse {
-        "Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE"
+        "Returns the accessions of the celltype-specific bigBed files for cCREs on ENCODE"
         cCREBedsByCellType: cCREBedsByCellType
-        "Returns info on the data used to create ccREs"
+        "Returns info on the data used to create cCREs"
         cCREFiles: cCREFiles
     }
 
@@ -122,8 +117,20 @@ import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolv
 
 export const typeDefs = gql`
     type Query {
-        "Get cCRE data"
-        data(assembly: Assembly!, data: DataParameters, pagination: PaginationParameters): DataResponse
+        "Get data for cCREs"
+        ccres(
+            assembly: Assembly!
+            "A list of accessions to return"
+            accessions: [String!]
+            "Get cCREs overlapping a given range"
+            range: InputChromRange
+            "Only return cCREs with max zscores for all available experiments that fall within specific ranges"
+            expmaxs: InputExpMax
+            "Only return cCREs with zscores that fall within specific ranges for the specified cell type"
+            ctexps: InputCtExps
+            "Advanced parameters to define offset/limit/order."
+            pagination: PaginationParameters
+        ): cCREs
         "Get global data"
         globals: GlobalsResponse
         "Search differential expression data"
@@ -150,17 +157,6 @@ export const typeDefs = gql`
     enum Assembly {
         GRCh38
         mm10
-    }
-
-    "Parameters to define what ccREs should be returned from a DataResponse"
-    input DataParameters {
-        "A list of accessions to return"
-        accessions: [String!]
-        range: InputChromRange
-        "Only return ccREs with max zscores for all available experiments that fall within specific ranges"
-        expmaxs: InputExpMax
-        "Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type"
-        ctexps: InputCtExps
     }
 
     "Represents a range on a chromomsome."
@@ -220,9 +216,9 @@ export const typeDefs = gql`
 
     "ADVANCED - you probably do not need this. offset + limit <= 10000; limit <= 1000; to access more data, refine your search"
     input PaginationParameters {
-        "Default 0. Instead of starting at the first ccRE, return ccREs offsetted."
+        "Default 0. Instead of starting at the first cCRE, return cCREs offsetted."
         offset: Int
-        "Default 1000. Change the limit to the number of ccREs returned."
+        "Default 1000. Change the limit to the number of cCREs returned."
         limit: Int
         "The field to order by. If an ct-specific orderby is passed, but is not applicable to the ct (i.e. no data), then maxz will be used instead."
         orderBy: OrderBy
@@ -246,10 +242,10 @@ export const typeDefs = gql`
         ctcf_zscore
     }
 
-    type DataResponse {
-        "Returns the total number of ccREs that match the parameters. However, for speed, only up to the top 1000 will be displayed"
+    type cCREs {
+        "Returns the total number of cCREs that match the parameters. However, for speed, only up to the top 1000 will be displayed"
         total: Int!
-        "Returns the ccREs that match the parameters"
+        "Returns the cCREs that match the parameters"
         ccres: [cCRE!]!
     }
 
@@ -271,15 +267,15 @@ export const typeDefs = gql`
         tfs: [String!]!
         "A list of cell compartments"
         cellCompartments: [String!]!
-        "Get info on all cell types used and assays used for ccRE data"
+        "Get info on all cell types used and assays used for cCRE data"
         cellTypeInfoArr: [CellTypeInfo!]
         "Gets the info for a specific cell type. Can use 'none' to return nothing."
         ctinfo(cellType: String!): CellTypeInfo
-        "Returns the numbers of ccREs keyed by chromosome"
+        "Returns the numbers of cCREs keyed by chromosome"
         chromCounts: ChromCounts
         "Returns the length of each chromosome"
         chromLens: ChromLens
-        "Returns the numbers of ccREs in each bin of a chromosome"
+        "Returns the numbers of cCREs in each bin of a chromosome"
         cCREHistBins: cCREHistBins
         "Returns biosample types available in gene expression"
         geBiosampleTypes: [String!]!
@@ -290,11 +286,11 @@ export const typeDefs = gql`
     }
 
     type cCRE {
-        "Assembly the ccRE is defined of"
+        "Assembly the cCRE is defined of"
         assembly: Assembly!
-        "Accession of this ccRE"
+        "Accession of this cCRE"
         accession: String!
-        "The range of the ccRE"
+        "The range of the cCRE"
         range: ChromRange!
         "The max zscore from any experiment in any celltype"
         maxz: Float!
@@ -306,15 +302,15 @@ export const typeDefs = gql`
         k27acmax: Float!
         "Max k4me3 zscore of all experiments"
         k4me3max: Float!
-        "Does this ccRE have an ortholog in other assemblies"
+        "Does this cCRE have an ortholog in other assemblies"
         concordant: Boolean!
-        "Is ccRE +/- 2kb of TSS"
+        "Is cCRE +/- 2kb of TSS"
         isproximal: Boolean!
         "celltype-specific zscores"
         ctspecific(ct: String!): CtSpecific
         "Nearby genes"
         nearbygenes: Genes!
-        "Get details about this ccRE"
+        "Get details about this cCRE"
         details: cCreDetailsResponse!
     }
 
@@ -391,7 +387,7 @@ export const typeDefs = gql`
         ): [ChIPSeqIntersectionData!]!
     }
 
-    "The celltype-specific z-scores for this ccRE"
+    "The celltype-specific z-scores for this cCRE"
     type CTAssayData {
         ct: CellTypeInfo!
         dnase: Float
@@ -410,7 +406,7 @@ export const typeDefs = gql`
 
     "A nearby cCRE"
     type NearbyRE {
-        "The distance from the ccRE"
+        "The distance from the cCRE"
         distance: Int!
         cCRE: cCRE!
     }
@@ -470,7 +466,7 @@ export const typeDefs = gql`
         CISTROME
     }
 
-    "Info on a cell type used in SCREEN and in ccREs"
+    "Info on a cell type used in SCREEN and in cCREs"
     type CellTypeInfo {
         name: String
         value: String!
@@ -581,9 +577,9 @@ export const typeDefs = gql`
         trait: String!
         "Total number of LD blocks"
         totalLDblocks: Int!
-        "Total number of LD blocks that overlap ccREs"
+        "Total number of LD blocks that overlap cCREs"
         numLdBlocksOverlap: Int!
-        "Total number of ccRE that overlap"
+        "Total number of cCRE that overlap"
         numcCREsOverlap: Int!
         allSNPs: [LDBlockSNP!]!
         topCellTypes: [GwasCellType!]
@@ -601,7 +597,7 @@ export const typeDefs = gql`
         ldblocks: [LDBlockSNP!]!
         "GWAS studies containing this SNP. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array."
         related_studies: [GwasStudy!]!
-        "Returns the ccRE that overlaps this SNP, if one exists"
+        "Returns the cCRE that overlaps this SNP, if one exists"
         overlapping_cCRE: cCRE
         nearbygenes: [GeneAndDistance!]!
     }
@@ -702,7 +698,7 @@ export const resolvers = ({
         CISTROME: 'cistrome',
     },
     Query: {
-        data: resolve_data,
+        ccres: resolve_ccres,
         globals: resolve_globals,
         de_search: resolve_de,
         geneexp_search: resolve_geneexp,
@@ -731,13 +727,8 @@ export const resolvers = ({
         //cCREFiles: resolve_globals_assembly_creFiles,
         inputData: resolve_globals_assembly_inputData,
     },
-    cCRE: {
-        range: resolve_data_range,
-        ctspecific: resolve_data_ctspecific,
-        nearbygenes: resolve_data_nearbygenes,
-        details: resolve_details,
-    },
     cCreDetailsResponse: {
+        ccres: resolve_ccres,
         topTissues: resolve_cre_topTissues,
         nearbyGenomic: resolve_cre_nearbyGenomic,
         //fantom_cat: resolve_cre_fantomCat,
@@ -788,4 +779,4 @@ export const resolvers = ({
     },
 } as any) as GraphQLResolverMap;
 
-export const generatedSchema = buildFederatedSchema([{ typeDefs, resolvers }]);
+export const generatedSchema = buildFederatedSchema([{ typeDefs, resolvers: { ...resolvers, ...cCREResolvers } }]);

@@ -1,5 +1,9 @@
+import { GraphQLFieldResolver } from 'graphql';
+
 import { Gwas } from './resolvers/gwas';
 import { dbcre } from './db/db_cre_table';
+
+export type Resolver<Args = { [argName: string]: any }, Source = {}, Context = {}> = GraphQLFieldResolver<Source, Context, Args>;
 
 export type Assembly = 'grch38' | 'mm10';
 export type ChromRange = { chrom: string; start: number; end: number };

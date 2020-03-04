@@ -1,17 +1,20 @@
-import { GraphQLFieldResolver } from 'graphql';
 import { getCreTable, dbcre } from '../db/db_cre_table';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
-import { Assembly } from '../types';
-import { CREDetails } from './credetails';
+import { Assembly, ChromRange, Resolver } from '../types';
+import { CREDetails, resolve_details } from './credetails';
 
-export const resolve_data: GraphQLFieldResolver<{}, {}, { assembly: string; data: any; pagination: any }> = async (
-    _,
-    args
-): Promise<{ ccres: dbcre[]; total: number }> => {
-    const assembly = args.assembly.toLowerCase() as Assembly;
-    const data = args.data ? args.data : {};
-    const limit = (args.pagination && args.pagination.limit) || 1000;
-    const offset = (args.pagination && args.pagination.offset) || 0;
+type cCREs_args = {
+    assembly: Assembly;
+    accessions?: string[];
+    range?: ChromRange;
+    expmaxs?: any;
+    ctexps?: any;
+    pagination?: any;
+};
+export const resolve_ccres: Resolver<cCREs_args> = async (_, args): Promise<{ ccres: dbcre[]; total: number }> => {
+    const assembly = args.assembly;
+    const limit = args.pagination?.limit ?? 1000;
+    const offset = args.pagination?.offset ?? 0;
     if (limit > 1000) {
         throw new Error('Cannot have a limit greater than 1000 in pagination parameters.');
     }
@@ -23,7 +26,7 @@ export const resolve_data: GraphQLFieldResolver<{}, {}, { assembly: string; data
     }
 
     const ctmap = await loadCache(assembly).ctmap();
-    const results = await getCreTable(assembly, ctmap, data, { ...(args.pagination || {}), limit, offset });
+    const results = await getCreTable(assembly, ctmap, args, { ...args.pagination, limit, offset });
     return results;
 };
 
@@ -55,3 +58,12 @@ export function resolve_data_ctspecific(source, args) {
     const ct: string = args.ct;
     return ccRECtspecificLoaders[assembly].load(`${accession}::${ct}`);
 }
+
+export const cCREResolvers = {
+    cCRE: {
+        range: resolve_data_range,
+        ctspecific: resolve_data_ctspecific,
+        nearbygenes: resolve_data_nearbygenes,
+        details: resolve_details,
+    },
+};
