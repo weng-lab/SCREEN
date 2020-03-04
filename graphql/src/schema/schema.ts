@@ -3,69 +3,21 @@ import { GraphQLResolverMap } from 'apollo-graphql';
 import { buildFederatedSchema } from '@apollo/federation';
 
 import { resolve_ccres, cCREResolvers } from '../resolvers/cretable';
-import {
-    resolve_globals,
-    resolve_globals_inputData,
-    resolve_globals_assembly,
-    resolve_globals_assembly_tfs,
-    resolve_globals_assembly_cellCompartments,
-    resolve_globals_assembly_cellTypeInfoArr,
-    resolve_ctinfo,
-    resolve_globals_assembly_chromCounts,
-    resolve_globals_assembly_chromLens,
-    resolve_globals_assembly_creHistBins,
-    resolve_globals_assembly_geBiosampleTypes,
-    resolve_globals_assembly_geBiosamples,
-    resolve_globals_assembly_inputData,
-} from '../resolvers/globals';
+import { resolve_globals, globalsResolvers } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
-import {
-    resolve_gwas,
-    resolve_gwas_study,
-    resolve_gwas_studies,
-    resolve_gwas_snps,
-    resolve_gwas_study_numCresOverlap,
-    resolve_gwas_study_numLdBlocksOverlap,
-    resolve_gwas_study_allSNPs,
-    resolve_gwas_study_topCellTypes,
-    resolve_gwas_study_cres,
-} from '../resolvers/gwas';
-import {
-    resolve_credetails,
-    resolve_details,
-    resolve_cre_topTissues,
-    resolve_cre_nearbyGenomic,
-    resolve_cre_ortholog,
-    resolve_cre_tfIntersection,
-    resolve_cre_cistromeIntersection,
-    resolve_cre_linkedGenes,
-    resolve_cre_target_data,
-    resolve_cre_nearbyGenomic_nearbyGenes,
-    resolve_cre_nearbyGenomic_genesInTad,
-    resolve_cre_nearbyGenomic_re_tads,
-    resolve_cre_nearbyGenomic_nearbyCREs,
-    resolve_cre_nearbyGenomic_snps,
-    resolve_cre_ortholog_cCRE,
-} from '../resolvers/credetails';
+import { resolve_gwas, gwasResolvers } from '../resolvers/gwas';
+import { resolve_ccre, cCREDetailsResolvers } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_genetop } from '../resolvers/genetop';
-import {
-    resolve_snps,
-    resolve_snps_ldblocks,
-    resolve_snps_nearbygenes,
-    resolve_snps_overlapping_ccRE,
-    resolve_snps_relatedstudies,
-    resolve_gwas_ldblock_snps,
-    resolve_gwas_ldblock_leadsnp,
-} from '../resolvers/snp';
+import { resolve_snps, snpResolvers } from '../resolvers/snp';
 import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
 
 // For when these come back
 /*
     scalar Minipeaks
 
-    type cCreDetailsResponse {
+    type ccreDetails {
         "Returns intersecting FANTOM CAT RNAs"
         fantom_cat: FantomCat!
         "Returns signal profile data"
@@ -102,11 +54,11 @@ import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolv
     scalar cCREBedsByCellType
     scalar cCREFiles
 
-    type GlobalsResponse {
+    type Globals {
         files: Files
     }
 
-    type AssemblySpecificGlobalsResponse {
+    type AssemblySpecificGlobals {
         "Returns the accessions of the celltype-specific bigBed files for cCREs on ENCODE"
         cCREBedsByCellType: cCREBedsByCellType
         "Returns info on the data used to create cCREs"
@@ -131,22 +83,22 @@ export const typeDefs = gql`
             "Advanced parameters to define offset/limit/order."
             pagination: PaginationParameters
         ): cCREs
+        "Get details for a specific cCREs"
+        ccre(accession: String!): cCRE
         "Get global data"
-        globals: GlobalsResponse
-        "Search differential expression data"
-        de_search(assembly: Assembly!, gene: String!, ct1: String!, ct2: String!): DeResponse
+        globals: Globals
+        "Get differential expression data"
+        differentialExpression(assembly: Assembly!, gene: String!, ct1: String!, ct2: String!): DifferentialExpression
         "Get gene expression data"
-        geneexp_search(
+        geneExpresssion(
             assembly: Assembly!
             gene: String!
             "A list of biosamples types to filter by. By default, will include all available biosample types. Available biosample types can be queried with {globals{byAssembly{geBiosampleTypes}}}"
             biosample_types: [String!]
             "A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}"
             compartments: [String!]
-        ): GeneExpResponse
-        gwas(assembly: Assembly!): GwasResponse
-        "Get details for a specific cCREs"
-        credetails(accession: String!): cCRE
+        ): GeneExpression
+        gwas(assembly: Assembly!): Gwas
         "Get RAMPAGE data for a gene"
         rampage(assembly: Assembly!, gene: String!): RampageGeneData
         "Get gene expression by biosample"
@@ -249,12 +201,11 @@ export const typeDefs = gql`
         ccres: [cCRE!]!
     }
 
-    scalar Files
     scalar InputData
 
-    type GlobalsResponse {
+    type Globals {
         inputData: InputData
-        byAssembly(assembly: Assembly!): AssemblySpecificGlobalsResponse!
+        byAssembly(assembly: Assembly!): AssemblySpecificGlobals!
     }
 
     scalar ChromCounts
@@ -262,7 +213,9 @@ export const typeDefs = gql`
     scalar cCREHistBins
     scalar AssemblyInputData
 
-    type AssemblySpecificGlobalsResponse {
+    type AssemblySpecificGlobals {
+        "The assembly these globals are for"
+        assembly: Assembly!
         "A list of all transcription factors used"
         tfs: [String!]!
         "A list of cell compartments"
@@ -311,7 +264,7 @@ export const typeDefs = gql`
         "Nearby genes"
         nearbygenes: Genes!
         "Get details about this cCRE"
-        details: cCreDetailsResponse!
+        details: ccreDetails!
     }
 
     "Represents a range on a chromomsome. May optionally specify a strand."
@@ -361,7 +314,7 @@ export const typeDefs = gql`
     }
 
     "Get details of various experiments related to this cCRE."
-    type cCreDetailsResponse {
+    type ccreDetails {
         "Returns celltype-specific experiment data"
         topTissues: [CTAssayData!]!
         "Returns nearby genomic elements"
@@ -380,7 +333,7 @@ export const typeDefs = gql`
         "Returns linked genes"
         linkedGenes: [LinkedGene!]!
         "Returns the intersection data that supports a specific target"
-        ccre_target_data(
+        ccreTargetData(
             target: String!
             target_type: ChIPSeqTargetType!
             eset: IntersectionSource!
@@ -488,23 +441,13 @@ export const typeDefs = gql`
     }
 
     "Differential expression data"
-    type DeResponse {
-        gene: DeGene!
+    type DifferentialExpression {
+        gene: CommonGene!
         diffcCREs: [DiffcCRE!]!
         "Null if there are no de genes"
         nearbyGenes: [DiffGene!]
         min: Int!
         max: Int!
-    }
-
-    "Gene info for de"
-    type DeGene {
-        "The coordinates of this gene"
-        coords: ChromRange!
-        "The gene name"
-        gene: String!
-        "The ensembl id and ver of the gene"
-        ensemblid_ver: String!
     }
 
     type DiffcCRE {
@@ -517,11 +460,11 @@ export const typeDefs = gql`
     type DiffGene {
         isde: Boolean!
         fc: Float
-        gene: DeGene!
+        gene: CommonGene!
     }
 
     "Gene expression data"
-    type GeneExpResponse {
+    type GeneExpression {
         "Info on the gene queried. If the gene does not exist (like for spike-ins), this will be null."
         gene_info: CommonGene
         "All experimental data for this gene"
@@ -559,7 +502,7 @@ export const typeDefs = gql`
     }
 
     "GWAS data"
-    type GwasResponse {
+    type Gwas {
         studies: [GwasStudy!]!
         study(study: String!): GwasStudy!
         snps(search: String!): [SNP!]!
@@ -699,84 +642,33 @@ export const resolvers = ({
     },
     Query: {
         ccres: resolve_ccres,
+        ccre: resolve_ccre,
         globals: resolve_globals,
-        de_search: resolve_de,
-        geneexp_search: resolve_geneexp,
+        differentialExpression: resolve_de,
+        geneExpresssion: resolve_geneexp,
         gwas: resolve_gwas,
-        credetails: resolve_credetails,
         rampage: resolve_rampage,
         genetop: resolve_genetop,
         snps: resolve_snps,
     },
-    GlobalsResponse: {
-        //files: resolve_globals_files,
-        inputData: resolve_globals_inputData,
-        byAssembly: resolve_globals_assembly,
-    },
-    AssemblySpecificGlobalsResponse: {
-        tfs: resolve_globals_assembly_tfs,
-        cellCompartments: resolve_globals_assembly_cellCompartments,
-        cellTypeInfoArr: resolve_globals_assembly_cellTypeInfoArr,
-        ctinfo: resolve_ctinfo,
-        chromCounts: resolve_globals_assembly_chromCounts,
-        chromLens: resolve_globals_assembly_chromLens,
-        cCREHistBins: resolve_globals_assembly_creHistBins,
-        geBiosampleTypes: resolve_globals_assembly_geBiosampleTypes,
-        geBiosamples: resolve_globals_assembly_geBiosamples,
-        //cCREBedsByCellType: resolve_globals_assembly_cCREBedsByCellType,
-        //cCREFiles: resolve_globals_assembly_creFiles,
-        inputData: resolve_globals_assembly_inputData,
-    },
-    cCreDetailsResponse: {
-        ccres: resolve_ccres,
-        topTissues: resolve_cre_topTissues,
-        nearbyGenomic: resolve_cre_nearbyGenomic,
-        //fantom_cat: resolve_cre_fantomCat,
-        ortholog: resolve_cre_ortholog,
-        tfIntersection: resolve_cre_tfIntersection,
-        cistromeIntersection: resolve_cre_cistromeIntersection,
-        linkedGenes: resolve_cre_linkedGenes,
-        ccre_target_data: resolve_cre_target_data,
-        //miniPeaks: resolve_cre_miniPeaks,
-    },
-    OrthologouscCRE: {
-        cCRE: resolve_cre_ortholog_cCRE,
-    },
     CellTypeInfo: {
         cCREActivity: resolve_celltypeinfo_ccREActivity,
-    },
-    GwasResponse: {
-        studies: resolve_gwas_studies,
-        study: resolve_gwas_study,
-        snps: resolve_gwas_snps,
-    },
-    GwasStudy: {
-        numLdBlocksOverlap: resolve_gwas_study_numLdBlocksOverlap,
-        numcCREsOverlap: resolve_gwas_study_numCresOverlap,
-        allSNPs: resolve_gwas_study_allSNPs,
-        topCellTypes: resolve_gwas_study_topCellTypes,
-        ccres: resolve_gwas_study_cres,
-    },
-    SNP: {
-        ldblocks: resolve_snps_ldblocks,
-        related_studies: resolve_snps_relatedstudies,
-        overlapping_cCRE: resolve_snps_overlapping_ccRE,
-        nearbygenes: resolve_snps_nearbygenes,
-    },
-    LDBlock: {
-        leadsnp: resolve_gwas_ldblock_leadsnp,
-        snps: resolve_gwas_ldblock_snps,
     },
     CommonGene: {
         exons: resolve_gene_exons,
     },
-    NearbyGenomic: {
-        nearby_genes: resolve_cre_nearbyGenomic_nearbyGenes,
-        tads: resolve_cre_nearbyGenomic_genesInTad,
-        re_tads: resolve_cre_nearbyGenomic_re_tads,
-        nearby_res: resolve_cre_nearbyGenomic_nearbyCREs,
-        overlaping_snps: resolve_cre_nearbyGenomic_snps,
-    },
 } as any) as GraphQLResolverMap;
 
-export const generatedSchema = buildFederatedSchema([{ typeDefs, resolvers: { ...resolvers, ...cCREResolvers } }]);
+export const generatedSchema = buildFederatedSchema([
+    {
+        typeDefs,
+        resolvers: ({
+            ...resolvers,
+            ...cCREResolvers,
+            ...globalsResolvers,
+            ...cCREDetailsResolvers,
+            ...gwasResolvers,
+            ...snpResolvers,
+        } as any) as GraphQLResolverMap,
+    },
+]);

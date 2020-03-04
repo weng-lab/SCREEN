@@ -87,6 +87,7 @@ export type cache = {
     ensemblToGene: Record<
         string,
         {
+            assembly: Assembly;
             approved_symbol: string;
             ensemblid: string;
             ensemblid_ver: string;

@@ -1,9 +1,10 @@
-import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
 import * as DbDe from '../db/db_de';
 import { loadCache } from '../db/db_cache';
 import * as CoordUtils from '../coord_utils';
 import { dbcre } from '../db/db_cre_table';
+import { Assembly, Resolver } from '../types';
+import { Gene } from './credetails';
 
 class DE {
     assembly;
@@ -40,7 +41,7 @@ class DE {
         return this.pos;
     }
 
-    async nearbyDEs() {
+    async nearbyDEs(): Promise<{ isde: boolean; fc: number; gene: Gene }[] | undefined> {
         // limb_14.5 from C57BL-6_limb_embryo_14.5_days
         const ct1 = this.ct1
             .replace('C57BL/6_', '')
@@ -133,7 +134,19 @@ class DE {
     }
 }
 
-async function de(assembly, gene, ct1, ct2) {
+export const resolve_de: Resolver<{ assembly: Assembly; gene: string; ct1: string; ct2: string }> = async (
+    source,
+    args,
+    context
+) => {
+    const assembly = args.assembly;
+    if (assembly !== 'mm10') {
+        throw new Error('Differential expression data only available for mm10 currently.');
+    }
+    const gene = args.gene;
+    const ct1 = args.ct1;
+    const ct2 = args.ct2;
+
     const de = new DE(assembly, gene, ct1, ct2);
 
     const genecoord = await de.coord();
@@ -145,6 +158,7 @@ async function de(assembly, gene, ct1, ct2) {
 
     return {
         gene: {
+            assembly,
             coords: genecoord,
             gene: de.names[0],
             ensemblid_ver: de.names[1],
@@ -154,15 +168,4 @@ async function de(assembly, gene, ct1, ct2) {
         min: c.start,
         max: c.end,
     };
-}
-
-export const resolve_de: GraphQLFieldResolver<any, any> = (source, args, context) => {
-    const assembly = args.assembly.toLowerCase();
-    if (assembly !== 'mm10') {
-        throw new Error('Differential expression data only available for mm10 currently.');
-    }
-    const gene = args.gene;
-    const ct1 = args.ct1;
-    const ct2 = args.ct2;
-    return de(assembly, gene, ct1, ct2);
 };

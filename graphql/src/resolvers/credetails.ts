@@ -4,10 +4,11 @@ import { getAssemblyFromCre, assemblies } from '../utils';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
 import { Assembly } from '../types';
+import { resolve_ccres } from './cretable';
 
 export type Gene = {
     assembly: Assembly;
-    gene: string;
+    approved_symbol: string;
     ensemblid_ver: string;
     coords: {
         chrom: string;
@@ -78,9 +79,9 @@ export class CREDetails {
 
     async nearbyGenes(): Promise<{ gene: any; distance: number; pc: boolean }[]> {
         const { genesAll, genesPC } = await this.awaitGenes();
-        const pcGenes = genesPC.map(g => g.gene.gene);
+        const pcGenes = genesPC.map(g => g.gene.approved_symbol);
         for (const g of genesAll) {
-            g['pc'] = pcGenes.includes(g.gene.gene);
+            g['pc'] = pcGenes.includes(g.gene.approved_symbol);
         }
         return genesAll.sort((a, b) => a.distance - b.distance) as (nearbyGene & { pc: boolean })[];
     }
@@ -133,7 +134,7 @@ export class CREDetails {
     }
 }
 
-export async function resolve_credetails(source, args, context, info) {
+export async function resolve_ccre(source, args, context, info) {
     const accession: string = args.accession;
     const assembly = getAssemblyFromCre(accession);
     if (!assembly) {
@@ -304,3 +305,28 @@ export async function resolve_cre_miniPeaks(source, args, context, info) {
     //const res = await request(options);
     //return res[accession].rows;
 }
+
+export const cCREDetailsResolvers = {
+    ccreDetails: {
+        ccres: resolve_ccres,
+        topTissues: resolve_cre_topTissues,
+        nearbyGenomic: resolve_cre_nearbyGenomic,
+        //fantom_cat: resolve_cre_fantomCat,
+        ortholog: resolve_cre_ortholog,
+        tfIntersection: resolve_cre_tfIntersection,
+        cistromeIntersection: resolve_cre_cistromeIntersection,
+        linkedGenes: resolve_cre_linkedGenes,
+        ccreTargetData: resolve_cre_target_data,
+        //miniPeaks: resolve_cre_miniPeaks,
+    },
+    OrthologouscCRE: {
+        cCRE: resolve_cre_ortholog_cCRE,
+    },
+    NearbyGenomic: {
+        nearby_genes: resolve_cre_nearbyGenomic_nearbyGenes,
+        tads: resolve_cre_nearbyGenomic_genesInTad,
+        re_tads: resolve_cre_nearbyGenomic_re_tads,
+        nearby_res: resolve_cre_nearbyGenomic_nearbyCREs,
+        overlaping_snps: resolve_cre_nearbyGenomic_snps,
+    },
+};

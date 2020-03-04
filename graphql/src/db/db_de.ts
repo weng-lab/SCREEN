@@ -35,7 +35,7 @@ export async function nearbyDEs(assembly, range, ct1, ct2, pval, ctmap) {
     return db.any(q, [range.chrom, pval, range.start, range.end, ct2id, ct1id]);
 }
 
-export async function genesInRegion(assembly, chrom, start, stop) {
+export async function genesInRegion(assembly, chrom, start, stop): Promise<{ ensemblid: string }[]> {
     const tableName = assembly + '_gene_info';
     const q = `
         SELECT ensemblid

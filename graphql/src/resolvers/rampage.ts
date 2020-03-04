@@ -2,6 +2,7 @@ import { GraphQLFieldResolver } from 'graphql';
 import * as DbCommon from '../db/db_common';
 import { natsorter } from '../utils';
 import { Assembly } from '../types';
+import { Gene } from './credetails';
 
 const sortTranscripts = (a, b) => natsorter(a.transcript, b.transcript);
 
@@ -21,7 +22,7 @@ const _process = (transcript, ri) => {
     };
 };
 
-export async function getByGene(assembly: Assembly, gene: { ensemblid_ver: string; gene: string }) {
+export async function getByGene(assembly: Assembly, gene: Gene) {
     const ensemblid_ver = gene.ensemblid_ver;
     const transcripts = await DbCommon.rampageByGene(assembly, ensemblid_ver);
 
@@ -29,7 +30,7 @@ export async function getByGene(assembly: Assembly, gene: { ensemblid_ver: strin
     const transcripts_out = transcripts.map(t => _process(t, ri));
     return {
         transcripts: transcripts_out.sort(sortTranscripts),
-        gene: gene,
+        gene,
     };
 }
 

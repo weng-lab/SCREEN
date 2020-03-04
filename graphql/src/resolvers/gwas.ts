@@ -133,3 +133,18 @@ export const resolve_gwas: GraphQLFieldResolver<any, any> = (source, args, conte
     const g = new Gwas(assembly);
     return g.awaitStudies().then(r => ({ gwas_obj: g }));
 };
+
+export const gwasResolvers = {
+    Gwas: {
+        studies: resolve_gwas_studies,
+        study: resolve_gwas_study,
+        snps: resolve_gwas_snps,
+    },
+    GwasStudy: {
+        numLdBlocksOverlap: resolve_gwas_study_numLdBlocksOverlap,
+        numcCREsOverlap: resolve_gwas_study_numCresOverlap,
+        allSNPs: resolve_gwas_study_allSNPs,
+        topCellTypes: resolve_gwas_study_topCellTypes,
+        ccres: resolve_gwas_study_cres,
+    },
+};

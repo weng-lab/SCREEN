@@ -226,8 +226,8 @@ query suggestions($suggestionSearch: String!, $assemblies: [Assembly]){
   }
 }
 
-query geneexp_search {
-  geneexp_search(assembly: GRCh38, gene: "GAPDH", biosample_types: ["tissue"], compartments: ["cell"]) {
+query geneExpresssion {
+  geneExpresssion(assembly: GRCh38, gene: "GAPDH", biosample_types: ["tissue"], compartments: ["cell"]) {
     coords {
       chrom
       start

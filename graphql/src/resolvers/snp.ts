@@ -71,3 +71,16 @@ export const resolve_snps_nearbygenes: GraphQLFieldResolver<SNP, {}> = async sou
     const snp: string = source.id;
     return nearbygenes(assembly, snp);
 };
+
+export const snpResolvers = {
+    SNP: {
+        ldblocks: resolve_snps_ldblocks,
+        related_studies: resolve_snps_relatedstudies,
+        overlapping_cCRE: resolve_snps_overlapping_ccRE,
+        nearbygenes: resolve_snps_nearbygenes,
+    },
+    LDBlock: {
+        leadsnp: resolve_gwas_ldblock_leadsnp,
+        snps: resolve_gwas_ldblock_snps,
+    },
+};

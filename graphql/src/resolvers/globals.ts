@@ -1,5 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import { loadCache, Compartments, loadGlobalCache } from '../db/db_cache';
+import { Resolver, Assembly } from '../types';
 import { chrom_lengths } from '../constants';
 
 export const resolve_globals = () => ({});
@@ -11,8 +12,8 @@ export const resolve_globals_files = () => loadGlobalCache().files();
 
 export const resolve_globals_inputData = () => loadGlobalCache().inputData();
 
-export const resolve_globals_assembly: GraphQLFieldResolver<any, any> = (source, args) => {
-    const assembly = args.assembly.toLowerCase();
+export const resolve_globals_assembly: Resolver<{ assembly: Assembly }> = (source, args) => {
+    const assembly = args.assembly;
     return {
         assembly,
     };
@@ -64,4 +65,26 @@ export const resolve_ctinfo: GraphQLFieldResolver<any, any> = async (source, arg
         throw new Error(`${cellType} does not exist!`);
     }
     return result[0];
+};
+
+export const globalsResolvers = {
+    Globals: {
+        //files: resolve_globals_files,
+        inputData: resolve_globals_inputData,
+        byAssembly: resolve_globals_assembly,
+    },
+    AssemblySpecificGlobals: {
+        tfs: resolve_globals_assembly_tfs,
+        cellCompartments: resolve_globals_assembly_cellCompartments,
+        cellTypeInfoArr: resolve_globals_assembly_cellTypeInfoArr,
+        ctinfo: resolve_ctinfo,
+        chromCounts: resolve_globals_assembly_chromCounts,
+        chromLens: resolve_globals_assembly_chromLens,
+        cCREHistBins: resolve_globals_assembly_creHistBins,
+        geBiosampleTypes: resolve_globals_assembly_geBiosampleTypes,
+        geBiosamples: resolve_globals_assembly_geBiosamples,
+        //cCREBedsByCellType: resolve_globals_assembly_cCREBedsByCellType,
+        //cCREFiles: resolve_globals_assembly_creFiles,
+        inputData: resolve_globals_assembly_inputData,
+    },
 };

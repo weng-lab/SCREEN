@@ -409,11 +409,15 @@ export async function ccreBeds(assembly) {
 export async function genemap(assembly) {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid, ensemblid_ver, approved_symbol, approved_symbol as gene, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
+        SELECT ensemblid, ensemblid_ver, approved_symbol, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
         FROM ${tableName}
     `;
     const res = await db.any(q);
     return res.reduce((prev, curr) => {
+        curr = {
+            assembly,
+            ...curr,
+        };
         prev[curr.ensemblid] = curr;
         prev[curr.ensemblid_ver] = curr;
         return prev;
@@ -501,24 +505,6 @@ h3k4me3_zscores`
         obj[assay] = r[k];
         return obj;
     }, {} as Record<assaytype, number[]>);
-}
-
-async function getGenes(assembly, accession, allOrPc) {
-    const tableall = assembly + '_cre_all';
-    const tableinfo = assembly + '_gene_info';
-    const tableTss = assembly + '_tss_info';
-    const q = `
-        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
-        FROM
-        (SELECT UNNEST(gene_${allOrPc}_id) geneid,
-        UNNEST(gene_${allOrPc}_distance) distance
-        FROM ${tableall} WHERE accession = $1) AS g
-        INNER JOIN ${tableinfo} AS gi
-        ON g.geneid = gi.geneid
-        INNER JOIN ${tableTss} as tss
-        ON gi.ensemblid_ver = tss.ensemblid_ver
-    `;
-    return db.any(q, [accession]);
 }
 
 export async function getGenesMany(
@@ -717,13 +703,13 @@ export async function rampage_info(assembly) {
 export async function geneByApprovedSymbol(assembly: Assembly, gene: string): Promise<Gene> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop, strand
+        SELECT ensemblid_ver, approved_symbol, chrom, start, stop, strand
         FROM ${tableName}
         WHERE approved_symbol = $1
     `;
     return await db.one(q, [gene], r => ({
         assembly,
-        gene: r.gene,
+        approved_symbol: r.approved_symbol,
         ensemblid_ver: r.ensemblid_ver,
         coords: {
             chrom: r.chrom,
