@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
-import { Assembly, ctspecificdata } from '../types';
+import { Assembly, ctspecificdata, Resolver } from '../types';
 
 export class Gwas {
     assembly: Assembly;
@@ -128,8 +128,11 @@ export const resolve_gwas_snps: GraphQLFieldResolver<any, any> = async (source, 
     return DbGwas.searchSNPs(assembly, search);
 };
 
-export const resolve_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
-    const assembly = args.assembly.toLowerCase();
+export const resolve_gwas: Resolver<{ assembly: Assembly }> = (source, args) => {
+    if (args.assembly !== 'grch38') {
+        throw new Error('GWAS only available for GRCh38');
+    }
+    const assembly = args.assembly;
     const g = new Gwas(assembly);
     return g.awaitStudies().then(r => ({ gwas_obj: g }));
 };

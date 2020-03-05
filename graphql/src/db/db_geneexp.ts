@@ -59,23 +59,44 @@ export const computeHorBarsAll = async (assembly, gene, compartments, biosample_
     const tableNameData = assembly + '_rnaseq_expression';
     const tableNameMetadata = assembly + '_rnaseq_metadata';
     const q = `
-        SELECT
+SELECT
+    expid,
+    organ,
+    cellType,
+    ageTitle,
+    json_agg(json_build_object('replicate', replicate, 'tpm', tpm, 'fpkm', fpkm, 'id', id)) as reps
+FROM (
+    SELECT
         r.expid,
         meta.organ,
         meta.cellType,
         meta.ageTitle,
-        json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm, 'id', r.id)) as reps
-        FROM ${tableNameData} AS r
-        INNER JOIN ${tableNameMetadata} AS meta ON meta.expid = r.expid AND meta.replicate = r.replicate
-        WHERE gene_name = '${gene}'
-        AND meta.cellCompartment = ANY ($1)
-        AND meta.biosample_type = ANY ($2)
-        GROUP BY
+        r.replicate,
+        r.id,
+        r.tpm,
+        r.fpkm
+	FROM ${tableNameData} AS r
+	INNER JOIN ${tableNameMetadata} AS meta ON meta.expid = r.expid AND meta.replicate = r.replicate
+	WHERE gene_name = '${gene}'
+    AND meta.cellCompartment = ANY ($1)
+    AND meta.biosample_type = ANY ($2)
+    GROUP BY
         meta.organ,
         meta.cellType,
         meta.ageTitle,
-        r.expid
-    `;
+        r.tpm,
+        r.fpkm,
+        r.expid,
+        r.fileid,
+        r.replicate,
+        r.id
+) g
+GROUP BY
+    expid,
+    organ,
+    cellType,
+    ageTitle
+`;
     const res = await db.any(q, [compartments, biosample_types]);
     return res.map(makeEntry);
 };

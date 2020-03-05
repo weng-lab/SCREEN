@@ -504,7 +504,7 @@ export const typeDefs = gql`
     "GWAS data"
     type Gwas {
         studies: [GwasStudy!]!
-        study(study: String!): GwasStudy!
+        study(study: String!): GwasStudy
         snps(search: String!): [SNP!]!
     }
 
