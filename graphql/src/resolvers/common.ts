@@ -10,7 +10,7 @@ export const resolve_gene_exons: GraphQLFieldResolver<any, any> = async source =
     return exons(assembly, ensemblid_ver);
 };
 
-export const resolve_celltypeinfo_ccREActivity: GraphQLFieldResolver<{ value: string }, any, any> = (source, args) => {
+export const resolve_biosampleinfo_ccREActivity: GraphQLFieldResolver<{ value: string }, any, any> = (source, args) => {
     const ct = source.value;
     const ccre: string = args.ccre;
     const assembly = getAssemblyFromCre(ccre);

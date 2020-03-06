@@ -11,7 +11,7 @@ import { resolve_ccre, cCREDetailsResolvers } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps, snpResolvers } from '../resolvers/snp';
-import { resolve_celltypeinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
+import { resolve_biosampleinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
 
 // For when these come back
 /*
@@ -220,10 +220,10 @@ export const typeDefs = gql`
         tfs: [String!]!
         "A list of cell compartments"
         cellCompartments: [String!]!
-        "Get info on all cell types used and assays used for cCRE data"
-        cellTypeInfoArr: [CellTypeInfo!]
-        "Gets the info for a specific cell type. Can use 'none' to return nothing."
-        ctinfo(cellType: String!): CellTypeInfo
+        "Get info on all biosamples used and assays used for cCRE data"
+        biosamples: [BiosampleInfo!]
+        "Gets the info for a specific biosample"
+        biosample(biosample: String!): BiosampleInfo
         "Returns the numbers of cCREs keyed by chromosome"
         chromCounts: ChromCounts
         "Returns the length of each chromosome"
@@ -238,6 +238,11 @@ export const typeDefs = gql`
         inputData: AssemblyInputData
     }
 
+    """
+    Represents a single cCRE.
+
+    Note that querying of 'details' is limited to up to only 5 cCREs at a time, for performance.
+    """
     type cCRE {
         "Assembly the cCRE is defined of"
         assembly: Assembly!
@@ -342,7 +347,7 @@ export const typeDefs = gql`
 
     "The celltype-specific z-scores for this cCRE"
     type CTAssayData {
-        ct: CellTypeInfo!
+        ct: BiosampleInfo!
         dnase: Float
         h3k4me3: Float
         h3k27ac: Float
@@ -419,20 +424,26 @@ export const typeDefs = gql`
         CISTROME
     }
 
-    "Info on a cell type used in SCREEN and in cCREs"
-    type CellTypeInfo {
+    "Info on a biosample used in SCREEN and in cCREs"
+    type BiosampleInfo {
+        "A user-friendly name for this biosample"
         name: String
+        "A machine-friendly name for this biosample (e.g. spaces with with underscores)"
         value: String!
+        "The tissue this biosample is from"
         tissue: String!
-        displayName: String!
+        "True if there is differential expression data for this biosample"
         isde: Boolean!
+        "Alternative names for this biosample"
         synonyms: [String!]
-        assays: [CellTypeAssay!]
+        "Epigentic assays performed on this biosample that were used to create cCREs"
+        assays: [AssayMetadata!]
+        "Get cCRE activity for this biosample"
         cCREActivity(ccre: String!): CtSpecific
     }
 
-    "Info on a single assay from a cell type"
-    type CellTypeAssay {
+    "Info on a single assay from a biosample"
+    type AssayMetadata {
         assay: String!
         expid: String!
         fileid: String!
@@ -529,6 +540,7 @@ export const typeDefs = gql`
         ccres("The cell type to get cres for. If null, will get cres for all cell types" cellType: String): [GwasCCRE!]!
     }
 
+    "Represents a SNP"
     type SNP {
         "The SNP assembly"
         assembly: Assembly!
@@ -566,7 +578,7 @@ export const typeDefs = gql`
         expID: String!
         fdr: Float!
         pval: Float!
-        ct: CellTypeInfo!
+        ct: BiosampleInfo!
     }
 
     type GwasCCRE {
@@ -651,8 +663,8 @@ export const resolvers = ({
         genetop: resolve_genetop,
         snps: resolve_snps,
     },
-    CellTypeInfo: {
-        cCREActivity: resolve_celltypeinfo_ccREActivity,
+    BiosampleInfo: {
+        cCREActivity: resolve_biosampleinfo_ccREActivity,
     },
     CommonGene: {
         exons: resolve_gene_exons,

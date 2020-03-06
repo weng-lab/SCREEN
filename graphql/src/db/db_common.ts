@@ -335,8 +335,6 @@ export async function datasets(assembly) {
                 name: r.name,
                 value: r.value,
                 tissue: r.tissue,
-                // Sometimes name is null, so fallback to value
-                displayName: r.name || r.value,
                 isde: r.isde,
                 synonyms: r.synonyms,
                 assays: [],

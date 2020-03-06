@@ -2,6 +2,14 @@ The SCREEN API facilitates access to a number of different data and types of
 data. Here, we'll briefly describe the data available, but go into more depth,
 with examples, for each in separate pages.
 
+## Retrieving metadata
+
+In many queries, specific names for biosamples, cell compartments, transcription
+factors, etc. are required/optional for input. So, it's important to be able to
+get a list of these. The `globals` field allows querying these by assembly, the
+input files used for SCREEN, and some other miscellaneous data such as binned
+cCRE counts across the genome.
+
 ## Searching for cCREs
 
 In order to search for ccREs, you can use the `ccres` field. ccREs can be
@@ -19,14 +27,6 @@ section.
 To get detailed information on a single cCRE, such as their epigenetic signals
 in all cell types, or their intersection with transcription factors, you can use
 the `ccre` field.
-
-## Retrieving metadata
-
-In many queries, specific names for biosamples, cell compartments, transcription
-factors, etc. are required/optional for input. So, it's important to be able to
-get a list of these. The `globals` field allows querying these by assembly, the
-input files used for SCREEN, and some other miscellaneous data such as binned
-cCRE counts across the genome.
 
 ## Querying gene expression data
 

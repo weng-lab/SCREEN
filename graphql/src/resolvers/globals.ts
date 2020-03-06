@@ -23,7 +23,7 @@ export const resolve_globals_assembly_tfs = source => loadCache(source.assembly)
 
 export const resolve_globals_assembly_cellCompartments = source => Compartments;
 
-export const resolve_globals_assembly_cellTypeInfoArr = source =>
+export const resolve_globals_assembly_biosamples = source =>
     loadCache(source.assembly)
         .datasets()
         .then(d => d.globalCellTypeInfoArr);
@@ -54,15 +54,17 @@ export const resolve_help_key: GraphQLFieldResolver<any, any> = async (source, a
     return helpText;
 };
 
-export const resolve_ctinfo: GraphQLFieldResolver<any, any> = async (source, args) => {
-    const cellType = args.cellType;
-    if (cellType === 'none') return undefined;
+export const resolve_globals_assembly_biosample: Resolver<{ biosample: string }, { assembly: Assembly }> = async (
+    source,
+    args
+) => {
+    const biosample = args.biosample;
     const cellTypeInfoArr = await loadCache(source.assembly)
         .datasets()
         .then(d => d.globalCellTypeInfoArr);
-    const result = cellTypeInfoArr.filter(ct => ct.value === cellType || ct.name === cellType);
+    const result = cellTypeInfoArr.filter(ct => ct.value === biosample || ct.name === biosample);
     if (result.length == 0) {
-        throw new Error(`${cellType} does not exist!`);
+        throw new Error(`${biosample} does not exist!`);
     }
     return result[0];
 };
@@ -76,8 +78,8 @@ export const globalsResolvers = {
     AssemblySpecificGlobals: {
         tfs: resolve_globals_assembly_tfs,
         cellCompartments: resolve_globals_assembly_cellCompartments,
-        cellTypeInfoArr: resolve_globals_assembly_cellTypeInfoArr,
-        ctinfo: resolve_ctinfo,
+        biosamples: resolve_globals_assembly_biosamples,
+        biosample: resolve_globals_assembly_biosample,
         chromCounts: resolve_globals_assembly_chromCounts,
         chromLens: resolve_globals_assembly_chromLens,
         cCREHistBins: resolve_globals_assembly_creHistBins,
