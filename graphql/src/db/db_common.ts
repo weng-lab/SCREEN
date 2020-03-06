@@ -772,8 +772,8 @@ export async function inputData(assembly) {
     return await db.any(q, [assembly]);
 }
 
-// Almost like topTissues except filter by a threshold
-// TODO: add a threshold param to topTissues
+// Almost like biosampleSpecificSignals except filter by a threshold
+// TODO: add a threshold param to biosampleSpecificSignals
 export async function activeCts(
     assembly: Assembly,
     accession: string,

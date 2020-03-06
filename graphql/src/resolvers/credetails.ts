@@ -44,7 +44,7 @@ export class CREDetails {
     static getCtData = (ctvalue, ctmap, key, ranks) =>
         ctvalue in ctmap[key] ? ranks[key][ctmap[key][ctvalue] - 1] : undefined;
 
-    async topTissues() {
+    async biosampleSpecificSignals() {
         const c = loadCache(this.assembly);
         const ctmap = await c.ctmap();
         const datasets = await c.datasets();
@@ -167,9 +167,9 @@ export async function resolve_details(source, args, context, info) {
     return { details };
 }
 
-export async function resolve_cre_topTissues(source: dbcre & { details: CREDetails }) {
+export async function resolve_cre_biosampleSpecificSignals(source: dbcre & { details: CREDetails }) {
     const cre: CREDetails = source.details;
-    return cre.topTissues();
+    return cre.biosampleSpecificSignals();
 }
 
 export async function resolve_cre_nearbyGenomic(source, args, context, info) {
@@ -308,14 +308,14 @@ export async function resolve_cre_miniPeaks(source, args, context, info) {
 export const cCREDetailsResolvers = {
     ccreDetails: {
         ccres: resolve_ccres,
-        topTissues: resolve_cre_topTissues,
+        biosampleSpecificSignals: resolve_cre_biosampleSpecificSignals,
         nearbyGenomic: resolve_cre_nearbyGenomic,
         //fantom_cat: resolve_cre_fantomCat,
         ortholog: resolve_cre_ortholog,
         tfIntersection: resolve_cre_tfIntersection,
-        cistromeIntersection: resolve_cre_cistromeIntersection,
+        //cistromeIntersection: resolve_cre_cistromeIntersection,
         linkedGenes: resolve_cre_linkedGenes,
-        ccreTargetData: resolve_cre_target_data,
+        //ccreTargetData: resolve_cre_target_data,
         //miniPeaks: resolve_cre_miniPeaks,
     },
     OrthologouscCRE: {
@@ -326,6 +326,6 @@ export const cCREDetailsResolvers = {
         tads: resolve_cre_nearbyGenomic_genesInTad,
         re_tads: resolve_cre_nearbyGenomic_re_tads,
         nearby_res: resolve_cre_nearbyGenomic_nearbyCREs,
-        overlaping_snps: resolve_cre_nearbyGenomic_snps,
+        nearby_snps: resolve_cre_nearbyGenomic_snps,
     },
 };

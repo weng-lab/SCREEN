@@ -18,10 +18,18 @@ import { resolve_biosampleinfo_ccREActivity, resolve_gene_exons } from '../resol
     scalar Minipeaks
 
     type ccreDetails {
+        "Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data"
+        cistromeIntersection: ChIPSeqIntersections!
         "Returns intersecting FANTOM CAT RNAs"
         fantom_cat: FantomCat!
         "Returns signal profile data"
         miniPeaks: Minipeaks
+        "Returns the intersection data that supports a specific target"
+        ccreTargetData(
+            target: String!
+            target_type: ChIPSeqTargetType!
+            eset: IntersectionSource!
+        ): [ChIPSeqIntersectionData!]!
     }
 
     type FantomCat {
@@ -320,8 +328,8 @@ export const typeDefs = gql`
 
     "Get details of various experiments related to this cCRE."
     type ccreDetails {
-        "Returns celltype-specific experiment data"
-        topTissues: [CTAssayData!]!
+        "Returns biosamle-specific experiment data"
+        biosampleSpecificSignals: [AssayData!]!
         "Returns nearby genomic elements"
         nearbyGenomic: NearbyGenomic!
         #"Returns intersecting FANTOM CAT RNAs"
@@ -333,20 +341,12 @@ export const typeDefs = gql`
         ): [OrthologouscCRE!]
         "Returns intersection counts for transcription factor and histone modification ChIP-seq data"
         tfIntersection: ChIPSeqIntersections!
-        "Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data"
-        cistromeIntersection: ChIPSeqIntersections!
         "Returns linked genes"
         linkedGenes: [LinkedGene!]!
-        "Returns the intersection data that supports a specific target"
-        ccreTargetData(
-            target: String!
-            target_type: ChIPSeqTargetType!
-            eset: IntersectionSource!
-        ): [ChIPSeqIntersectionData!]!
     }
 
     "The celltype-specific z-scores for this cCRE"
-    type CTAssayData {
+    type AssayData {
         ct: BiosampleInfo!
         dnase: Float
         h3k4me3: Float
@@ -354,12 +354,18 @@ export const typeDefs = gql`
         ctcf: Float
     }
 
+    "Nearby genomic elements"
     type NearbyGenomic {
+        "Nearby genes"
         nearby_genes: [NearbyGene!]!
+        "Genes in the same TAD as this cCRE"
         tads: [CommonGene!]!
+        "cCREs in the same TAD as this cCRE"
         re_tads: [NearbyRE!]!
+        "Nearby cCREs"
         nearby_res: [NearbyRE!]!
-        overlapping_snps: [NearbySNP!]!
+        "SNPs within 10kb of this cCRE"
+        nearby_snps: [NearbySNP!]!
     }
 
     "A nearby cCRE"
@@ -421,7 +427,6 @@ export const typeDefs = gql`
 
     enum IntersectionSource {
         ENCODE
-        CISTROME
     }
 
     "Info on a biosample used in SCREEN and in cCREs"
@@ -650,7 +655,7 @@ export const resolvers = ({
     },
     IntersectionSource: {
         ENCODE: 'peak',
-        CISTROME: 'cistrome',
+        //CISTROME: 'cistrome',
     },
     Query: {
         ccres: resolve_ccres,

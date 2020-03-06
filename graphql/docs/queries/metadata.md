@@ -34,7 +34,7 @@ query {
 }
 ```
 
-# Gene expression-related metadata
+## Gene expression-related metadata
 
 ```
 query {
