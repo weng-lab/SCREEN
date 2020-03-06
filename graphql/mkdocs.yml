@@ -24,3 +24,4 @@ nav:
     - 'Gene expression': queries/gene_expression.md
     - 'Differential gene expression': queries/differential_gene_expression.md
     - 'GWAS and SNPs': queries/gwas_and_snps.md
+    - 'Rampage': queries/rampage.md

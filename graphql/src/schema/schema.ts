@@ -111,7 +111,7 @@ export const typeDefs = gql`
         rampage(assembly: Assembly!, gene: String!): RampageGeneData
         "Get gene expression by biosample"
         genetop(assembly: Assembly!, biosample: String!): [TopGenesReplicateData!]
-        snps(assembly: Assembly, id: String, range: InputChromRange): [SNP!]
+        snps(assembly: Assembly!, id: String, range: InputChromRange): [SNP!]
     }
 
     enum Assembly {
