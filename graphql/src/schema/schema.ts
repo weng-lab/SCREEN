@@ -9,12 +9,16 @@ import { resolve_geneexp } from '../resolvers/geneexp';
 import { resolve_gwas, gwasResolvers } from '../resolvers/gwas';
 import { resolve_ccre, cCREDetailsResolvers } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
-import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps, snpResolvers } from '../resolvers/snp';
 import { resolve_biosampleinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
 
 // For when these come back
 /*
+    Query {
+        "Get gene expression by biosample"
+        genetop(assembly: Assembly!, biosample: String!): [TopGenesReplicateData!]
+    }
+
     scalar Minipeaks
 
     type ccreDetails {
@@ -73,6 +77,19 @@ import { resolve_biosampleinfo_ccREActivity, resolve_gene_exons } from '../resol
         cCREFiles: cCREFiles
     }
 
+    type TopGenesReplicateData {
+        tissue: String!
+        cellType: String!
+        gene_name: String!
+        expID: String!
+        ageTitle: String!
+        rID: String!
+        replicate: String!
+        rawTPM: Float!
+        logTPM: Float!
+        rawFPKM: Float!
+        logFPKM: Float!
+    }
 */
 
 export const typeDefs = gql`
@@ -109,8 +126,6 @@ export const typeDefs = gql`
         gwas(assembly: Assembly!): Gwas
         "Get RAMPAGE data for a gene"
         rampage(assembly: Assembly!, gene: String!): RampageGeneData
-        "Get gene expression by biosample"
-        genetop(assembly: Assembly!, biosample: String!): [TopGenesReplicateData!]
         snps(assembly: Assembly!, id: String, range: InputChromRange): [SNP!]
     }
 
@@ -632,20 +647,6 @@ export const typeDefs = gql`
         strand: String!
         counts: Float!
     }
-
-    type TopGenesReplicateData {
-        tissue: String!
-        cellType: String!
-        gene_name: String!
-        expID: String!
-        ageTitle: String!
-        rID: String!
-        replicate: String!
-        rawTPM: Float!
-        logTPM: Float!
-        rawFPKM: Float!
-        logFPKM: Float!
-    }
 `;
 
 export const resolvers = ({
@@ -665,7 +666,7 @@ export const resolvers = ({
         geneExpresssion: resolve_geneexp,
         gwas: resolve_gwas,
         rampage: resolve_rampage,
-        genetop: resolve_genetop,
+        //genetop: resolve_genetop,
         snps: resolve_snps,
     },
     BiosampleInfo: {

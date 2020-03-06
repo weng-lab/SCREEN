@@ -42,17 +42,3 @@ query {
   }
 }
 ```
-
-## Get the top expressed genes for a given biosample
-
-```
-query {
-  genetop(assembly: GRCh38, biosample: "K562") {
-    gene_name
-    cellType
-    expID
-    replicate
-    rawTPM
-  }
-}
-```

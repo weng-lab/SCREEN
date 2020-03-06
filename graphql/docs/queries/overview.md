@@ -31,9 +31,7 @@ the `ccre` field.
 ## Querying gene expression data
 
 The SCREEN API has imported all ENCODE RNA-seq data. With the `geneExpression`
-field, you can query the expression of a single gene across all biosamples. With
-the `genetop` field, you can query the top (1000) expressed genes in a given
-biosample.
+field, you can query the expression of a single gene across all biosamples.
 
 ## Querying differential gene expression data
 
