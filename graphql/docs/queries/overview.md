@@ -37,7 +37,7 @@ biosample.
 
 ## Querying differential gene expression data
 
-**NOTE: This is only available for mm10 currently**
+**NOTE: Differential expression data is only available for mm10 currently**
 
 For mouse embryonic biosamples, differential gene expression data is available
 with the `differentialExpression` field.

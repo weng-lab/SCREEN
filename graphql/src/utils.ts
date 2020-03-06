@@ -1,7 +1,9 @@
+import DataLoader from 'dataloader';
+
 import { chroms } from './constants';
 import { Assembly } from './types';
 
-export const assemblies = ['grch38', 'mm10'];
+export const assemblies: Assembly[] = ['grch38', 'mm10'];
 
 const starts = {
     mm10: 'em10e',
@@ -73,3 +75,5 @@ export const reduceAsKeys = <T extends string = string, V = any>(array: T[], map
         {} as Record<T, V>
     );
 };
+
+export const createDataLoader = <K, V>(f: (assembly: Assembly, keys: readonly K[]) => Promise<V[]>): Record<Assembly, DataLoader<K, V>> => reduceAsKeys(assemblies, (assembly: Assembly) => new DataLoader<K, V>(keys => f(assembly, keys)));

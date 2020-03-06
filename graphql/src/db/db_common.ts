@@ -4,6 +4,7 @@ import { getCreTable, dbcre } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
 import { Assembly, assaytype, NearbyRE } from '../types';
 import { Gene, nearbyGene } from '../resolvers/credetails';
+import { createDataLoader } from '../utils';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -477,35 +478,26 @@ export async function crePos(assembly, accession) {
     return { chrom: r['chrom'], start: r['start'], end: r['stop'] };
 }
 
-async function getColsForAccession(assembly, accession, cols) {
+const ccreEpigeneticSignals = async (
+    assembly: Assembly,
+    accessions: readonly string[]
+): Promise<Record<assaytype, number[]>[]> => {
     const tableName = assembly + '_cre_all';
     const q = `
-SELECT ${cols.join(',')}
+SELECT dnase_zscores, ctcf_zscores, h3k27ac_zscores, h3k4me3_zscores
 FROM ${tableName}
-WHERE accession = $1
+JOIN unnest($1) WITH ORDINALITY t(accession, ord) USING (accession)
+ORDER BY t.ord
     `;
-    return db.oneOrNone(q, [accession]);
-}
-
-export async function creRanks(assembly, accession): Promise<Record<assaytype, number[]>> {
-    const cols = `
-dnase_zscores
-ctcf_zscores
-h3k27ac_zscores
-h3k4me3_zscores`
-        .trim()
-        .split('\n');
-
-    const r = await getColsForAccession(assembly, accession, cols);
-    if (!r) {
-        throw new Error(`Invalid accession (${accession})`);
-    }
-    return cols.reduce((obj, k) => {
-        const assay = k.split('_')[0];
-        obj[assay] = r[k];
-        return obj;
-    }, {} as Record<assaytype, number[]>);
-}
+    const res = await db.any(q, [accessions]);
+    return res.map(r => ({
+        dnase: r.dnase_zscores,
+        ctcf: r.ctcf_zscores,
+        h3k27ac: r.h3k27ac_zscores,
+        h3k4me3: r.h3k4me3_zscores,
+    }));
+};
+export const ccreEpigeneticSignalsLoader = createDataLoader(ccreEpigeneticSignals);
 
 export async function getGenesMany(
     assembly: Assembly,
@@ -790,7 +782,7 @@ export async function activeCts(
     assays: assaytype[],
     threshold: number = 1.64
 ): Promise<string[]> {
-    const ranks = await creRanks(assembly, accession);
+    const ranks = await ccreEpigeneticSignalsLoader[assembly].load(accession);
     const ctmap = await loadCache(assembly).ctmap();
     const active = new Set<string>();
     for (const assay of assays) {

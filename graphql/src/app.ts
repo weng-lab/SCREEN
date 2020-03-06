@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000;
 const isPlaygroundActive = true || process.env.NODE_ENV !== "production";
 const apolloServer = new ApolloServer({
     schema: generatedSchema,
-    playground: isPlaygroundActive
+    playground: isPlaygroundActive,
 });
 
 const app = express();

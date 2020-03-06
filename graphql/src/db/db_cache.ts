@@ -9,12 +9,6 @@ import { reduceAsKeys } from '../utils';
 
 const assemblies: Assembly[] = ['grch38', 'mm10'];
 
-const cacheLoader = (cacheMap: loadablecache) =>
-    new DataLoader<keyof cache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
-
-const globalcacheLoader = (cacheMap: loadableglobalcache) =>
-    new DataLoader<keyof globalcache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
-
 const ccRECtspecificLoader = (assembly: Assembly) =>
     new DataLoader<string, ctspecificdata>(keys => getCtSpecificData(assembly, keys));
 export const ccRECtspecificLoaders = reduceAsKeys(assemblies, ccRECtspecificLoader);
@@ -196,18 +190,22 @@ function getGlobalCacheMap(): loadableglobalcache {
     };
 }
 
-function getCache<C>(
-    cacheKeys: Array<keyof C>,
-    cacheLoader: DataLoader<keyof C, any>
-): ByFunction<Promisify<Record<keyof C, any>>> {
-    return cacheKeys.reduce((prev, key) => {
-        prev[key] = () => cacheLoader.load(key);
+function getCache<C, R extends ByFunction<Promisify<C>> = ByFunction<Promisify<C>>>(
+    cacheMap: R
+): [ByFunction<Promisify<C>>, DataLoader<keyof C, C[keyof C]>] {
+    const loader = new DataLoader<keyof C, C[keyof C]>(keys => Promise.all(keys.map(key => cacheMap[key]()) as any));
+    const map = Object.keys(cacheMap).reduce((prev, key) => {
+        prev[key] = () => loader.load(key as any); // We know this key is `keyof R`
         return prev;
-    }, {} as ByFunction<Promisify<Record<keyof C, any>>>);
+    }, {} as ByFunction<Promisify<C>>);
+    return [map, loader];
 }
 
-let caches: Record<Assembly, loadablecache> = undefined as any;
-let globalcache: loadableglobalcache = undefined as any;
+let caches: Record<Assembly, [loadablecache, DataLoader<keyof cache, any>]> = undefined as any;
+let globalcache: [
+    loadableglobalcache,
+    DataLoader<keyof globalcache, globalcache[keyof globalcache]>
+] = undefined as any;
 export function prepareCache() {
     if (caches) {
         return;
@@ -215,17 +213,15 @@ export function prepareCache() {
     try {
         const GRCh38map = getCacheMap('grch38');
         const mm10map = getCacheMap('mm10');
-        const grch38 = getCache<loadablecache>(Object.keys(GRCh38map) as (keyof cache)[], cacheLoader(GRCh38map));
-        const mm10 = getCache<loadablecache>(Object.keys(mm10map) as (keyof cache)[], cacheLoader(mm10map));
+        const grch38 = getCache<cache>(GRCh38map);
+        const mm10 = getCache<cache>(mm10map);
         caches = {
             grch38,
             mm10,
         };
         const globalmap = getGlobalCacheMap();
-        globalcache = getCache<loadableglobalcache>(
-            Object.keys(globalmap) as (keyof globalcache)[],
-            globalcacheLoader(globalmap)
-        );
+        const global = getCache<globalcache>(globalmap);
+        globalcache = global;
 
         console.log('Cache functions loaded: ', Object.keys(caches));
     } catch (e) {
@@ -237,11 +233,11 @@ export function prepareCache() {
 }
 
 export function loadCache(assembly: Assembly): loadablecache {
-    return caches[assembly.toLowerCase()];
+    return caches[assembly.toLowerCase()][0];
 }
 
 export function loadGlobalCache(): loadableglobalcache {
-    return globalcache;
+    return globalcache[0];
 }
 
 export const Compartments = Promise.resolve([

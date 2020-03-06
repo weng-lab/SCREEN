@@ -49,8 +49,7 @@ export class CREDetails {
         const ctmap = await c.ctmap();
         const datasets = await c.datasets();
         // ['h3k4me3', 'h3k27ac', 'dnase', 'ctcf']
-        const ranks = await DbCommon.creRanks(this.assembly, this.accession);
-        console.log(ranks);
+        const ranks = await DbCommon.ccreEpigeneticSignalsLoader[this.assembly].load(this.accession);
         const data = datasets.globalCellTypeInfoArr.map(ct => {
             const dnase = CREDetails.getCtData(ct.value, ctmap, 'dnase', ranks);
             const h3k4me3 = CREDetails.getCtData(ct.value, ctmap, 'h3k4me3', ranks);
@@ -249,7 +248,7 @@ export async function resolve_cre_ortholog_cCRE(source: {
     accession: string;
     range: { chrom: string; start: number; end: number };
 }) {
-    if (!assemblies.includes(source.assembly)) {
+    if (!assemblies.includes(source.assembly as any)) {
         return undefined;
     }
     const ctmap = await loadCache(source.assembly as Assembly).ctmap();
