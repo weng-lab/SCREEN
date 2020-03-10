@@ -1,10 +1,11 @@
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
-import { getCreTable, dbcre } from './db_cre_table';
+import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
-import { Assembly, assaytype, NearbyRE } from '../types';
-import { Gene, nearbyGene } from '../resolvers/credetails';
+import { Assembly, assaytype, NearbyRE, ChromRange } from '../types';
+import { nearbyGene } from '../resolvers/credetails';
 import { createDataLoader } from '../utils';
+import { Gene } from '../types';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -405,25 +406,33 @@ export async function ccreBeds(assembly) {
     return beds(assembly, tableName);
 }
 
-export async function genemap(assembly) {
+export async function genemap(assembly): Promise<Record<string, Gene & { ensemblid: string }>> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid, ensemblid_ver, approved_symbol, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
+        SELECT ensemblid, ensemblid_ver, approved_symbol, chrom, start, stop, strand
         FROM ${tableName}
     `;
     const res = await db.any(q);
     return res.reduce((prev, curr) => {
-        curr = {
+        const gene = {
             assembly,
-            ...curr,
+            approved_symbol: curr.approved_symbol,
+            ensemblid: curr.ensemblid,
+            ensemblid_ver: curr.ensemblid_ver,
+            coords: {
+                chrom: curr.chrom,
+                start: curr.start,
+                end: curr.stop,
+                strand: curr.strand,
+            },
         };
-        prev[curr.ensemblid] = curr;
-        prev[curr.ensemblid_ver] = curr;
+        prev[gene.ensemblid] = gene;
+        prev[gene.ensemblid_ver] = gene;
         return prev;
     }, {});
 }
 
-export async function geneInfo(assembly, gene) {
+export async function geneInfo(assembly: Assembly, gene: string) {
     const tableName = assembly + '_gene_info';
     const q = `
         SELECT *
@@ -497,6 +506,34 @@ ORDER BY t.ord
 };
 export const ccreEpigeneticSignalsLoader = createDataLoader(ccreEpigeneticSignals);
 
+export const genes = async (assembly: Assembly, genes: readonly string[]): Promise<Gene[]> => {
+    const tableName = assembly + '_gene_info';
+    const q = `
+SELECT ensemblid_ver, approved_symbol, chrom, start, stop, strand
+FROM ${tableName}
+JOIN unnest($1) WITH ORDINALITY t(approved_symbol, ord) USING (approved_symbol)
+ORDER BY t.ord
+    `;
+    const res = await db.any(q, [genes]);
+    if (res.length !== genes.length) {
+        throw new Error('Invalid gene');
+    }
+    return res.map(r => ({
+        assembly,
+        approved_symbol: r.approved_symbol,
+        ensemblid_ver: r.ensemblid_ver,
+        coords: {
+            assembly,
+            chrom: r.chrom,
+            start: r.start,
+            end: r.stop,
+            strand: r.strand,
+        },
+    }));
+};
+export const genesLoader = createDataLoader(genes);
+
+// cCREs
 export async function getGenesMany(
     assembly: Assembly,
     accessions: readonly string[],
@@ -690,26 +727,6 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export async function geneByApprovedSymbol(assembly: Assembly, gene: string): Promise<Gene> {
-    const tableName = assembly + '_gene_info';
-    const q = `
-        SELECT ensemblid_ver, approved_symbol, chrom, start, stop, strand
-        FROM ${tableName}
-        WHERE approved_symbol = $1
-    `;
-    return await db.one(q, [gene], r => ({
-        assembly,
-        approved_symbol: r.approved_symbol,
-        ensemblid_ver: r.ensemblid_ver,
-        coords: {
-            chrom: r.chrom,
-            start: r.start,
-            end: r.stop,
-            strand: r.strand,
-        },
-    }));
-}
-
 export async function linkedGenes(assembly, accession) {
     const tableName = assembly + '_linked_genes';
     const q = `
@@ -797,7 +814,43 @@ export async function activeCts(
     return Array.from(active);
 }
 
-export async function exons(assembly: Assembly, ensemblid_ver: string) {
+export async function transcriptsForGene(gene: Gene): Promise<{ transcript: string; gene: Gene; range: ChromRange }[]> {
+    const tableName = gene.assembly + '_gene_details';
+    const q = `
+SELECT transcript_id as transcript, seqname as chrom, startpos as start, endpos as end, strand
+FROM ${tableName}
+WHERE gene_id = $1
+AND feature = 'transcript'
+    `;
+    const res = await db.any<{ transcript: string; chrom: string; start: number; end: number; strand: string }>(q, [
+        gene.ensemblid_ver,
+    ]);
+    return res.map(row => ({
+        gene,
+        transcript: row.transcript,
+        range: {
+            assembly: gene.assembly,
+            chrom: row.chrom,
+            start: row.start,
+            end: row.end,
+            strand: row.strand,
+        },
+    }));
+}
+
+export const transcriptExons = async (assembly: Assembly, transcript_ver: string): Promise<ChromRange[]> => {
+    const tableName = assembly + '_gene_details';
+    const q = `
+SELECT transcript_id, feature, seqname as chrom, startpos as start, endpos as end, strand
+FROM ${tableName}
+WHERE feature = 'exon'
+AND transcript_id = $1
+    `;
+    const res = await db.any<{ chrom: string; start: number; end: number; strand: string }>(q, [transcript_ver]);
+    return res.map(row => ({ ...row, assembly, chrom: row.chrom.trim(), strand: row.strand.trim() }));
+};
+
+export const geneExons = async (assembly: Assembly, ensemblid_ver: string) => {
     const tableName = assembly + '_gene_details';
     const q = `
 SELECT seqname as chrom, startpos as start, endpos as end, strand
@@ -817,4 +870,15 @@ AND transcript_id = (
         row => ({ ...row, chrom: row.chrom.trim(), strand: row.strand.trim() })
     );
     return res;
+};
+
+export async function geCellCompartments(assembly) {
+    const tableName = assembly + '_rnaseq_metadata';
+    const q = `
+        SELECT DISTINCT(cellcompartment)
+        FROM ${tableName}
+        ORDER BY 1
+    `;
+    const res = await db.many(q);
+    return res.map(r => r['cellcompartment']);
 }

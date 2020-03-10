@@ -39,7 +39,6 @@ query {
     }
   }
 }
-
 ```
 
 ## Query cCREs by biosample-specific epigenetic signal

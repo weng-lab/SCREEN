@@ -7,28 +7,10 @@ query {
     gene {
       gene
     }
-    diffcCREs {
-      center
-      value
-      typ
-      cCRE {
-        accession
-      }
-    }
-    nearbyGenes {
-      isde
-      fc
-      gene {
-        gene
-        coords {
-          chrom
-          start
-          end
-        }
-      }
-    }
-    min
-    max
+    isde
+    fc
+    ct1
+    ct2
   }
 }
 ```

@@ -3,20 +3,9 @@ import { getCreTable, dbcre } from '../db/db_cre_table';
 import { getAssemblyFromCre, assemblies } from '../utils';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
-import { Assembly } from '../types';
+import { Assembly, Gene } from '../types';
 import { resolve_ccres } from './cretable';
 
-export type Gene = {
-    assembly: Assembly;
-    approved_symbol: string;
-    ensemblid_ver: string;
-    coords: {
-        chrom: string;
-        start: number;
-        end: number;
-        strand: string;
-    };
-};
 export type nearbyGene = {
     gene: Gene;
     distance: number;

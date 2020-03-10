@@ -5,7 +5,7 @@
 query {
   geneExpresssion(assembly: GRCh38, gene: "TIGAR") {
     gene_info {
-      gene
+      approved_symbol
     }
     items {
       cellType
@@ -29,7 +29,7 @@ query {
     biosample_types: ["cell line"]
   ) {
     gene_info {
-      gene
+      approved_symbol
     }
     items {
       cellType
@@ -41,4 +41,9 @@ query {
     }
   }
 }
+```
+
+## Get gene expression given a gene
+
+```graphql
 ```

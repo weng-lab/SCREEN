@@ -1,8 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbCommon from '../db/db_common';
 import { natsorter } from '../utils';
-import { Assembly } from '../types';
-import { Gene } from './credetails';
+import { Assembly, Gene, Resolver } from '../types';
 
 const sortTranscripts = (a, b) => natsorter(a.transcript, b.transcript);
 
@@ -22,7 +21,10 @@ const _process = (transcript, ri) => {
     };
 };
 
-export async function getByGene(assembly: Assembly, gene: Gene) {
+export const resolve_rampage: GraphQLFieldResolver<any, any> = async (source, args) => {
+    const assembly: Assembly = args.assembly.toLowerCase();
+    const approved_symbol: string = args.gene;
+    const gene = await DbCommon.genesLoader[assembly].load(approved_symbol);
     const ensemblid_ver = gene.ensemblid_ver;
     const transcripts = await DbCommon.rampageByGene(assembly, ensemblid_ver);
 
@@ -32,11 +34,18 @@ export async function getByGene(assembly: Assembly, gene: Gene) {
         transcripts: transcripts_out.sort(sortTranscripts),
         gene,
     };
-}
+};
 
-export const resolve_rampage: GraphQLFieldResolver<any, any> = async (source, args, context) => {
-    const assembly: Assembly = args.assembly.toLowerCase();
-    const gene: string = args.gene;
-    const r = await DbCommon.geneByApprovedSymbol(assembly, gene);
-    return getByGene(assembly, r);
+export const resolve_transcript_rampage: Resolver<
+    {},
+    { gene: Gene; transcript: string; rampage_info?: any }
+> = async source => {
+    if (source.gene.assembly !== 'grch38') {
+        throw new Error('Rampage only available for GRCh38');
+    }
+    if (!source.rampage_info) {
+        source.rampage_info = DbCommon.rampage_info(source.gene.assembly);
+    }
+    const ri = await source.rampage_info;
+    return _process(source.transcript, ri);
 };

@@ -1,6 +1,4 @@
 import { db } from './db';
-import TissueColors from '../tissuecolors';
-import { natsorter } from '../utils';
 
 const fixedmap = {
     limb: 'limb',

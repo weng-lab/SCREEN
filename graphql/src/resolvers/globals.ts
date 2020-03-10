@@ -1,5 +1,5 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { loadCache, Compartments, loadGlobalCache } from '../db/db_cache';
+import { loadCache, loadGlobalCache } from '../db/db_cache';
 import { Resolver, Assembly } from '../types';
 import { chrom_lengths } from '../constants';
 
@@ -21,7 +21,7 @@ export const resolve_globals_assembly: Resolver<{ assembly: Assembly }> = (sourc
 
 export const resolve_globals_assembly_tfs = source => loadCache(source.assembly).tf_list();
 
-export const resolve_globals_assembly_cellCompartments = source => Compartments;
+export const resolve_globals_assembly_cellCompartments = source => loadCache(source.assembly).geCellCompartments();
 
 export const resolve_globals_assembly_biosamples = source =>
     loadCache(source.assembly)

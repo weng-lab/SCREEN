@@ -9,7 +9,7 @@ import { request } from 'graphql-request'
 const query = `query($gene: String!) {
   geneExpresssion(assembly: GRCh38, gene: $gene) {
     gene_info {
-      gene
+      approved_symbol
       ensemblid_ver
     }
     items {

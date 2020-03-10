@@ -6,7 +6,7 @@ import { dbcre } from './db/db_cre_table';
 export type Resolver<Args = { [argName: string]: any }, Source = {}, Context = {}> = GraphQLFieldResolver<Source, Context, Args>;
 
 export type Assembly = 'grch38' | 'mm10';
-export type ChromRange = { chrom: string; start: number; end: number };
+export type ChromRange = { assembly: Assembly; chrom: string; start: number; end: number, strand?: string };
 export type SNP = { assembly: Assembly; id: string; range: ChromRange };
 export type LDBlock = {
     assembly: Assembly;
@@ -32,4 +32,10 @@ export type ctspecificdata = {
 export type NearbyRE = {
     distance: number;
     cCRE: dbcre;
+};
+export type Gene = {
+    assembly: Assembly;
+    approved_symbol: string;
+    ensemblid_ver: string;
+    coords: ChromRange;
 };

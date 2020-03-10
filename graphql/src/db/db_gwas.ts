@@ -149,6 +149,7 @@ const mapldblocksnps = (assembly: Assembly, gwas_obj: Gwas) => (rows: DBLDBlockS
             assembly,
             id: row.snp,
             range: {
+                assembly,
                 chrom: row.chrom,
                 start: row.start,
                 end: row.stop,
@@ -210,6 +211,7 @@ LIMIT 10
         assembly,
         id: snp.snp,
         range: {
+            assembly,
             chrom: snp.chrom,
             start: snp.start,
             end: snp.stop,

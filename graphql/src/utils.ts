@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
 
-import { chroms } from './constants';
+import { chroms, chrom_lengths } from './constants';
 import { Assembly } from './types';
 
 export const assemblies: Assembly[] = ['grch38', 'mm10'];
@@ -77,3 +77,26 @@ export const reduceAsKeys = <T extends string = string, V = any>(array: T[], map
 };
 
 export const createDataLoader = <K, V>(f: (assembly: Assembly, keys: readonly K[]) => Promise<V[]>): Record<Assembly, DataLoader<K, V>> => reduceAsKeys(assemblies, (assembly: Assembly) => new DataLoader<K, V>(keys => f(assembly, keys)));
+
+const ensemblid_nover_regexp = /ENSMUS[GT]\d+/;
+export const removeEnsemblVer = (ver_string: string) => {
+    const match = ver_string.match(ensemblid_nover_regexp);
+    if (!match) {
+        throw new Error('No match');
+    }
+    return match[0];
+};
+
+export function checkCoords(assembly: Assembly, coord): boolean {
+    if (!(coord.chrom in chrom_lengths[assembly])) {
+        throw new Error(`Invalid chromosome ${coord.chrom}`);
+    }
+    if (coord.start < 0) {
+        throw new Error(`Invalid start position. Should be >=0.`)
+    }
+    const chrom_end = chrom_lengths[assembly][coord.chrom];
+    if (coord.end > chrom_end) {
+        throw new Error(`Invalid end position (${coord.end}). End of chromosome (${coord.chrom}) is ${chrom_end}`);
+    }
+    return true;
+}

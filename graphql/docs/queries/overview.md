@@ -51,3 +51,8 @@ with the `snps` field.
 ## Query RAMPAGE data
 
 You can query RAMPAGE data for a particular gene with the `rampage` field.
+
+## Find genomic elements in a given range
+
+If you have a given range in the genome and want to find intersecting elements,
+you can use the `range` field.

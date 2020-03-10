@@ -1,171 +1,44 @@
 import * as Common from '../db/db_common';
 import * as DbDe from '../db/db_de';
-import { loadCache } from '../db/db_cache';
-import * as CoordUtils from '../coord_utils';
-import { dbcre } from '../db/db_cre_table';
-import { Assembly, Resolver } from '../types';
-import { Gene } from './credetails';
+import { Assembly, Gene, Resolver } from '../types';
+import { removeEnsemblVer } from '../utils';
 
-class DE {
-    assembly;
-    gene;
-    ct1;
-    ct2;
-    pos;
-    names;
-    halfWindow;
-    thres;
-    radiusScale;
-    range;
+export type DifferentialExpression = {
+    isde: boolean;
+    fc: number | null;
+    ct1: string;
+    ct2: string;
+    gene: Gene;
+};
 
-    constructor(assembly, gene, ct1, ct2) {
-        this.assembly = assembly;
-        this.gene = gene;
-        this.ct1 = ct1;
-        this.ct2 = ct2;
-
-        this.halfWindow = 250 * 1000 * 2;
-        this.thres = 0;
-        this.radiusScale = 10;
-    }
-
-    async coord() {
-        if (!this.pos) {
-            const { pos, names } = await Common.genePos(this.assembly, this.gene);
-            if (!pos) {
-                throw new Error('Invalid pos for ' + this.gene);
-            }
-            this.pos = pos;
-            this.names = names;
-        }
-        return this.pos;
-    }
-
-    async nearbyDEs(): Promise<{ isde: boolean; fc: number; gene: Gene }[] | undefined> {
-        // limb_14.5 from C57BL-6_limb_embryo_14.5_days
-        const ct1 = this.ct1
-            .replace('C57BL/6_', '')
-            .replace('embryo_', '')
-            .replace('_days', '')
-            .replace('postnatal_', '');
-        const ct2 = this.ct2
-            .replace('C57BL/6_', '')
-            .replace('embryo_', '')
-            .replace('_days', '')
-            .replace('postnatal_', '');
-
-        const cd = await this.coord();
-        const c = loadCache(this.assembly);
-        const de_ctidmap = await c.de_ctidmap();
-        const ensemblToGene = await c.ensemblToGene();
-
-        const nearbyDEs = await DbDe.nearbyDEs(this.assembly, this.range, ct1, ct2, 0.05, de_ctidmap);
-        if (nearbyDEs.length === 0) {
-            return undefined;
-        }
-        const degenes = nearbyDEs.reduce((prev, d) => {
-            prev[d.ensembl] = +(Math.round(+(d['log2foldchange'] + 'e+3')) + 'e-3');
-            return prev;
-        }, {});
-
-        const genes = await DbDe.genesInRegion(this.assembly, this.range.chrom, this.range.start, this.range.end);
-        return genes.map(g => {
-            const ensemblid = g.ensemblid;
-            const fc = degenes[ensemblid];
-            const gene = ensemblToGene[ensemblid];
-            return {
-                isde: !!fc,
-                fc,
-                gene,
-            };
-        });
-    }
-
-    parseCE(typ, c: dbcre & { zscore_1: number; zscore_2: number }) {
-        const radius = (c.end - c.start) / 2;
-        return {
-            center: radius + c.start,
-            value: +(Math.round(+(+(c.zscore_2 - c.zscore_1) + 'e+3')) + 'e-3'),
-            typ: typ,
-            ccRE: c,
-        };
-    }
-
-    async nearbyPromoters() {
-        const rankMethodToIDxToCellType = await loadCache(this.assembly).rankMethodToIDxToCellType();
-        const rmLookup = rankMethodToIDxToCellType['H3K4me3'];
-        if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
-            return [];
-        }
-        const ct1PromoterIdx = rmLookup[this.ct1];
-        const ct2PromoterIdx = rmLookup[this.ct2];
-
-        const cols = [
-            `h3k4me3_zscores[${ct1PromoterIdx}] as zscore_1`,
-            `h3k4me3_zscores[${ct2PromoterIdx}] as zscore_2`,
-        ];
-        const cres = await DbDe.nearbyCREs(this.assembly, this.range, cols, true);
-        return cres
-            .filter(c => c['zscore_1'] > this.thres || c['zscore_2'] > this.thres)
-            .map(c => this.parseCE('promoter-like signature', c));
-    }
-
-    async nearbyEnhancers() {
-        const rankMethodToIDxToCellType = await loadCache(this.assembly).rankMethodToIDxToCellType();
-        const rmLookup = rankMethodToIDxToCellType['H3K27ac'];
-        if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
-            return [];
-        }
-        const ct1EnhancerIdx = rmLookup[this.ct1];
-        const ct2EnhancerIdx = rmLookup[this.ct2];
-
-        const cols = [
-            `h3k27ac_zscores[${ct1EnhancerIdx}] as zscore_1`,
-            `h3k27ac_zscores[${ct2EnhancerIdx}] as zscore_2`,
-        ];
-        const cres = await DbDe.nearbyCREs(this.assembly, this.range, cols, false);
-        return cres
-            .filter(c => c['zscore_1'] > this.thres || c['zscore_2'] > this.thres)
-            .map(c => this.parseCE('enhancer-like signature', c));
-    }
-
-    async diffCREs() {
-        return ([] as Array<any>).concat(await this.nearbyPromoters()).concat(await this.nearbyEnhancers());
-    }
-}
+export const convertCtToDect = (ct: string) =>
+    ct
+        .replace('C57BL/6_', '')
+        .replace('embryo_', '')
+        .replace('_days', '')
+        .replace('postnatal_', '');
 
 export const resolve_de: Resolver<{ assembly: Assembly; gene: string; ct1: string; ct2: string }> = async (
     source,
-    args,
-    context
-) => {
+    args
+): Promise<DifferentialExpression> => {
     const assembly = args.assembly;
-    if (assembly !== 'mm10') {
-        throw new Error('Differential expression data only available for mm10 currently.');
-    }
     const gene = args.gene;
     const ct1 = args.ct1;
     const ct2 = args.ct2;
-
-    const de = new DE(assembly, gene, ct1, ct2);
-
-    const genecoord = await de.coord();
-    const c = CoordUtils.expanded(genecoord, de.halfWindow);
-    de.range = c;
-
-    const nearbyDEs = await de.nearbyDEs();
-    const diffCREs = await de.diffCREs();
-
+    if (assembly !== 'mm10') {
+        throw new Error('Differential expression data only available for mm10.');
+    }
+    const completeGene = await Common.genesLoader[assembly].load(gene);
+    const ensemblid_ver = completeGene.ensemblid_ver;
+    const de = await DbDe.deGenesLoader[assembly].load(
+        `${convertCtToDect(ct1)}:${convertCtToDect(ct2)}:${removeEnsemblVer(ensemblid_ver)}`
+    );
     return {
-        gene: {
-            assembly,
-            coords: genecoord,
-            gene: de.names[0],
-            ensemblid_ver: de.names[1],
-        },
-        diffCREs: diffCREs,
-        nearbyGenes: nearbyDEs,
-        min: c.start,
-        max: c.end,
-    };
+        gene: source,
+        ct1,
+        ct2,
+        isde: de.isde,
+        fc: de.fc,
+    } as DifferentialExpression;
 };

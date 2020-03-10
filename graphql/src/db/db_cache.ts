@@ -2,7 +2,7 @@ import * as Common from './db_common';
 import * as De from './db_de';
 import * as Gwas from './db_gwas';
 import DataLoader from 'dataloader';
-import { Assembly, assaytype, ctspecificdata } from '../types';
+import { Assembly, assaytype, ctspecificdata, ChromRange, Gene } from '../types';
 import { getCtSpecificData } from './db_cre_table';
 import { nearbyGene } from '../resolvers/credetails';
 import { reduceAsKeys } from '../utils';
@@ -78,24 +78,11 @@ export type cache = {
     datasets: { globalCellTypeInfoArr: { name: string; value: string }[]; byCellTypeValue: Record<string, string> };
     rankMethodToCellTypes: any;
     rankMethodToIDxToCellType: any;
-    ensemblToGene: Record<
-        string,
-        {
-            assembly: Assembly;
-            approved_symbol: string;
-            ensemblid: string;
-            ensemblid_ver: string;
-            coords: {
-                chrom: string;
-                start: number;
-                end: number;
-                strand: string;
-            };
-        }
-    >;
+    ensemblToGene: Record<string, Gene & { ensemblid: string }>;
     nineState: any;
     filesList: any;
     inputData: any;
+    geCellCompartments: string[];
     geBiosampleTypes: string[];
     geBiosamples: any;
     geneIDsToApprovedSymbol: Record<string, any>;
@@ -126,6 +113,7 @@ function getCacheMap(assembly): loadablecache {
         filesList: () => indexFilesTab(assembly),
         inputData: () => Common.inputData(assembly),
 
+        geCellCompartments: () => Common.geCellCompartments(assembly),
         geBiosampleTypes: () => Common.geBiosampleTypes(assembly),
         geBiosamples: () => Common.geBiosamples(assembly),
 
@@ -239,15 +227,5 @@ export function loadCache(assembly: Assembly): loadablecache {
 export function loadGlobalCache(): loadableglobalcache {
     return globalcache[0];
 }
-
-export const Compartments = Promise.resolve([
-    'cell',
-    'nucleoplasm',
-    'cytosol',
-    'nucleus',
-    'membrane',
-    'chromatin',
-    'nucleolus',
-]);
 
 prepareCache();

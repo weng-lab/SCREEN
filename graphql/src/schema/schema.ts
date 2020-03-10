@@ -5,12 +5,14 @@ import { buildFederatedSchema } from '@apollo/federation';
 import { resolve_ccres, cCREResolvers } from '../resolvers/cretable';
 import { resolve_globals, globalsResolvers } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
-import { resolve_geneexp } from '../resolvers/geneexp';
+import { resolve_geneexp, geneExpressionResolvers } from '../resolvers/geneexp';
 import { resolve_gwas, gwasResolvers } from '../resolvers/gwas';
 import { resolve_ccre, cCREDetailsResolvers } from '../resolvers/credetails';
-import { resolve_rampage } from '../resolvers/rampage';
+import { resolve_rampage, resolve_transcript_rampage } from '../resolvers/rampage';
 import { resolve_snps, snpResolvers } from '../resolvers/snp';
-import { resolve_biosampleinfo_ccREActivity, resolve_gene_exons } from '../resolvers/common';
+import { resolve_biosampleinfo_ccREActivity, resolve_transcript_exons } from '../resolvers/common';
+import { geneResolvers, resolve_gene } from '../resolvers/gene';
+import { rangeResolvers, resolve_range } from '../resolvers/range';
 
 // For when these come back
 /*
@@ -126,7 +128,11 @@ export const typeDefs = gql`
         gwas(assembly: Assembly!): Gwas
         "Get RAMPAGE data for a gene"
         rampage(assembly: Assembly!, gene: String!): RampageGeneData
+        "Get SNPS overlapping a range"
         snps(assembly: Assembly!, id: String, range: InputChromRange): [SNP!]
+        "Get information related to a single gene"
+        gene(assembly: Assembly!, gene: String!): Gene
+        range(assembly: Assembly!, range: InputChromRange!): ChromRange!
     }
 
     enum Assembly {
@@ -305,6 +311,16 @@ export const typeDefs = gql`
         end: Int
         "Strand of this range or null if not defined"
         strand: String
+        "Returns a new range expanded from the center of the current range by a given distance"
+        expandFromCenter(distance: Int!): ChromRange
+        "Returns a new range expanded from edges of the current range by a given distance"
+        expandFromEdges(distance: Int!): ChromRange
+        "Gets ccres that intersect this range. If more than 1000 ccREs intersect, only the top 1000 are returned for performance."
+        ccres: [cCRE!]!
+        "Gets all genes that intersect this range"
+        genes: [Gene!]!
+        "Gets all SNPs that intersect this range"
+        snps: [SNP!]!
     }
 
     "If a celltype was specific, provide celltype-specific data"
@@ -336,7 +352,7 @@ export const typeDefs = gql`
         "The distance to the cCRE"
         distance: Int!
         "The gene"
-        gene: CommonGene!
+        gene: Gene!
         "Whether or not this gene is protein coding"
         pc: Boolean!
     }
@@ -374,7 +390,7 @@ export const typeDefs = gql`
         "Nearby genes"
         nearby_genes: [NearbyGene!]!
         "Genes in the same TAD as this cCRE"
-        tads: [CommonGene!]!
+        tads: [Gene!]!
         "cCREs in the same TAD as this cCRE"
         re_tads: [NearbyRE!]!
         "Nearby cCREs"
@@ -471,33 +487,10 @@ export const typeDefs = gql`
         biosample_type: String!
     }
 
-    "Differential expression data"
-    type DifferentialExpression {
-        gene: CommonGene!
-        diffcCREs: [DiffcCRE!]!
-        "Null if there are no de genes"
-        nearbyGenes: [DiffGene!]
-        min: Int!
-        max: Int!
-    }
-
-    type DiffcCRE {
-        center: Float!
-        value: Float!
-        typ: String!
-        cCRE: cCRE!
-    }
-
-    type DiffGene {
-        isde: Boolean!
-        fc: Float
-        gene: CommonGene!
-    }
-
     "Gene expression data"
     type GeneExpression {
         "Info on the gene queried. If the gene does not exist (like for spike-ins), this will be null."
-        gene_info: CommonGene
+        gene_info: Gene
         "All experimental data for this gene"
         items: [ExperimentData!]!
     }
@@ -609,25 +602,68 @@ export const typeDefs = gql`
 
     type GeneAndDistance {
         distance: Int!
-        gene: CommonGene!
+        gene: Gene!
     }
 
     "Gene info for gene expression"
-    type CommonGene {
+    type Gene {
         assembly: Assembly!
         "The gene name"
-        gene: String!
+        approved_symbol: String!
         "The ensembl id and ver of the gene"
         ensemblid_ver: String!
         "The coordinates of this gene"
         coords: ChromRange!
+        "Get exons this gene. Only available for mm10 right now."
         exons: [ChromRange!]!
+        "Returns gene expression data for the gene across one or many experiments or biosamples"
+        expression(
+            "A list of biosamples types to filter by. By default, will include all available biosample types. Available biosample types can be queried with {globals{byAssembly{geBiosampleTypes}}}"
+            biosample_types: [String!]
+            "A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}"
+            compartments: [String!]
+        ): GeneExpression!
+        "Check to see if this gene is differentially expressed between two cell types."
+        differentialExpression(
+            "The first cell type"
+            ct1: String!
+            "The second cell type"
+            ct2: String!
+        ): DifferentialExpression
+        "Get all the transcripts for this gene"
+        transcripts: [Transcript!]
+    }
+
+    type Transcript {
+        "The gene this transcript is of"
+        gene: Gene!
+        "The ensemblid with version of this transcript"
+        transcript: String!
+        range: ChromRange!
+        "The range of each exon of this transcript"
+        exons: [ChromRange!]!
+        "Any Rampage data that is available for this transcript"
+        rampage: [RampageTranscriptData!]
+    }
+
+    "Differential expression data for a given gene between two cell types"
+    type DifferentialExpression {
+        "Whether this gene is differentially expressed between two cell types"
+        isde: Boolean!
+        "If this gene is differentially expressed, the fold change"
+        fc: Float
+        "The gene"
+        gene: Gene!
+        "The first cell type"
+        ct1: String!
+        "The second cell type"
+        ct2: String!
     }
 
     "Rampage data for a specific gene"
     type RampageGeneData {
         transcripts: [RampageTranscript!]!
-        gene: CommonGene!
+        gene: Gene!
     }
 
     type RampageTranscript {
@@ -668,12 +704,15 @@ export const resolvers = ({
         rampage: resolve_rampage,
         //genetop: resolve_genetop,
         snps: resolve_snps,
+        gene: resolve_gene,
+        range: resolve_range,
     },
     BiosampleInfo: {
         cCREActivity: resolve_biosampleinfo_ccREActivity,
     },
-    CommonGene: {
-        exons: resolve_gene_exons,
+    Transcript: {
+        exons: resolve_transcript_exons,
+        rampage: resolve_transcript_rampage,
     },
 } as any) as GraphQLResolverMap;
 
@@ -687,6 +726,9 @@ export const generatedSchema = buildFederatedSchema([
             ...cCREDetailsResolvers,
             ...gwasResolvers,
             ...snpResolvers,
+            ...geneResolvers,
+            ...rangeResolvers,
+            ...geneExpressionResolvers,
         } as any) as GraphQLResolverMap,
     },
 ]);

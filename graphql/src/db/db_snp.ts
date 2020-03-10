@@ -36,6 +36,7 @@ export async function snptable(
         assembly,
         id: row['snp'],
         range: {
+            assembly,
             chrom: row['chrom'],
             start: row['start'],
             end: row['stop'],
