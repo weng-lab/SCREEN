@@ -1,3 +1,4 @@
+# Get GWAS and SNP data
 
 ## Get GWAS studies
 

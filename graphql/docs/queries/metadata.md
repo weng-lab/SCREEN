@@ -1,3 +1,4 @@
+# Query metadata
 
 ## Input data
 

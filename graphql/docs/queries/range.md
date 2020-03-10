@@ -1,3 +1,4 @@
+# Get data by genomic location
 
 ## Expand any returned `ChromRange` from center or edge
 
