@@ -555,15 +555,16 @@ INNER JOIN ${tableTss} as tss
 ON gi.ensemblid_ver = tss.ensemblid_ver
     `;
     const res = await db.any(q, [accessions]);
-    const map: Record<string, nearbyGene[]> = res.reduce((prev, row) => {
+    const map: Record<string, nearbyGene[]> = res.reduce((prev: Record<string, nearbyGene[]>, row) => {
         prev[row.accession] = prev[row.accession] || [];
 
         prev[row.accession].push({
             gene: {
                 assembly,
-                gene: row.approved_symbol,
+                approved_symbol: row.approved_symbol,
                 ensemblid_ver: row.ensemblid_ver,
                 coords: {
+                    assembly,
                     chrom: row.chrom,
                     start: row.start,
                     end: row.stop,

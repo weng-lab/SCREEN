@@ -3,10 +3,15 @@ import express, { Request, Response } from "express";
 import { generatedSchema } from './schema/schema';
 
 const port = process.env.PORT || 3000;
+const playgroundEndpoint = process.env.PLAYGROUND_ENDPOINT || undefined;
 const isPlaygroundActive = true || process.env.NODE_ENV !== "production";
 const apolloServer = new ApolloServer({
     schema: generatedSchema,
-    playground: isPlaygroundActive,
+    playground: !isPlaygroundActive
+        ? undefined
+        : {
+            endpoint: playgroundEndpoint,
+        },
     introspection: true,
 });
 

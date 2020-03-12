@@ -65,7 +65,7 @@ export class CREDetails {
         return { genesAll: this.genesAll, genesPC: this.genesPC };
     }
 
-    async nearbyGenes(): Promise<{ gene: any; distance: number; pc: boolean }[]> {
+    async nearbyGenes(): Promise<(nearbyGene & { pc: boolean })[]> {
         const { genesAll, genesPC } = await this.awaitGenes();
         const pcGenes = genesPC.map(g => g.gene.approved_symbol);
         for (const g of genesAll) {
