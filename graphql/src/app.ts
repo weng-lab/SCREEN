@@ -7,6 +7,7 @@ const isPlaygroundActive = true || process.env.NODE_ENV !== "production";
 const apolloServer = new ApolloServer({
     schema: generatedSchema,
     playground: isPlaygroundActive,
+    introspection: true,
 });
 
 const app = express();
