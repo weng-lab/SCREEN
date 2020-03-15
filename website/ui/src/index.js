@@ -12,6 +12,10 @@ import IndexPage from './apps/index/main';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-93680006-1');
+ReactGA.pageview(window.location.pathname + window.location.search);
+
 const uuid = uuider.v4();
 
 const myCreateElement = (Component, props) => {
