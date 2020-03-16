@@ -6,6 +6,7 @@ import { DifferentialExpression, convertCtToDect } from './de';
 import { natsorter, removeEnsemblVer } from '../utils';
 import { deGenesLoader } from '../db/db_de';
 import { GeneExpArgs } from './geneexp';
+import { resolve_gene_rampage } from './rampage';
 
 export type Transcript = {
     gene: Gene;
@@ -84,5 +85,6 @@ export const geneResolvers = {
         expression: resolve_gene_expression,
         differentialExpression: resolve_gene_differentialexpression,
         transcripts: resolve_gene_transcripts,
+        rampage: resolve_gene_rampage,
     },
 };

@@ -2,6 +2,7 @@ import { getCreTable, dbcre } from '../db/db_cre_table';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { Assembly, ChromRange, Resolver } from '../types';
 import { CREDetails, resolve_details } from './credetails';
+import { cleanBiosampleName } from '../utils';
 
 type cCREs_args = {
     assembly: Assembly;
@@ -55,7 +56,8 @@ export function resolve_data_range(source) {
 export function resolve_data_ctspecific(source, args) {
     const assembly: Assembly = source.assembly.toLowerCase();
     const accession: string = source.accession;
-    const ct: string = args.ct;
+    // TODO: should really verify cell type exists first
+    const ct: string = cleanBiosampleName(args.ct);
     return ccRECtspecificLoaders[assembly].load(`${accession}::${ct}`);
 }
 

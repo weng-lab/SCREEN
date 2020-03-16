@@ -2,6 +2,9 @@
 
 ## Expand any returned `ChromRange` from center or edge
 
+Ranges can be expanded from their center or edges. This can be used to query
+other data from the new range.
+
 ```graphql
 query {
   range(
@@ -26,6 +29,8 @@ query {
 ```
 
 ## Get genomic elements in a given range
+
+Given a range, you can search for multiple types of data.
 
 ```graphql
 query {

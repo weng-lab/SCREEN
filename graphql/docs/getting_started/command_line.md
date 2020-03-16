@@ -1,7 +1,7 @@
-The SCREEN API takes a query as JSON as POST data and returns a JSON response.
-As mentioned before, the interactive playground allows copying the `cURL`
-command for a given query. However, here, we'll given a simple `cURL` command
-for reference.
+The SCREEN API takes a query as JSON in the body of a POST request and returns a
+JSON response. As mentioned before, the interactive playground allows copying
+the `cURL` command for a given query. However, here, we'll give a simple `cURL`
+command for reference.
 
 The following command
 ```bash

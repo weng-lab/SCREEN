@@ -2,6 +2,8 @@
 
 ## Input data
 
+Returns the data used in SCREEN.
+
 ```grapqhl
 query {
   globals {
@@ -11,6 +13,8 @@ query {
 ```
 
 ## Cell compartments and biosample info
+
+Returns cell compartments, biosamples, and assays used for K562.
 
 ```grapqhl
 query {
@@ -37,7 +41,9 @@ query {
 
 ## Gene expression-related metadata
 
-```
+Returns biosamples and biosample types with associated gene expression data available.
+
+```graphql
 query {
   globals {
     byAssembly(assembly: GRCh38) {

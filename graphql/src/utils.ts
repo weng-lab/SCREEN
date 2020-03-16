@@ -100,3 +100,5 @@ export function checkCoords(assembly: Assembly, coord): boolean {
     }
     return true;
 }
+
+export const cleanBiosampleName = (biosample: string) => biosample.replace(' ', '_');

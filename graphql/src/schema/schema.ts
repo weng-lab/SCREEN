@@ -632,6 +632,7 @@ export const typeDefs = gql`
         ): DifferentialExpression
         "Get all the transcripts for this gene"
         transcripts: [Transcript!]
+        rampage: RampageGeneData
     }
 
     type Transcript {

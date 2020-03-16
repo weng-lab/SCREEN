@@ -228,7 +228,7 @@ export async function resolve_cre_ortholog(
     { assembly: string; accession: string; range: { chrom: string; start: number; end: number } }[] | undefined
 > {
     const cre: CREDetails = source.details;
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
     return orthologs(cre.assembly, cre.accession, assembly);
 }
 

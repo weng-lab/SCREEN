@@ -28,6 +28,7 @@ request = requests.post(
 if request.status_code != 200:
     raise Exception("Query failed. Status code: {}.".format(request.status_code))
 result = request.json()
+print(result)
 ```
 
 where the `result` is

@@ -49,3 +49,18 @@ export const resolve_transcript_rampage: Resolver<
     const ri = await source.rampage_info;
     return _process(source.transcript, ri);
 };
+
+export const resolve_gene_rampage: Resolver<{}, Gene> = async source => {
+    const assembly: Assembly = source.assembly;
+    const approved_symbol: string = source.approved_symbol;
+    const gene = await DbCommon.genesLoader[assembly].load(approved_symbol);
+    const ensemblid_ver = gene.ensemblid_ver;
+    const transcripts = await DbCommon.rampageByGene(assembly, ensemblid_ver);
+
+    const ri = await DbCommon.rampage_info(assembly);
+    const transcripts_out = transcripts.map(t => _process(t, ri));
+    return {
+        transcripts: transcripts_out.sort(sortTranscripts),
+        gene,
+    };
+};

@@ -2,7 +2,9 @@
 
 ## Query a single cCRE
 
-```
+Returns a single cCRE by accession.
+
+```graphql
 query {
   ccre(accession: "EH38E2000616") {
     accession
@@ -12,7 +14,9 @@ query {
 
 ## Get biosample-specific epigenetic signals
 
-```
+Returns all biosample-specific signals for a given cCRE.
+
+```graphql
 query {
   ccre(accession: "EH38E2000616") {
     accession
@@ -34,7 +38,9 @@ query {
 
 ## Get nearby genomic features
 
-```
+Returns nearby genomic features for a single cCRE.
+
+```graphql
 query {
   ccre(accession: "EH38E2000616") {
     accession
@@ -43,11 +49,11 @@ query {
         nearby_genes {
           distance
           gene {
-            gene
+            approved_symbol
           }
         }
         tads {
-          gene
+          approved_symbol
         }
         re_tads {
           distance
@@ -75,12 +81,23 @@ query {
 
 ## Get orthologous cCREs in another assembly
 
-```
+Returns orthogolous cCREs in both hg19 and mm10 for a given GRCh38 cCRE.
+
+```graphql
 query {
-  ccre(accession: "EH38E2000616") {
+  ccre(accession: "EH38E1516972") {
     accession
     details {
-      ortholog(assembly: "mm10") {
+      # Can rename fields by doing `<name>: field...`
+      mm10: ortholog(assembly: "mm10") {
+        accession
+        range {
+          chrom
+          start
+          end
+        }
+      }
+      hg19: ortholog(assembly: "hg19") {
         accession
         range {
           chrom
@@ -95,15 +112,20 @@ query {
 
 ## Get overlapping TFs
 
-```
+Get overlapping TF and histone peaks for a given cCRE.
+
+```graphql
 query {
   ccre(accession: "EH38E2000616") {
     accession
     details {
       tfIntersection {
         tf {
+          # The name of the TF
           name
+          # The number of peaks that overlap this cCRE
           n
+          # The total number of peaks for the TF that *could* overlap this cCRE
           total
         }
         histone {
@@ -119,9 +141,11 @@ query {
 
 ## Get linked genes
 
-```
+Returns linked genes for a cCRE.
+
+```graphql
 query {
-  ccre(accession: "EH38E2000616") {
+  ccre(accession: "EH38E1516972") {
     accession
     details {
       linkedGenes {
@@ -134,3 +158,30 @@ query {
   }
 }
 ```
+
+# Try it out
+
+What query would you use to get the max H3K27ac Z-score for nearby cCREs for `EH38E1516972`?
+
+<details>
+<summary>See answer</summary>
+
+```graphql
+query {
+  ccre(accession: "EH38E1516972") {
+    accession
+    details {
+      nearbyGenomic {
+        nearby_res {
+          cCRE {
+            k27acmax
+          }
+        }
+      }
+    }
+  }
+}
+```
+</details>
+
+<br />

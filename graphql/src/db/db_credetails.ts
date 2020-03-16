@@ -26,6 +26,7 @@ export async function orthologs(
     { assembly: string; accession: string; range: { chrom: string; start: number; end: number } }[] | undefined
 > {
     if (!orthoAssemblies[thisassembly].includes(otherassembly)) {
+        throw new Error(`${otherassembly} is invalid. Current options: ${orthoAssemblies[thisassembly]}`);
         return undefined;
     }
     const tablename = `${thisassembly}_liftover_${otherassembly}`;
