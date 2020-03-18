@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 import sys
@@ -10,7 +10,7 @@ import argparse
 import fileinput
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+                             "../utils"))
 from db_utils import getcursor
 from utils import AddPath, printt
 

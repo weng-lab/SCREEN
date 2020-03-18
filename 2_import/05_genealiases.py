@@ -1,20 +1,20 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import re
 import argparse
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
 from get_tss import Genes
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -43,7 +43,7 @@ class GeneInfo:
                 toks = line.rstrip('\n').replace('"', '').split('\t')
                 if len(toks) != len(header):
                     raise Exception("wrong len")
-                g = dict(zip(header, toks))
+                g = dict(list(zip(header, toks)))
                 try:
                     gid = g["ensembl_gene_id"]
                 except:
@@ -141,7 +141,7 @@ class GeneRow:
                         'transcript_type', "locus_type",
                         "locus_group", "date_modified",
                         "date_approved_reserved"]
-        self.info = {k: v for k, v in self.info.items() if k not in
+        self.info = {k: v for k, v in list(self.info.items()) if k not in
                      keysToRemove and v and v != [""]}
 
     def output(self):
@@ -182,17 +182,17 @@ class ImportGenes:
         genes = GeneInfo(self.assembly).genes
 
         ret = {}
-        for gid, info in genes.iteritems():
+        for gid, info in genes.items():
             ret[gid] = GeneRow(gid, info, gidsToDbID)
         printt("merged", len(ret))
         count = len(ret)
 
-        for gid, ver in requiredGids.iteritems():
+        for gid, ver in requiredGids.items():
             if gid not in ret:
                 ret[gid] = GeneRow(gid, {}, gidsToDbID)
         printt("loaded missing genes for DB", len(ret) - count)
 
-        ret = ret.values()
+        ret = list(ret.values())
         print("example\n", ret[0].output())
 
         tableName = self.assembly + "_gene_info"
@@ -217,7 +217,7 @@ info jsonb);
                 "approved_symbol", "chrom", "start", "stop",
                 "strand", "gene_type", "info"]
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in ret:
             outF.write(r.output() + '\n')
         outF.seek(0)

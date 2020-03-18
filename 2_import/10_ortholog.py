@@ -1,20 +1,20 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
 import gzip
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from constants import paths
 from dbconnect import db_connect
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex
 
@@ -68,7 +68,7 @@ class ImportLiftover:
 
         cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
         printt("writing stringio...")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in mmToHg:
             outF.write("\t".join([r[0], r[1], r[2], r[4], r[6], r[7]]) + '\n')
         outF.seek(0)

@@ -1,13 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
 import gzip
-import StringIO
+import io
 
 PI = __import__('11_peakIntersections')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../1_screen_pipeline/03_peak_intersection'))
@@ -18,7 +18,7 @@ from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
@@ -37,7 +37,7 @@ biosample_term_name text,
 tissue text
 )""".format(tn=t))
     jobs = cistromeIntersections.loadJobs(assembly, runDate)
-    outF = StringIO.StringIO()
+    outF = io.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
                               r["etype"], r["label"],

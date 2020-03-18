@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+ #!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -8,10 +8,9 @@ import psycopg2
 import re
 import argparse
 import gzip
-import StringIO
+import io
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils"))
 from utils import AddPath, Utils, Timer, printt
 from db_utils import getcursor, vacumnAnalyze, makeIndex
 from files_and_paths import Dirs, Tools, Genome, Datasets

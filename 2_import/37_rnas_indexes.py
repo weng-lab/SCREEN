@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -14,8 +14,7 @@ from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
 from db_utils import getcursor, makeIndex, makeIndexArr, makeIndexIntRange, makeIndexInt4Range, vacumnAnalyze, makeIndexRev
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer, printt

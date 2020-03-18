@@ -1,20 +1,20 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
 import gzip
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import paths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 
@@ -49,7 +49,7 @@ class ImportTADs:
             ensemblidVerToGeneID = [line.rstrip('\n').split(',') for line in f]
         lookup = {r[0]: r[2] for r in ensemblidVerToGeneID}
 
-        f = StringIO.StringIO()
+        f = io.StringIO()
         for tr in tadRows:
             r = [tr[1], tr[2]]
             geneIDs = [lookup[g] for g in tr[3].split(',')]
@@ -91,7 +91,7 @@ tadName text
         printt("reading", fnp)
         with gzip.open(fnp) as f:
             rows = [line.rstrip().split('\t') for line in f]
-        f = StringIO.StringIO()
+        f = io.StringIO()
         for r in rows:
             f.write('\t'.join(r) + '\n')
         f.seek(0)

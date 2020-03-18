@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
-import StringIO
+import io
 import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -14,7 +14,7 @@ from dbconnect import db_connect
 from constants import paths, GwasVersion
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
 from exp import Exp
 from utils import Utils, printt, printWroteNumLines, cat, importedNumRows, updatedNumRows
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
@@ -65,7 +65,7 @@ class ImportGwas:
         self.setupGWAS()
 
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in rows:
             if 'Lead' == r[4]:
                 r[4] = r[3]
@@ -121,15 +121,15 @@ class ImportGwas:
             rows = [r.rstrip('\n').split('\t') for r in f if r]
 
         fields = [f.replace('-', '_').replace("'", '_') for f in header[2:]]
-        fields = [fields[i] for i in xrange(len(fields)) if i + 2 not in skip]
+        fields = [fields[i] for i in range(len(fields)) if i + 2 not in skip]
         self._setupEnrichment(fields, tableName)
 
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in rows:
-            for idx in xrange(2, len(r)):
+            for idx in range(2, len(r)):
                 r[idx] = str(float(r[idx]))
-            r = [r[i] for i in xrange(len(r)) if i + 2 not in skip]
+            r = [r[i] for i in range(len(r)) if i + 2 not in skip]
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["expID", "cellTypeName"] + fields
@@ -218,7 +218,7 @@ class ImportGwas:
         print("example", snpsIntersecting[0].rstrip('\n').split('\t'))
 
         printt("rewriting...")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         count = {}
         for r in snpsIntersecting:
             toks = r.rstrip('\n').split('\t')
@@ -242,7 +242,7 @@ class ImportGwas:
             if authorPubmedTrait not in count: count[authorPubmedTrait] = 0
             count[authorPubmedTrait] += 1
         print("example", '\t'.join([authorPubmedTrait, accession, snp]))
-        for k, v in count.iteritems():
+        for k, v in count.items():
             print("%s: %d" % (k, v))
         outF.seek(0)
 

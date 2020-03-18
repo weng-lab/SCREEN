@@ -1,19 +1,19 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import re
 import argparse
-import StringIO
+import io
 import gzip
 from joblib import Parallel, delayed
 
 from determine_tissue import DetermineTissue
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))
 from exp import Exp
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -98,7 +98,7 @@ idx integer);""".format(tableName=tableName))
                    ("Insulator", 4),
                    ("Promoter", 4)]
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
 
         for fnBase, ctIdx in fnBases:
             fn = fnBase + "-list.txt"
@@ -127,7 +127,7 @@ idx integer);""".format(tableName=tableName))
                "H3K4me3": "h3k4me3-list.txt"}
 
         outRows = []
-        for assay, fn in fns.iteritems():
+        for assay, fn in fns.items():
             fnp = os.path.join(d, fn)
             with open(fnp) as f:
                 rows = f.readlines()
@@ -150,7 +150,7 @@ cellTypeName text);""".format(tableName=tableName))
         cols = ["assay", "expID", "fileID", "tissue", "biosample_summary",
                 "biosample_type", "cellTypeName"]
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in outRows:
             outF.write(r + '\n')
         outF.seek(0)
@@ -165,7 +165,7 @@ cellTypeName text);""".format(tableName=tableName))
                "Promoter": ("promoter-list.txt", "H3K4me3")}
 
         outRows = []
-        for assay, fnAndAssay in fns.iteritems():
+        for assay, fnAndAssay in fns.items():
             fn = fnAndAssay[0]
             fnp = os.path.join(d, fn)
             with open(fnp) as f:
@@ -193,7 +193,7 @@ cellTypeName text);""".format(tableName=tableName))
 
         cols = "assays dnase_expID dnase_fileID other_assay other_expID other_fileID cellTypeName".split(' ')
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in outRows:
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
@@ -212,8 +212,7 @@ def get9stateInfo(assembly, r):
         mc = MemCacheWrapper(Config.memcache)
     qd = QueryDCC(auth=False, cache=mc)
 
-    fileIDs = filter(lambda x: x.startswith("EN"),
-                     [r[2], r[3], r[4], r[5]])
+    fileIDs = [x for x in [r[2], r[3], r[4], r[5]] if x.startswith("EN")]
     for fileID in fileIDs:
         exp = qd.getExpFromFileID(fileIDs[0])
         tissue = DetermineTissue.TranslateTissue(assembly, exp)
@@ -263,7 +262,7 @@ class NineState:
         outRows = Parallel(n_jobs=self.args.j)(delayed(get9stateInfo)(
                 self.assembly, r) for r in rows)
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in outRows:
             outF.write(r + '\n')
 
@@ -300,16 +299,16 @@ class NineState:
 
 def runOntology(oid, infos):
     vals = {}
-    for k, v in infos.iteritems():
+    for k, v in infos.items():
         if isinstance(v, list):
             t = [x.strip() for x in v]  # remove newlines
-            vals[k] = filter(lambda x: " coup de sabre" not in x and '\\' not in x and '"' not in x, t)
+            vals[k] = [x for x in t if " coup de sabre" not in x and '\\' not in x and '"' not in x]
         else:
             if '{' in v or '"' in v:
                 vals[k] = ''
             else:
                 vals[k] = v
-    nvals = {k: v for k, v in vals.iteritems() if v}
+    nvals = {k: v for k, v in vals.items() if v}
     return '\t'.join([oid, json.dumps(nvals)])
 
 class Ontology:
@@ -358,9 +357,9 @@ info jsonb
             kv = json.load(f)
 
         outRows = Parallel(n_jobs=self.args.j)(delayed(runOntology)(
-            oid, infos) for oid, infos in kv.iteritems())
+            oid, infos) for oid, infos in kv.items())
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in outRows:
             outF.write(r + '\n')
         outF.seek(0)
@@ -438,7 +437,7 @@ synonyms jsonb
 
         printt('***********', "import lookup")
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for row in outRows:
             for r in row:
                 outF.write('\t'.join(r) + '\n')

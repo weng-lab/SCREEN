@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 import sys
@@ -8,9 +8,9 @@ import gzip
 import argparse
 import json
 import re
-import StringIO
+import io
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))
 from utils import Utils, eprint, AddPath, printt
 from querydcc import QueryDCC
 from cache_memcache import MemCacheWrapper
@@ -86,7 +86,7 @@ typ text
 
         printt('***********', "import ENCODE files")
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in rows:
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)

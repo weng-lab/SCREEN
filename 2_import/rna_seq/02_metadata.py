@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
@@ -181,7 +181,7 @@ FROM {tableName}
         lookup = self.patchOrgan()
 
         printt("loading metadata")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for row in rows:
             self.processRow(row, outF, lookup)
         outF.seek(0)

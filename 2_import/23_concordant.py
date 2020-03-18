@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -8,10 +8,10 @@ import psycopg2
 import re
 import argparse
 import gzip
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+                             "../utils"))
 from utils import AddPath, Utils, Timer, printt, printWroteNumLines
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -53,7 +53,7 @@ class Concordant:
         printt("rows", "{:,}".format(len(rows)))
 
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in rows:
             outF.write('\t'.join([r, "1"]) + '\n')
         outF.seek(0)

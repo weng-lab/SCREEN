@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -8,10 +8,10 @@ import psycopg2
 import re
 import argparse
 import gzip
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+                             "../utils"))
 from utils import AddPath, Utils, Timer, printt
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -61,7 +61,7 @@ pgidx integer
         with gzip.open(self.fnp) as f:
             header = f.readline().rstrip('\n').replace('\t\t', '\t').split()
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         counter = 1
         for h in header[1:]:
             outF.write('\t'.join([h, str(counter)]) + '\n')
@@ -82,7 +82,7 @@ pgidx integer
         self.cts = header[1:]
 
         printt("rewrite rows")
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in rows:
             outF.write('\t'.join([r[0], "{" + ",".join(r[1:]) + "}"]) + '\n')
         outF.seek(0)

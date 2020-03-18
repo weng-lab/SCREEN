@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -8,14 +8,14 @@ import psycopg2
 import re
 import argparse
 from itertools import groupby
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
 from get_tss import Genes, Transcripts
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -73,7 +73,7 @@ stop integer
 
         cols = ["ensemblid_ver", "chrom", "start", "stop"]
 
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in ret:
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)

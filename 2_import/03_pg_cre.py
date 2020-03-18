@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -13,7 +13,7 @@ from dbconnect import db_connect
 from constants import chroms, chrom_lengths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printt
@@ -51,7 +51,7 @@ buckets jsonb);""".format(tableName=outTableName))
         printt("created", outTableName)
 
         numBins = 500  # open end, so will get numBins + 1
-        for chrom, mmax in chrom_lengths[self.assembly].iteritems():
+        for chrom, mmax in chrom_lengths[self.assembly].items():
             if chrom not in chroms[self.assembly]:
                 continue
             tn = self.assembly + "_cre_all"

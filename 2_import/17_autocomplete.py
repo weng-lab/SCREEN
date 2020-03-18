@@ -1,20 +1,20 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
 import gzip
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, paths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex, makeIndexGinTrgmOps, makeIndexTextPatternOps
 from files_and_paths import Dirs
@@ -105,7 +105,7 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
             names.append('\t'.join([row[1].lower(), c, row[1], "1", str(row[9])]))
 
             if row[2]:
-                for k, v in row[2].iteritems():
+                for k, v in row[2].items():
                     if '|' in v:
                         for e in v.split('|'):
                             if e:
@@ -115,7 +115,7 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         return list(set(names))
 
     def _db(self, names):
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         outF.write("\n".join(names))
         outF.seek(0)
 

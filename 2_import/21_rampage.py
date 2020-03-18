@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
@@ -8,12 +8,12 @@ import psycopg2
 import re
 import argparse
 import gzip
-import StringIO
+import io
 
 from determine_tissue import DetermineTissue
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+                             "../utils"))
 from utils import AddPath, Utils, Timer, printt
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -41,7 +41,7 @@ def doImport(curs, assembly):
     lookup = {r[3]: r for r in tsses}
 
     printt("rewriting")
-    outF = StringIO.StringIO()
+    outF = io.StringIO()
     for row in rows:
         r = [row[0]]
         t = lookup[row[0]]
@@ -117,7 +117,7 @@ tissue text,
 strand VARCHAR(1)
 ) """.format(tn=tableName))
 
-    outF = StringIO.StringIO()
+    outF = io.StringIO()
 
     mc = None
     if Config.memcache:

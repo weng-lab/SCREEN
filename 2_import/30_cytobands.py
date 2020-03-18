@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 import sys
@@ -8,7 +8,7 @@ import gzip
 import argparse
 import json
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))
 from utils import Utils, eprint, AddPath, printt
 
 AddPath(__file__, '../common/')
@@ -68,7 +68,7 @@ cytobands jsonb);""".format(tableName=self.tableName))
         print("updated", self.tableName)
 
     def show(self):
-        for chrom, bands in self.bands.iteritems():
+        for chrom, bands in self.bands.items():
             print(chrom, len(bands), bands[0])
         print()
         print(json.dumps(self.bands, sort_keys=True, indent=4))

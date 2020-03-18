@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import argparse
 import sys
 import os
@@ -8,8 +8,7 @@ import psycopg2
 from collections import OrderedDict
 from importlib import import_module
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../utils"))
 from db_utils import getcursor
 from utils import AddPath, printt
 
@@ -40,7 +39,7 @@ def runAll(args, DBCONN, startIdx, skipIdx):
             print("problem importing", fn)
             raise
 
-    for name, f in steps.iteritems():
+    for name, f in steps.items():
         f = steps[name]
         printt("**********************************************", name)
         f(args, DBCONN)

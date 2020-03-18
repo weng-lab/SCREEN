@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 
 import os
 import sys
@@ -8,9 +8,9 @@ import gzip
 import argparse
 import json
 import re
-import StringIO
+import io
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))
 from utils import Utils, eprint, AddPath, printt
 
 AddPath(__file__, '../common/')
@@ -101,7 +101,7 @@ transcript_id VARCHAR(50));""".format(tableName=self.tableName))
             'gene_id',
             'transcript_id'
         ]
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for r in outRows:
             outF.write(r + '\n')
         outF.seek(0)

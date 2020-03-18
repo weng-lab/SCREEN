@@ -1,19 +1,19 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
+
 import os
 import sys
 import json
 import psycopg2
 import argparse
 import gzip
-import StringIO
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import paths
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex
 from files_and_paths import Dirs
@@ -51,7 +51,7 @@ class ImportDE:
     """.format(tn=self.ctTableName))
 
     def setupCellTypes(self, cts):
-        outF = StringIO.StringIO()
+        outF = io.StringIO()
         for ct in sorted(list(cts)):
             outF.write(ct + '\n')
         outF.seek(0)
@@ -116,7 +116,7 @@ class ImportDE:
             printt(counter, len(fnps), fnp)
             data, skipped = self.readFile(fnp)
 
-            outF = StringIO.StringIO()
+            outF = io.StringIO()
             for d in data:
                 outF.write('\t'.join([str(ctsToId[ct1]),
                                       str(ctsToId[ct2])] + d) + '\n')
