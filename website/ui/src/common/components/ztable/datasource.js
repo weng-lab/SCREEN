@@ -1,8 +1,3 @@
-/*
- * SPDX-License-Identifier: MIT
- * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Zhiping Weng
- */
-
 import SortOrder from './sort_order';
 
 class DataSource {

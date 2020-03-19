@@ -1,8 +1,3 @@
-/*
- * SPDX-License-Identifier: MIT
- * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Zhiping Weng
- */
-
 export const SET_GENOME_BROWSER_CTS = 'SET_GENOME_BROWSER_CTS';
 export const setGenomeBrowserCelltypes = (list) => ({type: SET_GENOME_BROWSER_CTS, list});
 
