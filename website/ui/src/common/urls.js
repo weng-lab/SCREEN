@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Zhiping Weng
+ */
+
 export const geneCardLink = (d) => (
     "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + d);
 

@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Zhiping Weng
+ */
+
 export const SET_DATA = 'SET_DATA';
 export const SET_LOADING = 'SET_LOADING';
 export const SET_COMPLETE = 'SET_COMPLETE';

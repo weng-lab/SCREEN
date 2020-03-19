@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Zhiping Weng
+ */
+
 const React = require('react');
 var d3 = require('d3');
 

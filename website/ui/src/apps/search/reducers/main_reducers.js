@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Zhiping Weng
+ */
+
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 import {toParams, doToggle} from '../../../common/utility'
