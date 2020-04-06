@@ -22,7 +22,7 @@ class AppPageBase extends React.Component {
 	this.globals(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.search(nextProps);
 	this.globals(nextProps);
     }

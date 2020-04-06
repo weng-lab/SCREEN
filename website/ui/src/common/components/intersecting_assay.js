@@ -18,7 +18,7 @@ class IntersectingAssay extends React.Component {
         this.loadTarget = this.loadTarget.bind(this);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
         this.loadTarget(nextProps, this.state.target);
     }
 

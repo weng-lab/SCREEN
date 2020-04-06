@@ -28,7 +28,7 @@ class NucleosomeOccupancy extends React.Component {
 	};
     }
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
     console.log(props);
     console.log(this.props);
         if (this.props.q.chrom !== props.q.chrom

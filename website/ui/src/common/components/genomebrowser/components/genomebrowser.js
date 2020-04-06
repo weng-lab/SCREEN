@@ -17,7 +17,7 @@ class Polylines extends React.Component {
     componentDidMount(){
        this.changeheight(this.props);
     }
-    componentWillReceiveProps(nextProps)  {
+    UNSAFE_componentWillReceiveProps(nextProps)  {
       if(this.props.range!==nextProps.range || this.props.height!==nextProps.height)
       this.changeheight(nextProps);
     }
@@ -170,7 +170,7 @@ class GenomeBrowser extends React.Component
     componentDidMount(){
       this.changerange(this.props);
     }
-    componentWillReceiveProps(nextProps)  {
+    UNSAFE_componentWillReceiveProps(nextProps)  {
      if(this.props.selectedaccession!==nextProps.selectedaccession)
         this.setState({height:0})
      if(this.props.minrange!==nextProps.minrange || this.props.maxrange!==nextProps.maxrange)

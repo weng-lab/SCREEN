@@ -27,7 +27,7 @@ class DeExp extends React.Component{
         this.loadDe(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
         //console.log("componentWillReceiveProps", nextProps);
         this.loadDe(nextProps);
     }

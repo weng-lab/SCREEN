@@ -29,7 +29,7 @@ class GwasTab extends React.Component{
 	this.loadGwas(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
         this.loadGwas(nextProps);
     }
 

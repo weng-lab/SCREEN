@@ -56,7 +56,7 @@ class TabDataScreen extends React.Component {
 	this.loadFiles(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.loadFiles(nextProps);
     }
     

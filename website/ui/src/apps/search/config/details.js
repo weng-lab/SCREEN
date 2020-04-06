@@ -104,7 +104,7 @@ class ReTabBase extends React.Component{
 	}
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){
 		this.loadCRE(nextProps);

@@ -10,7 +10,7 @@ import { Button } from 'react-bootstrap';
 const viewbox_text = v => ["0", "0", v.width, v.height].join(" ");
 
 class ScaledPlot extends React.Component {
-    componentWillReceiveProps(props, axis_padding) {
+    UNSAFE_componentWillReceiveProps(props, axis_padding) {
 	this._viewsize = [props.viewBox.width - axis_padding[0],
 			  props.viewBox.height - axis_padding[1]];
     }
