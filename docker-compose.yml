@@ -1,52 +1,13 @@
-version: '3.3'
+version: '3.7'
 
 services:
-    dev_env_purcaro:
-      image: dev_env_mjp:002
-      volumes:
-#        - /data:/data:ro
-        - /home/mjp/docker_ubuntu:/home/mjp
-        - ./config/pgdg.list:/etc/apt/sources.list.d/pgdg.list
-        - ./config/pgpass:/home/mjp/.pgpass:ro
-      command: tail -f /dev/null
-      user: "1000"
-      depends_on:
-        - pg_screen_v13
-
-    pg_screen_v13:
-        image: postgres:10.1
-        secrets:
-          - psql_password
-        environment:
-          POSTGRES_PASSWORD_FILE: /run/secrets/psql_password
-        volumes:
-          - /tank/dockers/postgresql/screen_v13:/var/lib/postgresql/data
-          - ./config/postgresql.8gb.conf:/var/lib/postgresql/data/postgresql.conf
-
-    api:
-      build:
-        context: .
-        dockerfile: Dockerfile.api
-      volumes:
-        - ./config/pgpass:/root/.pgpass:ro
-        #- /data:/data:ro
-      depends_on:
-        - pg_screen_v13
-
     www:
       build:
         context: .
-        dockerfile: Dockerfile.ui
-      depends_on:
-        - api
-
-    cassandra_v13:
-      image: cassandra:3.11
+        dockerfile: Dockerfile.ui.dev
       volumes:
-        - /tank/dockers/cassandra/cassandra_v13:/var/lib/cassandra
-      environment:
-        - CASSANDRA_WRITE_REQUEST_TIMEOUT_IN_MS=20000
-
-secrets:
-  psql_password:
-    file: ./config/psql_password.txt
+        - ./website/ui:/app
+        - ./config/beta.json:/app/config.json
+        - ./config/beta.json:/app/src/config.json
+      ports:
+        - 9001:3000
