@@ -6,13 +6,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory} from 'react-router';
-import uuider from 'react-native-uuid';
+import { v4 as uuidv4 } from 'uuid';
 import Loadable from 'react-loadable';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
-const uuid = uuider.v4();
+const uuid = uuidv4();
 
 const addUuid = (Component, props) => {
     return React.createElement(Component, {...props,

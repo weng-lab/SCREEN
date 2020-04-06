@@ -11,3 +11,4 @@ services:
         - ./config/beta.json:/app/src/config.json
       ports:
         - 9001:3000
+      user: "1000:1000"
