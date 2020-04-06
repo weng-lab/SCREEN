@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+
+
 
 import psycopg2
 import json
@@ -75,7 +79,7 @@ class PGcreTable(object):
 
     def _buildWhereStatement(self, j, chrom, start, stop):
         useAccs = self._accessions(j)
-        if useAccs:
+        if useAccs and False:
             self._notCtSpecific(j)
         else:
             ct = j.get("cellType", None)
@@ -313,4 +317,4 @@ with DELIMITER E'\t'
         sf.seek(0)
         with open(fnp, 'w') as f:
             for line in sf.readlines():
-                f.write(line.replace(b'\\n', b''))
+                f.write(line.replace("\\n", ""))

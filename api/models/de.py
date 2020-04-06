@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+
+
 from .cre import CRE
 from common.pg_search import PGsearch
 from common.pg_de import PGde
@@ -105,7 +109,7 @@ class DE:
 
         cd = self.coord()
 
-        pg = PGde(self.pgSearch.pg, self.assembly)
+        pg = PGde(self.pgSearch.pw, self.assembly)
         nearbyDEs = pg.nearbyDEs(cd, self.halfWindow, ct1, ct2, 0.05)
 
         if not nearbyDEs:

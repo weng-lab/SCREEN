@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+
+
 # purcaro@gmail.com
 # modelled after John Stam method at
 #  https://bedops.readthedocs.org/en/latest/content/usage-examples/master-list.html
