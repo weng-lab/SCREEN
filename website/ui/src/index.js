@@ -5,7 +5,7 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory} from 'react-router';
+import { Router, Route } from 'react-router';
 import uuider from 'react-native-uuid';
 
 import Search from './apps/search/main';
@@ -18,8 +18,16 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
 import ReactGA from 'react-ga';
+import { createBrowserHistory } from 'history';
+
 ReactGA.initialize('UA-93680006-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
+
+const h = createBrowserHistory();
+h.listen((location, action) => {
+    ReactGA.set({ page: location.pathname });
+    ReactGA.pageview(location.pathname);
+});
 
 const uuid = uuider.v4();
 
@@ -29,7 +37,7 @@ const myCreateElement = (Component, props) => {
 }
 
 ReactDOM.render((
-    <Router history={browserHistory} createElement={myCreateElement} >
+    <Router history={h} createElement={myCreateElement} >
 	<Route path={"/"} component={IndexPage} />
 	<Route path={"/index/:tab"} component={IndexPage} />
 	<Route path={"/search(.*)"} component={Search} />
