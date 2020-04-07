@@ -5,7 +5,7 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom';
-import { Router, Route } from 'react-router';
+import { Router, Route, browserHistory } from 'react-router';
 import uuider from 'react-native-uuid';
 
 import Search from './apps/search/main';
@@ -23,7 +23,7 @@ import { createBrowserHistory } from 'history';
 ReactGA.initialize('UA-93680006-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
-const h = createBrowserHistory();
+const h = browserHistory;
 h.listen((location, action) => {
     ReactGA.set({ page: location.pathname });
     ReactGA.pageview(location.pathname);
