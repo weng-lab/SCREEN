@@ -1,3 +1,8 @@
+//
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+//
+
 namespace SCREEN {
 
   arma::Mat<float> runCorrelation(std::vector<ScoredRegionSet>&, const std::string&);

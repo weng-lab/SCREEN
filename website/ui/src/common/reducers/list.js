@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+ */
+
 import {array_insert, array_remove} from '../common'
 
 export const SET_SELECTION = 'SET_SELECTION';

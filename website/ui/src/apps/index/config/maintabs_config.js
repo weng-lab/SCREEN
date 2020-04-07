@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+ */
+
 import TabMain from '../components/tab_main';
 import TabAbout from '../components/tab_about';
 import TabTutorial, { TabUCSC } from '../components/tab_tutorial';
