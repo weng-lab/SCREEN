@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+    www:
+      build:
+        context: .
+        dockerfile: Dockerfile.ui.dev
+      volumes:
+        - ./website/ui:/app
+        - ./config/beta.json:/app/config.json
+        - ./config/beta.json:/app/src/config.json
+      ports:
+        - 9001:3000
+      user: "1000:1000"

@@ -1,3 +1,7 @@
+
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+
 # from https://raw.githubusercontent.com/ENCODE-DCC/encoded/0c740649bad8fd15ec32e4a92e869fb59ed2ab6c/src/encoded/commands/generate_ontology.py
 
 from rdflib import ConjunctiveGraph, exceptions, Namespace

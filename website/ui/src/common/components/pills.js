@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+ */
+
             let pills = (
                 <ul className={"nav nav-pills nav-stacked col-md-3"}>
                     {sortedKeys.map((tss) => {
