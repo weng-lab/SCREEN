@@ -32,7 +32,7 @@ export const classif2 = () => (
 	<li><em>cCREs with promoter-like signatures (cCRE-PLS)</em> fall within 200 bp (center to center) of an annotated GENCODE TSS and have high DNase and H3K4me3 signals (evaluated as DNase and H3K4me3 max-Z scores, defined as the maximal DNase or H3K4me3 Z scores across all biosamples with data; see Methods).</li>
 	<li><em>cCREs with enhancer-like signatures (cCRE-ELS)</em> have high DNase and H3K27ac max-Z scores and must additionally have a low H3K4me3 max-Z score if they are within 200 bp of an annotated TSS. The subset of cCREs-ELS within 2 kb of a TSS is denoted proximal (cCRE-pELS), while the remaining subset is denoted distal (cCRE-dELS).</li>
         <li><em>DNase-H3K4me3 cCREs</em> have high H3K4me3 max-Z scores but low H3K27ac max-Z scores and do not fall within 200 bp of a TSS.</li>
-	<li><em>CTCF-only cCREs</em> have high DNase and CTCF max-Z scores and low H3K4me3, H3K27ac, and CTCF max-Z scores. </li>
+	<li><em>CTCF-only cCREs</em> have high DNase and CTCF max-Z scores and low H3K4me3 and H3K27ac max-Z scores. </li>
     </ol>);
 
 export const classif3 = () => (
