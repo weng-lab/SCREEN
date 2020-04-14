@@ -5,12 +5,29 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory} from 'react-router';
+import { Router, Route, browserHistory } from 'react-router';
+import Search from './apps/search/main';
+import GeneExp from './apps/geneexp/main';
+import De from './apps/de/main';
+import Gwas from './apps/gwas/main';
+import IndexPage from './apps/index/main';
 import { v4 as uuidv4 } from 'uuid';
 import Loadable from 'react-loadable';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
+
+import ReactGA from 'react-ga';
+import { createBrowserHistory } from 'history';
+
+ReactGA.initialize('UA-93680006-1');
+ReactGA.pageview(window.location.pathname + window.location.search);
+
+const h = browserHistory;
+h.listen((location, action) => {
+    ReactGA.set({ page: location.pathname });
+    ReactGA.pageview(location.pathname);
+});
 
 const uuid = uuidv4();
 
@@ -59,7 +76,7 @@ const LoadableGwas = Loadable({
 });
 
 ReactDOM.render((
-    <Router history={browserHistory} createElement={addUuid} >
+    <Router history={h} createElement={addUuid} >
 	<Route path={"/"} component={LoadableIndex} />
 	<Route path={"/index/:tab"} component={LoadableIndex} />
 	<Route path={"/search(.*)"} component={LoadableSearch} />
