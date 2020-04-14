@@ -24,7 +24,7 @@ class Rampage extends React.Component {
                       datascale: "counts"};
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         document.addEventListener("keydown", this.handleKeyPress);
     }
 

@@ -26,7 +26,7 @@ class Interactions extends React.Component {
 	};
     }
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         if (this.props.q.chrom !== props.q.chrom
 	    || this.props.q.start !== props.q.start
 	    || this.props.q.end !== props.q.end) {

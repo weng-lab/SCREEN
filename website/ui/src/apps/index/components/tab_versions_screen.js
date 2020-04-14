@@ -56,7 +56,7 @@ class TabDataScreen extends React.Component {
 	this.loadFiles(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.loadFiles(nextProps);
     }
     
@@ -105,7 +105,7 @@ class TabDataScreen extends React.Component {
         if (this.state.versions && this.state.versionIDs)
 	    return (
 		<div>
-		    <Tabs defaultActiveKey={1} id="tabset" defaultActiveKey={0}>
+		    <Tabs defaultActiveKey={1} id="tabset">
  		        { this.state.versionIDs.map( (id, i) => (
    			    <Tab title={id} key={id} eventKey={i}>
                                 <h3>ENCODE and Roadmap Experiments constituting ground level version {id} ({this.state.totals[id].toLocaleString()} total)</h3>

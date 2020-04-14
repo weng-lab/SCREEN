@@ -17,11 +17,11 @@ class ViolinPlot extends ScaledPlot {
 
     constructor(props) {
 	super(props);
-	this.componentWillReceiveProps(props);
+	this.UNSAFE_componentWillReceiveProps(props);
     }
 
-    componentWillReceiveProps(props) {
-	super.componentWillReceiveProps(props, [XAXIS, YAXIS]);
+    UNSAFE_componentWillReceiveProps(props) {
+	super.UNSAFE_componentWillReceiveProps(props, [XAXIS, YAXIS]);
 	this._qsetorder = (props.qsetorder ? props.qsetorder : Object.keys(props.qsets));
 	this._range = [Math.min(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].domain[0])),
 		       Math.max(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].domain[1])) * 1.1];

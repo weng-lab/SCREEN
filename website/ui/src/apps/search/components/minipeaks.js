@@ -35,7 +35,7 @@ class MiniPeaks extends React.Component {
 	return false;
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){

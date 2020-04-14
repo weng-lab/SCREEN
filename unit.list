@@ -1,0 +1,2 @@
+deb https://packages.nginx.org/unit/ubuntu/ bionic unit
+deb-src https://packages.nginx.org/unit/ubuntu/ bionic unit

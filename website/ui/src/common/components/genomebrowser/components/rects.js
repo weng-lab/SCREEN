@@ -9,7 +9,7 @@ export default class Rects extends React.Component {
     componentDidMount(){
        this.changeheight(this.props);
     }
-    componentWillReceiveProps(nextProps)  {
+    UNSAFE_componentWillReceiveProps(nextProps)  {
       if(this.props.y!==nextProps.y || this.props.height!==nextProps.height)
       this.changeheight(nextProps);
     }

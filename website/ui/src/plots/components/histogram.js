@@ -16,11 +16,11 @@ class Histogram extends ScaledPlot {
 
     constructor(props) {
 	super(props);
-	this.componentWillReceiveProps(props);
+	this.UNSAFE_componentWillReceiveProps(props);
     }
 
-    componentWillReceiveProps(props) {
-	super.componentWillReceiveProps(props, [XAXIS, YAXIS]);
+    UNSAFE_componentWillReceiveProps(props) {
+	super.UNSAFE_componentWillReceiveProps(props, [XAXIS, YAXIS]);
 	this._domain = [Math.min(...props.x), Math.max(...props.x) + (props.x[1] - props.x[0])];
 	this._range = [0, Math.max(...props.y) * 1.1];
 	let xscale = (this._viewsize[0] * 0.95) / (this._domain[1] - this._domain[0]);

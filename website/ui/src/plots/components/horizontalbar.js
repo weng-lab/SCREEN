@@ -33,11 +33,11 @@ export const compute_offsets = (sorted_keys, itemsets, value) => {
 class HorizontalBar extends ScaledPlot {
     constructor(props) {
 	super(props);
-	this.componentWillReceiveProps(props); // TODO: why?
+	this.UNSAFE_componentWillReceiveProps(props); // TODO: why?
     }
 
-    componentWillReceiveProps(props) {
-	super.componentWillReceiveProps(props, props.axis_offsets);
+    UNSAFE_componentWillReceiveProps(props) {
+	super.UNSAFE_componentWillReceiveProps(props, props.axis_offsets);
 	const t0 = x => x > 0 && x.toFixed ? x.toFixed(2) : (x > 0 ? x : 0);
 	this._format = props.format.value ? props.format.value : x => x;
 	this._label = props.format.label ? props.format.label : x => "";

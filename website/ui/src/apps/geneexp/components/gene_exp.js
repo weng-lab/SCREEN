@@ -32,7 +32,7 @@ class GeneExp extends React.Component{
         this.loadGene(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.updateWidth();
         this.loadGene(nextProps);
     }

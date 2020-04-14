@@ -15,7 +15,7 @@ export default class Exons extends React.Component {
       componentDidMount(){
          this.changeheight(this.props);
       }
-      componentWillReceiveProps(nextProps)  {
+      UNSAFE_componentWillReceiveProps(nextProps)  {
         if(this.props.range!==nextProps.range || this.props.height!==nextProps.height)
         this.changeheight(nextProps);
       }

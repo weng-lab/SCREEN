@@ -7,9 +7,12 @@ import TabMain from '../components/tab_main';
 import TabAbout from '../components/tab_about';
 import TabTutorial, { TabUCSC } from '../components/tab_tutorial';
 import TabQuery from '../components/tab_query';
-import TabFiles from '../components/tab_files';
 import TabVersions from '../components/tab_versions';
+
+/* 
+import TabFiles from '../components/tab_files';
 import TabAPI from '../components/tab_api';
+*/
 
 const MainTabsConfig = () => {
     return {main : {title: "Overview", visible: true, f: TabMain},

@@ -21,7 +21,7 @@ class DualSlider extends React.Component {
 	this.updateWithProps(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.updateWithProps(nextProps);
     }
 

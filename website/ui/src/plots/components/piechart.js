@@ -15,11 +15,11 @@ class PieChart extends ScaledPlot {
 
     constructor(props) {
 	super(props);
-	this.componentWillReceiveProps(props);
+	this.UNSAFE_componentWillReceiveProps(props);
     }
 
-    componentWillReceiveProps(props) {
-	super.componentWillReceiveProps(props, [0, 0]);
+    UNSAFE_componentWillReceiveProps(props) {
+	super.UNSAFE_componentWillReceiveProps(props, [0, 0]);
 	this._radius = Math.min(this.props.viewBox.width / 2, this.props.viewBox.height / 2);
 	this._coord = ccoords(this._radius);
     }
