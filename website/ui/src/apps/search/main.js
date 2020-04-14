@@ -62,10 +62,10 @@ class SearchPageInner extends React.Component {
                 <Provider store={store}>
                 <div>
 		      {PageTitle(assembly)}
-                <NavBarApp assembly={assembly}
-		  uuid={this.props.search.uuid}
-                show_cartimage={true}
-                searchbox={SearchBox} />
+                    <NavBarApp assembly={assembly}
+			       uuid={this.props.search.uuid}
+			       show_cartimage={true}
+			       searchbox={SearchBox} />
 
                 <div className="container" style={{width: "100%"}}>
                 {drawMain()}

@@ -14,7 +14,6 @@ import TableColumns, {table_order} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
 import loading from '../../../common/components/loading';
 
-import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 

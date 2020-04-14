@@ -43,7 +43,7 @@ class SearchBox extends React.Component {
 	return r;
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	var val = this.makeVal(nextProps);
 	var jq = JSON.stringify(val);
 	if(this.state.jq !== jq){

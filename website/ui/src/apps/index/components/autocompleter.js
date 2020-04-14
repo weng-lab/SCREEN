@@ -131,7 +131,8 @@ class Autocompleter extends React.Component {
                         onClick={this.searchmm10.bind(this)} role={"button"}>
 			Search Mouse<br /><small>(mm10)</small>
 		    </a>		
- 		    <br />
+ 		<br />
+		<em><strong>Pressing enter in the search box searches GRCh38. To search mm10, click the button above.</strong></em>
  		</div>
  	</div>);
     }

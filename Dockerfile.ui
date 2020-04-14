@@ -1,0 +1,23 @@
+# multi-stage build
+
+#FROM node:8.16-alpine
+FROM node:12.13-alpine3.9
+
+RUN mkdir -p /app/
+COPY website/ui /app
+COPY config/beta.json /app/config.json
+COPY config/beta.json /app/src/config.json
+
+WORKDIR /app/
+
+RUN yarn
+RUN yarn build
+
+# for final image
+
+FROM nginx:1.13-alpine
+
+RUN mkdir -p /app/
+COPY  --from=0 /app/build /usr/share/nginx/html
+COPY api/assets /usr/share/nginx/html/assets
+COPY --from=0 /app/nginx.conf /etc/nginx/nginx.conf

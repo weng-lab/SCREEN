@@ -122,7 +122,7 @@ class TabFiles extends React.Component {
 	}
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
         if(this.key === nextProps.maintabs_active){
 	    this.loadFiles(nextProps);
 	}

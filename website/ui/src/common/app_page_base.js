@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 import * as ApiClient from './api_client';
 
@@ -21,7 +22,7 @@ class AppPageBase extends React.Component {
 	this.globals(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.search(nextProps);
 	this.globals(nextProps);
     }
@@ -33,12 +34,17 @@ class AppPageBase extends React.Component {
 	if(this.state.isFetching){
 	    return;
 	}
+
 	this.setState({isFetching: true});
 	const query = Object.keys(nextProps.location.query).reduce((curr, key) => {
 		curr[key] = decodeURIComponent(nextProps.location.query[key]);
 		return curr;
 	}, {});
+
+	const uuid = "uuid" in query ? query["uuid"] : uuidv4();
+		
 	const jq = JSON.stringify({...query,
+				   uuid,
 				   ...this.extraProps});
 	ApiClient.appPageBaseInit(jq, this.url,
 				  (r) => {
@@ -73,10 +79,13 @@ class AppPageBase extends React.Component {
     }
     
     render() {
-	if("search" in this.state && "globals" in this.state){
+	if("search" in this.state && "globals" in this.state){	    
+
+	    const uuid = "uuid" in this.props ? this.props.uuid : uuidv4();
+
 	    return (
 		<div>
-		    {React.createElement(this.innerClass, {uuid: this.props.uuid,
+		    {React.createElement(this.innerClass, {uuid,
 							   search: this.state.search,
 							   globals: this.state.globals})}
 		</div>);

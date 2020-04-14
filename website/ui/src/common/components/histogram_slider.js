@@ -27,7 +27,7 @@ class HistogramSlider extends React.Component {
 	this.updateDimensions();
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
 	this.updateDimensions();
     }
 

@@ -159,7 +159,7 @@ class CelltypeView extends React.Component {
         this.loadCres(this.props);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
         //console.log("componentWillReceiveProps", nextProps);
         this.loadCres(nextProps);
     }
