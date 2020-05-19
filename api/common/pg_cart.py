@@ -43,13 +43,13 @@ class PGcart:
     def set(self, uuid, accessions):
         accessions = list(accessions)
         self.pw.insert("cart_set_upsert", """
-        INSERT into cart(uid, re_accessions)
-            values (%(uuid)s, %(re_accessions)s)
+        INSERT into cart(uid, accessions)
+            values (%(uuid)s, %(accessions)s)
             on conflict(uid)
-            do update set (re_accessions) = (%(re_accessions)s)
+            do update set (accessions) = (%(accessions)s)
             where cart.uid = %(uuid)s""",
                        {"uuid": uuid,
-                        "re_accessions" : json.dumps(accessions)})
+                        "accessions" : json.dumps(accessions)})
         return {"status": "ok"}
 
 
