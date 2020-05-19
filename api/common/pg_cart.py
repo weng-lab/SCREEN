@@ -42,26 +42,14 @@ class PGcart:
 
     def set(self, uuid, accessions):
         accessions = list(accessions)
-        rows = self.pw.fetchall("setCart", """
-        SELECT accessions
-        FROM {tn}
-        WHERE uuid = %s
-        """.format(tn=self.tableName),
-                                (uuid,))
-        
-        if (len(rows) > 0):
-            self.pw.update("setCart", """
-            UPDATE {tn}
-            SET accessions = %s
-            WHERE uuid = %s
-            """.format(tn=self.tableName),
-                            (Json(accessions), uuid))
-        else:
-            self.pw.insert("setCart", """
-            INSERT into {tn} (uuid, accessions)
-            VALUES (%s, %s)
-            """.format(tn=self.tableName),
-                           (uuid, Json(accessions)))
+        self.pw.insert("cart_set_upsert", """
+        INSERT into cart(uid, re_accessions)
+            values (%(uuid)s, %(re_accessions)s)
+            on conflict(uid)
+            do update set (re_accessions) = (%(re_accessions)s)
+            where cart.uid = %(uuid)s""",
+                       {"uuid": uuid,
+                        "re_accessions" : json.dumps(accessions)})
         return {"status": "ok"}
 
 
