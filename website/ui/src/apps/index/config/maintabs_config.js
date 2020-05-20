@@ -9,8 +9,8 @@ import TabTutorial, { TabUCSC } from '../components/tab_tutorial';
 import TabQuery from '../components/tab_query';
 import TabVersions from '../components/tab_versions';
 
-/* 
 import TabFiles from '../components/tab_files';
+/*
 import TabAPI from '../components/tab_api';
 */
 

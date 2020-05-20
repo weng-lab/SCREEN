@@ -99,7 +99,7 @@ class TabFiles extends React.Component {
     }
 
     loadFiles(nextProps){
-	fetch("https://screen-beta.wenglab.org/biosample-metadata.json")
+	fetch("https://" + window.location.hostname + "/biosample-metadata.json")
 	    .then( response => response.json())
 	    .then( data => {
                 this.setState({ data });
