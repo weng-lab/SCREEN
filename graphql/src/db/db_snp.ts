@@ -36,6 +36,7 @@ export async function snptable(
         assembly,
         id: row['snp'],
         range: {
+            assembly,
             chrom: row['chrom'],
             start: row['start'],
             end: row['stop'],
@@ -50,7 +51,7 @@ export async function nearbygenes(assembly: Assembly, id: string): Promise<any> 
     const greaterq = `
 select snp.id, snp.start as snpstart, snp.stop as snpstop, gene.approved_symbol, gene.ensemblid_ver, gene.start as genestart, gene.stop as genestop, gene.strand as genestrand, snp.chrom as chrom
 from ${tableName} snp
-inner join hg19_gene_info gene on snp.chrom = gene.chrom and snp.start <= gene.stop
+inner join ${assembly}_gene_info gene on snp.chrom = gene.chrom and snp.start <= gene.stop
 where snp.snp = $1
 order by gene.start asc
 limit 5
@@ -58,7 +59,7 @@ limit 5
     const lesserq = `
 select snp.id, snp.start as snpstart, snp.stop as snpstop, gene.approved_symbol, gene.ensemblid_ver, gene.start as genestart, gene.stop as genestop, gene.strand as genestrand, snp.chrom as chrom
 from ${tableName} snp
-inner join hg19_gene_info gene on snp.chrom = gene.chrom and snp.stop >= gene.start
+inner join ${assembly}_gene_info gene on snp.chrom = gene.chrom and snp.stop >= gene.start
 where snp.snp = $1
 order by gene.start desc
 limit 5
@@ -110,8 +111,8 @@ limit 5
         }))
         .sort((a, b) => a.distance - b.distance);
     const seen: any = {};
-    const nodups = withdups.filter(
-        item => (seen.hasOwnProperty(item.gene.gene) ? false : (seen[item.gene.gene] = true))
+    const nodups = withdups.filter(item =>
+        seen.hasOwnProperty(item.gene.gene) ? false : (seen[item.gene.gene] = true)
     );
     return nodups.slice(0, 5);
 }

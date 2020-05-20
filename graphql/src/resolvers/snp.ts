@@ -3,22 +3,21 @@ import { snptable, nearbygenes } from '../db/db_snp';
 import { SNP, Assembly } from '../types';
 import { gwasLDBlockSNPBySNP, SNPsInLDBlock } from '../db/db_gwas';
 import { Gwas } from './gwas';
-import { UserError } from 'graphql-errors';
 import { getCreTable } from '../db/db_cre_table';
 import { loadCache } from '../db/db_cache';
 
 export const resolve_snps: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
     const range = args.range;
     const id = args.id;
     if (!assembly && !id) {
-        throw new UserError('Must pass either an assembly or a range.');
+        throw new Error('Must pass either an assembly or a range.');
     }
     if (id && range) {
-        throw new UserError('Cannot pass both a range and an id.');
+        throw new Error('Cannot pass both a range and an id.');
     }
     if (!assembly) {
-        for (const test_assembly of ['hg19', 'mm10'] as Assembly[]) {
+        for (const test_assembly of ['GRCh38', 'mm10'] as Assembly[]) {
             const snps = await snptable(test_assembly, range, id);
             if (snps.length > 0) {
                 return snps;
@@ -31,7 +30,7 @@ export const resolve_snps: GraphQLFieldResolver<any, any> = async (source, args,
 
 export const resolve_snps_ldblocks: GraphQLFieldResolver<any, {}> = async source => {
     const assembly = source.assembly;
-    if (assembly !== 'hg19') {
+    if (assembly !== 'grch38') {
         return [];
     }
     const id = source.id;
@@ -64,11 +63,24 @@ export const resolve_snps_overlapping_ccRE: GraphQLFieldResolver<SNP, {}> = asyn
     const snp: string = source.id;
     const ctmap = await loadCache(assembly).ctmap();
     const ctable = await getCreTable(assembly, ctmap, { range: source.range }, {});
-    return ctable.cres[0];
+    return ctable.ccres[0];
 };
 
 export const resolve_snps_nearbygenes: GraphQLFieldResolver<SNP, {}> = async source => {
     const assembly: Assembly = source.assembly;
     const snp: string = source.id;
     return nearbygenes(assembly, snp);
+};
+
+export const snpResolvers = {
+    SNP: {
+        ldblocks: resolve_snps_ldblocks,
+        related_studies: resolve_snps_relatedstudies,
+        overlapping_cCRE: resolve_snps_overlapping_ccRE,
+        nearbygenes: resolve_snps_nearbygenes,
+    },
+    LDBlock: {
+        leadsnp: resolve_gwas_ldblock_leadsnp,
+        snps: resolve_gwas_ldblock_snps,
+    },
 };

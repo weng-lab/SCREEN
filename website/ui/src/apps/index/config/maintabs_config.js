@@ -19,7 +19,7 @@ const MainTabsConfig = () => {
             about : {title: "About", visible: true, f: TabAbout},
 	    ucsc : {title: "UCSC Genome Browser", visible: true, f: TabUCSC},
             tutorial : {title: "Tutorials", visible: true, f: TabTutorial},
-	    /*files: {title: "Downloads", visible: true, f: TabFiles}, */
+	    files: {title: "Downloads", visible: true, f: TabFiles},
 	    versions: {title: "Versions", visible: true, f: TabVersions},
             query: {title: "Query Results", visible: false, f: TabQuery},
             /*api: {title: "API", visible: true, f: TabAPI}*/

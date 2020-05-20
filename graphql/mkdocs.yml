@@ -1,0 +1,29 @@
+site_name: SCREEN GraphQL API
+repo_name: SCREEN
+repo_url: https://github.com/weng-lab/screen
+site_description: "A GraphQL API to access SCREEN data"
+site_author: Jack Huey
+remote_branch: master
+
+copyright: 'Copyright &copy; 2020 Weng Lab'
+
+theme:
+  name: 'readthedocs'
+
+nav:
+  - 'Home': index.md
+  - 'Getting started':
+    - 'Command-line': getting_started/command_line.md
+    - 'Python': getting_started/python.md
+    - 'Javascript': getting_started/javascript.md
+  - 'Queries':
+    - 'Overview': queries/overview.md
+    - 'Metadata': queries/metadata.md
+    - 'Searching cCREs': queries/ccres.md
+    - 'cCRE details': queries/ccredetails.md
+    - 'Gene expression': queries/gene_expression.md
+    - 'Differential gene expression': queries/differential_gene_expression.md
+    - 'GWAS and SNPs': queries/gwas_and_snps.md
+    - 'Rampage': queries/rampage.md
+    - 'Genomic elements by location': queries/range.md
+

@@ -1,10 +1,7 @@
-import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
-import { db, pgp } from './db';
-import { loadablecache, loadCache } from './db_cache';
+import { db } from './db';
+import { loadCache } from './db_cache';
 import { ChromRange, Assembly, ctspecificdata } from '../types';
-
-const { UserError } = require('graphql-errors');
 
 const accessions = (wheres, params, j: { accessions?: string[] }) => {
     const accs: Array<string> = j['accessions'] || [];
@@ -17,8 +14,8 @@ const accessions = (wheres, params, j: { accessions?: string[] }) => {
     return true;
 };
 
-const notCtSpecificRanks = (wheres, params, j: { ctexps?: any }) => {
-    j = j.ctexps || {};
+const notCtSpecificRanks = (wheres, params, j: { expmaxs?: any }) => {
+    j = j.expmaxs || {};
     // use max zscores
     const map = {
         dnase: 'dnase_max',
@@ -105,7 +102,7 @@ const where = (wheres, params, chrom, start, stop) => {
 export const buildWhereStatement = (
     assembly,
     ctmap: Record<string, any>,
-    j: { ctexps?: any; accessions?: string[] },
+    j: { ctexps?: any; expmaxs?: any; accessions?: string[] },
     chrom: string | undefined,
     start: number | undefined,
     stop: number | undefined,
@@ -227,7 +224,7 @@ async function creTableEstimate(table, where, params) {
 }
 
 export type dbcre = {
-    assembly: string;
+    assembly: Assembly;
     chrom: string;
     start: number;
     end: number;
@@ -254,7 +251,7 @@ export async function getCreTable(
     j: { ctexps?: any; accessions?: string[]; range?: Partial<ChromRange> },
     pagination,
     extra?: { wheres: string[]; fields: string[] }
-): Promise<{ total: number; cres: dbcre[] }> {
+): Promise<{ total: number; ccres: dbcre[] }> {
     const chrom = j.range && checkChrom(assembly, j.range.chrom);
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
@@ -272,12 +269,12 @@ export async function getCreTable(
     const offset = pagination.offset;
     const limit = pagination.limit;
     const query = `
-        SELECT ${fields}
-        FROM ${table} AS cre
-        ${where}
-        ORDER BY ${orderBy} DESC
-        ${offset && offset !== 0 ? `OFFSET ${offset}` : ''}
-        ${!!limit ? `LIMIT ${limit}` : ``}
+SELECT ${fields}
+FROM ${table} AS cre
+${where}
+ORDER BY ${orderBy} DESC
+${offset && offset !== 0 ? `OFFSET ${offset}` : ''}
+${!!limit ? `LIMIT ${limit}` : ``}
     `;
 
     const res = await db.any(query, params);
@@ -286,26 +283,23 @@ export async function getCreTable(
         // reached query limit
         total = await creTableEstimate(table, where, params);
     }
-    return { cres: res, total: total };
+    return { ccres: res, total: total };
 }
 
-export async function getCtSpecificData(assembly: Assembly, requested: string[]): Promise<ctspecificdata[]> {
+export async function getCtSpecificData(assembly: Assembly, requested: readonly string[]): Promise<ctspecificdata[]> {
     const table = assembly + '_cre_all';
     // ct => { ccres, indices }
     // Need to ensure that we return data in the same order that we were asked
-    const ctrequests = requested.reduce(
-        (prev, curr, index) => {
-            const [ccre, ct] = curr.split('::');
-            const obj = (prev[ct] = prev[ct] || {
-                ccres: [],
-                indices: {},
-            });
-            obj.ccres.push(ccre);
-            obj.indices[ccre] = index;
-            return prev;
-        },
-        {} as Record<string, { ccres: string[]; indices: Record<string, number> }>
-    );
+    const ctrequests = requested.reduce((prev, curr, index) => {
+        const [ccre, ct] = curr.split('::');
+        const obj = (prev[ct] = prev[ct] || {
+            ccres: [],
+            indices: {},
+        });
+        obj.ccres.push(ccre);
+        obj.indices[ccre] = index;
+        return prev;
+    }, {} as Record<string, { ccres: string[]; indices: Record<string, number> }>);
 
     const ctresults: Record<string, (ctspecificdata & { accession: string })[]> = {};
     for (const [ct, { ccres, indices }] of Object.entries(ctrequests)) {
@@ -346,15 +340,12 @@ export async function getCtSpecificData(assembly: Assembly, requested: string[])
         });
         ctresults[ct] = res;
     }
-    return Object.keys(ctresults).reduce(
-        (prev, ct) => {
-            const indices = ctrequests[ct].indices;
-            const results = ctresults[ct];
-            results.forEach((result, index) => {
-                prev[indices[result.accession]] = result;
-            });
-            return prev;
-        },
-        Array.from(Array(requested.length)) as ctspecificdata[]
-    );
+    return Object.keys(ctresults).reduce((prev, ct) => {
+        const indices = ctrequests[ct].indices;
+        const results = ctresults[ct];
+        results.forEach((result, index) => {
+            prev[indices[result.accession]] = result;
+        });
+        return prev;
+    }, Array.from(Array(requested.length)) as ctspecificdata[]);
 }

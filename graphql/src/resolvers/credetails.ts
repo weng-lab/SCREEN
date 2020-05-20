@@ -1,64 +1,44 @@
 import * as DbCommon from '../db/db_common';
-import { getCreTable } from '../db/db_cre_table';
-import { natsort, getAssemblyFromCre } from '../utils';
-import HelperGrouper from '../helpergrouper';
-import { getByGene } from './rampage';
+import { getCreTable, dbcre } from '../db/db_cre_table';
+import { getAssemblyFromCre, assemblies } from '../utils';
 import { loadCache, nearbyPcGenesLoaders, nearbyAllGenesLoaders } from '../db/db_cache';
 import { select_cre_intersections, orthologs } from '../db/db_credetails';
-import { Assembly } from '../types';
-
-const request = require('request-promise-native');
-const { UserError } = require('graphql-errors');
+import { Assembly, Gene } from '../types';
+import { resolve_ccres } from './cretable';
 
 export type nearbyGene = {
-    gene: {
-        gene: string;
-        ensemblid_ver: string;
-        coords: {
-            chrom: string;
-            start: number;
-            end: number;
-            strand: string;
-        };
-        tsscoords: {
-            chrom: string;
-            start: number;
-            end: number;
-            strand: string;
-        };
-    };
+    gene: Gene;
     distance: number;
 };
 
 export class CREDetails {
     assembly: Assembly;
-    accession;
-    _coord: Promise<{ chrom: string; start: number; end: number }>;
-    genesAll: nearbyGene[] | null;
-    genesPC: nearbyGene[] | null;
+    accession: string;
+    _coord: Promise<{ chrom: string; start: number; end: number }> | undefined;
+    genesAll: nearbyGene[] | null | undefined;
+    genesPC: nearbyGene[] | null | undefined;
 
     constructor(assembly: Assembly, accession: string) {
         this.assembly = assembly;
         this.accession = accession;
     }
 
-    async coord() {
+    async coord(): Promise<{ chrom: string; start: number; end: number }> {
         if (!this._coord) {
             this._coord = DbCommon.crePos(this.assembly, this.accession) as any;
         }
-        return await this._coord;
+        return await this._coord!;
     }
 
     static getCtData = (ctvalue, ctmap, key, ranks) =>
         ctvalue in ctmap[key] ? ranks[key][ctmap[key][ctvalue] - 1] : undefined;
 
-    async topTissues() {
+    async biosampleSpecificSignals() {
         const c = loadCache(this.assembly);
         const ctmap = await c.ctmap();
         const datasets = await c.datasets();
-        const coord = await this.coord();
         // ['h3k4me3', 'h3k27ac', 'dnase', 'ctcf']
-        const ranks = await DbCommon.creRanks(this.assembly, this.accession);
+        const ranks = await DbCommon.ccreEpigeneticSignalsLoader[this.assembly].load(this.accession);
         const data = datasets.globalCellTypeInfoArr.map(ct => {
             const dnase = CREDetails.getCtData(ct.value, ctmap, 'dnase', ranks);
             const h3k4me3 = CREDetails.getCtData(ct.value, ctmap, 'h3k4me3', ranks);
@@ -85,11 +65,11 @@ export class CREDetails {
         return { genesAll: this.genesAll, genesPC: this.genesPC };
     }
 
-    async nearbyGenes(): Promise<{ gene: any; distance: number; pc: boolean }[]> {
+    async nearbyGenes(): Promise<(nearbyGene & { pc: boolean })[]> {
         const { genesAll, genesPC } = await this.awaitGenes();
-        const pcGenes = genesPC.map(g => g.gene.gene);
+        const pcGenes = genesPC.map(g => g.gene.approved_symbol);
         for (const g of genesAll) {
-            g['pc'] = pcGenes.includes(g.gene.gene);
+            g['pc'] = pcGenes.includes(g.gene.approved_symbol);
         }
         return genesAll.sort((a, b) => a.distance - b.distance) as (nearbyGene & { pc: boolean })[];
     }
@@ -128,11 +108,11 @@ export class CREDetails {
         return DbCommon.intersectingSnps(this.assembly, this.accession, await this.coord(), halfWindow);
     }
 
-    async distToNearbyCREs(halfWindow) {
+    async distToNearbyCREs(halfWindow): Promise<{ distance: number; cCRE: dbcre }[]> {
         return DbCommon.distToNearbyCREs(this.assembly, this.accession, await this.coord(), halfWindow);
     }
 
-    async peakIntersectCount(eset) {
+    async peakIntersectCount(eset: 'peak' | 'cistrome') {
         const tfHistCounts = await loadCache(this.assembly).tfHistCounts();
         return DbCommon.peakIntersectCount(this.assembly, this.accession, tfHistCounts[eset], eset);
     }
@@ -142,27 +122,27 @@ export class CREDetails {
     }
 }
 
-export async function resolve_credetails(source, args, context, info) {
+export async function resolve_ccre(source, args, context, info) {
     const accession: string = args.accession;
     const assembly = getAssemblyFromCre(accession);
     if (!assembly) {
-        throw new UserError('Invalid accession: ' + accession);
+        throw new Error('Invalid accession: ' + accession);
     }
 
     const ctmap = await loadCache(assembly as Assembly).ctmap();
     const res = await getCreTable(assembly, ctmap, { accessions: [accession] }, {});
     if (res.total === 0) {
-        throw new UserError('Invalid accession: ' + accession);
+        throw new Error('Invalid accession: ' + accession);
     }
 
-    return res.cres[0];
+    return res.ccres[0];
 }
 
 function incrementAndCheckDetailsCount(context) {
     const count = context.detailsresolvecount || 0;
     if (count >= 5) {
-        throw new UserError(
-            'Requesting details of a ccRE is only allowed for a maximum of 5 ccREs per query, for performance.'
+        throw new Error(
+            'Requesting details of a cCRE is only allowed for a maximum of 5 cCREs per query, for performance.'
         );
     }
     context.detailsresolvecount = count + 1;
@@ -176,9 +156,9 @@ export async function resolve_details(source, args, context, info) {
     return { details };
 }
 
-export async function resolve_cre_topTissues(source, args, context, info) {
+export async function resolve_cre_biosampleSpecificSignals(source: dbcre & { details: CREDetails }) {
     const cre: CREDetails = source.details;
-    return cre.topTissues();
+    return cre.biosampleSpecificSignals();
 }
 
 export async function resolve_cre_nearbyGenomic(source, args, context, info) {
@@ -195,7 +175,7 @@ export async function resolve_cre_nearbyGenomic_snps(source, args) {
     return cre.intersectingSnps(10000); // 10 KB
 }
 
-export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args) {
+export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args): Promise<{ distance: number; cCRE: dbcre }[]> {
     const cre: CREDetails = source.cre;
     return cre.distToNearbyCREs(1000000); // 1 MB
 }
@@ -233,7 +213,7 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
         return results;
     };
     if (cre.assembly === 'mm10') {
-        throw new UserError('mm10 does not have FANTOM CAT data available.');
+        throw new Error('mm10 does not have FANTOM CAT data available.');
     }
     return {
         fantom_cat: await process('intersection'),
@@ -241,23 +221,44 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
     };
 }
 
-export async function resolve_cre_ortholog(source, args, context, info) {
+export async function resolve_cre_ortholog(
+    source: dbcre & { details: CREDetails },
+    args: { assembly: string }
+): Promise<
+    { assembly: string; accession: string; range: { chrom: string; start: number; end: number } }[] | undefined
+> {
     const cre: CREDetails = source.details;
-    const ortholog = await orthologs(cre.assembly, cre.accession);
-    return ortholog;
+    const assembly = args.assembly.toLowerCase();
+    return orthologs(cre.assembly, cre.accession, assembly);
 }
 
-export async function resolve_cre_tfIntersection(source, args, context, info) {
+export async function resolve_cre_ortholog_cCRE(source: {
+    assembly: string;
+    accession: string;
+    range: { chrom: string; start: number; end: number };
+}) {
+    if (!assemblies.includes(source.assembly as any)) {
+        return undefined;
+    }
+    const ctmap = await loadCache(source.assembly as Assembly).ctmap();
+    const res = await getCreTable(source.assembly, ctmap, { accessions: [source.accession] }, {});
+    return res.ccres[0];
+}
+
+export async function resolve_cre_tfIntersection(source: dbcre & { details: CREDetails }) {
     const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('peak');
 }
 
-export async function resolve_cre_cistromeIntersection(source, args, context, info) {
+export async function resolve_cre_cistromeIntersection(source: dbcre & { details: CREDetails }) {
+    if (source.assembly !== 'mm10') {
+        throw new Error('Cistrome instersection only available on mm10.');
+    }
     const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('cistrome');
 }
 
-export async function resolve_cre_linkedGenes(source, args, context, info) {
+export async function resolve_cre_linkedGenes(source) {
     const cre: CREDetails = source.details;
     if ('mm10' === cre.assembly) {
         return [];
@@ -288,6 +289,32 @@ export async function resolve_cre_miniPeaks(source, args, context, info) {
         },
         json: true,
     };
-    const res = await request(options);
-    return res[accession].rows;
+    throw new Error('not implemented');
+    //const res = await request(options);
+    //return res[accession].rows;
 }
+
+export const cCREDetailsResolvers = {
+    ccreDetails: {
+        ccres: resolve_ccres,
+        biosampleSpecificSignals: resolve_cre_biosampleSpecificSignals,
+        nearbyGenomic: resolve_cre_nearbyGenomic,
+        //fantom_cat: resolve_cre_fantomCat,
+        ortholog: resolve_cre_ortholog,
+        tfIntersection: resolve_cre_tfIntersection,
+        //cistromeIntersection: resolve_cre_cistromeIntersection,
+        linkedGenes: resolve_cre_linkedGenes,
+        //ccreTargetData: resolve_cre_target_data,
+        //miniPeaks: resolve_cre_miniPeaks,
+    },
+    OrthologouscCRE: {
+        cCRE: resolve_cre_ortholog_cCRE,
+    },
+    NearbyGenomic: {
+        nearby_genes: resolve_cre_nearbyGenomic_nearbyGenes,
+        tads: resolve_cre_nearbyGenomic_genesInTad,
+        re_tads: resolve_cre_nearbyGenomic_re_tads,
+        nearby_res: resolve_cre_nearbyGenomic_nearbyCREs,
+        nearby_snps: resolve_cre_nearbyGenomic_snps,
+    },
+};

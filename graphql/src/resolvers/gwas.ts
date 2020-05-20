@@ -1,14 +1,12 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
-import { Assembly } from '../types';
-
-const { UserError } = require('graphql-errors');
+import { Assembly, ctspecificdata, Resolver } from '../types';
 
 export class Gwas {
     assembly: Assembly;
-    studies: DbGwas.DBGwasStudy[];
-    byStudy: Record<string, DbGwas.DBGwasStudy>;
+    studies: DbGwas.DBGwasStudy[] | undefined;
+    byStudy: Record<string, DbGwas.DBGwasStudy> | undefined;
     constructor(assembly) {
         this.assembly = assembly;
     }
@@ -24,7 +22,7 @@ export class Gwas {
         }
     }
 
-    checkStudy = (study: string) => study in this.byStudy;
+    checkStudy = (study: string) => study in this.byStudy!;
 
     numLdBlocksOverlap = gwas_study => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
     numCresOverlap = gwas_study => DbGwas.numCresOverlap(this.assembly, gwas_study);
@@ -38,7 +36,6 @@ export class Gwas {
     async cres(gwas_study: string, ct: string | undefined) {
         const acache = loadCache(this.assembly);
         const ctmap = await acache.ctmap();
-        const ctsTable = await acache.ctsTable();
         const celltype = ct !== 'none' ? ct : undefined;
         const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, celltype, ctmap);
         let activeCres: DbGwas.gwascre[] = [];
@@ -46,8 +43,12 @@ export class Gwas {
             const ctspecific = await ccRECtspecificLoaders[this.assembly].loadMany(
                 cres.map(c => `${c.accession}::${celltype}`)
             );
+            let err = ctspecific.find(cts => cts instanceof Error);
+            if (err) {
+                throw err;
+            }
             cres.forEach((cre, index) => {
-                const cts = ctspecific[index];
+                const cts = ctspecific[index] as ctspecificdata;
                 if (
                     (cts.h3k4me3_zscore || 0) > 1.64 ||
                     (cts.h3k27ac_zscore || 0) > 1.64 ||
@@ -61,16 +62,16 @@ export class Gwas {
         }
 
         // accession, snp, geneid, zscores
-        return activeCres.map(c => ({ cRE: c, geneid: c.geneid, snps: c.snps }));
+        return activeCres.map(c => ({ ccRE: c, geneid: c.geneid, snps: c.snps }));
     }
 }
 
 export const resolve_gwas_studies: GraphQLFieldResolver<any, any> = source => {
     const g: Gwas = source.gwas_obj;
-    return g.studies.map(study => ({
+    return g.studies!.map(study => ({
         study_name: study.name,
         gwas_obj: g,
-        ...g.byStudy[study.name],
+        ...g.byStudy![study.name],
     }));
 };
 
@@ -78,12 +79,12 @@ export const resolve_gwas_study: GraphQLFieldResolver<any, any> = (source, args)
     const g: Gwas = source.gwas_obj;
     const studyarg = args.study;
     if (!g.checkStudy(studyarg)) {
-        throw new UserError('invalid gwas study');
+        throw new Error('invalid gwas study');
     }
     return {
         study_name: studyarg,
         gwas_obj: g,
-        ...g.byStudy[studyarg],
+        ...g.byStudy![studyarg],
     };
 };
 
@@ -127,8 +128,26 @@ export const resolve_gwas_snps: GraphQLFieldResolver<any, any> = async (source, 
     return DbGwas.searchSNPs(assembly, search);
 };
 
-export const resolve_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
+export const resolve_gwas: Resolver<{ assembly: Assembly }> = (source, args) => {
+    if (args.assembly !== 'grch38') {
+        throw new Error('GWAS only available for GRCh38');
+    }
     const assembly = args.assembly;
     const g = new Gwas(assembly);
     return g.awaitStudies().then(r => ({ gwas_obj: g }));
+};
+
+export const gwasResolvers = {
+    Gwas: {
+        studies: resolve_gwas_studies,
+        study: resolve_gwas_study,
+        snps: resolve_gwas_snps,
+    },
+    GwasStudy: {
+        numLdBlocksOverlap: resolve_gwas_study_numLdBlocksOverlap,
+        numcCREsOverlap: resolve_gwas_study_numCresOverlap,
+        allSNPs: resolve_gwas_study_allSNPs,
+        topCellTypes: resolve_gwas_study_topCellTypes,
+        ccres: resolve_gwas_study_cres,
+    },
 };

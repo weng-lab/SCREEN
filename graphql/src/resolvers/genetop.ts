@@ -23,7 +23,7 @@ const topGenes = async (assembly, biosample, normalized) => {
 };
 
 export const resolve_genetop: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
-    const assembly = args.assembly;
+    const assembly = args.assembly.toLowerCase();
     const biosample = args.biosample;
     const normalized = args.normalized !== null ? args.normalized : true;
     return topGenes(assembly, biosample, normalized);
