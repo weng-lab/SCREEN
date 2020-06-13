@@ -1,11 +1,7 @@
-import * as Common from './db_common';
 import { db } from './db';
-import { buildWhereStatement, dbcre, getCreTable } from './db_cre_table';
+import { buildWhereStatement, dbcre } from './db_cre_table';
 import { Assembly, SNP, LDBlockSNP } from '../types';
-import { LDBlock } from '../schema/GwasResponse';
 import { Gwas } from '../resolvers/gwas';
-import { loadCache, ccRECtspecificLoaders } from './db_cache';
-import { snptable } from './db_snp';
 
 export type DBGwasStudy = { name: string; author: string; pubmed: string; trait: string; totalLDblocks: number };
 export async function gwasStudies(assembly): Promise<DBGwasStudy[]> {
@@ -153,6 +149,7 @@ const mapldblocksnps = (assembly: Assembly, gwas_obj: Gwas) => (rows: DBLDBlockS
             assembly,
             id: row.snp,
             range: {
+                assembly,
                 chrom: row.chrom,
                 start: row.start,
                 end: row.stop,
@@ -164,7 +161,7 @@ const mapldblocksnps = (assembly: Assembly, gwas_obj: Gwas) => (rows: DBLDBlockS
             study: {
                 study_name: row.authorpubmedtrait,
                 gwas_obj,
-                ...gwas_obj.byStudy[row.authorpubmedtrait],
+                ...gwas_obj.byStudy![row.authorpubmedtrait],
             },
             taggedsnp: tagged,
         },
@@ -214,6 +211,7 @@ LIMIT 10
         assembly,
         id: snp.snp,
         range: {
+            assembly,
             chrom: snp.chrom,
             start: snp.start,
             end: snp.stop,

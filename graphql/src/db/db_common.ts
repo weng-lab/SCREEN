@@ -2,14 +2,15 @@ import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
 import { loadCache, Biosample } from './db_cache';
-import { Assembly, assaytype } from '../types';
+import { Assembly, assaytype, NearbyRE, ChromRange } from '../types';
 import { nearbyGene } from '../resolvers/credetails';
-import { UserError } from 'graphql-errors';
+import { createDataLoader } from '../utils';
+import { Gene } from '../types';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
     const q = `SELECT chrom, count from ${tableName}`;
-    const res = await db.many(q);
+    const res = await db.any(q);
     const ret = res.reduce((obj, e) => {
         return { ...obj, [e['chrom']]: +e['count'] };
     }, {});
@@ -19,7 +20,7 @@ export async function chromCounts(assembly) {
 export async function creHist(assembly) {
     const tableName = assembly + '_cre_bins';
     const q = `SELECT chrom, buckets, numBins, binMax from ${tableName}`;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce(
         (obj, e) => ({
             ...obj,
@@ -50,7 +51,7 @@ export async function tfHistoneDnaseList(assembly, eset) {
         SELECT distinct label
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res
         .map(r => r['label'])
         .slice()
@@ -64,7 +65,7 @@ export async function geBiosampleTypes(assembly) {
         FROM ${tableName}
         ORDER BY 1
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.map(r => r['biosample_type']);
 }
 
@@ -75,7 +76,7 @@ export async function geBiosamples(assembly) {
         FROM ${tableName}
         ORDER BY celltype
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.map(r => r['biosample']);
 }
 
@@ -86,11 +87,13 @@ export async function geneIDsToApprovedSymbol(assembly) {
         FROM ${tableName}
         ORDER BY 1
     `;
-    const res = await db.many(q);
-    return res.filter(o => o.geneid !== -1).reduce((obj, r) => {
-        obj[r['geneid']] = r['approved_symbol'];
-        return obj;
-    }, {});
+    const res = await db.any(q);
+    return res
+        .filter(o => o.geneid !== -1)
+        .reduce((obj, r) => {
+            obj[r['geneid']] = r['approved_symbol'];
+            return obj;
+        }, {});
 }
 
 export async function getHelpKeys() {
@@ -98,7 +101,7 @@ export async function getHelpKeys() {
         SELECT key, title, summary
         FROM helpkeys
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce(
         (obj, r) => ({
             ...obj,
@@ -142,7 +145,7 @@ export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMe
             FROM ${table}
         `;
 
-    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod }> = await db.many(q);
+    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod }> = await db.any(q);
     const ret = {} as Record<RankMethod, Record<celltype, ctindex>>;
     for (const r of res) {
         const rank_method = r.rankmethod;
@@ -162,13 +165,10 @@ export async function makeCtMap(assembly): Promise<Record<assaytype, Record<cell
     const rmInfo = await rankMethodToIDxToCellType(assembly);
     const ret = Object.keys(rmInfo)
         .filter(k => k in amap)
-        .reduce(
-            (obj, k) => {
-                obj[amap[k]] = rmInfo[k];
-                return obj;
-            },
-            {} as Record<assaytype, Record<celltype, ctindex>>
-        );
+        .reduce((obj, k) => {
+            obj[amap[k]] = rmInfo[k];
+            return obj;
+        }, {} as Record<assaytype, Record<celltype, ctindex>>);
     return ret;
 }
 
@@ -178,7 +178,7 @@ export async function makeCTStable(assembly) {
         SELECT cellTypeName, pgidx
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx'] }), {});
 }
 // TODO: add de
@@ -248,21 +248,18 @@ export async function makeBiosamplesMap(assembly): Promise<Record<string, Biosam
         id: string[];
         synonyms: string[][];
     }>(q);
-    const ret = res.reduce(
-        (prev, curr) => {
-            prev[curr.biosample_term_name] = {
-                name: curr.biosample_term_name,
-                celltypevalue: curr.values.filter(v => !!v)[0] || curr.biosample_term_name,
-                count: curr.count,
-                is_ninestate: curr.type.includes('ninestate'),
-                is_intersection_peak: curr.type.includes('peak'),
-                is_intersection_cistrome: curr.type.includes('cistrome'),
-                is_rnaseq: curr.type.includes('rnaseq'),
-            };
-            return prev;
-        },
-        {} as Record<string, Biosample>
-    );
+    const ret = res.reduce((prev, curr) => {
+        prev[curr.biosample_term_name] = {
+            name: curr.biosample_term_name,
+            celltypevalue: curr.values.filter(v => !!v)[0] || curr.biosample_term_name,
+            count: curr.count,
+            is_ninestate: curr.type.includes('ninestate'),
+            is_intersection_peak: curr.type.includes('peak'),
+            is_intersection_cistrome: curr.type.includes('cistrome'),
+            is_rnaseq: curr.type.includes('rnaseq'),
+        };
+        return prev;
+    }, {} as Record<string, Biosample>);
     return ret;
 }
 
@@ -322,7 +319,7 @@ async function allDatasets(assembly, dectmap) {
     const q = `
         SELECT ${cols.join(',')} FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.map(makeDataset);
 }
 
@@ -339,8 +336,6 @@ export async function datasets(assembly) {
                 name: r.name,
                 value: r.value,
                 tissue: r.tissue,
-                // Sometimes name is null, so fallback to value
-                displayName: r.name || r.value,
                 isde: r.isde,
                 synonyms: r.synonyms,
                 assays: [],
@@ -388,44 +383,56 @@ export async function datasets(assembly) {
     return ret;
 }
 
-async function beds(assembly, tableName) {
+async function beds(assembly, tableName): Promise<Record<string, Record<string, string>>> {
     const q = `
         SELECT celltype, dcc_accession, typ
         FROM ${tableName}
     `;
-    const res = await db.many(q);
-    const ret: any = {};
+    const res = await db.any(q);
+    const ret: Record<string, Record<string, string>> = {};
     for (const { celltype: ct, dcc_accession: acc, typ: typ } of res) {
         (ret[ct] = ret[ct] || {})[typ] = acc;
     }
     return ret;
 }
 
-export async function creBigBeds(assembly) {
+export async function ccreBigBeds(assembly) {
     const tableName = assembly + '_dcc_cres';
     return beds(assembly, tableName);
 }
 
-export async function creBeds(assembly) {
+export async function ccreBeds(assembly) {
     const tableName = assembly + '_dcc_cres_beds';
     return beds(assembly, tableName);
 }
 
-export async function genemap(assembly) {
+export async function genemap(assembly): Promise<Record<string, Gene & { ensemblid: string }>> {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid, ensemblid_ver, approved_symbol, approved_symbol as gene, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
+        SELECT ensemblid, ensemblid_ver, approved_symbol, chrom, start, stop, strand
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     return res.reduce((prev, curr) => {
-        prev[curr.ensemblid] = curr;
-        prev[curr.ensemblid_ver] = curr;
+        const gene = {
+            assembly,
+            approved_symbol: curr.approved_symbol,
+            ensemblid: curr.ensemblid,
+            ensemblid_ver: curr.ensemblid_ver,
+            coords: {
+                chrom: curr.chrom,
+                start: curr.start,
+                end: curr.stop,
+                strand: curr.strand,
+            },
+        };
+        prev[gene.ensemblid] = gene;
+        prev[gene.ensemblid_ver] = gene;
         return prev;
     }, {});
 }
 
-export async function geneInfo(assembly, gene) {
+export async function geneInfo(assembly: Assembly, gene: string) {
     const tableName = assembly + '_gene_info';
     const q = `
         SELECT *
@@ -478,70 +485,63 @@ export async function crePos(assembly, accession) {
     return { chrom: r['chrom'], start: r['start'], end: r['stop'] };
 }
 
-async function getColsForAccession(assembly, accession, cols) {
+const ccreEpigeneticSignals = async (
+    assembly: Assembly,
+    accessions: readonly string[]
+): Promise<Record<assaytype, number[]>[]> => {
     const tableName = assembly + '_cre_all';
     const q = `
-        SELECT ${cols.join(',')}
-        FROM ${tableName}
-        WHERE accession = $1
+SELECT dnase_zscores, ctcf_zscores, h3k27ac_zscores, h3k4me3_zscores
+FROM ${tableName}
+JOIN unnest($1) WITH ORDINALITY t(accession, ord) USING (accession)
+ORDER BY t.ord
     `;
-    return db.oneOrNone(q, [accession]);
-}
+    const res = await db.any(q, [accessions]);
+    return res.map(r => ({
+        dnase: r.dnase_zscores,
+        ctcf: r.ctcf_zscores,
+        h3k27ac: r.h3k27ac_zscores,
+        h3k4me3: r.h3k4me3_zscores,
+    }));
+};
+export const ccreEpigeneticSignalsLoader = createDataLoader(ccreEpigeneticSignals);
 
-export async function creRanks(assembly, accession): Promise<Record<assaytype, number[]>> {
-    const cols = `
-dnase_zscores
-ctcf_zscores
-h3k27ac_zscores
-h3k4me3_zscores`
-        .trim()
-        .split('\n');
-
-    const r = await getColsForAccession(assembly, accession, cols);
-    if (!r) {
-        throw new UserError(`Invalid accession (${accession})`);
-    }
-    return cols.reduce(
-        (obj, k) => {
-            const assay = k.split('_')[0];
-            obj[assay] = r[k];
-            return obj;
-        },
-        {} as Record<assaytype, number[]>
-    );
-}
-
-async function getGenes(assembly, accession, allOrPc) {
-    const tableall = assembly + '_cre_all';
-    const tableinfo = assembly + '_gene_info';
-    const tableTss = assembly + '_tss_info';
+export const genes = async (assembly: Assembly, genes: readonly string[]): Promise<Gene[]> => {
+    const tableName = assembly + '_gene_info';
     const q = `
-        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
-        FROM
-        (SELECT UNNEST(gene_${allOrPc}_id) geneid,
-        UNNEST(gene_${allOrPc}_distance) distance
-        FROM ${tableall} WHERE accession = $1) AS g
-        INNER JOIN ${tableinfo} AS gi
-        ON g.geneid = gi.geneid
-        INNER JOIN ${tableTss} as tss
-        ON gi.ensemblid_ver = tss.ensemblid_ver
+SELECT ensemblid_ver, approved_symbol, chrom, start, stop, strand
+FROM ${tableName}
+JOIN unnest($1) WITH ORDINALITY t(approved_symbol, ord) USING (approved_symbol)
+ORDER BY t.ord
     `;
-    return db.any(q, [accession]);
-}
+    const res = await db.any(q, [genes]);
+    if (res.length !== genes.length) {
+        throw new Error('Invalid gene');
+    }
+    return res.map(r => ({
+        assembly,
+        approved_symbol: r.approved_symbol,
+        ensemblid_ver: r.ensemblid_ver,
+        coords: {
+            assembly,
+            chrom: r.chrom,
+            start: r.start,
+            end: r.stop,
+            strand: r.strand,
+        },
+    }));
+};
+export const genesLoader = createDataLoader(genes);
 
-export async function getGenesMany(assembly, accessions: string[], allOrPc): Promise<nearbyGene[][]> {
+// cCREs
+export async function getGenesMany(
+    assembly: Assembly,
+    accessions: readonly string[],
+    allOrPc
+): Promise<nearbyGene[][]> {
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
     const tableTss = assembly + '_tss_info';
-    // accession => index
-    // Need to ensure that we return data in the same order that we were asked
-    const requests = accessions.reduce(
-        (prev, accession, index) => {
-            prev[accession] = index;
-            return prev;
-        },
-        {} as Record<string, number>
-    );
     const q = `
 SELECT g.accession, gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
 FROM (
@@ -555,41 +555,28 @@ INNER JOIN ${tableTss} as tss
 ON gi.ensemblid_ver = tss.ensemblid_ver
     `;
     const res = await db.any(q, [accessions]);
-    const map: Record<string, nearbyGene[]> = res.reduce(
-        (prev, row) => {
-            prev[row.accession] = prev[row.accession] || [];
+    const map: Record<string, nearbyGene[]> = res.reduce((prev: Record<string, nearbyGene[]>, row) => {
+        prev[row.accession] = prev[row.accession] || [];
 
-            prev[row.accession].push({
-                gene: {
-                    gene: row.approved_symbol,
-                    ensemblid_ver: row.ensemblid_ver,
-                    coords: {
-                        chrom: row.chrom,
-                        start: row.start,
-                        end: row.stop,
-                        strand: row.strand,
-                    },
-                    tsscoords: {
-                        chrom: row.tss_chrom,
-                        start: row.tss_start,
-                        end: row.tss_stop,
-                        strand: row.strand,
-                    },
+        prev[row.accession].push({
+            gene: {
+                assembly,
+                approved_symbol: row.approved_symbol,
+                ensemblid_ver: row.ensemblid_ver,
+                coords: {
+                    assembly,
+                    chrom: row.chrom,
+                    start: row.start,
+                    end: row.stop,
+                    strand: row.strand,
                 },
-                distance: row.distance,
-            });
-            return prev;
-        },
-        {} as Record<string, nearbyGene[]>
-    );
-    return Object.keys(map).reduce(
-        (prev, accession) => {
-            const index = requests[accession];
-            prev[index] = map[accession];
-            return prev;
-        },
-        Array.from(Array(requests.length)) as nearbyGene[][]
-    );
+            },
+            distance: row.distance,
+        });
+        return prev;
+    }, {} as Record<string, nearbyGene[]>);
+    console.log(map);
+    return accessions.map(accession => map[accession] || new Error(`BUG: nearby genes missing for ${accession}`));
 }
 
 export async function getTadOfCRE(assembly, accession) {
@@ -606,16 +593,16 @@ export async function getTadOfCRE(assembly, accession) {
     return db.oneOrNone(gettadboundaries, [accession]);
 }
 
-export async function cresInTad(assembly, accession, chrom, start, end, tadInfo) {
+export async function cresInTad(assembly, accession, chrom, start, end, tadInfo): Promise<NearbyRE[]> {
     const ctmap = loadCache(assembly).ctmap();
     const cres = await getCreTable(assembly, ctmap, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
-    return cres.cres
+    return cres.ccres
         .map(cre => ({
             distance: Math.min(Math.abs(end - cre.end), Math.abs(start - cre.start)),
-            ccRE: cre,
+            cCRE: cre,
         }))
         .filter(cre => cre.distance < 100000)
-        .filter(cre => cre.ccRE.accession !== accession)
+        .filter(cre => cre.cCRE.accession !== accession)
         .sort((a, b) => a.distance - b.distance);
 }
 
@@ -630,7 +617,7 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
     return db.any(q, [geneids]);
 }
 
-export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
+export async function distToNearbyCREs(assembly, accession, coord, halfWindow): Promise<NearbyRE[]> {
     const expanded = CoordUtils.expanded(coord, halfWindow);
     const ctmap = await loadCache(assembly).ctmap();
     const cres = await getCreTable(
@@ -639,10 +626,10 @@ export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
         { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
         {}
     );
-    return cres.cres
+    return cres.ccres
         .filter(cre => cre.accession !== accession)
         .map(cre => ({
-            ccRE: cre,
+            cCRE: cre,
             distance: Math.min(Math.abs(coord.end - cre.end), Math.abs(coord.start - cre.start)),
         }))
         .sort((a, b) => a.distance - b.distance);
@@ -674,7 +661,7 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
         .sort((a, b) => a.distance - b.distance);
 }
 
-export async function peakIntersectCount(assembly, accession, totals, eset) {
+export async function peakIntersectCount(assembly, accession, totals, eset): Promise<{ tf: any[]; histone: any[] }> {
     const tableName = assembly + '_' + _intersections_tablename(eset);
     const q = `
         SELECT tf, histone
@@ -683,19 +670,19 @@ export async function peakIntersectCount(assembly, accession, totals, eset) {
     `;
     const res = await db.oneOrNone(q, [accession]);
     if (!res) {
-        return { tfs: [], histone: [] };
+        return { tf: [], histone: [] };
     }
-    const tfs = Object.keys(res['tf']).map(k => ({
+    const tf = Object.keys(res['tf']).map(k => ({
         name: k,
         n: Array.from(new Set(res['tf'][k])).length,
         total: totals[k] || -1,
     }));
-    const histones = Object.keys(res['histone']).map(k => ({
+    const histone = Object.keys(res['histone']).map(k => ({
         name: k,
         n: Array.from(new Set(res['histone'][k])).length,
         total: totals[k] || -1,
     }));
-    return { tf: tfs, histone: histones };
+    return { tf, histone };
 }
 
 export async function rampageByGene(assembly, ensemblid_ver) {
@@ -741,27 +728,6 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
-export async function rampageEnsemblID(
-    assembly: Assembly,
-    gene: string
-): Promise<{ gene: string; ensemblid_ver: string; coords: { chrom: string; start: number; end: number } }> {
-    const tableName = assembly + '_gene_info';
-    const q = `
-        SELECT ensemblid_ver, approved_symbol as gene, chrom, start, stop
-        FROM ${tableName}
-        WHERE approved_symbol = $1
-    `;
-    return await db.one(q, [gene], r => ({
-        gene: r.gene,
-        ensemblid_ver: r.ensemblid_ver,
-        coords: {
-            chrom: r.chrom,
-            start: r.start,
-            end: r.stop,
-        },
-    }));
-}
-
 export async function linkedGenes(assembly, accession) {
     const tableName = assembly + '_linked_genes';
     const q = `
@@ -802,12 +768,12 @@ export async function tfTargetExps(assembly, accession, target, eset) {
     return targetExps(assembly, accession, target, eset, 'tf');
 }
 
-export async function tfHistCounts(assembly, eset) {
+export async function tfHistCounts(assembly, eset: 'peak' | 'cistrome') {
     const tableName = assembly + '_' + eset + 'intersectionsmetadata';
     const q = `
-        SELECT COUNT(label), label
-        FROM ${tableName}
-        GROUP BY label
+SELECT COUNT(label), label
+FROM ${tableName}
+GROUP BY label
     `;
     const rows = await db.any(q);
     return rows.reduce((obj, r) => ({ ...obj, [r['label']]: +r['count'] }), {});
@@ -824,15 +790,15 @@ export async function inputData(assembly) {
     return await db.any(q, [assembly]);
 }
 
-// Almost like topTissues except filter by a threshold
-// TODO: add a threshold param to topTissues
+// Almost like biosampleSpecificSignals except filter by a threshold
+// TODO: add a threshold param to biosampleSpecificSignals
 export async function activeCts(
     assembly: Assembly,
     accession: string,
     assays: assaytype[],
     threshold: number = 1.64
 ): Promise<string[]> {
-    const ranks = await creRanks(assembly, accession);
+    const ranks = await ccreEpigeneticSignalsLoader[assembly].load(accession);
     const ctmap = await loadCache(assembly).ctmap();
     const active = new Set<string>();
     for (const assay of assays) {
@@ -849,7 +815,43 @@ export async function activeCts(
     return Array.from(active);
 }
 
-export async function exons(assembly: Assembly, ensemblid_ver: string) {
+export async function transcriptsForGene(gene: Gene): Promise<{ transcript: string; gene: Gene; range: ChromRange }[]> {
+    const tableName = gene.assembly + '_gene_details';
+    const q = `
+SELECT transcript_id as transcript, seqname as chrom, startpos as start, endpos as end, strand
+FROM ${tableName}
+WHERE gene_id = $1
+AND feature = 'transcript'
+    `;
+    const res = await db.any<{ transcript: string; chrom: string; start: number; end: number; strand: string }>(q, [
+        gene.ensemblid_ver,
+    ]);
+    return res.map(row => ({
+        gene,
+        transcript: row.transcript,
+        range: {
+            assembly: gene.assembly,
+            chrom: row.chrom,
+            start: row.start,
+            end: row.end,
+            strand: row.strand,
+        },
+    }));
+}
+
+export const transcriptExons = async (assembly: Assembly, transcript_ver: string): Promise<ChromRange[]> => {
+    const tableName = assembly + '_gene_details';
+    const q = `
+SELECT transcript_id, feature, seqname as chrom, startpos as start, endpos as end, strand
+FROM ${tableName}
+WHERE feature = 'exon'
+AND transcript_id = $1
+    `;
+    const res = await db.any<{ chrom: string; start: number; end: number; strand: string }>(q, [transcript_ver]);
+    return res.map(row => ({ ...row, assembly, chrom: row.chrom.trim(), strand: row.strand.trim() }));
+};
+
+export const geneExons = async (assembly: Assembly, ensemblid_ver: string) => {
     const tableName = assembly + '_gene_details';
     const q = `
 SELECT seqname as chrom, startpos as start, endpos as end, strand
@@ -857,7 +859,7 @@ FROM ${tableName}
 WHERE feature = 'exon'
 AND transcript_id = (
     SELECT transcript_id
-    FROM hg19_gene_details
+    FROM grch38_gene_details
     WHERE gene_id = $1
     AND feature = 'exon'
     LIMIT 1
@@ -869,4 +871,15 @@ AND transcript_id = (
         row => ({ ...row, chrom: row.chrom.trim(), strand: row.strand.trim() })
     );
     return res;
+};
+
+export async function geCellCompartments(assembly) {
+    const tableName = assembly + '_rnaseq_metadata';
+    const q = `
+        SELECT DISTINCT(cellcompartment)
+        FROM ${tableName}
+        ORDER BY 1
+    `;
+    const res = await db.many(q);
+    return res.map(r => r['cellcompartment']);
 }
