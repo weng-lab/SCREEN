@@ -34,7 +34,7 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
 AgnosticCres = {"7-group": {"hg19": "ENCFF658MYW",
-                            "mm10": "ENCFF318XQA",
+                            "mm10": "http://gcp.wenglab.org/hubs/integrative1/data/mm10-ccREs.bigBed",
                             "hg38": "http://gcp.wenglab.org/hubs/integrative1/data/GRCh38-ccREs.CTA.bigBed"},
                 "9-state": {"H3K4me3": {"hg19": "ENCFF706MWD",
                                         "mm10": "ENCFF549SJX",
@@ -51,10 +51,12 @@ def EncodeUrlBigBed(accession, notencode=False):
     if notencode:
         if accession.startswith("http:") or accession.startswith("https:"):
             return accession
-    return os.path.join("https://www.encodeproject.org/files/",
+    return accession
+
+""" return os.path.join("https://www.encodeproject.org/files/",
                         accession,
                         "@@download/",
-                        accession + ".bigBed?proxy=true")
+                        accession + ".bigBed?proxy=true") """
 
 
 def EncodeUrlBigWig(accession):
@@ -300,7 +302,7 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
                 print(("missing 7group for ", cREs))
             else:
                 cREaccession = cREs["7group"]
-                url = EncodeUrlBigBed(cREaccession)
+                url = EncodeUrlBigBed(cREaccession) if "http" not in cREaccession else cREaccession
                 t = cRETrack(self.assembly, '', show7group, cREaccession, superTrackName,
                              True, ct, self.assembly == "hg38").lines(self.priority)
                 self.priority += 1
