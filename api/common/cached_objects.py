@@ -93,7 +93,7 @@ class CachedObjects:
         # self.creBigBeds = self.pgSearch.creBigBeds()
         self.creBigBeds = {}
         keys = [ '_', '_', "DNase", "H3K4me3", "H3K27ac", "CTCF" ]
-        lumfnp = os.path.join(os.path.dirname(__file__), "../GRCh38-Look-Up-Matrix.txt")
+        lumfnp = os.path.join(os.path.dirname(__file__), "../GRCh38-mm10-Look-Up-Matrix.txt")
         with open(lumfnp, 'r') as f:
             for line in f:
                 line = line.strip().split('\t')
