@@ -18,7 +18,7 @@
 						"downloadjs": "^1.4.7",
 						"enumify": "^1.0.4",
 						"flow-bin": "^0.57.3",
-						"jquery": "^3.2.1",
+						"jquery": "^3.5.0",
 						"jshashes": "^1.0.7",
 						"jszlib": "dasmoth/jszlib",
 						"react": "^16.0.0",
