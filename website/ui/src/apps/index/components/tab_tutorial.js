@@ -8,17 +8,21 @@ class UTabUCSC extends React.Component {
 		<div>
 		<h2>Introduction</h2>
 		<p>SCREEN and the ENCODE Encyclopedia are deeply integrated with the UCSC Genome Browser to facilitate genome-wide visualization of all of the Encyclopedia’s annotations. You can visualize all ground-level anotations from the Encylcopedia using our "mega-trackhub", which contains peaks and signal for all the core DNA-based and RNA-based assays available at ENCODE as well as integrative annotations related to the Registry of cCREs. Alternatively, SCREEN offers the capability to generate customized trackhubs with cCRE-related data including DNase-seq, H3K4me3 ChIP-seq, H3K27ac ChIP-seq, CTCF ChIP-seq, and RNA-seq. Select a tab below for more information or to access the mega-trackhub.</p>
+		<h2>cCRE tracks</h2>
+		If you are interested in visualizing the Registry of cCREs alongside your own data, you can use the buttons below:<br />
+		<a className="btn btn-primary mainButtonGwas" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=encodeCcreCombined" role="button">Human (GRCh38)</a>&nbsp;
+		<a className="btn btn-primary mainButtonGwas" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=mm10&g=encodeCcreCombined" role="button">Mouse (mm10)</a>
 		<h2>Mega trackhubs</h2>
 		We offer mega trackhubs for human and mouse which provide access to all the ground level data in the ENCODE Encyclopedia. These mega hubs are divided into three hubs for each species: a DNA-based hub, containing assays targeting DNase accessibility, DNA binding by transcription factors, DNA methylation, and other DNA-related features; an RNA-based hub, containing assays targeting RNA expression, RNA binding protein occupancy, and other RNA-related features; and an integrative hub, containing cCREs and the epigenetic data used to derive them. Mouse hubs are available on the mm10 genome; human hubs are available both on hg19 and GRCh38.<br/><br/>
 		You can use the buttons below to access the trackhubs at UCSC:<br/><br/>
-                		        <a className={"btn btn-primary mainButtonGwas"}
-                           href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/dna/hub.txt"} role={"button"}>
+                		        <a className="btn btn-primary mainButtonGwas"
+                           href="https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/dna/hub.txt" role="button">
 		            DNA
-	    </a>&nbsp;		        <a className={"btn btn-primary mainButtonGwas"}
-                           href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/rna/hub.txt"} role={"button"}>
+	    </a>&nbsp;		        <a className="btn btn-primary mainButtonGwas"
+                           href="https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/rna/hub.txt" role="button">
 		            RNA
-	    </a>&nbsp;		        <a className={"btn btn-primary mainButtonGwas"}
-                           href={"https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/integrative/hub.txt"} role={"button"}>
+	    </a>&nbsp;		        <a className="btn btn-primary mainButtonGwas"
+                           href="https://genome.ucsc.edu/cgi-bin/hgTracks?db=GRCh38&position=chr12:53380176-53416446&hubClear=http://screen.encodeproject.org/hubs/integrative/hub.txt" role="button">
 		            Integrative
 	    </a>
 		<h2>Custom trackhubs in SCREEN</h2>
