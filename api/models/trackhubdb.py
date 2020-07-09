@@ -98,7 +98,7 @@ class cRETrack(object):
 
     def _init(self):
         p = OrderedDict()
-        p["track"] = Helpers.sanitize(self.cREaccession)
+        p["track"] = Helpers.sanitize(self.cREaccession).replace("http_gcp_wenglab_org_hubs_integrative1_data_", "")
         p["parent"] = self.parent
         p["bigDataUrl"] = self._url()
         p["visibility"] = Helpers.viz("dense", self.active)
@@ -106,18 +106,18 @@ class cRETrack(object):
 
         if 'general' == self.ct:
             if self.show7group:
-                shortLabel = ["general 7g ccREs"]
-                longLabel = ["general 7-group ccREs"]
+                shortLabel = ["general 7g cCREs"]
+                longLabel = ["general 7-group cCREs"]
             else:
                 shortLabel = ["9s", self.ct]
-                longLabel = ["general ccREs", "with high", self.assay, '(9 state)']
+                longLabel = ["general cCREs", "with high", self.assay, '(9 state)']
         else:
             if self.show7group:
                 shortLabel = ["7g", self.ct]
-                longLabel = ["ccREs in", self.ct, '(7 group)']
+                longLabel = ["cCREs in", self.ct, '(7 group)']
             else:
                 shortLabel = ["9s", self.assay, self.ct]
-                longLabel = ["ccREs in", self.ct, "with high", self.assay, '(9 state)']
+                longLabel = ["cCREs in", self.ct, "with high", self.assay, '(9 state)']
 
         p["shortLabel"] = Helpers.makeShortLabel(*shortLabel)
         p["longLabel"] = Helpers.makeLongLabel(*longLabel)
@@ -264,8 +264,8 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         return [x for x in self.lines if x]
 
     def generalCREs(self, show7group):
-        superTrackName = Helpers.sanitize("super_" + 'general ccREs')
-        ret = self.makeSuperTrack('general ccREs', superTrackName)
+        superTrackName = Helpers.sanitize("super_" + 'general cCREs')
+        ret = self.makeSuperTrack('general cCREs', superTrackName)
 
         cREaccession = AgnosticCres["7-group"][self.assembly]
         t = cRETrack(self.assembly, '', True, cREaccession, superTrackName,
