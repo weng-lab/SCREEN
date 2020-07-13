@@ -1,0 +1,19 @@
+FROM python:3 AS build
+
+# Create app directory
+RUN mkdir -p /app
+WORKDIR /app
+
+RUN pip install mkdocs
+
+COPY mkdocs.yml /app/
+COPY docs/ /app/docs/
+
+RUN python -m mkdocs build
+
+# Copy build into new smaller docker container
+FROM nginx:1.14-alpine
+COPY --from=build /app/site /var/www
+COPY nginx.docs.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
