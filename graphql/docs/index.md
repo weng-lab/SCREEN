@@ -12,14 +12,14 @@ is a good introduction.
 
 ## Getting started
 
-The host url for the API is [`https://screen-api.wenglab.org/graphql`](https://api.wenglab.org/screen_graphql/graphql).
+The host url for the API is [`https://api.wenglab.org/screen_graphql/graphql`](https://api.wenglab.org/screen_graphql/graphql).
 
 ### Playground
 
 Navigating to the host url directly in the browser gives an interactive
 playground:
 
-<a href="https://screen-api.wenglab.org/graphql" rel="noopener noreferrer" target="_blank">
+<a href="https://api.wenglab.org/screen_graphql/graphql" rel="noopener noreferrer" target="_blank">
     <img src="img/playground.png"></img>
 </a>
 

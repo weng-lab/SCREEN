@@ -21,7 +21,7 @@ query($accession: String!) {
 }
 """
 request = requests.post(
-    'https://screen-api.wenglab.org/graphql',
+    'https://api.wenglab.org/screen_graphql/graphql',
     json={ 'query': query, 'variables': variables },
     headers={}
 )

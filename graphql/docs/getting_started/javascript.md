@@ -28,7 +28,7 @@ const variables = {
   gene: "PTMA"
 }
 
-request('https://screen-api.wenglab.org/graphql', query).then(data =>
+request('https://api.wenglab.org/screen_graphql/graphql', query).then(data =>
   console.log(data)
 )
 ```

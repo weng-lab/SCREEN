@@ -5,7 +5,7 @@ command for reference.
 
 The following command
 ```bash
-curl 'https://screen-api.wenglab.org/graphql'\
+curl 'https://api.wenglab.org/screen_graphql/graphql'\
  -H 'Content-Type: application/json'\
  -H 'Accept: application/json'\
  --data-binary '{"query":"{ globals { byAssembly(assembly: GRCh38) { tfs } } }"}'
