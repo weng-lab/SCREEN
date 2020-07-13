@@ -39,3 +39,8 @@ export type Gene = {
     ensemblid_ver: string;
     coords: ChromRange;
 };
+export type rDHS = {
+    assembly: Assembly;
+    accession: string;
+    ccre: string | undefined;
+};

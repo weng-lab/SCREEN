@@ -1,7 +1,8 @@
-import { checkChrom, isaccession, isclose } from '../utils';
+import { checkChrom, isaccession, isclose, getAssemblyFromCre, getAssemblyFromrDHS, createDataLoader } from '../utils';
 import { db } from './db';
 import { loadCache } from './db_cache';
-import { ChromRange, Assembly, ctspecificdata } from '../types';
+import { ChromRange, Assembly, ctspecificdata, rDHS } from '../types';
+import DataLoader from 'dataloader';
 
 const accessions = (wheres, params, j: { accessions?: string[] }) => {
     const accs: Array<string> = j['accessions'] || [];
@@ -112,6 +113,7 @@ export const buildWhereStatement = (
     const wheres = extra ? extra.wheres : [];
     const fields = [
         `'${assembly}' as assembly`,
+        `cre.rdhs as rdhs`,
         `cre.chrom as chrom`,
         `cre.start as start`,
         `cre.stop as end`,
@@ -225,6 +227,7 @@ async function creTableEstimate(table, where, params) {
 
 export type dbcre = {
     assembly: Assembly;
+    rdhs: string;
     chrom: string;
     start: number;
     end: number;
@@ -248,7 +251,7 @@ export type dbcre = {
 export async function getCreTable(
     assembly: string,
     ctmap: Record<string, any>,
-    j: { ctexps?: any; accessions?: string[]; range?: Partial<ChromRange> },
+    j: { ctexps?: any; accessions?: readonly string[]; range?: Partial<ChromRange> },
     pagination,
     extra?: { wheres: string[]; fields: string[] }
 ): Promise<{ total: number; ccres: dbcre[] }> {
@@ -348,4 +351,49 @@ export async function getCtSpecificData(assembly: Assembly, requested: readonly 
         });
         return prev;
     }, Array.from(Array(requested.length)) as ctspecificdata[]);
+}
+
+export const rDHSLoader = new DataLoader<string, rDHS | undefined>(accessions => getrDHSs(accessions));
+
+export async function getrDHSs(accessions: readonly string[]): Promise<rDHS[]> {
+    const byAssembly = {} as Record<Assembly, string[]>;
+    accessions.forEach(accession => {
+        const assembly = getAssemblyFromrDHS(accession);
+        if (assembly === undefined) {
+            return;
+        }
+        (byAssembly[assembly] || (byAssembly[assembly] = [])).push(accession.toLowerCase());
+    });
+    const all = {} as Record<string, rDHS>;
+    for (let [assembly, accessions] of Object.entries(byAssembly)) {
+        const table = assembly + '_cre_all';
+        const query = `
+SELECT accession, rDHS
+FROM ${table}
+WHERE rDHS = ANY($<accessions>)
+        `;
+        const res = await db.any<{ accession: string; rdhs: string; chrom: string; start: number; stop: number }>(
+            query,
+            {
+                accessions,
+            }
+        );
+        for (let r of res) {
+            all[r.rdhs.toUpperCase()] = {
+                accession: r.rdhs.toUpperCase(),
+                assembly: assembly as Assembly,
+                ccre: r.accession,
+            };
+        }
+    }
+
+    return accessions.map(accession => all[accession]);
+}
+
+export const cCRELoader = createDataLoader(getcCREsByAccession);
+
+export async function getcCREsByAccession(assembly: Assembly, accessions: readonly string[]): Promise<dbcre[]> {
+    const ctmap = loadCache(assembly).ctmap();
+    const res = await getCreTable(assembly, ctmap, { accessions }, {});
+    return res.ccres;
 }

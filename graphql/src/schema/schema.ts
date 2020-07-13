@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { buildFederatedSchema } from '@apollo/federation';
 
-import { resolve_ccres, cCREResolvers } from '../resolvers/cretable';
+import { resolve_ccres, cCREResolvers, resolve_rdhss } from '../resolvers/cretable';
 import { resolve_globals, globalsResolvers } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp, geneExpressionResolvers } from '../resolvers/geneexp';
@@ -112,6 +112,7 @@ export const typeDefs = gql`
         ): cCREs
         "Get details for a specific cCREs"
         ccre(accession: String!): cCRE
+        rdhss(accessions: [String!]!): [rDHS]
         "Get global data"
         globals: Globals
         "Get differential expression data"
@@ -277,6 +278,8 @@ export const typeDefs = gql`
         assembly: Assembly!
         "Accession of this cCRE"
         accession: String!
+        "The rDHS of the cCRE"
+        rDHS: rDHS!
         "The range of the cCRE"
         range: ChromRange!
         "The max zscore from any experiment in any celltype"
@@ -299,6 +302,18 @@ export const typeDefs = gql`
         nearbygenes: Genes!
         "Get details about this cCRE"
         details: ccreDetails!
+    }
+
+    """
+    Represents a single rDHS.
+    """
+    type rDHS {
+        "Assembly the rDHS is defined of"
+        assembly: Assembly!
+        "Accession of this rDHS"
+        accession: String!
+        "The associated cCRE, if there is any"
+        ccre: cCRE
     }
 
     "Represents a range on a chromomsome. May optionally specify a strand."
@@ -698,6 +713,7 @@ export const resolvers = ({
     Query: {
         ccres: resolve_ccres,
         ccre: resolve_ccre,
+        rdhss: resolve_rdhss,
         globals: resolve_globals,
         differentialExpression: resolve_de,
         geneExpresssion: resolve_geneexp,

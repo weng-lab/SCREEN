@@ -39,6 +39,15 @@ export const getAssemblyFromCre = (accession): Assembly | undefined => {
     }
     return undefined;
 };
+export const getAssemblyFromrDHS = (accession: string): Assembly | undefined => {
+    const rdhs = accession.toLowerCase();
+    if (rdhs.startsWith('em10d')) {
+        return 'mm10';
+    } else if (rdhs.startsWith('eh38d')) {
+        return 'grch38';
+    }
+    return undefined;
+};
 
 export const checkChrom = (assembly, chrom) => {
     const achroms = chroms[assembly];

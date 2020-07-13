@@ -75,10 +75,22 @@ Returns back two cCREs by accession.
 
 ```graphql
 query {
-  ccres(assembly: GRCh38, accessions: ["EH38E2000616", "EH38E1972623"]) {
+  ccres(assembly: GRCh38, accessions: ["EH38E2000616", "EH38E1310153"]) {
     ccres {
       accession
     }
+  }
+}
+```
+
+## Query rDHSs by accession
+
+Returns two rDHSs by their accession. Currently, only rDHSs with an assocaited cCRE are returned.
+
+```graphql
+query {
+  rdhss(accessions: ["EH38D3128116", "EH38D2115304"]) {
+    accession
   }
 }
 ```

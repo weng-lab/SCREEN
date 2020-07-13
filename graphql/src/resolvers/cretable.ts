@@ -1,6 +1,6 @@
-import { getCreTable, dbcre } from '../db/db_cre_table';
+import { getCreTable, dbcre, getrDHSs, rDHSLoader, cCRELoader } from '../db/db_cre_table';
 import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
-import { Assembly, ChromRange, Resolver } from '../types';
+import { Assembly, ChromRange, Resolver, rDHS } from '../types';
 import { CREDetails, resolve_details } from './credetails';
 import { cleanBiosampleName } from '../utils';
 
@@ -29,6 +29,22 @@ export const resolve_ccres: Resolver<cCREs_args> = async (_, args): Promise<{ cc
     const ctmap = await loadCache(assembly).ctmap();
     const results = await getCreTable(assembly, ctmap, args, { ...args.pagination, limit, offset });
     return results;
+};
+
+export const resolve_rdhss: Resolver<{ accessions: string[] }> = async (
+    _,
+    args
+): Promise<(rDHS | Error | undefined)[]> => {
+    return rDHSLoader.loadMany(args.accessions);
+};
+
+export const resolve_data_rDHS: Resolver<{}, dbcre> = (ccre): rDHS => {
+    const { assembly, rdhs, accession } = ccre;
+    return {
+        assembly,
+        accession: rdhs,
+        ccre: accession,
+    };
 };
 
 export async function resolve_data_nearbygenes(source: dbcre) {
@@ -61,11 +77,22 @@ export function resolve_data_ctspecific(source, args) {
     return ccRECtspecificLoaders[assembly].load(`${accession}::${ct}`);
 }
 
+export const resolve_rDHS_cCRE: Resolver<{}, rDHS> = async (rdhs): Promise<dbcre | undefined> => {
+    if (!rdhs.ccre) {
+        return undefined;
+    }
+    return cCRELoader[rdhs.assembly].load(rdhs.ccre);
+};
+
 export const cCREResolvers = {
     cCRE: {
+        rDHS: resolve_data_rDHS,
         range: resolve_data_range,
         ctspecific: resolve_data_ctspecific,
         nearbygenes: resolve_data_nearbygenes,
         details: resolve_details,
+    },
+    rDHS: {
+        ccre: resolve_rDHS_cCRE,
     },
 };
