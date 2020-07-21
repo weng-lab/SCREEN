@@ -55,8 +55,9 @@ class DE:
                 "h3k4me3_zscores[%s]" % ct2PromoterIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
                                         cols, True)
+        
         ret = []
-        for c in cres:
+        for c in [ x for x in cres if "PLS" in self.cache.groups[x[0]] ]:
             if c[3] > self.thres or c[4] > self.thres:
                 ret.append(self._parseCE("promoter-like signature", c))
         return ret
@@ -73,8 +74,10 @@ class DE:
                 "h3k27ac_zscores[%s]" % ct2EnhancerIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
                                         cols, False)
+        cres += self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
+                                         cols, True)
         ret = []
-        for c in cres:
+        for c in [ x for x in cres if "ELS" in self.cache.groups[x[0]] ]:
             if c[3] > self.thres or c[4] > self.thres:
                 ret.append(self._parseCE("enhancer-like signature", c))
         return ret

@@ -89,6 +89,8 @@ class CachedObjects:
         }
         if self.assembly in ["GRCh38", "mm10"]:
             self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset="cistrome")
+        if self.assembly == "mm10":
+            self.groups = { r[0]: r[1] for r in self.pw.fetchall("groups", "SELECT accession, cgroup FROM mm10_ccre_groups") }
 
         # self.creBigBeds = self.pgSearch.creBigBeds()
         self.creBigBeds = {}
