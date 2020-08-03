@@ -11,6 +11,7 @@ import Autocompleter from './autocompleter'
 import * as ApiClient from '../../../common/api_client';
 import * as Actions from '../actions';
 import {tabPanelize} from '../../../common/utility'
+import * as Para from './tab_about_paragraphs';
 
 class TabMain extends React.Component {
     constructor(props) {
@@ -78,7 +79,7 @@ class TabMain extends React.Component {
         if(this.key !== this.props.maintabs_active){
 	    return false;
 	}
-	return (tabPanelize(
+	return (<React.Fragment>{tabPanelize(
             <div>
 
 	        <div className={"row vertical-align hidden-sm hidden-xs"}>
@@ -111,8 +112,18 @@ class TabMain extends React.Component {
 		        {this.searchBox()}
 		    </div>
 	        </div>
-
-	    </div>));
+		<br />
+		                <div className="row">
+                    <div className="col-md-12">
+			<h4>How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN</h4>
+		    </div>
+		</div>
+                <div className="row">
+		    <div className="col-md-12">
+			{Para.citation()}
+                    </div>
+        	</div>
+	    </div>)}</React.Fragment>);
     }
 }
 

@@ -103,8 +103,7 @@ const figureLegends = [
 
 export const citation = () => (
     <ul>
-        <li>ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M. 2012. An integrated encyclopedia of DNA elements in the human genome. <i>Nature</i> 489: 57–74.</li>
-        <li>ENCODE Project Consortium, Myers RM, Stamatoyannopoulos J, Snyder M, Dunham I, Hardison RC, Bernstein BE, Gingeras TR, Kent WJ, Birney E, et al. 2011. A user's guide to the encyclopedia of DNA elements (ENCODE). <i>PLoS Biol</i> 9: e1001046.</li>
+        <li>ENCODE Project Consortium, Jill E. Moore, Michael J. Purcaro, Henry E. Pratt, Charles B. Epstein, Noam Shoresh, Jessika Adrian, et al. 2020. “Expanded Encyclopaedias of DNA Elements in the Human and Mouse Genomes.” <i>Nature</i> 583 (7818): 699–710.</li>
 	</ul>);
 
 export const figure = (num, alt, style = {}) => {

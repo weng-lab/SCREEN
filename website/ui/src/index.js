@@ -5,7 +5,7 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory } from 'react-router';
+import { Router, Route, browserHistory, Redirect } from 'react-router';
 import Search from './apps/search/main';
 import GeneExp from './apps/geneexp/main';
 import De from './apps/de/main';
@@ -78,6 +78,7 @@ const LoadableGwas = Loadable({
 ReactDOM.render((
     <Router history={h} createElement={addUuid} >
 	<Route path={"/"} component={LoadableIndex} />
+	<Route path={"/downloads"} render={ () => <Redirect to="/index/files" /> } />
 	<Route path={"/index/:tab"} component={LoadableIndex} />
 	<Route path={"/search(.*)"} component={LoadableSearch} />
 	<Route path={"/search/:maintab(.*)"} component={LoadableSearch} />
