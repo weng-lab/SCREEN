@@ -199,7 +199,7 @@ class TabFiles extends React.Component {
                     <div style={{ width: "33%", padding: "2%", display: "table-cell" }}>
 			<SearchIcon
 			    title="Adult Primary Cells and Tissues"
-			    number={Object.keys(this.state.data.human).filter( x => this.state.data.human[x].life_stage === "adult" ).length}
+			    number={Object.keys(this.state.data.human).filter( x => this.state.data.human[x].biosample_type !== "cell line" && this.state.data.human[x].life_stage !== "embryonic" ).length}
 			onClick={ () => { this.setState({ hmodal: { species: "human", type: ADULT, d: Object.keys(this.state.data.human).filter( x => this.state.data.human[x].life_stage === "adult" && this.state.data.human[x].biosample_type !== "cell line" ) } }); }}
 			/>
 		    </div>
@@ -226,7 +226,7 @@ class TabFiles extends React.Component {
                     <div style={{ width: "33%", padding: "2%", display: "table-cell" }}>
 			<SearchIcon
 			    title="Adult Primary Cells and Tissues"
-			    number={Object.keys(this.state.data.mouse).filter( x => this.state.data.mouse[x].life_stage === "adult" ).length}
+			    number={Object.keys(this.state.data.mouse).filter( x => this.state.data.mouse[x].biosample_type !== "cell line" && this.state.data.mouse[x].life_stage !== "embryonic" ).length}
 			onClick={ () => { this.setState({ mmodal: { species: "mouse", type: ADULT, d: Object.keys(this.state.data.mouse).filter( x => this.state.data.mouse[x].life_stage === "adult" && this.state.data.mouse[x].biosample_type !== "cell line" ) } }); }}
 			/>
 		    </div>
