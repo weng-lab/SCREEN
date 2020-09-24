@@ -226,7 +226,7 @@ export const factorbook_link_tf = (assembly) => (d) => {
     const lookup = {"GRCh38": "human",
 		    "hg19": "human",
 		    "mm10": "mouse"};
-    const url = "http://www.factorbook.org/" + lookup[assembly] + "/chipseq/tf/" + d;
+    const url = "http://www.factorbook.org/tf/" + lookup[assembly] + '/' + d + "/function";
     return <a href={url} target="_blank">{d}</a>;
 }
 
