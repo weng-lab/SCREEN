@@ -1,1 +1,0 @@
-docker run --rm --volume `pwd`:/usr/src/ --volume /path>/license:/usr/headers/ osterman/copyright-header:latest --license-file /usr/headers/header.01.txt --add-path .   --guess-extension --output-dir /usr/src/
