@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Jack Huey">
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Overview - SCREEN GraphQL API</title>
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Overview";
+    var mkdocs_page_input_path = "queries/overview.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> SCREEN GraphQL API</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Getting started</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../../getting_started/command_line/">Command-line</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../getting_started/python/">Python</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../getting_started/javascript/">Javascript</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Queries</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">Overview</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#retrieving-metadata">Retrieving metadata</a></li>
+    
+
+    <li class="toctree-l3"><a href="#searching-for-ccres">Searching for cCREs</a></li>
+    
+
+    <li class="toctree-l3"><a href="#getting-details-for-a-single-ccre">Getting details for a single cCRE</a></li>
+    
+
+    <li class="toctree-l3"><a href="#querying-gene-expression-data">Querying gene expression data</a></li>
+    
+
+    <li class="toctree-l3"><a href="#querying-differential-gene-expression-data">Querying differential gene expression data</a></li>
+    
+
+    <li class="toctree-l3"><a href="#querying-gwas-and-snp-data">Querying GWAS and SNP data</a></li>
+    
+
+    <li class="toctree-l3"><a href="#query-rampage-data">Query RAMPAGE data</a></li>
+    
+
+    <li class="toctree-l3"><a href="#find-genomic-elements-in-a-given-range">Find genomic elements in a given range</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../metadata/">Metadata</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../ccres/">Searching cCREs</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../ccredetails/">cCRE details</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../gene_expression/">Gene expression</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../differential_gene_expression/">Differential gene expression</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../gwas_and_snps/">GWAS and SNPs</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../rampage/">Rampage</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../range/">Genomic elements by location</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">SCREEN GraphQL API</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Queries &raquo;</li>
+        
+      
+    
+    <li>Overview</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/weng-lab/screen/edit/master/docs/queries/overview.md"> Edit on SCREEN</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>The SCREEN API facilitates access to a number of different data and types of
+data. Here, we'll briefly describe the data available, but go into more depth,
+with examples, for each in separate pages.</p>
+<blockquote>
+<p>Remember: a complete list of types, fields, and documentation is available in
+the GraphQL playground.</p>
+</blockquote>
+<h2 id="retrieving-metadata">Retrieving metadata</h2>
+<p>In many queries, specific names for biosamples, cell compartments, transcription
+factors, etc. are required/optional for input. So, it's important to be able to
+get a list of these. The <code>globals</code> field allows querying metadata.</p>
+<h2 id="searching-for-ccres">Searching for cCREs</h2>
+<p>In order to search for ccREs, you can use the <code>ccres</code> field. cCREs can be
+searched by a set of accession, a range, or by their epigenetic signals. This is
+useful to find basic information about a lot of cCREs, such as their location,
+their biosample-agnostic epigenetic signals, or their epigenetic signals in a
+single or few cell types. However, due to performance limitations, it is not a
+good choice to get detailed information (such as epigenetics signals in every
+cell type). For this reason, this data is unavailable when querying more than 5
+cCREs at a time. If you do want this data for individual cCREs, see the next
+section.</p>
+<h2 id="getting-details-for-a-single-ccre">Getting details for a single cCRE</h2>
+<p>To get detailed information on a single cCRE, such as their epigenetic signals
+in all cell types, or their intersection with transcription factors, you can use
+the <code>ccre</code> field.</p>
+<h2 id="querying-gene-expression-data">Querying gene expression data</h2>
+<p>The SCREEN API has imported all ENCODE RNA-seq data. With the <code>geneExpression</code>
+field, you can query the expression of a single gene across all biosamples.</p>
+<h2 id="querying-differential-gene-expression-data">Querying differential gene expression data</h2>
+<p><strong>NOTE: Differential expression data is only available for mm10 currently</strong></p>
+<p>For mouse embryonic biosamples, differential gene expression data is available
+with the <code>differentialExpression</code> field.</p>
+<h2 id="querying-gwas-and-snp-data">Querying GWAS and SNP data</h2>
+<p><strong>NOTE: GWAS data is only available for GRCh38</strong></p>
+<p>In order to query GWAS studies, their defined LD Blocks, and their SNPs, you can
+use the <code>gwas</code> field. You can also query SNPs by genome, accession, or location
+with the <code>snps</code> field.</p>
+<h2 id="query-rampage-data">Query RAMPAGE data</h2>
+<p>You can query RAMPAGE data for a particular gene with the <code>rampage</code> field.</p>
+<h2 id="find-genomic-elements-in-a-given-range">Find genomic elements in a given range</h2>
+<p>If you have a given range in the genome and want to find intersecting elements,
+you can use the <code>range</code> field.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../metadata/" class="btn btn-neutral float-right" title="Metadata">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../../getting_started/javascript/" class="btn btn-neutral" title="Javascript"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2020 Weng Lab</p>
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../../getting_started/javascript/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../metadata/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+
+</body>
+</html>
