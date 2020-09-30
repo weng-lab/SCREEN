@@ -1,0 +1,5 @@
+/node_modules
+/tmp
+/cache
+prod
+prod.old

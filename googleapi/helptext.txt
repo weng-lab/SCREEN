@@ -1,0 +1,65 @@
+﻿Visualizer help tooltips
+
+
+Instructions for editing
+This document follows a particular format to allow importing into the visualizer. Each entry below corresponds to one tooltip on the website and contains the following:
+
+
+@key: a specific key to match the entry to the database. This determines where on the site the tooltip will appear; existing keys should not be modified.
+#comment: a comment line describing where on the site this tooltip will appear. This may be modified and will not appear in the tooltips on the website.
+%title: the title that will appear in the top of the tooltip on the website. This may be modified.
+help text: a blurb to appear in the tooltip on the website; may contain line breaks. Blurbs are associated with the key directly above them, and stop as soon as the next key is encountered. They may be modified.
+
+
+There is a prototype entry at the end of the document to make creating new tooltips easier. To add a new entry:
+
+
+1. copy the prototype entry, beginning with “@prototye” and ending with “last prototype line”, and paste a copy directly above it
+2. change the key from @prototype to a new key; the content does not matter but must not match any existing keys
+3. change the comment, title, and content
+
+
+Entry keys are hardcoded into the visualizer so new keys will not appear on the website immediately. Updates to existing entries may take a few hours to appear.
+
+
+
+
+Tooltip entries
+
+
+@Activity Heatmap
+# appears next to the activity heatmap on the main search results page
+%Activity heatmap
+The activity heatmap displays the fraction of the search results which are active in each cell type by DNase, promoter, enhancer, and CTCF rank.
+
+
+An active element is defined as any element with a rank below the predefined threshold of 20,000.
+
+
+@TSS Start
+# appears next to the TSS start histogram on the main search results page
+%TSS distance graph
+This histogram bins the search results according to the distance to the nearest TSS. All genes are considered, both coding and non-coding.
+
+
+@Comparison Heatmap
+# appears on the comparison page when 3 or more cell types are selected
+%Comparison heatmap
+This heatmap displays the fraction of the search results that are below the selected rank threshold at left for each possible pairing of the cell types selected at left. Darker colors indicate a greater fraction of shared active elements; lighter colors indicate a lower fraction. The activity threshold defaults to 20,000.
+
+
+Clicking a box in the heatmap will switch to the search results tab, which will display the regulatory elements which are active the pairing selected as well as the elements which are active in one of the selected cell types but not the other. The heatmap may be sorted by clicking on the row and column labels.
+
+
+@Comparison Venn
+# appears on the comparison page when exactly 2 cell types are selected
+%Comparison venn diagram
+This diagram displays the overlap between elements which are active according to the threshold defined at left in the two cell types selected at left. Elements in the overlap region are below the defined threshold in both cell types; elements outside this region are below the threshold in one cell type but not the other. Rolling the mouse over the diagram will display the number of elements in each region. The search results tab above lists the regulatory elements in each region of the diagram.
+
+
+@prototype
+# prototype comment
+%prototype title
+prototype text
+more prototype text
+last prototype line

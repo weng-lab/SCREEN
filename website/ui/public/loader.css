@@ -1,0 +1,20 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
+ */
+
+/* https://css-tricks.com/snippets/css/absolute-center-vertical-horizontal-an-image/ */
+html, body, #wrapper {
+    height:100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+#wrapper td {
+    vertical-align: middle;
+    text-align: center;
+}
+#root {
+    height: 100%;
+}

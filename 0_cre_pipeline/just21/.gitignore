@@ -1,0 +1,5 @@
+external
+cpp/external
+cpp/bin
+cpp/build
+cpp/lib
