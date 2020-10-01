@@ -27,7 +27,8 @@
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",
 	"hg19bed": "/bed_intersect/hg19.sorted.bed",
-	"mm10bed": "/bed_intersect/mm10.sorted.bed"
+	"mm10bed": "/bed_intersect/mm10.sorted.bed",
+	"grch38bed": "/bed_intersect/grch38.sorted.bed"
     },
     "UI": {
 	"apiServer": "https://api.wenglab.org/screen_v13",

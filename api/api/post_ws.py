@@ -60,22 +60,23 @@ class PostWebService(object):
         lines = j["allLines"]
         assembly = j["assembly"]
 
-        f, filename = tempfile.mkstemp(dir=Config.bedupload["incomingDir"])
-        for arr in lines:
-            arr = arr.strip()
-            os.write(f, arr + '\n')
-        os.close(f)
+        with tempfile.NamedTemporaryFile('wt', dir = Config.bedupload["incomingDir"]) as f:
+            for arr in lines:
+                arr = arr.strip()
+                f.write(arr + '\n')
+            f.flush()
 
-        cres = {"hg19": Config.bedupload["hg19bed"],
-                "mm10": Config.bedupload["mm10bed"]}
+            cres = {"hg19": Config.bedupload["hg19bed"],
+                    "mm10": Config.bedupload["mm10bed"],
+                    "GRCh38": Config.bedupload["grch38bed"]}
 
-        cmds = ["cat", filename,
-                '|', 'sort -k1,1 -k2,2n',
-                '|', 'bedtools intersect -a ', cres[assembly], ' -b stdin'
-                '|', 'sort | uniq',
-                '|', "head -n 1000",
-                '|', "awk '{ print $5 }'"]
-        accessions = Utils.runCmds(cmds)
+            cmds = ["cat", f.name,
+                    '|', 'sort -k1,1 -k2,2n',
+                    '|', 'bedtools intersect -a ', cres[assembly], ' -b stdin'
+                    '|', 'sort | uniq',
+                    '|', "head -n 1000",
+                    '|', "awk '{ print $5 }'"]
+            accessions = Utils.runCmds(cmds)
         accessions = [x.strip() for x in accessions]
 
         ret = {"uuid": uuid,
