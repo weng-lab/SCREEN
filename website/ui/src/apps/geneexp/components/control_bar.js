@@ -234,7 +234,7 @@ class ControlBar extends React.Component {
 		</div>
 		</div>,
 	    <div className="row" key="datascale">
-		<div className="col-md-4" style={{paddingRight: "0px"}}>
+		{ false && <div className="col-md-4" style={{paddingRight: "0px"}}>
 		    {panelize("TPM/FPKM", 
 			      React.createElement(TmpFpkmBox,
 						  {defaultValue: this.isTpm,
@@ -242,8 +242,8 @@ class ControlBar extends React.Component {
 						       this.isTpm = v;
 						       this.setView();}}
 			      ), null, null, {display: "flex", justifyContent: "center"})}
-		</div>
-		<div className="col-md-4" style={{paddingLeft: "2px", paddingRight: "2px"}}>
+	    </div> }
+		<div className="col-md-4" style={{ /* paddingLeft: "2px",*/ paddingRight: "2px"}}>
 		    {panelize("Scale",
 			      React.createElement(LinearLogBox,
 						  {defaultValue: this.isLinear,
