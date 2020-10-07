@@ -81,7 +81,7 @@ class UTabTutorial extends React.Component {
 		{Iframe("https://www.youtube.com/embed/btBh6x-mh1Q")}
 
                 <h3>Gene Expression</h3>
-		{Iframe("https://www.youtube.com/embed/D6dxzSX2XTE")}
+		{Iframe("https://www.youtube.com/embed/s-vsuzA8PJs")}
 		
 	        <h3>Differential Gene Expression</h3>
 		{Iframe("https://www.youtube.com/embed/KzsuZ8oGxZk")}
