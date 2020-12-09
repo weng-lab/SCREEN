@@ -67,27 +67,27 @@ class UTabTutorial extends React.Component {
 	return (tabPanelize(
             <div>
                 <h2>Tutorials</h2>
+	    
+                <h3>Main Search</h3>
+                {Iframe("https://www.youtube.com/embed/U-NvLkNx-N4")}
+
+	        <h3>Search Results Table</h3>
+		{Iframe("https://www.youtube.com/embed/ZjxoZngwsxI")}
+
+		<h3>cCRE Details</h3>
+                {Iframe("https://www.youtube.com/embed/lHJ9T1H676M")}
 
 	    	<h3>Mini-Peaks (cCRE signal profile)</h3>
 		{Iframe("https://www.youtube.com/embed/btBh6x-mh1Q")}
-	    
-                <h3>Main Search</h3>
-                {Iframe("https://www.youtube.com/embed/gOS7Eyi0xvM")}
-
-	        <h3>Search Results Table</h3>
-		{Iframe("https://www.youtube.com/embed/tOUJJ1L1E20")}
-
-		<h3>cCRE Details</h3>
-                {Iframe("https://www.youtube.com/embed/58U6k86vz2U")}
 
                 <h3>Gene Expression</h3>
-		{Iframe("https://www.youtube.com/embed/D6dxzSX2XTE")}
+		{Iframe("https://www.youtube.com/embed/s-vsuzA8PJs")}
 		
 	        <h3>Differential Gene Expression</h3>
 		{Iframe("https://www.youtube.com/embed/KzsuZ8oGxZk")}
 
 	        <h3>GWAS</h3>
-		{Iframe("https://www.youtube.com/embed/eunBo1-yF9M")}
+		{Iframe("https://www.youtube.com/embed/3mZ2IAuCobg")}
 		
 	    </div>));
     }

@@ -11,7 +11,7 @@ import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 
 import TableWithCart from './table_with_cart';
-import {getCommonState, orjoin, toParams} from '../../../common/utility';
+import {getCommonState, orjoin, toParams, isCart } from '../../../common/utility';
 
 class ResultsTableContainer extends React.Component {
     state = { cres: [], rfacets: [], total: 0, cts: null,
@@ -33,7 +33,13 @@ class ResultsTableContainer extends React.Component {
     }
 
     loadCREs(props){
-        var jq = JSON.stringify(getCommonState(props));
+	var p = getCommonState(props);
+	if (isCart()) {
+	    delete p.coord_chrom;
+	    delete p.coord_start;
+	    delete p.coord_end;
+	}
+        var jq = JSON.stringify(p);
 	var setrfacets = this.props.actions.setrfacets;
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
