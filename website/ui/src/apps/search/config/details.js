@@ -12,7 +12,7 @@ import { CSVLink } from 'react-csv';
 import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
-        TfIntersectionTable, OrthologTable, FantomCatTable,
+        TfIntersectionTable, OrthologTable, FantomCatTable, FunctionalValidationTable,
 	CistromeIntersectionTable, GroundLevelTables} from './details_tables';
 
 import loading from '../../../common/components/loading';
@@ -172,6 +172,15 @@ class NearbyGenomicTab extends ReTabBase{
     }
 }
 
+class FunctionalValidationTab extends ReTabBase{
+    constructor(props) {
+	super(props, "functionalValidation");
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, FunctionalValidationTable(globals, assembly), 1);
+        }
+    }
+}
+
 class FantomCatTab extends ReTabBase {
     constructor(props) {
 	super(props, "fantom_cat");
@@ -296,6 +305,7 @@ const DetailsTabInfo = (assembly) => {
                   f: RampageTab},
         ortholog: {title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
+	functionalValidation: { title: Render.tabTitle([ "Functional", "Data" ]), enabled: true, f: FunctionalValidationTab },
 	/* groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
 		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"}, */
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),

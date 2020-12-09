@@ -492,6 +492,19 @@ export const LinkedGenesTable = (globals, assembly) => ({
     }
 });
 
+export const FunctionalValidationTable = (globals, assembly) => ({
+    "functional_validation": {
+	title: "Functional Validation",
+	emptyText: "No functional validation data matches this cCRE",
+	cols: [{ title: "cCRE", data: "cCRE", render: Render.relink(assembly === "mm10" ? "GRCh38" : "mm10", "") },
+	       { title: "overlap", data: "overlap" },
+	       { title: "VISTA ID", data: "accession"},
+	       { title: "chromosome", data: "chromosome" },
+	       { title: "start", data: "start", render: Render.integer },
+	       { title: "length", data: "length", render: Render.integer }],
+    }
+});
+
 export const GroundLevelTables = (globals, assembly) => ({
     "cdhs": {
 	title: "cDHSs",
