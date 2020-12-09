@@ -200,6 +200,7 @@ class DataWebService():
                    tissues
                    active
                    overlap
+                   coordinates { chromosome, start, end }
                  }
                 }
             """,
