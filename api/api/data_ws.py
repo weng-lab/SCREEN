@@ -198,9 +198,10 @@ class DataWebService():
                 "chromosome": x[u'coordinates'][u'chromosome'],
                 "start": x[u'coordinates'][u'start'],
                 "length": x[u'coordinates'][u'end'] - x[u'coordinates'][u'start'],
-                "tissues": x[u'tissues']
+                "tissues": x[u'tissues'],
+                "overlap": x[u'overlap']
             }
-        return { accession: [ format_result(x) for x in requests.post("https://factorbook.api.wenglab.org/graphql", json = {
+        return { accession: { "functional_validation": [ format_result(x) for x in requests.post("https://factorbook.api.wenglab.org/graphql", json = {
             "query": """
                query q($cCRE: [String!]) {
                  vistaQuery(assembly: "grch38", cCRE: $cCRE) {
@@ -214,7 +215,7 @@ class DataWebService():
                 }
             """,
             "variables": { "assembly": self.assembly, "cCRE": accession }
-        }).json()[u'data'][u'vistaQuery'] ] }
+        }).json()[u'data'][u'vistaQuery'] ] } }
 
     def fantom_cat(self, j, accession):
         def process(key):
