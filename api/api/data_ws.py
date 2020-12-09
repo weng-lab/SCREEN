@@ -191,7 +191,16 @@ class DataWebService():
         return {accession: ranks}
 
     def _re_detail_functionalValidation(self, j, accession):
-        return { accession: requests.post("https://factorbook.api.wenglab.org/graphql", json = {
+        def format_result(x):
+            return {
+                "cCRE": x[u'cCRE'],
+                "accession": x[u'accession'],
+                "chromosome": x[u'coordinates'][u'chromosome'],
+                "start": x[u'coordinates'][u'start'],
+                "length": x[u'coordinates'][u'end'] - x[u'coordinates'][u'start'],
+                "tissues": x[u'tissues']
+            }
+        return { accession: [ format_result(x) for x in requests.post("https://factorbook.api.wenglab.org/graphql", json = {
             "query": """
                query q($cCRE: [String!]) {
                  vistaQuery(assembly: "grch38", cCRE: $cCRE) {
@@ -205,7 +214,7 @@ class DataWebService():
                 }
             """,
             "variables": { "assembly": self.assembly, "cCRE": accession }
-        }).json() }
+        }).json()[u'data'][u'vistaQuery'] ] }
 
     def fantom_cat(self, j, accession):
         def process(key):
