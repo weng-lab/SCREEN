@@ -85,7 +85,8 @@ class DataWebService():
             "rampage": self._re_detail_rampage,
             "linkedGenes": self._re_detail_linkedGenes,
             "miniPeaks": self._re_detail_miniPeaks,
-            "groundLevel": self._re_detail_groundlevel
+            "groundLevel": self._re_detail_groundlevel,
+            "functionalValidation": self._re_detail_functionalValidation
         }
 
     def process(self, j, args, kwargs):
@@ -188,6 +189,22 @@ class DataWebService():
         cre = CRE(self.pgSearch, accession, self.cache)
         ranks = cre.topTissues()
         return {accession: ranks}
+
+    def _re_detail_functionalValidation(self, j, accession):
+        return { accession: requests.post("https://factorbook.api.wenglab.org/graphql", json = {
+            "query": """
+               query q($cCRE: [String!]) {
+                 vistaQuery(assembly: "grch38", cCRE: $cCRE) {
+                   cCRE
+                   accession
+                   tissues
+                   active
+                   overlap
+                 }
+                }
+            """,
+            "variables": { "assembly": self.assembly, "cCRE": accession }
+        }).json() }
 
     def fantom_cat(self, j, accession):
         def process(key):
