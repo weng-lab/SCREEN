@@ -204,7 +204,7 @@ class DataWebService():
         return { accession: { "functional_validation": [ format_result(x) for x in requests.post("https://factorbook.api.wenglab.org/graphql", json = {
             "query": """
                query q($cCRE: [String!]) {
-                 vistaQuery(assembly: "grch38", cCRE: $cCRE) {
+                 vistaQuery(assembly: "grch38", cCRE: $cCRE, active: true) {
                    cCRE
                    accession
                    tissues
