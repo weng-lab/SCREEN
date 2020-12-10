@@ -496,12 +496,13 @@ export const FunctionalValidationTable = (globals, assembly) => ({
     "functional_validation": {
 	title: "Functional Validation",
 	emptyText: "No functional validation data matches this cCRE",
-	cols: [{ title: "cCRE", data: "cCRE", render: Render.relink(assembly === "mm10" ? "GRCh38" : "mm10", "") },
-	       { title: "overlap", data: "overlap" },
-	       { title: "VISTA ID", data: "accession"},
-	       { title: "chromosome", data: "chromosome" },
-	       { title: "start", data: "start", render: Render.integer },
-	       { title: "length", data: "length", render: Render.integer }],
+	cols: [{ title: "biosample(s)", data: "tissues", render: d => d.join(", ")  },
+	       { title: "assay", data: "cCRE", render: _ => "transgenic reporter" },
+       	       { title: "start", data: "start", render: Render.integer },
+	       { title: "length", data: "length", render: x => Render.integer(x) + " bp" },
+	       { title: "overlap", data: "overlap", render: x => Render.integer(x) + " bp" },
+	       { title: "lab", data: "cCRE", render: _ => "Penacchio" },
+	       { title: "VISTA ID", data: "accession"}],
     }
 });
 
