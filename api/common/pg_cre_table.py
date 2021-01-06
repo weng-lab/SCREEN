@@ -292,7 +292,7 @@ with DELIMITER E'\t'
 
         self.pw.copy_expert("_cre_table_bed", q, fnp)
 
-    def creTableDownloadJson(self, j, fnp):
+    def creTableDownloadJson(self, j, fnp, cache):
         chrom = checkChrom(self.assembly, j)
         start = j.get("coord_start", None)
         stop = j.get("coord_end", None)
@@ -315,6 +315,14 @@ with DELIMITER E'\t'
         sf = io.StringIO()
         self.pw.copy_expert_file_handle("_cre_table_json", q, sf)
         sf.seek(0)
+        def dupdate(j, x):
+            j.update(x)
+            return j
         with open(fnp, 'w') as f:
-            for line in sf.readlines():
-                f.write(line.replace("\\n", ""))
+            lines = json.loads(sf.read().replace("\\n", ""))
+            f.write(json.dumps([
+                dupdate(j, {
+                    "all_nearby_gene_ids": [ cache.genePGIDsToApprovedSymbol[x] for x in j["gene_all_id"] if x in cache.genePGIDsToApprovedSymbol ],
+                    "pc_nearby_gene_ids": [ cache.genePGIDsToApprovedSymbol[x] for x in j["gene_pc_id"] if x in cache.genePGIDsToApprovedSymbol ]
+                }) for j in lines
+            ]) + '\n')

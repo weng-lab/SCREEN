@@ -27,9 +27,9 @@ class CREdownload:
             raise
             return {"error": "error running action"}
 
-    def json(self, j):
+    def json(self, j, cache):
         try:
-            ret = self.downloadAsJson(j, j["uuid"])
+            ret = self.downloadAsJson(j, j["uuid"], cache)
             return ret
         except:
             raise
@@ -48,9 +48,9 @@ class CREdownload:
         Utils.ensureDir(outFnp)
         return outFn, outFnp
 
-    def downloadAsJson(self, j, uuid):
+    def downloadAsJson(self, j, uuid, cache):
         outFn, outFnp = self._downloadFileName(uuid, ".json")
-        self.pgSearch.creTableDownloadJson(j, outFnp)
+        self.pgSearch.creTableDownloadJson(j, outFnp, cache)
         url = os.path.join('/', "downloads", uuid, outFn)
         return {"url": url}
 

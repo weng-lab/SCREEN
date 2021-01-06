@@ -118,9 +118,9 @@ class PGsearch(object):
         pct = PGcreTable(self.pw, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTableDownloadBed(j, fnp)
 
-    def creTableDownloadJson(self, j, fnp):
+    def creTableDownloadJson(self, j, fnp, cache):
         pct = PGcreTable(self.pw, self.assembly, self.ctmap, self.ctsTable)
-        return pct.creTableDownloadJson(j, fnp)
+        return pct.creTableDownloadJson(j, fnp, cache)
 
     def crePos(self, accession):
         r = self.pw.fetchone("cre_pos", """
@@ -640,6 +640,14 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
     def geneIDsToApprovedSymbol(self):
         rows = self.pw.fetchall("geneIDsToApprovedSymbol", """
         SELECT geneid, approved_symbol
+        FROM {gtn}
+        ORDER BY 1
+        """.format(gtn=self.assembly + "_gene_info"))
+        return {r[0]: r[1] for r in rows}
+
+    def genePGIDsToApprovedSymbol(self):
+        rows = self.pw.fetchall("geneIDsToApprovedSymbol", """
+        SELECT id, approved_symbol
         FROM {gtn}
         ORDER BY 1
         """.format(gtn=self.assembly + "_gene_info"))

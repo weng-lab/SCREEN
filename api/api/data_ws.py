@@ -303,7 +303,7 @@ class DataWebService():
     
     def json_download(self, j, args):
         cd = CREdownload(self.pgSearch, Config.downloadDir)
-        return cd.json(j)
+        return cd.json(j, self.cache)
 
     def cre_tf_dcc(self, j, args):
         accession = j.get("accession", None)

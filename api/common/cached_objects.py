@@ -80,6 +80,7 @@ class CachedObjects:
         self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
 
         self.geneIDsToApprovedSymbol = self.pgSearch.geneIDsToApprovedSymbol()
+        self.genePGIDsToApprovedSymbol = self.pgSearch.genePGIDsToApprovedSymbol()
 
         self.help_keys = self.pgSearch.getHelpKeys()
 
