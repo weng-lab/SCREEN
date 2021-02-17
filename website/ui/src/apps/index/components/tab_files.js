@@ -19,7 +19,7 @@ import RightArrow from './rightarrow';
 import SearchIcon from './search';
 
 const dccLink = fileID => {
-    const url = "http://gcp.wenglab.org/Seven-Group/" + fileID;
+    const url = "https://api.wenglab.org/screen_v13/fdownloads/Seven-Group/" + fileID;
     return fileDownload(url, fileID, fileID);
 }
 
@@ -121,13 +121,13 @@ class TabFiles extends React.Component {
 		    <div className="row" style={{ paddingTop: "1.0em" }}>
 		    <div className="col-md-1" />
                     <div className="col-md-4" style={{ textAlign: "center" }}>
-		        <a className={"btn btn-primary btn-lg"} role={"button"} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+		        <a className={"btn btn-primary btn-lg"} role={"button"} href="https://api.wenglab.org/screen_v13/fdownloads/GRCh38-ccREs.bed" download>
 		    Download all human cCREs<br/><span style={{ fontSize: "0.8em" }}>(GRCh38)</span>
 		        </a>
 		    </div>
    		    <div className="col-md-2" />
 		    <div className="col-md-4" style={{ textAlign: "center" }}>
-		        <a className={"btn btn-primary btn-lg"} role={"button"} href="http://gcp.wenglab.org/mm10-ccREs.bed" download>
+		        <a className={"btn btn-primary btn-lg"} role={"button"} href="https://api.wenglab.org/screen_v13/fdownloads/mm10-ccREs.bed" download>
 		    Download all mouse cCREs<br/><span style={{ fontSize: "0.8em" }}>(mm10)</span>
 		        </a>
 		    </div>
@@ -137,19 +137,19 @@ class TabFiles extends React.Component {
 		    <div style={{ width: "100%", display: "table" }}>
 		    <div style={{ display: "table-row" }}>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/GRCh38-ccREs.PLS.bed" title="Promoter-like (PLS)" number={34803} bar="#ff0000"/>
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/GRCh38-ccREs.PLS.bed" title="Promoter-like (PLS)" number={34803} bar="#ff0000"/>
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/GRCh38-ccREs.pELS.bed" title="Proximal enhancer-like (pELS)" number={141830} bar="#ffa700" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/GRCh38-ccREs.pELS.bed" title="Proximal enhancer-like (pELS)" number={141830} bar="#ffa700" />
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/GRCh38-ccREs.dELS.bed" title="Distal enhancer-like (dELS)" number={667599} bar="#ffcd00" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/GRCh38-ccREs.dELS.bed" title="Distal enhancer-like (dELS)" number={667599} bar="#ffcd00" />
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/GRCh38-ccREs.CTCF-only.bed" title="CTCF-only" number={56766} bar="#00b0f0" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/GRCh38-ccREs.CTCF-only.bed" title="CTCF-only" number={56766} bar="#00b0f0" />
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/GRCh38-ccREs.DNase-H3K4me3.bed" title="DNase-H3K4me3" number={25537} bar="#ffaaaa" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/GRCh38-ccREs.DNase-H3K4me3.bed" title="DNase-H3K4me3" number={25537} bar="#ffaaaa" />
 		    </div>
 		    </div>
 		    </div>
@@ -158,19 +158,19 @@ class TabFiles extends React.Component {
 		    <div style={{ width: "100%", display: "table" }}>
 		    <div style={{ display: "table-row" }}>
 		    <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/mm10-ccREs.PLS.bed" title="Promoter-like (PLS)" number={23762} bar="#ff0000"/>
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/mm10-ccREs.PLS.bed" title="Promoter-like (PLS)" number={23762} bar="#ff0000"/>
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/mm10-ccREs.pELS.bed" title="Proximal enhancer-like (pELS)" number={72794} bar="#ffa700" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/mm10-ccREs.pELS.bed" title="Proximal enhancer-like (pELS)" number={72794} bar="#ffa700" />
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/mm10-ccREs.dELS.bed" title="Distal enhancer-like (dELS)" number={209040} bar="#ffcd00" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/mm10-ccREs.dELS.bed" title="Distal enhancer-like (dELS)" number={209040} bar="#ffcd00" />
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		        <Download href="http://gcp.wenglab.org/mm10-ccREs.CTCF-only.bed" title="CTCF-only" number={23836} bar="#00b0f0" />
+		        <Download href="https://api.wenglab.org/screen_v13/fdownloads/mm10-ccREs.CTCF-only.bed" title="CTCF-only" number={23836} bar="#00b0f0" />
 		    </div>
                     <div style={{ width: "20%", padding: "2%", display: "table-cell" }}>
-		    <Download href="http://gcp.wenglab.org/mm10-ccREs.DNase-H3K4me3.bed" title="DNase-H3K4me3" number={10383} bar="#ffaaaa" />
+		    <Download href="https://api.wenglab.org/screen_v13/fdownloads/mm10-ccREs.DNase-H3K4me3.bed" title="DNase-H3K4me3" number={10383} bar="#ffaaaa" />
 		    </div>
 		    </div>
 		    </div>
