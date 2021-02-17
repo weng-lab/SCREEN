@@ -107,6 +107,7 @@ class Apis():
 
     @cherrypy.expose
     def fdownloads(self, *args, **kwargs):
+        cherrypy.response.headers["Content-Disposition"] = "attachment; filename=\"%s\"" % (args[-1])
         return requests.get("http://gcp.wenglab.org/%s" % ('/'.join(args))).text
 
     @cherrypy.expose
