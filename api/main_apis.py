@@ -106,6 +106,10 @@ class Apis():
         return self.dataWS.process(j, args, kwargs)
 
     @cherrypy.expose
+    def fdownloads(self, *args, **kwargs):
+        return requests.get("http://gcp.wenglab.org/%s" % ('/'.join(args))).text
+
+    @cherrypy.expose
     # @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
