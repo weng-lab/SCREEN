@@ -177,8 +177,8 @@ class BigWigTrack(object):
         return EncodeUrlBigWig(self.fileID)
 
     def lines(self, priority):
-        p = self._init()
-        return ''.join([x for x in outputLines(p, 1, {"priority": priority})])
+        self.p = self._init()
+        return ''.join([x for x in outputLines(self.p, 1, {"priority": priority})])
 
 
 class TrackhubDb:
@@ -186,6 +186,7 @@ class TrackhubDb:
         self.ps = ps
         self.cacheW = cacheW
         self.db = db
+        self._unique_bigwigs = set()
 
     def ucsc_trackhub(self, *args, **kwargs):
         uuid = args[0]
@@ -325,8 +326,11 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
 
         cache = self.cacheW[self.assembly if self.assembly != "hg38" else "GRCh38"]
         for expInfo in cache.datasets.byCellType[ct]:
-            t = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
-                            expInfo["assay"], superTrackName, True, ct).lines(self.priority)
+            tt = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
+                            expInfo["assay"], superTrackName, True, ct)
+            t = tt.lines(self.priority)
+            if tt.p["track"] in self._unique_bigwigs: continue
+            self._unique_bigwigs.add(tt.p["track"])
             self.priority += 1
             ret += [t]
         return ret
@@ -360,6 +364,8 @@ longLabel {tct_long}
                              ctn, f["expID"], f["fileID"]])
             bwt.setDesc(desc)
             t = bwt.lines(self.priority)
+            if bwt.p["track"] in self._unique_bigwigs: continue
+            self._unique_bigwigs.add(bwt.p["track"])
             self.priority += 1
             ret += [t]
         return ret
