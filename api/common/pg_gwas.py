@@ -206,9 +206,9 @@ class PGgwas(object):
                                         groupBy = ', '.join(groupBy)),
                             (gwas_study,))
         sf = io.StringIO()
-        self.pw.copy_expert_file_handle(q, sf)
+        self.pw.copy_expert_file_handle("_gwas", q, sf)
         sf.seek(0)
         with open(json, 'w') as f:
             for line in sf.readlines():
-                f.write(line.replace(b'\\n', b''))
+                f.write(line.replace('\\n', ''))
                 
