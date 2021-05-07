@@ -160,7 +160,7 @@ class DataWebService():
         chrom = checkChrom(self.assembly, j)
         r = requests.post("https://ga.staging.wenglab.org/graphql", json = {
             "query": """
-            query q($coordinates: GenomicRangeInput, $assembly: String!, $chromosome: String, $start: Int, $end: Int) {
+            query q($coordinates: [GenomicRangeInput!], $assembly: String!, $chromosome: String, $start: Int, $end: Int) {
                 cCREQuery(assembly: $assembly, coordinates: $coordinates) {
                     accession
                     coordinates {
