@@ -159,6 +159,11 @@ class DataWebService():
 
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)
+        if "accessions" in j and len(j["accessions"]) > 0: coords = self._coord(j["accessions"][0].upper())
+        if chrom is None:
+            chrom = coords.chrom
+            j["coord_start"] = coords.start
+            j["coord_end"] = coords.end
         r = requests.post("https://ga.staging.wenglab.org/graphql", json = {
             "query": """
             query q($coordinates: [GenomicRangeInput!], $assembly: String!, $chromosome: String, $start: Int, $end: Int) {
@@ -289,8 +294,7 @@ class DataWebService():
                 "assembly": self.assembly.lower()
             }
         }).json()["data"]
-        print(accession, file = sys.stderr)
-        print(self.assembly.lower(), file = sys.stderr)
+        print(r, file = sys.stderr)
         accessionMap = {}
         typemap = {}
         for x in r["ccREBiosampleQuery"]["biosamples"]:
@@ -369,10 +373,80 @@ class DataWebService():
             "cage": cage
         }}
 
+    def _coord(self, accession):
+        rr = requests.post("https://ga.staging.wenglab.org/graphql", json = {
+            "query": """
+            query q($assembly: String!, $accession: [String!]) {
+              cCREQuery(accession: $accession, assembly: $assembly) {
+                coordinates {
+                  chromosome
+                  start
+                  end
+                }
+              }
+             }""", "variables": { "assembly": self.assembly, "accession": accession }}).json()["data"]["cCREQuery"][0]["coordinates"]
+        class Coord:
+            def __init__(self, rr):
+                self.chrom = rr["chromosome"]
+                self.start = rr["start"]
+                self.end = rr["end"]
+        return Coord(rr)
+    
     def _re_detail_nearbyGenomic(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        coord = cre.coord()
+        coord = self._coord(accession)
+        r = requests.post("https://ga.staging.wenglab.org/graphql", json = {
+            "query": """
+            query features($coordinates: [GenomicRangeInput!], $chromosome: String, $start: Int, $end: Int, %s $b: String!, $c: String!) {
+            %s
+            gene(chromosome: $chromosome, start: $start, end: $end, assembly: $b) {
+            name
+            id
+            coordinates {
+                chromosome
+                start
+                end
+            }
+        }
+            cCREQuery(assembly: $c, coordinates: $coordinates) {
+            accession
+            coordinates {
+                chromosome
+                start
+                end
+            }
+            group
+        }
+            }""" % ( "$a: String!," if self.assembly == "GRCh38" else "", """snpQuery(coordinates: $coordinates, assembly: $a, common: true) {
+            id
+            coordinates {
+                chromosome
+                start
+                end
+            }
+        }""" if self.assembly == "GRCh38" else "" ), "variables": { "coordinates": { "chromosome": coord.chrom, "start": coord.start - 100000, "end": coord.end + 100000 }, "chromosome": coord.chrom, "start": coord.start - 1000000, "end": coord.end + 1000000, "a": "hg38" if self.assembly == "GRCh38" else self.assembly, "b": self.assembly, "c": self.assembly.lower() }}).json()["data"]
+        def gene_distance(g):
+            c = math.floor((coord.start + coord.end) / 2)
+            return min(abs(g["start"] - c), abs(g["end"] - c))
+        def snp_distance(s):
+            c = math.floor((coord.start + coord.end) / 2)
+            return abs(c - s["coordinates"]["start"])
+        def ccre_distance(cc):
+            c = math.floor((coord.start + coord.end) / 2)
+            cc = math.floor((cc["coordinates"]["start"] + cc["coordinates"]["end"]) / 2)
+            return abs(cc - c)
 
+        return {
+            accession: {
+                "nearby_genes": [{ "name": x["name"], "ensemblid_ver": x["id"], "chrom": x["coordinates"]["chromosome"], "start": x["coordinates"]["start"], "stop": x["coordinates"]["end"], "distance": gene_distance(x["coordinates"])} for x in r["gene"]],
+                "nearby_res": [{ "name": x["accession"], "distance": ccre_distance(x) } for x in r["cCREQuery"]],
+                "overlapping_snps": [{ "accession": accession, "chrom": coord.chrom, "cre_start": coord.start, "cre_end": coord.end, "distance": snp_distance(x), "snp_start": x["coordinates"]["start"], "snp_end": x["coordinates"]["end"], "name": x["id"] } for x in (r["snpQuery"] if "snpQuery" in r else []) ],
+                "re_tads": [],
+                "tads": [],
+                "vistaids": []
+            }
+        }
+        
         # with Timer("snps") as t:
         snps = cre.intersectingSnps(10000)  # 10 KB
         # with Timer("nearbyCREs") as t:
@@ -394,8 +468,43 @@ class DataWebService():
 
     def _re_detail_tfIntersection(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        peakIntersectCount = cre.peakIntersectCount()
-        return {accession: peakIntersectCount}
+        coord = self._coord(accession)
+        rr = requests.post("https://ga.staging.wenglab.org/graphql", json = {
+            "query": """query tfpeaks($assembly: String, $range: [ChromosomeRangeInput]!, $species: String) {
+            peaks(assembly: $assembly, range: $range) {
+    peaks {
+      chrom
+      chrom_start
+      chrom_end
+      dataset {
+        biosample
+        accession
+        target
+      }
+    }
+}
+peakDataset(species: $species) {
+    partitionByTarget {
+      target {
+        name
+      }
+      counts {
+        total
+      }
+    }
+  }
+            }""", "variables": { "assembly": j["assembly"].lower(), "range": { "chrom": coord.chrom, "chrom_start": coord.start, "chrom_end": coord.end }, "species": "Homo sapiens" if j["assembly"] == "GRCh38" else "Mus musculus" }
+        }).json()
+        print(rr, file = sys.stderr)
+        rr = rr["data"]
+        peakmap = {}
+        for x in rr["peaks"]["peaks"]:
+            if x["dataset"]["target"] not in peakmap: peakmap[x["dataset"]["target"]] = set()
+            peakmap[x["dataset"]["target"]].add(x["dataset"]["accession"])
+        totalmap = { x["target"]["name"]: x["counts"]["total"] for x in rr["peakDataset"]["partitionByTarget"] }
+        return { accession: { "histone": [], "tf": [{
+            "name": k, "n": len(v), "total": totalmap[k]
+        } for k, v in peakmap.items() ] } }
 
     def _re_detail_cistromeIntersection(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
@@ -440,7 +549,25 @@ class DataWebService():
         target = j.get("target", None)
         if not target:
             raise Exception("invalid target")
-        return {target: self.pgSearch.tfTargetExps(accession, target, eset=j.get("eset", None))}
+        coord = self._coord(accession)
+        rr = requests.post("https://ga.staging.wenglab.org/graphql", json = {
+            "query": """query tfpeaks($assembly: String, $range: [ChromosomeRangeInput]!, $target: String) {
+            peaks(assembly: $assembly, range: $range, target: $target) {
+    peaks {
+      chrom
+      chrom_start
+      chrom_end
+      dataset {
+        biosample
+        accession
+        target
+files(types: "replicated_peaks") {
+                      accession
+                    }
+      }
+    }
+            }}""", "variables": { "assembly": j["assembly"].lower(), "range": { "chrom": coord.chrom, "chrom_start": coord.start, "chrom_end": coord.end }, "target": target }}).json()["data"]["peaks"]["peaks"]
+        return {target: [{ "expID": "%s / %s" % (x["dataset"]["accession"], x["dataset"]["files"][0]["accession"]), "biosample_term_name": x["dataset"]["biosample"] } for x in rr ]}
 
     def cre_histone_dcc(self, j, args):
         accession = j.get("accession", None)
