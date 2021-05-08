@@ -6,11 +6,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory, Redirect } from 'react-router';
-import Search from './apps/search/main';
-import GeneExp from './apps/geneexp/main';
-import De from './apps/de/main';
-import Gwas from './apps/gwas/main';
-import IndexPage from './apps/index/main';
 import { v4 as uuidv4 } from 'uuid';
 import Loadable from 'react-loadable';
 
@@ -18,7 +13,6 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
 import ReactGA from 'react-ga';
-import { createBrowserHistory } from 'history';
 
 ReactGA.initialize('UA-93680006-1');
 ReactGA.pageview(window.location.pathname + window.location.search);

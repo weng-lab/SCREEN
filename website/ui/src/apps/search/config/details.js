@@ -17,8 +17,7 @@ import { CSVLink } from 'react-csv';
 import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
-        TfIntersectionTable, OrthologTable, FantomCatTable,
-	GroundLevelTables} from './details_tables';
+        TfIntersectionTable, OrthologTable, FantomCatTable} from './details_tables';
 
 import loading from '../../../common/components/loading';
 
@@ -259,15 +258,6 @@ class LinkedGenesTab extends ReTabBase{
         this.doRender = (globals, assembly, data) => {
             return tabEles(globals, data, LinkedGenesTable(globals, assembly), 1);
         }
-    }
-}
-
-class GroundLevelTab extends ReTabBase {
-    constructor(props) {
-	super(props, "groundLevel");
-	this.doRender = (globals, assembly, data) => {
-	    return tabEles(globals, data, GroundLevelTables(globals, assembly), 1);
-	}
     }
 }
 

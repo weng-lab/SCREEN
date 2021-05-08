@@ -6,16 +6,12 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-import * as Render from '../../../common/zrenders';
 import Ztable from '../../../common/components/ztable/ztable';
-import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
-import * as ApiClient from '../../../common/api_client';
 
 import HumanSVG from './human';
 import MouseSVG from './mouse';
 import Download from './download';
-import RightArrow from './rightarrow';
 import SearchIcon from './search';
 
 const dccLink = fileID => {
