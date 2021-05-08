@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
 
-
+import requests
 import json
 import os
 import sys
@@ -22,12 +22,40 @@ class Datasets:
 
         self.byFileID = {r["fileID"]: r for r in rows}
         self.byCellType = {}
-        for r in rows:
-            ctn = r["cellTypeName"]
-            if ctn in self.byCellType:
-                self.byCellType[ctn].append(r)
-            else:
-                self.byCellType[ctn] = [r]
+        r = requests.post("https://ga.staging.wenglab.org/graphql", json = {
+            "query": """
+            query q($assembly: String!) {                                                                                                                                     
+                ccREBiosampleQuery(assembly: $assembly) {                                                                                                                                            
+                  biosamples {                                                                                                                                                                       
+                    name          
+                    ontology
+                    sampleType
+                    dnaseFile: fileAccession(assay: "DNase")
+                    h3k4me3File: fileAccession(assay: "H3K4me3")
+                    h3k27acFile: fileAccession(assay: "DNase")
+                    ctcfFile: fileAccession(assay: "CTCF")
+                    dnase: experimentAccession(assay: "DNase")                                                                                                                                       
+                    h3k4me3: experimentAccession(assay: "H3K4me3")                                                                                                                                   
+                    h3k27ac: experimentAccession(assay: "H3K27ac")                                                                                                                                   
+                    ctcf: experimentAccession(assay: "CTCF")                                                                                                                                                            }                                                                                                                                                                                 
+                }
+            }""", "variables": { "assembly": assembly.lower() }
+        }).json()["data"]["ccREBiosampleQuery"]["biosamples"]
+        for x in r:
+            self.byCellType[x["name"]] = [{
+                "assay": a,
+                "biosample_summary": x["name"].replace("_", " "),
+                "biosample_type": x["sampleType"],
+                "cellTypeDesc": x["name"].replace("_", " "),
+                "cellTypeName": x["name"],
+                "expID": x[a.lower()],
+                "fileID": x[a.lower() + "File"],
+                "isde": False,
+                "name": x["name"].replace("_", " "),
+                "synonyms": None,
+                "tissue": x["ontology"],
+                "value": x["name"]
+            } for a in [ "CTCF", "H3K4me3", "H3K27ac", "DNase" ] if x[a.lower()] is not None ]
 
         # used by trees
         self.biosampleTypeToCellTypes = {}
@@ -41,6 +69,9 @@ class Datasets:
         self.globalCellTypeInfoArr = []
         for k, v in self.globalCellTypeInfo.items():
             self.globalCellTypeInfoArr.append(v)
+        self.globalCellTypeInfoArr = []
+        for _, v in self.byCellType.items():
+            self.globalCellTypeInfoArr.append(v[0])
         self.globalCellTypeInfoArr.sort(key=lambda v: v["value"].lower())
 
         self.biosample_types = sorted(list(set([b["biosample_type"]

@@ -12,6 +12,7 @@ import numpy as np
 import cherrypy
 import uuid
 import requests
+import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -204,7 +205,7 @@ class DataWebService():
             distances = { k: gene_distance(c, v) for k, v in genes.items() }
             return sorted([ k for k, _ in distances.items() ], key = lambda k: distances[k])[:3]
         cg = { x["accession"]: closest_genes(x) for x in r["cCREQuery"] }
-        return [{
+        return { "cres": [{
             "chrom": x["coordinates"]["chromosome"],
             "start": x["coordinates"]["start"],
             "len": x["coordinates"]["end"] - x["coordinates"]["start"],
@@ -225,8 +226,9 @@ class DataWebService():
             "vistaids": None,
             "sct": 0,
             "maxz": 0,
-            "in_cart": 0
-        } for x in r["cCREQuery"] ]
+            "in_cart": 0,
+            "ctspecifc": { "ct": None }
+        } for x in r["cCREQuery"] ], "cts": [], "rfacets": [ "dnase", "promoter", "enhancer", "ctcf" ], "total": 1 }
 
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
@@ -256,7 +258,63 @@ class DataWebService():
         return self.tfEnrichment.findenrichment(tree_rank_method, a[0], a[1])
 
     def _re_detail_topTissues(self, j, accession):
+        r = requests.post("https://ga.staging.wenglab.org/graphql", json = {
+            "query": """
+            query q($accession: [String!], $assembly: String!) {
+                ccREBiosampleQuery(assembly: $assembly) {
+                  biosamples {
+                    name
+                    dnase: experimentAccession(assay: "DNase")
+                    h3k4me3: experimentAccession(assay: "H3K4me3")
+                    h3k27ac: experimentAccession(assay: "H3K27ac")
+                    ctcf: experimentAccession(assay: "CTCF")
+                  }
+                }
+                cCREQuery(assembly: $assembly, accession: $accession) {
+                    accession
+                    group
+                    zScores {
+                      score
+                      experiment
+                    }
+                    dnase: maxZ(assay: "DNase")
+                    h3k4me3: maxZ(assay: "H3K4me3")
+                    h3k27ac: maxZ(assay: "H3K27ac")
+                    ctcf: maxZ(assay: "CTCF")
+                }
+            }
+            """,
+            "variables": {
+                "accession": accession,
+                "assembly": self.assembly.lower()
+            }
+        }).json()["data"]
+        print(accession, file = sys.stderr)
+        print(self.assembly.lower(), file = sys.stderr)
+        accessionMap = {}
+        typemap = {}
+        for x in r["ccREBiosampleQuery"]["biosamples"]:
+            for a in [ "dnase", "h3k4me3", "h3k27ac", "ctcf" ]:
+                accessionMap[x[a]] = ( x["name"], a )
+            typemap[x["name"]] = "withdnase" if x["dnase"] is not None else "typec"
+            if x["h3k4me3"] is not None and x["h3k27ac"] is not None and x["ctcf"] is not None and x["dnase"] is not None: typemap[x["name"]] = "typea"
+        scores = {}; sscores = {}
         cre = CRE(self.pgSearch, accession, self.cache)
+        for xx in r["cCREQuery"][0]["zScores"]:
+            ct, assay = accessionMap[xx["experiment"]]
+            if ct not in scores: scores[ct] = { a: -11 for a in [ "dnase", "h3k4me3", "h3k27ac", "ctcf" ] }
+            scores[ct]["group"] = r["cCREQuery"][0]["group"]
+            scores[ct][assay] = xx["score"]
+            scores[ct]["ct"] = ct
+            scores[ct]["tissue"] = ""
+        cre.group = r["cCREQuery"][0]["group"]
+        for k, v in scores.items():
+            v["group"] = cre._group(v, v["group"] == "PLS" or v["group"] == "pELS")
+            if typemap[k] not in sscores: sscores[typemap[k]] = []
+            sscores[typemap[k]].append(v)
+        sscores["iranks"] = [{ k: v for k, v in r["cCREQuery"][0].items() }]
+        sscores["iranks"][0]["title"] = "cell type agnostic"
+        return { accession: sscores }
         ranks = cre.topTissues()
         return {accession: ranks}
 
