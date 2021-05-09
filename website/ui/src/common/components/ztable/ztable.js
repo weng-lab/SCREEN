@@ -5,7 +5,7 @@
 
 import React from 'react';
 import os from 'os';
-import { Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, Pagination, FormText } from 'react-bootstrap';
 import SortOrder from './sort_order';
 import SortCols from './sort_cols';
 import DataSource from './datasource';
@@ -39,7 +39,7 @@ class Footer extends React.Component {
 	    return false;
 	}
 
-	return (this.props.ds.rowIDs.length ? <HelpBlock>Total: {this.props.ds.rowIDs.length}</HelpBlock> : <HelpBlock>{this.props.emptyText}</HelpBlock>);
+	return (this.props.ds.rowIDs.length ? <FormText>Total: {this.props.ds.rowIDs.length}</FormText> : <FormText>{this.props.emptyText}</FormText>);
     }
 }
 

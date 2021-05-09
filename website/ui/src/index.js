@@ -5,23 +5,35 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory, Redirect } from 'react-router';
+import { Router, Route, Redirect } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
 import Loadable from 'react-loadable';
 
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
+/* TODO: FIXME
 import ReactGA from 'react-ga';
+
+import { createBrowserHistory } from 'history';
+
+
+let history = createBrowserHistory();
 
 ReactGA.initialize('UA-93680006-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
+history.listen((location) => {
+    window.ga('set', 'page', location.pathname + location.search);
+    window.ga('send', 'pageview');
+});
 const h = browserHistory;
 h.listen((location, action) => {
     ReactGA.set({ page: location.pathname });
     ReactGA.pageview(location.pathname);
 });
+
+*/
 
 const uuid = uuidv4();
 
@@ -70,7 +82,7 @@ const LoadableGwas = Loadable({
 });
 
 ReactDOM.render((
-    <Router history={h} createElement={addUuid} >
+    <Router createElement={addUuid} >
 	<Route path={"/"} component={LoadableIndex} />
 	<Route path={"/downloads"} render={ () => <Redirect to="/index/files" /> } />
 	<Route path={"/index/:tab"} component={LoadableIndex} />
