@@ -3,9 +3,9 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import {Enum} from 'enumify';
+import { Enumify } from 'enumify';
 
-class SortOrder extends Enum {
+class SortOrder extends Enumify {
     cycleOrder(){
         switch (this) {
 	    case SortOrder.DISABLED:
@@ -21,6 +21,5 @@ class SortOrder extends Enum {
 	}
     }
 }
-SortOrder.initEnum(['ASC', 'DSC', 'NONE', 'DISABLED']);
 
 export default SortOrder;

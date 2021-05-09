@@ -5,35 +5,26 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom';
-import { Router, Route, Redirect } from 'react-router';
+import { Switch, Route, Router, Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import Loadable from 'react-loadable';
+import Loadable from 'react-loadable'; // TODO: remove and change to https://btholt.github.io/complete-intro-to-react-v5/code-splitting
+
+import SearchPage from './apps/search/main';
+
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
-/* TODO: FIXME
-import ReactGA from 'react-ga';
 
+import ReactGA from 'react-ga';
 import { createBrowserHistory } from 'history';
 
 
-let history = createBrowserHistory();
-
-ReactGA.initialize('UA-93680006-1');
-ReactGA.pageview(window.location.pathname + window.location.search);
-
-history.listen((location) => {
-    window.ga('set', 'page', location.pathname + location.search);
-    window.ga('send', 'pageview');
-});
-const h = browserHistory;
-h.listen((location, action) => {
+const h = createBrowserHistory();
+h.listen((location, _) => {
     ReactGA.set({ page: location.pathname });
     ReactGA.pageview(location.pathname);
 });
-
-*/
 
 const uuid = uuidv4();
 
@@ -61,10 +52,7 @@ const LoadableIndex = Loadable({
     loading: Loading,
 });
 
-const LoadableSearch = Loadable({
-    loader: () => import('./apps/search/main'),
-    loading: Loading
-});
+
 
 const LoadableGeneExp = Loadable({
     loader: () => import('./apps/geneexp/main'),
@@ -82,15 +70,35 @@ const LoadableGwas = Loadable({
 });
 
 ReactDOM.render((
-    <Router createElement={addUuid} >
-	<Route path={"/"} component={LoadableIndex} />
-	<Route path={"/downloads"} render={ () => <Redirect to="/index/files" /> } />
-	<Route path={"/index/:tab"} component={LoadableIndex} />
-	<Route path={"/search(.*)"} component={LoadableSearch} />
-	<Route path={"/search/:maintab(.*)"} component={LoadableSearch} />
-	<Route path={"/search/:maintab/:subtab(.*)"} component={LoadableSearch} />
-	<Route path={"/geApp/"} component={LoadableGeneExp} />
-	<Route path={"/deApp/"} component={LoadableDe} />
-	<Route path={"/gwasApp/"} component={LoadableGwas} />
+    <Router history={h}>
+	<Switch>
+	    <Route exact path={"/"}>
+		<LoadableIndex />
+	    </Route>
+	    <Route path={"/downloads"}>
+		
+	    </Route>
+	    <Route path={"/index/:tab"}>
+		<LoadableIndex />
+	    </Route>
+	    <Route path={"/search(.*)"}>
+		<SearchPage />
+	    </Route>
+	    <Route path={"/search/:maintab(.*)"}>
+		<SearchPage />
+	    </Route>
+	    <Route path={"/search/:maintab/:subtab(.*)"}>
+		<SearchPage />
+	    </Route>
+	    <Route path={"/geApp/"}>
+		<LoadableGeneExp />
+	    </Route>
+	    <Route path={"/deApp/"}>
+		<LoadableDe />
+	    </Route>
+	    <Route path={"/gwasApp/"}>
+		<LoadableGwas />
+	    </Route>
+	</Switch>
     </Router>
 ), document.getElementById('root'));

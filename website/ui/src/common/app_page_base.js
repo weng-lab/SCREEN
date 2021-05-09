@@ -21,13 +21,19 @@ class AppPageBase extends React.Component {
 	this.search(this.props);
 	this.globals(this.props);
     }
+ 
+    UNSAFE_componentWillReceiveProps(nextProps, state){
+	const location = state.currentLocation;
+	const nextLocation = props.location;
 
-    UNSAFE_componentWillReceiveProps(nextProps){
-	this.search(nextProps);
+	console.log("nextProps:", nextProps);
+	console.log("state", state);
+	
+	this.search(nextProps, location, nextLocation);
 	this.globals(nextProps);
     }
     
-    search(nextProps){
+    search(nextProps, location, nextLocation){
 	if("search" in this.state){
 	    return;
 	}
@@ -36,6 +42,10 @@ class AppPageBase extends React.Component {
 	}
 
 	this.setState({isFetching: true});
+
+	console.log("location:", location);
+	console.log("nextLocation:", nextLocation);
+	
 	const query = Object.keys(nextProps.location.query).reduce((curr, key) => {
 		curr[key] = decodeURIComponent(nextProps.location.query[key]);
 		return curr;
