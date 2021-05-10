@@ -19,7 +19,7 @@ import './css.css';
 import ReactGA from 'react-ga';
 import { createBrowserHistory } from 'history';
 
-
+ReactGA.initialize('UA-93680006-1');
 const h = createBrowserHistory();
 h.listen((location, _) => {
     ReactGA.set({ page: location.pathname });
