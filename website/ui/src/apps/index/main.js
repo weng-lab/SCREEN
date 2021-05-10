@@ -38,9 +38,11 @@ class IndexPage extends React.Component {
       }
 
 
-      render() {
+    render() {
+	console.log("props:", this.props);
+	
         let tab = null;
-        if("tab" in this.props.params){
+        if(this.props && this.props.params && "tab" in this.props.params){
           tab = this.props.params.tab;
         }
 
