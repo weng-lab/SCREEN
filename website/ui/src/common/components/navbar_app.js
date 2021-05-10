@@ -21,13 +21,11 @@ class NavBarApp extends React.Component {
 	
 	return (
             <Navbar inverse={true}>
-		<Navbar.Header>
 		    <Navbar.Brand>
 			<a href={'/'}>
 			    SCREEN
 			</a>
 		    </Navbar.Brand>
-		</Navbar.Header>
 		<Nav>
 		    <NavItem>
 			<SearchBox uuid={this.props.uuid}

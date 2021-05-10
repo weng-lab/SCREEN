@@ -4,7 +4,7 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -24,6 +24,7 @@
     "history": "^5.0.0",
     "jshashes": "^1.0.8",
     "jszlib": "^0.0.1",
+    "query-string": "^7.0.0",
     "react": "^17.0.1",
     "react-async": "^10.0.1",
     "react-autosuggest": "^10.1.0",

@@ -5,8 +5,18 @@
 
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import queryString from 'query-string';
+import { useLocation } from 'react-router-dom';
 
 import * as ApiClient from './api_client';
+
+const MyLocation = () => {
+    // FIXME: switch to location hook...
+    // const location = useLocation();
+    const location = window.location.search;
+    const values = queryString.parse(location);
+    return values;
+}
 
 class AppPageBase extends React.Component {
     constructor(props, url, innerClass, extraProps = {}) {
@@ -23,17 +33,11 @@ class AppPageBase extends React.Component {
     }
  
     UNSAFE_componentWillReceiveProps(nextProps, state){
-	const location = state.currentLocation;
-	const nextLocation = props.location;
-
-	console.log("nextProps:", nextProps);
-	console.log("state", state);
-	
-	this.search(nextProps, location, nextLocation);
+	this.search(nextProps);
 	this.globals(nextProps);
     }
     
-    search(nextProps, location, nextLocation){
+    search(nextProps){
 	if("search" in this.state){
 	    return;
 	}
@@ -43,11 +47,9 @@ class AppPageBase extends React.Component {
 
 	this.setState({isFetching: true});
 
-	console.log("location:", location);
-	console.log("nextLocation:", nextLocation);
-	
-	const query = Object.keys(nextProps.location.query).reduce((curr, key) => {
-		curr[key] = decodeURIComponent(nextProps.location.query[key]);
+	const queryRaw = MyLocation();
+	const query = Object.keys(queryRaw).reduce((curr, key) => {
+		curr[key] = decodeURIComponent(queryRaw[key]);
 		return curr;
 	}, {});
 
@@ -76,13 +78,21 @@ class AppPageBase extends React.Component {
 	    return;
 	}
 	this.setState({isFetchingGlobals: true});
-	ApiClient.globals(nextProps.location.query.assembly,
+
+	const queryRaw = MyLocation();
+	const query = Object.keys(queryRaw).reduce((curr, key) => {
+		curr[key] = decodeURIComponent(queryRaw[key]);
+		return curr;
+	}, {});
+
+	ApiClient.globals(query.assembly,
 			  (r) => {
+			      console.log("r:", r);
 			      this.setState({globals: r, isFetchingGlobals: false, isError: false});
 			  },
 			  (err) => {
 			      console.log("err searching ");
-			      console.log(nextProps.location.query);
+			      console.log(query);
 			      console.log(err);
 			      this.setState({isFetchingGlobals: false, isError: true});
 			  });
