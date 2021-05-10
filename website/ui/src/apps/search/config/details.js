@@ -11,6 +11,7 @@ import * as ApiClient from '../../../common/api_client';
 import GeneExp from '../../geneexp/components/gene_exp';
 import Rampage from '../components/rampage';
 import MiniPeaks from '../components/minipeaks';
+import Umap from '../components/umap';
 
 import { CSVLink } from 'react-csv';
 
@@ -261,20 +262,6 @@ class LinkedGenesTab extends ReTabBase{
     }
 }
 
-class UmapTab extends ReTabBase{
-    constructor(props) {
-	super(props, "umap");
-
-	if(0) {
-	    return <div><br />{"No RAMPAGE data found for this cCRE"}</div>;
-	}
-	
-        this.doRender = (globals, assembly, data) => {
-            return tabEles(globals, data, LinkedGenesTable(globals, assembly), 1);
-        }
-    }
-}
-
 const DetailsTabInfo = (assembly) => {
     return {
         topTissues : {title: Render.tabTitle(["In Specific", "Biosamples"]),
@@ -300,8 +287,8 @@ const DetailsTabInfo = (assembly) => {
                      enabled: true, f: MiniPeaks},
 	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
 		      enabled: assembly !== "mm10", f: LinkedGenesTab},
-	umap : {title: Render.tabTitle(["UMAP", ""]),
-                      enabled: true, f: UmapTab},
+	umap: {title: Render.tabTitle(["UMAP", ""]),
+                      enabled: true, f: Umap},
 
     };
 }
