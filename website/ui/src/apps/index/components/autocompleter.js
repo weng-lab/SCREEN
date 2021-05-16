@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { Container, Button } from 'semantic-ui-react';
 
 import AutocompleteBox from "../../../common/components/autocompletebox";
 
@@ -16,7 +17,6 @@ class Autocompleter extends React.Component {
 
     this.userQueries = {}; // cache
     this.loadSearch = this.loadSearch.bind(this);
-    this.searchGRCh38 = this.searchGRCh38.bind(this);
     this.onEnter = this.onEnter.bind(this);
     this.onChange = this.onChange.bind(this);
 
@@ -71,14 +71,6 @@ class Autocompleter extends React.Component {
     );
   }
 
-  searchGRCh38() {
-    this.loadSearch("GRCh38");
-  }
-
-  searchmm10() {
-    this.loadSearch("mm10");
-  }
-
   onEnter() {
     this.loadSearch("GRCh38");
   }
@@ -127,47 +119,30 @@ class Autocompleter extends React.Component {
       );
     }
     return (
-      <div>
-        <div className={"form-group text-center"}>
-          <span>
-            {err}
-            {input}
-          </span>
-        </div>
+      <Container textAlign="center">
+        <span>
+          {err}
+          {input}
+        </span>
         <em>{this.props.instructions}</em>
         <br />
         <em>{this.props.examples}</em>
         <br />
+
+        <Button primary onClick={() => this.loadSearch("GRCh38") }>
+          {"Search Human"}<br /><small>{"(GRCh38)"}</small>
+        </Button>
+        <Button primary onClick={() => this.loadSearch("mm10") }>
+          {"Search Mouse"}<br /><small>{"(mm10)"}</small>
+        </Button>
+        
         <br />
-        <div id={"mainButtonGroup"}>
-          <a
-            className={"btn btn-primary btn-lg mainButtonHg19"}
-            onClick={this.searchGRCh38.bind(this)}
-            role={"button"}
-          >
-            Search Human
-            <br />
-            <small>(GRCh38)</small>
-          </a>
-          &nbsp;
-          <a
-            className={"btn btn-primary btn-lg mainButtonHg19"}
-            onClick={this.searchmm10.bind(this)}
-            role={"button"}
-          >
-            Search Mouse
-            <br />
-            <small>(mm10)</small>
-          </a>
-          <br />
-          <em>
-            <strong>
-              Pressing enter in the search box searches GRCh38. To search mm10,
-              click the button above.
+        <em>
+          <strong>
+            Pressing enter in the search box searches GRCh38. To search mm10, click the button above.
             </strong>
-          </em>
-        </div>
-      </div>
+        </em>
+      </Container>
     );
   }
 }
