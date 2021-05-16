@@ -25,20 +25,6 @@ import { PageTitle } from "../../common/utility";
 import reducers from "./reducers";
 import initialState from "./config/initial_state";
 
-const Footer = () => (
-  <Segment>
-    <Container textAlign="center">
-      &copy; 2016-2021 Weng Lab @ UMass Med, ENCODE Data Analysis Center
-    </Container>
-  </Segment>
-);
-
-const Title = () => (
-  <Header as='h1' textAlign={"center"}>
-  {"SCREEN: Search Candidate cis-Regulatory Elements by ENCODE"}
-  </Header>
-)
-
 class IndexPage extends React.Component {
   render() {
 
@@ -52,7 +38,10 @@ class IndexPage extends React.Component {
       <Provider store={store}>
         <Container>
           {PageTitle()}
-          <Title />
+
+          <Header as='h1' textAlign={"center"}>
+            {"SCREEN: Search Candidate cis-Regulatory Elements by ENCODE"}
+          </Header>
 
           <Router>
             <HeaderMenu onItemClick={item => this.onItemClick(item)}
@@ -66,7 +55,6 @@ class IndexPage extends React.Component {
                 ["Query Results", "query"]
               ]} />
 
-
             <Switch>
               <Route path="/" exact><TabOverview /></Route>
               <Route path="/about"><TabAbout /></Route>
@@ -77,7 +65,13 @@ class IndexPage extends React.Component {
               <Route path="/query"><TabQuery /></Route>
             </Switch>
           </Router>
-          <Footer />
+
+          <Segment>
+            <Container textAlign="center">
+              &copy;{"2016-2021 Weng Lab @ UMass Med, ENCODE Data Analysis Center"}
+            </Container>
+          </Segment>
+
         </Container>
       </Provider>
     );
