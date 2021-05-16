@@ -5,13 +5,13 @@
 
 import React from "react";
 import os from "os";
-import {
-  Form,
-  FormGroup,
-  FormControl,
-  Pagination,
-  FormText,
-} from "react-bootstrap";
+// import {
+//   Form,
+//   FormGroup,
+//   FormControl,
+//   Pagination,
+//   FormText,
+// } from "semantic-ui-react";
 import SortOrder from "./sort_order";
 import SortCols from "./sort_cols";
 import DataSource from "./datasource";
@@ -69,27 +69,7 @@ class SearchBox extends React.Component {
 
     return (
       <div style={{ float: "right" }}>
-        <Form inline>
-          <FormGroup>
-            Search:
-            <FormControl
-              bsSize="small"
-              size="15"
-              type="text"
-              value={this.props.value}
-              onKeyPress={(event) => {
-                if (event.which === 13 /* Enter */) {
-                  // prevent form submission, from
-                  // https://github.com/christianalfoni/formsy-react/issues/360
-                  return event.preventDefault();
-                }
-                return null;
-              }}
-              onChange={this.props.onChange}
-            />
-            <FormControl.Feedback />
-          </FormGroup>
-        </Form>
+        {"fixme!"}
       </div>
     );
   }

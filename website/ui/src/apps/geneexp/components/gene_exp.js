@@ -6,7 +6,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { Button } from "react-bootstrap";
+import { Button } from "semantic-ui-react";
 
 import * as Actions from "../actions/main_actions";
 import * as ApiClient from "../../../common/api_client";

@@ -5,7 +5,7 @@
 
 import React from "react";
 
-import { Tabs, Tab } from "react-bootstrap";
+import { Tab } from "semantic-ui-react";
 
 import Ztable from "../../../common/components/ztable/ztable";
 import loading from "../../../common/components/loading";

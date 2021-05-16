@@ -4,11 +4,11 @@
  */
 
 import React from "react";
-import {
-  ButtonToolbar,
-  ToggleButtonGroup,
-  ToggleButton,
-} from "react-bootstrap";
+// import {
+//   ButtonToolbar,
+//   ToggleButtonGroup,
+//   ToggleButton,
+// } from "semantic-ui-react";
 
 import { panelize } from "../../../common/utility";
 import { CHECKLIST_MATCH_ANY } from "../../../common/components/checklist";
@@ -83,32 +83,35 @@ class TmpFpkmBox extends React.Component {
     let a = "TPM";
     let b = "FPKM";
     return (
-      <ButtonToolbar style={{ display: "flex", justifyContent: "center" }}>
-        <ToggleButtonGroup
-          type="radio"
-          name="options"
-          defaultValue={this.props.defaultValue}
-        >
-          <ToggleButton
-            value={true}
-            bsSize="xsmall"
-            onClick={() => {
-              this.props.setVal(true);
-            }}
-          >
-            {a}
-          </ToggleButton>
-          <ToggleButton
-            value={false}
-            bsSize="xsmall"
-            onClick={() => {
-              this.props.setVal(false);
-            }}
-          >
-            {b}
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </ButtonToolbar>
+      <span>
+      {"fixme"}
+      </span>
+      // <ButtonToolbar style={{ display: "flex", justifyContent: "center" }}>
+      //   <ToggleButtonGroup
+      //     type="radio"
+      //     name="options"
+      //     defaultValue={this.props.defaultValue}
+      //   >
+      //     <ToggleButton
+      //       value={true}
+      //       bsSize="xsmall"
+      //       onClick={() => {
+      //         this.props.setVal(true);
+      //       }}
+      //     >
+      //       {a}
+      //     </ToggleButton>
+      //     <ToggleButton
+      //       value={false}
+      //       bsSize="xsmall"
+      //       onClick={() => {
+      //         this.props.setVal(false);
+      //       }}
+      //     >
+      //       {b}
+      //     </ToggleButton>
+      //   </ToggleButtonGroup>
+      // </ButtonToolbar>
     );
   }
 }

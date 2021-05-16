@@ -59,6 +59,7 @@ class SearchPageInner extends React.Component {
       <Provider store={store}>
         <div>
           {PageTitle(assembly)}
+          
           <NavBarApp
             assembly={assembly}
             uuid={this.props.search.uuid}

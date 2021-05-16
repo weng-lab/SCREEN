@@ -4,8 +4,7 @@
  */
 
 import React from "react";
-
-import { Nav, Navbar, NavItem } from "react-bootstrap";
+import { Input, Menu } from 'semantic-ui-react'
 
 import SearchBox from "./searchbox";
 import CartImage, { cart_connector } from "./cart_image";
@@ -20,6 +19,7 @@ class NavBarApp extends React.Component {
     }
 
     return (
+
       <Navbar inverse={true}>
         <Navbar.Brand>
           <a href={"/"}>SCREEN</a>

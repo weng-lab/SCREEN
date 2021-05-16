@@ -5,7 +5,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button } from "react-bootstrap";
+import { Button } from "semantic-ui-react";
 
 const viewbox_text = (v) => ["0", "0", v.width, v.height].join(" ");
 

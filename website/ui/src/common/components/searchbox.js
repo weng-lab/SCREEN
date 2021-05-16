@@ -7,7 +7,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { Button } from "react-bootstrap";
+import { Button } from "semantic-ui-react";
 import AutocompleteBox from "./autocompletebox";
 import { toParams } from "../utility";
 

@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { Button, ButtonGroup } from "react-bootstrap";
+import { Button, ButtonGroup } from "semantic-ui-react";
 
 import { toParams, commajoin } from "./utility";
 import * as ApiClient from "./api_client";
