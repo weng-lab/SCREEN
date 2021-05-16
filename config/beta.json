@@ -26,7 +26,7 @@
     "apiServer": "https://api.wenglab.org/beta_screen",
     "minipeakServer": "https://api.wenglab.org/beta_screen/dataws/re_detail/",
     "bed_intersect": "https://api.wenglab.org/beta_screen/postws/lines",
-    "staticServer": "/assets",
+    "staticServer": "https://screen-beta.wenglab.org/assets",
     "overrides": {}
   }
 }

@@ -10,9 +10,10 @@ import { v4 as uuidv4 } from "uuid";
 import Loadable from "react-loadable"; // TODO: remove and change to https://btholt.github.io/complete-intro-to-react-v5/code-splitting
 
 import SearchPage from "./apps/search/main";
+import IndexPage from "./apps/index/main";
 
-// import 'semantic-ui-css/semantic.min.css';
-import "bootstrap/dist/css/bootstrap.min.css";
+import "semantic-ui-css/semantic.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import "./css.css";
 
 import ReactGA from "react-ga";
@@ -49,11 +50,6 @@ class Loading extends React.Component {
   }
 }
 
-const LoadableIndex = Loadable({
-  loader: () => import("./apps/index/main"),
-  loading: Loading,
-});
-
 const LoadableGeneExp = Loadable({
   loader: () => import("./apps/geneexp/main"),
   loading: Loading,
@@ -73,11 +69,13 @@ ReactDOM.render(
   <Router history={h}>
     <Switch>
       <Route exact path={"/"}>
-        <LoadableIndex />
+        <IndexPage />
       </Route>
-      <Route path={"/downloads"}></Route>
+      <Route path={"/downloads"}>
+        
+      </Route>
       <Route path={"/index/:tab"}>
-        <LoadableIndex />
+        <IndexPage />
       </Route>
       <Route path={"/search(.*)"}>
         <SearchPage />

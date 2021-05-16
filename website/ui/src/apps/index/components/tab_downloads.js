@@ -113,27 +113,11 @@ const CtsTableColumns = [
   },
 ];
 
-class TabFiles extends React.Component {
+class TabDownloads extends React.Component {
   constructor(props) {
     super(props);
     this.key = "files";
     this.state = { isFetching: false, isError: false };
-  }
-
-  componentDidMount() {
-    if (this.key === this.props.maintabs_active) {
-      this.loadFiles(this.props);
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.key === nextProps.maintabs_active) {
-      this.loadFiles(nextProps);
-    }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.key === nextProps.maintabs_active;
   }
 
   loadFiles(nextProps) {
@@ -145,7 +129,6 @@ class TabFiles extends React.Component {
   }
 
   doRenderWrapper() {
-    console.log(this.state.data);
     return (
       <div>
         <div className="row">
@@ -375,7 +358,7 @@ class TabFiles extends React.Component {
                         Object.keys(this.state.data.human).filter(
                           (x) =>
                             this.state.data.human[x].biosample_type !==
-                              "cell line" &&
+                            "cell line" &&
                             this.state.data.human[x].life_stage !== "embryonic"
                         ).length
                       }
@@ -387,9 +370,9 @@ class TabFiles extends React.Component {
                             d: Object.keys(this.state.data.human).filter(
                               (x) =>
                                 this.state.data.human[x].life_stage !==
-                                  "embryonic" &&
+                                "embryonic" &&
                                 this.state.data.human[x].biosample_type !==
-                                  "cell line"
+                                "cell line"
                             ),
                           },
                         });
@@ -409,9 +392,9 @@ class TabFiles extends React.Component {
                         Object.keys(this.state.data.human).filter(
                           (x) =>
                             this.state.data.human[x].life_stage ===
-                              "embryonic" &&
+                            "embryonic" &&
                             this.state.data.human[x].biosample_type !==
-                              "cell line"
+                            "cell line"
                         ).length
                       }
                       onClick={() => {
@@ -420,9 +403,9 @@ class TabFiles extends React.Component {
                             d: Object.keys(this.state.data.human).filter(
                               (x) =>
                                 this.state.data.human[x].life_stage ===
-                                  "embryonic" &&
+                                "embryonic" &&
                                 this.state.data.human[x].biosample_type !==
-                                  "cell line"
+                                "cell line"
                             ),
                             species: "human",
                             type: EMBRYONIC,
@@ -484,7 +467,7 @@ class TabFiles extends React.Component {
                         Object.keys(this.state.data.mouse).filter(
                           (x) =>
                             this.state.data.mouse[x].biosample_type !==
-                              "cell line" &&
+                            "cell line" &&
                             this.state.data.mouse[x].life_stage !== "embryonic"
                         ).length
                       }
@@ -496,9 +479,9 @@ class TabFiles extends React.Component {
                             d: Object.keys(this.state.data.mouse).filter(
                               (x) =>
                                 this.state.data.mouse[x].life_stage !==
-                                  "embryonic" &&
+                                "embryonic" &&
                                 this.state.data.mouse[x].biosample_type !==
-                                  "cell line"
+                                "cell line"
                             ),
                           },
                         });
@@ -518,9 +501,9 @@ class TabFiles extends React.Component {
                         Object.keys(this.state.data.mouse).filter(
                           (x) =>
                             this.state.data.mouse[x].life_stage ===
-                              "embryonic" &&
+                            "embryonic" &&
                             this.state.data.mouse[x].biosample_type !==
-                              "cell line"
+                            "cell line"
                         ).length
                       }
                       onClick={() => {
@@ -529,9 +512,9 @@ class TabFiles extends React.Component {
                             d: Object.keys(this.state.data.mouse).filter(
                               (x) =>
                                 this.state.data.mouse[x].life_stage ===
-                                  "embryonic" &&
+                                "embryonic" &&
                                 this.state.data.mouse[x].biosample_type !==
-                                  "cell line"
+                                "cell line"
                             ),
                             species: "mouse",
                             type: EMBRYONIC,
@@ -616,11 +599,10 @@ class TabFiles extends React.Component {
   }
 
   render() {
-    if (this.key !== this.props.maintabs_active) {
-      return false;
-    }
+    this.loadFiles(this.props);
+
     return tabPanelize(<div>{this.doRenderWrapper()}</div>);
   }
 }
 
-export default TabFiles;
+export default TabDownloads;
