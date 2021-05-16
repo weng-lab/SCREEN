@@ -1,15 +1,99 @@
-export const ccres_info = {"EH38D2560902": {"chr": "chr12", "start": 53380044, "end": 53380245}, "EH38D2560930": {"chr": "chr12", "start": 53413796, "end": 53413955}, "EH38D2560847": {"chr": "chr12", "start": 53326726, "end": 53326927}, "EH38D2560850": {"chr": "chr12", "start": 53327826, "end": 53327985}, "EH38D2560852": {"chr": "chr12", "start": 53328393, "end": 53328549}, "EH38D2560858": {"chr": "chr12", "start": 53334207, "end": 53334531}, "EH38D2560859": {"chr": "chr12", "start": 53334937, "end": 53335101}, "EH38D2560862": {"chr": "chr12", "start": 53338015, "end": 53338177}, "EH38D2560869": {"chr": "chr12", "start": 53344582, "end": 53344737}, "EH38D2560875": {"chr": "chr12", "start": 53352290, "end": 53352530}, "EH38D2560883": {"chr": "chr12", "start": 53360029, "end": 53360198}, "EH38D2560884": {"chr": "chr12", "start": 53363132, "end": 53363285}, "EH38D2560885": {"chr": "chr12", "start": 53365288, "end": 53365616}, "EH38D2560887": {"chr": "chr12", "start": 53366644, "end": 53366848}, "EH38D2560890": {"chr": "chr12", "start": 53371238, "end": 53371588}, "EH38D2560891": {"chr": "chr12", "start": 53371695, "end": 53371864}, "EH38D2560892": {"chr": "chr12", "start": 53372363, "end": 53372608}, "EH38D2560897": {"chr": "chr12", "start": 53378350, "end": 53378587}, "EH38D2560898": {"chr": "chr12", "start": 53378849, "end": 53379018}, "EH38D2560899": {"chr": "chr12", "start": 53379201, "end": 53379365}, "EH38D2560900": {"chr": "chr12", "start": 53379524, "end": 53379674}, "EH38D2560901": {"chr": "chr12", "start": 53379702, "end": 53380030}, "EH38D2560907": {"chr": "chr12", "start": 53382310, "end": 53382515}, "EH38D2560908": {"chr": "chr12", "start": 53382576, "end": 53382730}, "EH38D2560911": {"chr": "chr12", "start": 53385966, "end": 53386229}, "EH38D2560913": {"chr": "chr12", "start": 53387553, "end": 53387706}, "EH38D2560916": {"chr": "chr12", "start": 53389883, "end": 53390083}, "EH38D2560927": {"chr": "chr12", "start": 53412655, "end": 53412991}, "EH38D2560929": {"chr": "chr12", "start": 53413583, "end": 53413778}, "EH38D2560931": {"chr": "chr12", "start": 53413972, "end": 53414144}, "EH38D2560848": {"chr": "chr12", "start": 53326959, "end": 53327195}, "EH38D2560849": {"chr": "chr12", "start": 53327525, "end": 53327783}, "EH38D2560851": {"chr": "chr12", "start": 53328046, "end": 53328387}, "EH38D2560853": {"chr": "chr12", "start": 53330035, "end": 53330310}, "EH38D2560854": {"chr": "chr12", "start": 53330724, "end": 53330925}, "EH38D2560855": {"chr": "chr12", "start": 53332766, "end": 53333107}, "EH38D2560856": {"chr": "chr12", "start": 53333400, "end": 53333573}, "EH38D2560857": {"chr": "chr12", "start": 53333890, "end": 53334160}, "EH38D2560860": {"chr": "chr12", "start": 53336254, "end": 53336603}, "EH38D2560861": {"chr": "chr12", "start": 53337337, "end": 53337635}, "EH38D2560864": {"chr": "chr12", "start": 53338939, "end": 53339246}, "EH38D2560865": {"chr": "chr12", "start": 53340416, "end": 53340760}, "EH38D2560866": {"chr": "chr12", "start": 53342787, "end": 53343081}, "EH38D2560867": {"chr": "chr12", "start": 53343332, "end": 53343632}, "EH38D2560868": {"chr": "chr12", "start": 53343999, "end": 53344348}, "EH38D2560870": {"chr": "chr12", "start": 53344830, "end": 53345125}, "EH38D2560871": {"chr": "chr12", "start": 53345217, "end": 53345557}, "EH38D2560872": {"chr": "chr12", "start": 53345874, "end": 53346212}, "EH38D2560873": {"chr": "chr12", "start": 53346581, "end": 53346845}, "EH38D2560874": {"chr": "chr12", "start": 53348800, "end": 53349150}, "EH38D2560876": {"chr": "chr12", "start": 53352620, "end": 53352967}, "EH38D2560877": {"chr": "chr12", "start": 53353045, "end": 53353309}, "EH38D2560879": {"chr": "chr12", "start": 53354280, "end": 53354454}, "EH38D2560880": {"chr": "chr12", "start": 53355080, "end": 53355427}, "EH38D2560881": {"chr": "chr12", "start": 53355467, "end": 53355688}, "EH38D2560882": {"chr": "chr12", "start": 53358860, "end": 53359194}, "EH38D2560886": {"chr": "chr12", "start": 53365960, "end": 53366281}, "EH38D2560888": {"chr": "chr12", "start": 53370278, "end": 53370563}, "EH38D2560889": {"chr": "chr12", "start": 53370811, "end": 53371151}, "EH38D2560893": {"chr": "chr12", "start": 53372626, "end": 53372941}, "EH38D2560894": {"chr": "chr12", "start": 53373058, "end": 53373258}, "EH38D2560895": {"chr": "chr12", "start": 53373800, "end": 53374118}, "EH38D2560896": {"chr": "chr12", "start": 53377039, "end": 53377236}, "EH38D2560903": {"chr": "chr12", "start": 53380452, "end": 53380797}, "EH38D2560904": {"chr": "chr12", "start": 53380953, "end": 53381211}, "EH38D2560905": {"chr": "chr12", "start": 53381397, "end": 53381665}, "EH38D2560906": {"chr": "chr12", "start": 53381945, "end": 53382293}, "EH38D2560909": {"chr": "chr12", "start": 53383321, "end": 53383613}, "EH38D2560910": {"chr": "chr12", "start": 53383754, "end": 53383935}, "EH38D2560912": {"chr": "chr12", "start": 53387194, "end": 53387533}, "EH38D2560914": {"chr": "chr12", "start": 53388223, "end": 53388491}, "EH38D2560915": {"chr": "chr12", "start": 53388546, "end": 53388742}, "EH38D2560917": {"chr": "chr12", "start": 53390666, "end": 53390995}, "EH38D2560918": {"chr": "chr12", "start": 53391813, "end": 53392020}, "EH38D2560919": {"chr": "chr12", "start": 53396488, "end": 53396744}, "EH38D2560920": {"chr": "chr12", "start": 53397770, "end": 53398114}, "EH38D2560921": {"chr": "chr12", "start": 53398479, "end": 53398652}, "EH38D2560922": {"chr": "chr12", "start": 53399914, "end": 53400248}, "EH38D2560923": {"chr": "chr12", "start": 53401384, "end": 53401674}, "EH38D2560924": {"chr": "chr12", "start": 53402748, "end": 53403036}, "EH38D2560925": {"chr": "chr12", "start": 53404182, "end": 53404389}, "EH38D2560926": {"chr": "chr12", "start": 53412166, "end": 53412505}, "EH38D2560928": {"chr": "chr12", "start": 53413179, "end": 53413383}, "EH38D2560932": {"chr": "chr12", "start": 53415052, "end": 53415390}, "EH38D2560933": {"chr": "chr12", "start": 53415517, "end": 53415838}, "EH38D2560934": {"chr": "chr12", "start": 53416028, "end": 53416311}}
-
-
-
+export const ccres_info = {
+  EH38D2560902: { chr: "chr12", start: 53380044, end: 53380245 },
+  EH38D2560930: { chr: "chr12", start: 53413796, end: 53413955 },
+  EH38D2560847: { chr: "chr12", start: 53326726, end: 53326927 },
+  EH38D2560850: { chr: "chr12", start: 53327826, end: 53327985 },
+  EH38D2560852: { chr: "chr12", start: 53328393, end: 53328549 },
+  EH38D2560858: { chr: "chr12", start: 53334207, end: 53334531 },
+  EH38D2560859: { chr: "chr12", start: 53334937, end: 53335101 },
+  EH38D2560862: { chr: "chr12", start: 53338015, end: 53338177 },
+  EH38D2560869: { chr: "chr12", start: 53344582, end: 53344737 },
+  EH38D2560875: { chr: "chr12", start: 53352290, end: 53352530 },
+  EH38D2560883: { chr: "chr12", start: 53360029, end: 53360198 },
+  EH38D2560884: { chr: "chr12", start: 53363132, end: 53363285 },
+  EH38D2560885: { chr: "chr12", start: 53365288, end: 53365616 },
+  EH38D2560887: { chr: "chr12", start: 53366644, end: 53366848 },
+  EH38D2560890: { chr: "chr12", start: 53371238, end: 53371588 },
+  EH38D2560891: { chr: "chr12", start: 53371695, end: 53371864 },
+  EH38D2560892: { chr: "chr12", start: 53372363, end: 53372608 },
+  EH38D2560897: { chr: "chr12", start: 53378350, end: 53378587 },
+  EH38D2560898: { chr: "chr12", start: 53378849, end: 53379018 },
+  EH38D2560899: { chr: "chr12", start: 53379201, end: 53379365 },
+  EH38D2560900: { chr: "chr12", start: 53379524, end: 53379674 },
+  EH38D2560901: { chr: "chr12", start: 53379702, end: 53380030 },
+  EH38D2560907: { chr: "chr12", start: 53382310, end: 53382515 },
+  EH38D2560908: { chr: "chr12", start: 53382576, end: 53382730 },
+  EH38D2560911: { chr: "chr12", start: 53385966, end: 53386229 },
+  EH38D2560913: { chr: "chr12", start: 53387553, end: 53387706 },
+  EH38D2560916: { chr: "chr12", start: 53389883, end: 53390083 },
+  EH38D2560927: { chr: "chr12", start: 53412655, end: 53412991 },
+  EH38D2560929: { chr: "chr12", start: 53413583, end: 53413778 },
+  EH38D2560931: { chr: "chr12", start: 53413972, end: 53414144 },
+  EH38D2560848: { chr: "chr12", start: 53326959, end: 53327195 },
+  EH38D2560849: { chr: "chr12", start: 53327525, end: 53327783 },
+  EH38D2560851: { chr: "chr12", start: 53328046, end: 53328387 },
+  EH38D2560853: { chr: "chr12", start: 53330035, end: 53330310 },
+  EH38D2560854: { chr: "chr12", start: 53330724, end: 53330925 },
+  EH38D2560855: { chr: "chr12", start: 53332766, end: 53333107 },
+  EH38D2560856: { chr: "chr12", start: 53333400, end: 53333573 },
+  EH38D2560857: { chr: "chr12", start: 53333890, end: 53334160 },
+  EH38D2560860: { chr: "chr12", start: 53336254, end: 53336603 },
+  EH38D2560861: { chr: "chr12", start: 53337337, end: 53337635 },
+  EH38D2560864: { chr: "chr12", start: 53338939, end: 53339246 },
+  EH38D2560865: { chr: "chr12", start: 53340416, end: 53340760 },
+  EH38D2560866: { chr: "chr12", start: 53342787, end: 53343081 },
+  EH38D2560867: { chr: "chr12", start: 53343332, end: 53343632 },
+  EH38D2560868: { chr: "chr12", start: 53343999, end: 53344348 },
+  EH38D2560870: { chr: "chr12", start: 53344830, end: 53345125 },
+  EH38D2560871: { chr: "chr12", start: 53345217, end: 53345557 },
+  EH38D2560872: { chr: "chr12", start: 53345874, end: 53346212 },
+  EH38D2560873: { chr: "chr12", start: 53346581, end: 53346845 },
+  EH38D2560874: { chr: "chr12", start: 53348800, end: 53349150 },
+  EH38D2560876: { chr: "chr12", start: 53352620, end: 53352967 },
+  EH38D2560877: { chr: "chr12", start: 53353045, end: 53353309 },
+  EH38D2560879: { chr: "chr12", start: 53354280, end: 53354454 },
+  EH38D2560880: { chr: "chr12", start: 53355080, end: 53355427 },
+  EH38D2560881: { chr: "chr12", start: 53355467, end: 53355688 },
+  EH38D2560882: { chr: "chr12", start: 53358860, end: 53359194 },
+  EH38D2560886: { chr: "chr12", start: 53365960, end: 53366281 },
+  EH38D2560888: { chr: "chr12", start: 53370278, end: 53370563 },
+  EH38D2560889: { chr: "chr12", start: 53370811, end: 53371151 },
+  EH38D2560893: { chr: "chr12", start: 53372626, end: 53372941 },
+  EH38D2560894: { chr: "chr12", start: 53373058, end: 53373258 },
+  EH38D2560895: { chr: "chr12", start: 53373800, end: 53374118 },
+  EH38D2560896: { chr: "chr12", start: 53377039, end: 53377236 },
+  EH38D2560903: { chr: "chr12", start: 53380452, end: 53380797 },
+  EH38D2560904: { chr: "chr12", start: 53380953, end: 53381211 },
+  EH38D2560905: { chr: "chr12", start: 53381397, end: 53381665 },
+  EH38D2560906: { chr: "chr12", start: 53381945, end: 53382293 },
+  EH38D2560909: { chr: "chr12", start: 53383321, end: 53383613 },
+  EH38D2560910: { chr: "chr12", start: 53383754, end: 53383935 },
+  EH38D2560912: { chr: "chr12", start: 53387194, end: 53387533 },
+  EH38D2560914: { chr: "chr12", start: 53388223, end: 53388491 },
+  EH38D2560915: { chr: "chr12", start: 53388546, end: 53388742 },
+  EH38D2560917: { chr: "chr12", start: 53390666, end: 53390995 },
+  EH38D2560918: { chr: "chr12", start: 53391813, end: 53392020 },
+  EH38D2560919: { chr: "chr12", start: 53396488, end: 53396744 },
+  EH38D2560920: { chr: "chr12", start: 53397770, end: 53398114 },
+  EH38D2560921: { chr: "chr12", start: 53398479, end: 53398652 },
+  EH38D2560922: { chr: "chr12", start: 53399914, end: 53400248 },
+  EH38D2560923: { chr: "chr12", start: 53401384, end: 53401674 },
+  EH38D2560924: { chr: "chr12", start: 53402748, end: 53403036 },
+  EH38D2560925: { chr: "chr12", start: 53404182, end: 53404389 },
+  EH38D2560926: { chr: "chr12", start: 53412166, end: 53412505 },
+  EH38D2560928: { chr: "chr12", start: 53413179, end: 53413383 },
+  EH38D2560932: { chr: "chr12", start: 53415052, end: 53415390 },
+  EH38D2560933: { chr: "chr12", start: 53415517, end: 53415838 },
+  EH38D2560934: { chr: "chr12", start: 53416028, end: 53416311 },
+};
 
 export default ccres_info;
 
 // from https://github.com/weng-lab/Factorbook/blob/master/src/utilities/misc.tsx
 export const range = (min: number, max: number, by: number = 1) => {
-    let newVals: number[] = [];
-    for (let i = min; i < max; i = i + by) {
-        newVals.push(i);
-    }
-    return newVals;
+  let newVals: number[] = [];
+  for (let i = min; i < max; i = i + by) {
+    newVals.push(i);
+  }
+  return newVals;
 };

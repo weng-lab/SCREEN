@@ -3,53 +3,49 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import {array_insert, array_remove} from '../common'
+import { array_insert, array_remove } from "../common";
 
-export const SET_SELECTION = 'SET_SELECTION';
-export const CLEAR_SELECTION = 'CLEAR_SELECTION';
-export const ADD_ITEM = 'ADD_ITEM';
-export const REMOVE_ITEM = 'REMOVE_ITEM';
-export const SET_ITEMS = 'SET_ITEMS';
+export const SET_SELECTION = "SET_SELECTION";
+export const CLEAR_SELECTION = "CLEAR_SELECTION";
+export const ADD_ITEM = "ADD_ITEM";
+export const REMOVE_ITEM = "REMOVE_ITEM";
+export const SET_ITEMS = "SET_ITEMS";
 
 export let list_default_state = {
-    items: [],
-    selection: null
+  items: [],
+  selection: null,
 };
 
 export function ListFacetReducer(state = list_default_state, action) {
+  if (action == null) return state;
 
-    if (action == null) return state;
-    
-    switch (action.type) {
-
+  switch (action.type) {
     case CLEAR_SELECTION:
-	return Object.assign({}, state, {selection: null});
-	
+      return Object.assign({}, state, { selection: null });
+
     case SET_SELECTION:
-	if (action.selection <= -1 || action.selection >= state.items.length)
-	    return state;
-	return Object.assign({}, state, {
-	    selection: action.selection
-	});
+      if (action.selection <= -1 || action.selection >= state.items.length)
+        return state;
+      return Object.assign({}, state, {
+        selection: action.selection,
+      });
 
     case ADD_ITEM:
-	return Object.assign({}, state, {
-	    items: array_insert(state.items, action.item)
-	});
+      return Object.assign({}, state, {
+        items: array_insert(state.items, action.item),
+      });
 
     case REMOVE_ITEM:
-	return Object.assign({}, state, {
-	    items: array_remove(state.items, action.item)
-	});
+      return Object.assign({}, state, {
+        items: array_remove(state.items, action.item),
+      });
 
     case SET_ITEMS:
-	//console.log(state);
-	return Object.assign({}, state, {
-	    items: action.items
-	});
-	
-    }
+      //console.log(state);
+      return Object.assign({}, state, {
+        items: action.items,
+      });
+  }
 
-    return state;
-    
-};
+  return state;
+}

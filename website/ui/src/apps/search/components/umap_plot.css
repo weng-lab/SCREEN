@@ -1,73 +1,70 @@
 .svgBox {
-    background-color: black;
+  background-color: black;
 }
 
 /* based off C3 */
 .toolTipTableBox {
-    pointer-events: none;
-    z-index: 10;
-    position: absolute;
-    float: right;
- 
+  pointer-events: none;
+  z-index: 10;
+  position: absolute;
+  float: right;
 }
 
 .toolTipTable {
-    border-collapse: collapse;
-    border-spacing: 0;
-    background-color: #fff;
-    empty-cells: show;
-    box-shadow: 7px 7px 12px -9px #777;
-    opacity: .9;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: #fff;
+  empty-cells: show;
+  box-shadow: 7px 7px 12px -9px #777;
+  opacity: 0.9;
 }
 
 .toolTipTable tbody {
-    display: table-row-group;
-    vertical-align: middle;
-    border-color: inherit;
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
 }
 
 .toolTipTable tr {
-    border: 1px solid #CCC;
+  border: 1px solid #ccc;
 }
 
 .toolTipTable th {
-    background-color: #aaa;
-    font-size: 14px;
-    padding: 2px 5px;
-    text-align: left;
-    color: #FFF;
+  background-color: #aaa;
+  font-size: 14px;
+  padding: 2px 5px;
+  text-align: left;
+  color: #fff;
 }
 
 .toolTipTable td {
-    text-align: left;
-    font-size: 13px;
-    padding: 3px 6px;
-    background-color: #fff;
-    border-left: 1px dotted #999;
+  text-align: left;
+  font-size: 13px;
+  padding: 3px 6px;
+  background-color: #fff;
+  border-left: 1px dotted #999;
 }
 
-.toolTipTable td>span {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 6px;
+.toolTipTable td > span {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
 }
 
 .toolTipTable td.value {
-    text-align: right;
+  text-align: right;
 }
-
 
 .dnaseHigh {
-    background-color: #06da93;
+  background-color: #06da93;
 }
-.h3k4me3High{
-    background-color: #ff0000;
+.h3k4me3High {
+  background-color: #ff0000;
 }
-.h3k27acHigh{
-    background-color: #ffcd00;
+.h3k27acHigh {
+  background-color: #ffcd00;
 }
-.ctcfHigh{
-    background-color: #00b0f0;
+.ctcfHigh {
+  background-color: #00b0f0;
 }
-

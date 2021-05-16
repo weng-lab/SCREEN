@@ -3,17 +3,19 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import * as React from 'react';
-import { Grid, Row, Panel, Button } from 'react-bootstrap';
+import * as React from "react";
+import { Grid, Row, Panel, Button } from "react-bootstrap";
 
-const hostbase = 'https://api.wenglab.org/screen_v13_graphql';
-const host = hostbase + '/graphql';
-const schemaurl = hostbase + '/graphqlschema';
+const hostbase = "https://api.wenglab.org/screen_v13_graphql";
+const host = hostbase + "/graphql";
+const schemaurl = hostbase + "/graphqlschema";
 
 const makelink = (query, variables) =>
-    variables
-        ? `${host}?query=${encodeURIComponent(query)}&variables=${encodeURIComponent(variables)}`
-        : `${host}?query=${encodeURIComponent(query)}`;
+  variables
+    ? `${host}?query=${encodeURIComponent(
+        query
+      )}&variables=${encodeURIComponent(variables)}`
+    : `${host}?query=${encodeURIComponent(query)}`;
 
 const datarangeexample = `
 query rangeSearchAndData(
@@ -172,106 +174,121 @@ query celltypes {
 `;
 
 class TabAPI extends React.Component {
-    state = { schemaopen: false, schema: 'Loading' };
+  state = { schemaopen: false, schema: "Loading" };
 
-    componentDidMount() {
-        fetch(schemaurl).then(r => r.text()).then(r => this.setState({ schema: r })).catch(r => this.setState({ schema: 'Error' }));
-    }
+  componentDidMount() {
+    fetch(schemaurl)
+      .then((r) => r.text())
+      .then((r) => this.setState({ schema: r }))
+      .catch((r) => this.setState({ schema: "Error" }));
+  }
 
-    render() {
-        const schematext = this.state.schema;
-        const schemaBlob = new Blob([schematext], { type: 'application/txt' });
-        const schemadownloadurl = URL.createObjectURL(schemaBlob);
-        const makelinkout = (title, query, variables) => (
-            <a href={makelink(query, variables)} target="_blank" rel="noopener noreferrer">
-                {title}
+  render() {
+    const schematext = this.state.schema;
+    const schemaBlob = new Blob([schematext], { type: "application/txt" });
+    const schemadownloadurl = URL.createObjectURL(schemaBlob);
+    const makelinkout = (title, query, variables) => (
+      <a
+        href={makelink(query, variables)}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {title}
+      </a>
+    );
+    return (
+      <Grid>
+        <Row>
+          <h2>API</h2>
+        </Row>
+        <Row>
+          <p>
+            The preferred way to programatically access SCREEN and cCRE data is
+            to use our GraphQL API. Information on GraphQL can be found{" "}
+            {<a href="http://graphql.org/">{" here"}</a>}.
+          </p>
+          <br />
+          <p>
+            The entire SCREEN site uses the GraphQL API for its backend, so you
+            can have access to any data available on this site.
+            <br />
+            The current host of the GraphQL server is: <i>{host}</i>
+          </p>
+          <p>
+            This page will always contain the latest host, as well as the
+            current schema and examples (below).
+          </p>
+        </Row>
+        <Row>
+          <h2>Quick Start</h2>
+        </Row>
+        <Row>
+          <p style={{ width: "100%" }}>
+            The fastest way to begin to use the API is through the GraphiQL UI:
+            {"  "}
+            <a href={host} target="_blank" rel="noopener noreferrer">
+              Graph<i>i</i>QL
             </a>
-        );
-        return (
-            <Grid>
-                <Row>
-                    <h2>API</h2>
-                </Row>
-                <Row>
-                    <p>
-                        The preferred way to programatically access SCREEN and cCRE data is to use our GraphQL
-                        API. Information on GraphQL can be found {<a href="http://graphql.org/">{' here'}</a>}.
-                    </p>
-                    <br />
-                    <p>
-                        The entire SCREEN site uses the GraphQL API for its backend, so you can have access to
-                        any data available on this site.
-                        <br />
-                        The current host of the GraphQL server is: <i>{host}</i>
-                    </p>
-                    <p>
-                        This page will always contain the latest host, as well as the current schema and
-                        examples (below).
-                    </p>
-                </Row>
-                <Row>
-                    <h2>Quick Start</h2>
-                </Row>
-                <Row>
-                    <p style={{ width: '100%' }}>
-                        The fastest way to begin to use the API is through the GraphiQL UI:
-                        {'  '}
-                        <a href={host} target="_blank" rel="noopener noreferrer">
-                            Graph<i>i</i>QL
-                        </a>
-                    </p>
-                    <p>
-                        For more advanced usage, a number of options exist.
-                        {'  '}
-                        <a
-                            href={
-                                'https://dev-blog.apollodata.com/4-simple-ways-to-call-a-graphql-api-a6807bcdb355'
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            This
-                        </a>{' '}
-                        blog post has a few useful examples.
-                    </p>
-                </Row>
-                <Row>
-                    <h2>Schema</h2>
-                </Row>
-                <Row>
-                    <Button  onClick={() => this.setState({ schemaopen: !this.state.schemaopen })}>
-                        {this.state.schemaopen ? 'Close schema' : 'Open schema'}
-                    </Button>
-                    <Panel expanded={this.state.schemaopen} collapsible={true}>
-                        <a href={schemadownloadurl} download={'schema.txt'}>
-                            Download
-                        </a>
-                        <pre>
-                            <code>{this.state.schema}</code>
-                        </pre> 
-                    </Panel>
-                </Row>
-                <Row>
-                    <h2>Examples</h2>
-                </Row>
-                <Row>
-                    {makelinkout(
-                        'Search for cCREs by certain parameters',
-                        datarangeexample,
-                        datarangevariables
-                    )}
-                    <br />
-                    {makelinkout('cCRE Details', credetailsexample)}
-                    <br />
-                    {makelinkout('Gene Expression Data', gene_expexample)}
-                    <br />
-                    {makelinkout('Spike-in Expression Data', spikein_expexample)}
-                    <br />
-                    {makelinkout('Available Cell Types for cCREs and Gene Expression', celltypes_examples)}
-                </Row>
-            </Grid>
-        );
-    }
+          </p>
+          <p>
+            For more advanced usage, a number of options exist.
+            {"  "}
+            <a
+              href={
+                "https://dev-blog.apollodata.com/4-simple-ways-to-call-a-graphql-api-a6807bcdb355"
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              This
+            </a>{" "}
+            blog post has a few useful examples.
+          </p>
+        </Row>
+        <Row>
+          <h2>Schema</h2>
+        </Row>
+        <Row>
+          <Button
+            onClick={() =>
+              this.setState({ schemaopen: !this.state.schemaopen })
+            }
+          >
+            {this.state.schemaopen ? "Close schema" : "Open schema"}
+          </Button>
+          <Panel expanded={this.state.schemaopen} collapsible={true}>
+            <a href={schemadownloadurl} download={"schema.txt"}>
+              Download
+            </a>
+            <pre>
+              <code>{this.state.schema}</code>
+            </pre>
+          </Panel>
+        </Row>
+        <Row>
+          <h2>Examples</h2>
+        </Row>
+        <Row>
+          {makelinkout(
+            "Search for cCREs by certain parameters",
+            datarangeexample,
+            datarangevariables
+          )}
+          <br />
+          {makelinkout("cCRE Details", credetailsexample)}
+          <br />
+          {makelinkout("Gene Expression Data", gene_expexample)}
+          <br />
+          {makelinkout("Spike-in Expression Data", spikein_expexample)}
+          <br />
+          {makelinkout(
+            "Available Cell Types for cCREs and Gene Expression",
+            celltypes_examples
+          )}
+        </Row>
+      </Grid>
+    );
+  }
 }
 
 export default TabAPI;
