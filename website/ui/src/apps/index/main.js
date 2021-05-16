@@ -68,13 +68,13 @@ class IndexPage extends React.Component {
 
 
             <Switch>
-              <Route path="/" exact component={TabOverview} />
-              <Route path="/about" component={TabAbout} />
-              <Route path="/ucsc" component={TabUCSC} />
-              <Route path="/tutorials" component={TabTutorial} />
-              <Route path="/downloads" component={TabDownloads} />
-              <Route path="/versions" component={TabVersions} />
-              <Route path="/query" component={TabQuery} />
+              <Route path="/" exact><TabOverview /></Route>
+              <Route path="/about"><TabAbout /></Route>
+              <Route path="/ucsc"><TabUCSC /></Route>
+              <Route path="/tutorials"><TabTutorial /></Route>
+              <Route path="/downloads"><TabDownloads /></Route>
+              <Route path="/versions"><TabVersions /></Route>
+              <Route path="/query"><TabQuery /></Route>
             </Switch>
           </Router>
           <Footer />
