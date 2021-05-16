@@ -54,9 +54,9 @@ class Footer extends React.Component {
     }
 
     return this.props.ds.rowIDs.length ? (
-      <FormText>Total: {this.props.ds.rowIDs.length}</FormText>
+      <small>Total: {this.props.ds.rowIDs.length}</small>
     ) : (
-      <FormText>{this.props.emptyText}</FormText>
+      <small>{this.props.emptyText}</small>
     );
   }
 }
@@ -78,19 +78,22 @@ class SearchBox extends React.Component {
 class PageBox extends React.Component {
   render() {
     return (
-      <Pagination
-        className="users-pagination pull-right"
-        bsSize="small"
-        maxButtons={3}
-        first
-        last
-        next
-        prev
-        boundaryLinks
-        items={this.props.pages}
-        activePage={this.props.curPage}
-        onSelect={this.props.onSelect}
-      />
+      <div>
+        {"fixme"}
+      </div>
+      // <Pagination
+      //   className="users-pagination pull-right"
+      //   bsSize="small"
+      //   maxButtons={3}
+      //   first
+      //   last
+      //   next
+      //   prev
+      //   boundaryLinks
+      //   items={this.props.pages}
+      //   activePage={this.props.curPage}
+      //   onSelect={this.props.onSelect}
+      // />
     );
   }
 }

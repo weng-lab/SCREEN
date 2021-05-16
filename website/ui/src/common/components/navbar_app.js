@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { Link } from 'react-router-dom'
 import { Input, Menu } from 'semantic-ui-react'
 
 import SearchBox from "./searchbox";
@@ -19,37 +20,34 @@ class NavBarApp extends React.Component {
     }
 
     return (
+      <Menu inverted>
+        <Menu.Item name='home' as={Link} to="/">{"SCREEN"}</Menu.Item>
 
-      <Navbar inverse={true}>
-        <Navbar.Brand>
-          <a href={"/"}>SCREEN</a>
-        </Navbar.Brand>
-        <Nav>
-          <NavItem>
-            <SearchBox
-              uuid={this.props.uuid}
-              assembly={this.props.assembly}
-              store={this.props.store}
-            />
-          </NavItem>
-        </Nav>
-        <Nav pullRight>
-          <NavItem>{cartimage}</NavItem>
-          <NavItem href="http://www.encodeproject.org" target="_blank">
-            <img
-              src={ApiClient.StaticUrl("/encode/ENCODE_logo.small3.png")}
-              style={{
-                padding: "4px",
-                height: "36px",
-                backgroundColor: "#5cb85c",
-                borderColor: "#4cae4c",
-              }}
-              alt={"ENCODE logo"}
-            />
-          </NavItem>
-        </Nav>
-      </Navbar>
-    );
+        <Menu.Item name="search">
+          <SearchBox
+            uuid={this.props.uuid}
+            assembly={this.props.assembly}
+            store={this.props.store} />
+        </Menu.Item>
+
+        <Menu.Item name="cart">
+          {cartimage}
+        </Menu.Item>
+
+        <Menu.Item name="encode" as={Link} to={{ pathname: "https://www.encodeproject.org" }} target="_blank" rel="noopener noreferrer">
+          <img src={ApiClient.StaticUrl("/encode/ENCODE_logo.small3.png")}
+            style={{
+              padding: "4px",
+              height: "36px",
+              backgroundColor: "#5cb85c",
+              borderColor: "#4cae4c",
+            }}
+            alt={"ENCODE logo"}
+          />
+        </Menu.Item>
+
+      </Menu>
+    )
   }
 }
 
