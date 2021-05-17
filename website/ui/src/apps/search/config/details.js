@@ -116,29 +116,12 @@ class ReTabBase extends React.Component {
     this.state = { jq: null, isFetching: true, isError: false };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if ("details" === nextProps.maintabs_active) {
-      if (this.key === nextProps.re_details_tab_active) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   componentDidMount() {
-    if ("details" === this.props.maintabs_active) {
-      if (this.key === this.props.re_details_tab_active) {
         this.loadCRE(this.props);
-      }
-    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if ("details" === nextProps.maintabs_active) {
-      if (this.key === nextProps.re_details_tab_active) {
         this.loadCRE(nextProps);
-      }
-    }
   }
 
   loadCRE = ({ assembly, cre_accession_detail }) => {
@@ -182,11 +165,8 @@ class ReTabBase extends React.Component {
   };
 
   render() {
-    if ("details" === this.props.maintabs_active) {
-      if (this.key !== this.props.re_details_tab_active) {
-        return false;
-      }
-    }
+    console.log(this.props);
+
     return <div style={{ width: "100%" }}>{this.doRenderWrapper()}</div>;
   }
 }

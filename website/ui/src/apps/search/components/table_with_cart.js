@@ -66,7 +66,7 @@ class TableWithCart extends React.Component {
       ApiClient.setByPost(
         JSON.stringify(j),
         "/cart/set",
-        (r) => {},
+        (r) => { },
         (msg) => {
           console.log("error posting to cart/set", msg);
         }
@@ -397,18 +397,18 @@ class TableWithCart extends React.Component {
         ref={"searchTable"}
         style={{ display: this.props.isFetching ? "none" : "block" }}
       >
-        <Segment style={{backgroundColor: "rgb(255, 165, 136)"}}>
+        <Segment style={{ backgroundColor: "rgb(255, 165, 136)" }}>
           <List>
             {tooMany}
             {failMsg}
             {meetMsg}
-            </List>
-            <List bulleted>
-              <List.Item>{click}</List.Item>
-              <List.Item>{geneView}</List.Item>
-              {diffExp && <List.Item>{diffExp}</List.Item>}
-              </List>
-          </Segment>
+          </List>
+          <List bulleted>
+            <List.Item>{click}</List.Item>
+            <List.Item>{geneView}</List.Item>
+            {diffExp && <List.Item>{diffExp}</List.Item>}
+          </List>
+        </Segment>
 
         {gb}
 

@@ -21,7 +21,7 @@ class DetailsTab extends React.Component {
   render() {
     return React.createElement(DetailsContainer, {
       ...this.props,
-      tabs: DetailsTabInfo(this.props.assembly),
+      tabs: DetailsTabInfo(this.props.assembly, this.props),
     });
   }
 }
@@ -39,6 +39,7 @@ class SearchTabs extends React.Component {
       const showCart = "cart" in query;
       const showCRE = this.props.active_cre;
       const showCREurl = this.props.active_cre ? this.props.active_cre.accession : '';
+      const showCREtitle = this.props.active_cre ? this.props.active_cre.accession : 'cCRE';
 
       console.log(this.props);
 
@@ -52,7 +53,7 @@ class SearchTabs extends React.Component {
               ["Bed Upload", "/search/bedupload/" + "?" + queryString.stringify(query), true],
               [geTitle, "/search/geneexpression/", !!gene],
               [rTitle, "/search/rampage/", showRampage],
-              ["cCRE Details", "/search/ccre/" + showCREurl, showCRE],
+              [showCREtitle + " Details", "/search/ccre/" + showCREurl, showCRE],
               ["Configure Genome Browser", "/search/genomebrowser/", false],
             ]} />
 

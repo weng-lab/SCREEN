@@ -13,6 +13,8 @@ import { Container, Tab } from "semantic-ui-react";
 
 class DetailsContainer extends React.Component {
   render() {
+    console.log(this.props)
+
     const makeTab = (key, tab) => {
       let active = key === this.props.re_details_tab_active;
       if (!tab.enabled && !active) {
