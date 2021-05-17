@@ -76,6 +76,10 @@ class BedUpload extends React.Component {
   };
 
   render() {
+    console.log("bed upload");
+    return (<div> {"hi!"}</div>)
+
+
     return (
       <div>
         <h2>cCRE intersection</h2>

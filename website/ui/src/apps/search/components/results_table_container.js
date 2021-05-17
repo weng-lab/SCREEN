@@ -17,6 +17,7 @@ import {
   toParams,
   isCart,
 } from "../../../common/utility";
+import { Segment } from "semantic-ui-react";
 
 class ResultsTableContainer extends React.Component {
   state = {
@@ -29,18 +30,8 @@ class ResultsTableContainer extends React.Component {
     jq: null,
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return "results" === nextProps.maintabs_active;
-  }
-
   componentDidMount() {
-    if (this.props.maintabs_visible) {
       this.loadCREs(this.props);
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.loadCREs(nextProps);
   }
 
   loadCREs(props) {
@@ -209,10 +200,6 @@ class ResultsTableContainer extends React.Component {
   }
 
   render() {
-    if ("results" !== this.props.maintabs_active) {
-      return false;
-    }
-
     let cresWithChecks = this.state.cres;
 
     cresWithChecks.forEach((cre) => {
@@ -231,13 +218,10 @@ class ResultsTableContainer extends React.Component {
         : "";
       if (interp.hasOwnProperty("msg") || interp.hasOwnProperty("gene")) {
         interpBox = (
-          <div
-            className="interpretation panel"
-            style={{ backgroundColor: "#ffa588", marginBottom: "0px" }}
-          >
+          <Segment style={{ backgroundColor: "#ffa588", marginBottom: "0px" }}>
             {interpMsb}
             {interpGene}
-          </div>
+          </Segment>
         );
       }
     }

@@ -16,6 +16,7 @@ import loading from "../../../common/components/loading";
 
 import { doToggle, isCart } from "../../../common/utility";
 import GenomeBrowser from "../../../common/components/genomebrowser/components/genomebrowser";
+import { List, Segment } from "semantic-ui-react";
 
 class TableWithCart extends React.Component {
   state = {
@@ -309,25 +310,25 @@ class TableWithCart extends React.Component {
     let tooMany = "";
     if (data.length < this.props.total) {
       tooMany = (
-        <li className={"list-group-item"}>
+        <List.Item>
           <em>
             For performance, SCREEN cannot display more than 1,000 candidate
             cis-Regulatory Elements (cCREs) in this table. You may download the
             entire set of search results in bed or JSON format, or use the
             facets at left to narrow your search.
           </em>
-        </li>
+        </List.Item>
       );
     }
     let failMsg = "";
     if (missingAssays && missingAssays.length) {
       failMsg = (
-        <li className={"list-group-item"}>
+        <List.Item>
           <em>
             The cell type you have selected does not have{" "}
             {this._format_message(missingAssays)} data available.
           </em>
-        </li>
+        </List.Item>
       );
     }
 
@@ -335,13 +336,13 @@ class TableWithCart extends React.Component {
     let jq = JSON.parse(this.props.jq);
     if (!isCart() && jq && jq.coord_chrom) {
       meetMsg = (
-        <li className={"list-group-item"}>
+        <List.Item>
           <h4>
             Showing {data.length > 1000 ? 1000 : data.length} matching Candidate
             cis-Regulatory Elements (cCREs) in the region {jq.coord_chrom}:
             {jq.coord_start}-{jq.coord_end}.
           </h4>
-        </li>
+        </List.Item>
       );
     }
     let click =
@@ -396,18 +397,18 @@ class TableWithCart extends React.Component {
         ref={"searchTable"}
         style={{ display: this.props.isFetching ? "none" : "block" }}
       >
-        <div className={"searchTableNotes"}>
-          <ul className={"list-group searchTableNotesUl"}>
+        <Segment style={{backgroundColor: "rgb(255, 165, 136)"}}>
+          <List>
             {tooMany}
             {failMsg}
             {meetMsg}
-            <ul className="creMsgs">
-              <li>{click}</li>
-              <li>{geneView}</li>
-              {diffExp && <li>{diffExp}</li>}
-            </ul>
-          </ul>
-        </div>
+            </List>
+            <List bulleted>
+              <List.Item>{click}</List.Item>
+              <List.Item>{geneView}</List.Item>
+              {diffExp && <List.Item>{diffExp}</List.Item>}
+              </List>
+          </Segment>
 
         {gb}
 

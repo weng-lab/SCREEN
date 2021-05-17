@@ -20,14 +20,11 @@ class NavBarApp extends React.Component {
     }
 
     return (
-      <Menu inverted>
+      <Menu inverted style={{marginBottom: 0 }}>
         <Menu.Item name='home' as={Link} to="/">{"SCREEN"}</Menu.Item>
 
         <Menu.Item name="search">
-          <SearchBox
-            uuid={this.props.uuid}
-            assembly={this.props.assembly}
-            store={this.props.store} />
+          <SearchBox uuid={this.props.uuid} assembly={this.props.assembly} store={this.props.store} />
         </Menu.Item>
 
         <Menu.Item name="cart">

@@ -16,8 +16,6 @@ import main_reducers from "./reducers/main_reducers";
 import initialState from "./config/initial_state";
 import { PageTitle } from "../../common/utility";
 
-import AppPageBase from "../../common/app_page_base";
-
 class GeneExpPageInner extends React.Component {
   render() {
     const store = createStore(

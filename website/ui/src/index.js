@@ -13,7 +13,6 @@ import SearchPage from "./apps/search/main";
 import IndexPage from "./apps/index/main";
 
 import "semantic-ui-css/semantic.min.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import "./css.css";
 
 import ReactGA from "react-ga";
@@ -77,15 +76,9 @@ ReactDOM.render(
       <Route path={"/index/:tab"}>
         <IndexPage />
       </Route>
-      <Route path={"/search(.*)"}>
-        <SearchPage />
-      </Route>
-      <Route path={"/search/:maintab(.*)"}>
-        <SearchPage />
-      </Route>
-      <Route path={"/search/:maintab/:subtab(.*)"}>
-        <SearchPage />
-      </Route>
+      <Route path={"/search(.*)"}><SearchPage /></Route>
+      <Route path={"/search/:maintab(.*)"}><SearchPage /></Route>
+      <Route path={"/search/:maintab/:subtab(.*)"}><SearchPage /></Route>
       <Route path={"/geApp/"}>
         <LoadableGeneExp />
       </Route>
