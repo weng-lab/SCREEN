@@ -3,15 +3,34 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React from "react";
+import React, {useCallback} from "react";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Button } from "semantic-ui-react";
-import Dropzone from "react-dropzone";
+import {useDropzone} from 'react-dropzone'
 
 import * as Actions from "../actions/main_actions";
 import * as ApiClient from "../../../common/api_client";
+
+
+const MyDropzone = () => {
+  const onDrop = useCallback(acceptedFiles => {
+    // Do something with the files
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
+  return (
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
+      {
+        isDragActive ?
+          <p>Drop bed files here, or click to select bed files to upload</p> :
+          <p>Drag 'n' drop bed files here, or click to select bed files to upload</p>
+      }
+    </div>
+  )
+}
 
 class BedUpload extends React.Component {
   state = { files: [] };
@@ -76,22 +95,14 @@ class BedUpload extends React.Component {
   };
 
   render() {
-    console.log("bed upload");
-    return (<div> {"hi!"}</div>)
-
-
-    return (
+       return (
       <div>
         <h2>cCRE intersection</h2>
         Upload bed files here to be automatically intersected with all available
         cCREs.
         <br />
-        <div className="dropzone">
-          <Dropzone onDrop={this.onDrop}>
-            <p>Drop bed files here, or click to select bed files to upload.</p>
-          </Dropzone>
-        </div>
-        <aside>
+        <MyDropzone />
+         <aside>
           <h2>Beds</h2>
           <ul>
             {this.state.files.map((f) => (

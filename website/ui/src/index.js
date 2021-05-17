@@ -67,15 +67,15 @@ const LoadableGwas = Loadable({
 ReactDOM.render(
   <Router history={h}>
     <Switch>
-      <Route exact path={"/"}>
-        <IndexPage />
-      </Route>
-      <Route path={"/downloads"}>
-        
-      </Route>
-      <Route path={"/index/:tab"}>
-        <IndexPage />
-      </Route>
+      <Route exact path={"/"}><IndexPage /></Route>
+      <Route path="/about"><IndexPage /></Route>
+      <Route path="/ucsc"><IndexPage /></Route>
+      <Route path="/tutorials"><IndexPage /></Route>
+      <Route path="/downloads"><IndexPage /></Route>
+      <Route path="/versions"><IndexPage /></Route>
+      <Route path="/query"><IndexPage /></Route>
+      <Route path={"/index/:tab"}><IndexPage /></Route>
+      
       <Route path={"/search(.*)"}><SearchPage /></Route>
       <Route path={"/search/:maintab(.*)"}><SearchPage /></Route>
       <Route path={"/search/:maintab/:subtab(.*)"}><SearchPage /></Route>

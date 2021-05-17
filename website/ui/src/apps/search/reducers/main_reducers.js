@@ -7,13 +7,6 @@ import * as Actions from "../actions/main_actions";
 import * as SearchAction from "../../../common/actions/searchbox_actions.js";
 import { toParams, doToggle } from "../../../common/utility";
 
-const mainTabSetter = (state, tabName) => {
-  let ret = { maintabs_active: tabName };
-  ret.maintabs = { ...state.maintabs };
-  ret.maintabs[tabName].visible = true;
-  return ret;
-};
-
 const main_reducers = (state, action) => {
   switch (action.type) {
     case Actions.SET_CELL_TYPE:
@@ -82,18 +75,22 @@ const main_reducers = (state, action) => {
       return { ...state, gene_pc_start: action.start, gene_pc_end: action.end };
 
     case Actions.SHOW_MAIN_TABS:
-      return { ...state, maintabs_visible: action.show };
+      return { ...state, 
+        // maintabs_visible: action.show 
+      };
 
     case Actions.SET_RFACETS:
       return { ...state, rfacets: action.rfacets };
 
     case Actions.SET_MAIN_TAB:
-      return { ...state, ...mainTabSetter(state, action.name) };
+      return { ...state, 
+        // ...mainTabSetter(state, action.name) 
+      };
 
     case Actions.SHOW_GENOME_BROWSER:
       let ret = {
         ...state,
-        ...mainTabSetter(state, "configgb"),
+        // ...mainTabSetter(state, "configgb"),
         configuregb_cre: action.cre,
         configuregb_type: action.etype ? action.etype : "cre",
         configuregb_browser: action.name,
@@ -124,7 +121,7 @@ const main_reducers = (state, action) => {
     case Actions.SHOW_RE_DETAIL:
       return {
         ...state,
-        ...mainTabSetter(state, "details"),
+        // ...mainTabSetter(state, "details"),
         active_cre: action.cre,
         cre_accession_detail: action.cre.accession,
       };

@@ -127,10 +127,11 @@ class Zrow extends React.Component {
       <tr>
         {this.props.rowData.map((r, idx) => {
           const k = "text-center " + r[1];
+          const key = this.props.dataIdx.toString() + "_" + idx.toString();
           return (
             <td
               className={k}
-              key={this.props.dataIdx.toString() + "_" + idx.toString()}
+              key={key}
               onClick={this.props.onRowClick(k, this.props.dataIdx)}
             >
               {r[0]}

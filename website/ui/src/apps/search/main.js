@@ -8,7 +8,7 @@ import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Switch, useLocation, useParams } from "react-router-dom";
 import thunkMiddleware from "redux-thunk";
-import { Grid, Segment } from 'semantic-ui-react'
+
 import queryString from 'query-string'
 import { v4 as uuidv4 } from "uuid";
 
@@ -29,28 +29,11 @@ import DetailsContainer from "./components/details_container";
 import DetailsTabInfo from "./config/details";
 import GeneExp from "../geneexp/components/gene_exp";
 import RampagePlot from "./components/rampage_plot";
-import ResultsTableContainer from "./components/results_table_container";
 
 import * as Render from "../../common/zrenders";
 import { Servers } from "../../common/api_client";
 
-const ResultsTab = ({ globals, uuid, assembly, showCart }) => {
-
-  return (
-    <Grid>
-      <Grid.Row>
-        {!showCart && <Grid.Column width={4}>
-          <Segment>
-            <FacetBoxen {...{ globals, uuid, assembly, showCart }} />
-          </Segment>
-        </Grid.Column>}
-        <Grid.Column width={showCart ? 16 : 12 }>
-          <ResultsTableContainer {...{ globals, uuid, assembly, showCart }} />
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
-  );
-}
+import ResultsTab from "./results_tab";
 
 class DetailsTab extends React.Component {
   render() {
@@ -91,17 +74,17 @@ class SearchPageInner extends React.Component {
           <Router>
             <HeaderMenu onItemClick={item => this.onItemClick(item)}
               items={[
-                ["cCRE Search Results", "/search/", true],
-                ["Bed Upload", "/bedupload/", true],
-                [geTitle, "/geneexpression/", !!gene],
-                [rTitle, "/rampage/", showRampage],
-                ["cCRE Details", "/ccre/", false],
-                ["Configure Genome Browser", "/genomebrowser/", false],
+                ["cCRE Search Results", "/search/"  + "?" + queryString.stringify(query), true],
+                ["Bed Upload", "/search/bedupload/" + "?" + queryString.stringify(query), true],
+                [geTitle, "/search/geneexpression/", !!gene],
+                [rTitle, "/search/rampage/", showRampage],
+                ["cCRE Details", "/search/ccre/", false],
+                ["Configure Genome Browser", "/search/genomebrowser/", false],
               ]} />
 
             <Switch>
               <Route path="/search" exact><ResultsTab {...this.props} {...{ assembly, showCart }} /></Route>
-              <Route path="/search/bedupload"><BedUpload {...this.props} /></Route>
+              <Route path="/search/bedupload"><BedUpload {...this.props} {...{ assembly, showCart }}/></Route>
               <Route path="/search/geneexpression"><GeneExp {...this.props} {...{ gene }} /></Route>
               <Route path="/search/rampage"><RampagePlot {...this.props} {...{ gene }} /></Route>
               <Route path="/search/ccre"><DetailsTab /></Route>
