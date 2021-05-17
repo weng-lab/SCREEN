@@ -29,6 +29,7 @@ import {
 import loading from "../../../common/components/loading";
 
 import * as Render from "../../../common/zrenders";
+import { Tab } from "semantic-ui-react";
 
 function chunkArr(arr, chunk) {
   // from https://jsperf.com/array-splice-vs-underscore
@@ -355,58 +356,63 @@ class LinkedGenesTab extends ReTabBase {
 }
 
 const DetailsTabInfo = (assembly) => {
-  return {
-    topTissues: {
-      title: Render.tabTitle(["In Specific", "Biosamples"]),
-      enabled: true,
-      f: TopTissuesTab,
+  const tabTitle = (t) => (t[0] + " " + t[1]);
+
+  return [
+    {
+      menuItem: tabTitle(["In Specific", "Biosamples"]),
+      enabled: true, key: "topTissues",
+      render: () => <Tab.Pane><TopTissuesTab /></Tab.Pane>,
     },
-    nearbyGenomic: {
-      title: Render.tabTitle(["Nearby", "Genomic Features"]),
-      enabled: true,
-      f: NearbyGenomicTab,
+    {
+      menuItem: tabTitle(["Nearby", "Genomic Features"]),
+      enabled: true, key: "nearbyGenomic",
+      render: () => <Tab.Pane><NearbyGenomicTab /></Tab.Pane>,
     },
-    tfIntersection: {
-      title: Render.tabTitle(["TF and His-mod", "Intersection"]),
-      enabled: true,
-      f: TfIntersectionTab,
+    {
+      menuItem: tabTitle(["TF and His-mod", "Intersection"]),
+      enabled: true, key: "tfIntersection",
+      render: () => <Tab.Pane><TfIntersectionTab /></Tab.Pane>,
     },
-    /* cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
-                               enabled: assembly === "mm10" || assembly === "GRCh38", f: CistromeIntersectionTab}, */
-    fantom_cat: {
-      title: Render.tabTitle(["FANTOM", "Intersection"]),
-      enabled: assembly === "hg19",
-      f: FantomCatTab,
+    /* {menuItem: tabTitle(["Cistrome", "Intersection"]),
+                               enabled: assembly === "mm10" || assembly === "GRCh38", key: "cistromeIntersection",
+                                render: () => <Tab.Pane><CistromeIntersectionTab}, 
+                                */
+    {
+      menuItem: tabTitle(["FANTOM", "Intersection"]),
+      enabled: assembly === "hg19", key: "FantomCatTab",
+      render: () => <Tab.Pane><FantomCatTab /></Tab.Pane>,
     },
-    ge: {
-      title: Render.tabTitle(["Associated", "Gene Expression"]),
-      enabled: true,
-      f: GeTab,
+    // {
+    //   menuItem: tabTitle(["Associated", "Gene Expression"]),
+    //   enabled: true, key: "ge",
+    //   render: () => <Tab.Pane><GeTab /></Tab.Pane>,
+    // },
+    {
+      menuItem: tabTitle(["Associated", "RAMPAGE Signal"]),
+      enabled: "mm10" !== assembly, key: "rampage",
+      render: () => <Tab.Pane><RampageTab /></Tab.Pane>
     },
-    rampage: {
-      title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
-      enabled: "mm10" !== assembly,
-      f: RampageTab,
+    {
+      menuItem: tabTitle(["Linked cCREs in", "other Assemblies"]),
+      enabled: true, key: "ortholog",
+      render: () => <Tab.Pane><OrthologTab /></Tab.Pane>,
     },
-    ortholog: {
-      title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
-      enabled: true,
-      f: OrthologTab,
+    /* {menuItem: tabTitle(["Ground", "Level"]),
+		      enabled: assembly !== "mm10", key: "groundLevel",
+          render: () => <Tab.Pane><GroundLevelTab, enabled: assembly !== "mm10"}, */
+    {
+      menuItem: tabTitle(["Signal", "Profile"]),
+      enabled: true, key: "minipeaks",
+      render: () => <Tab.Pane><MiniPeaks /></Tab.Pane>,
     },
-    /* groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
-		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"}, */
-    miniPeaks: {
-      title: Render.tabTitle(["Signal", "Profile"]),
-      enabled: true,
-      f: MiniPeaks,
+    {
+      menuItem: tabTitle(["Linked", "Genes"]),
+      enabled: assembly !== "mm10", key: "umap",
+      render: () => <Tab.Pane><LinkedGenesTab /></Tab.Pane>,
     },
-    linkedGenes: {
-      title: Render.tabTitle(["Linked", "Genes"]),
-      enabled: assembly !== "mm10",
-      f: LinkedGenesTab,
-    },
-    umap: { title: Render.tabTitle(["UMAP", ""]), enabled: true, f: Umap },
-  };
+    { menuItem: "UMAP", enabled: false, render: () => <Tab.Pane><Umap /></Tab.Pane>}
+  ]
 };
 
 export default DetailsTabInfo;

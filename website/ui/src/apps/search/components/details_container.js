@@ -9,28 +9,10 @@ import { bindActionCreators } from "redux";
 
 import * as Actions from "../actions/main_actions";
 import * as Render from "../../../common/zrenders";
+import { Container, Tab } from "semantic-ui-react";
 
 class DetailsContainer extends React.Component {
   render() {
-    const makeTabTitle = (key, tab) => {
-      let active = key === this.props.re_details_tab_active;
-      if (!tab.enabled && !active) {
-        return <div key={key} />;
-      }
-      let cn = (active ? "active" : "") + " detailsTabTitle";
-      return (
-        <li
-          className={cn}
-          key={"tab_" + key}
-          onClick={() => {
-            this.props.actions.setReDetailTab(key);
-          }}
-        >
-          <a data-toggle="tab">{tab.title}</a>
-        </li>
-      );
-    };
-
     const makeTab = (key, tab) => {
       let active = key === this.props.re_details_tab_active;
       if (!tab.enabled && !active) {
@@ -53,21 +35,12 @@ class DetailsContainer extends React.Component {
     // console.log(this.props);
     let cre = this.props.active_cre;
 
+    console.log(tabs);
+
     return (
-      <div className="container" style={{ width: "100%" }}>
-        <div className="row">
-          <div className="col-md-10">
-            {Render.creTitle(this.props.globals, cre)}
-          </div>
-        </div>
-
-        <ul className="nav nav-tabs">
-          {Object.keys(tabs).map((key) => makeTabTitle(key, tabs[key]))}
-        </ul>
-
-        <div className="tab-content clearfix">
-          {Object.keys(tabs).map((key) => makeTab(key, tabs[key]))}
-        </div>
+      <div>
+        {Render.creTitle(this.props.globals, cre)}
+        <Tab renderActiveOnly panes={tabs} />
       </div>
     );
   }
