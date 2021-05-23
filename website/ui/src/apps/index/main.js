@@ -47,22 +47,22 @@ class IndexPage extends React.Component {
             <HeaderMenu onItemClick={item => this.onItemClick(item)}
               items={[
                 ["Overview", "/"],
-                ["About", "/about"],
-                ["UCSC Genome Browser", "/ucsc"],
-                ["Tutorials", "/tutorials"],
-                ["Downloads", "/downloads"],
-                ["Versions", "/versions"],
-                ["Query Results", "query"]
+                ["About", "/index/about"],
+                ["UCSC Genome Browser", "/index/ucsc"],
+                ["Tutorials", "/index/tutorials"],
+                ["Downloads", "/index/downloads"],
+                ["Versions", "/index/versions"],
+                ["Query Results", "/index/query"]
               ]} />
 
             <Switch>
               <Route path="/" exact><TabOverview /></Route>
-              <Route path="/about"><TabAbout /></Route>
-              <Route path="/ucsc"><TabUCSC /></Route>
-              <Route path="/tutorials"><TabTutorial /></Route>
-              <Route path="/downloads"><TabDownloads /></Route>
-              <Route path="/versions"><TabVersions /></Route>
-              <Route path="/query"><TabQuery /></Route>
+              <Route path="/index/about"><TabAbout /></Route>
+              <Route path="/index/ucsc"><TabUCSC /></Route>
+              <Route path="/index/tutorials"><TabTutorial /></Route>
+              <Route path="/index/downloads"><TabDownloads /></Route>
+              <Route path="/index/versions"><TabVersions /></Route>
+              <Route path="/index/query"><TabQuery /></Route>
             </Switch>
           </Router>
 
