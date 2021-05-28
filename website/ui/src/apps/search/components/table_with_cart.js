@@ -10,7 +10,7 @@ import { List, Segment } from "semantic-ui-react";
 import Legend from "./legend";
 import * as ApiClient from "../../../common/api_client";
 
-import TableColumns, { table_order } from "../config/table_with_cart";
+import TableColumns from "../config/table_with_cart";
 import { numberWithCommas } from "../../../common/common";
 import loading from "../../../common/components/loading";
 
@@ -415,16 +415,16 @@ class TableWithCart extends React.Component {
         {gb}
 
         <DataTable
-                    key="table_with_cart"
-                    columns={TableColumns(this.props, ctCol)}
-                    rows={data}
-                    sortColumn={0}
-                    searchable
-                    itemsPerPage={10}
-                />
+          key="table_with_cart"
+          columns={TableColumns(this.props, ctCol)}
+          rows={data}
+          sortColumn={1} // dnase_zcores
+          searchable
+          itemsPerPage={10}
+        />
 
 
-{/*         
+        {/*         
         <Ztable
           data={data}
           sortCol={table_order}

@@ -4,9 +4,8 @@
  */
 
 import React from "react";
-import $ from "jquery";
 
-import Ztable from "./ztable/ztable";
+import { DataTable } from 'ts-ztable';
 import { ListItem } from "./list";
 
 class LongListFacet extends React.Component {
@@ -20,7 +19,6 @@ class LongListFacet extends React.Component {
     if (this.props.onTdClick) {
       this.props.onTdClick(null);
     }
-    $(this.refs.container).empty();
   };
 
   render() {
@@ -33,9 +31,24 @@ class LongListFacet extends React.Component {
       title = this.props.friendlySelectionLookup(title);
     }
 
+    console.log(this.props)
+
     return (
       <div>
         <div style={{ display: table_display }}>
+
+
+          <DataTable
+            key={this.props.key}
+            columns={this.props.cols}
+            rows={this.props.data}
+            searchable
+            sortColumn={this.props.sortColumn}
+            sortDescending={true}
+            itemsPerPage={this.props.pageLength}
+          />
+
+          {/* 
           <Ztable
             cols={this.props.cols}
             data={this.props.data}
@@ -45,7 +58,7 @@ class LongListFacet extends React.Component {
             bFilter={true}
             bLengthChange={false}
             pageLength={this.props.pageLength}
-          />
+          /> */}
         </div>
 
         <div style={{ display: sdisplay }}>

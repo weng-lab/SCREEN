@@ -90,33 +90,29 @@ export const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
     {
       header: "dnase",
       headerRender: x => tz("DNase", cts),
-      value: row => row.dnase_zscore,
-      render: row => ZRender.real(row.dnase_zscore),
-      visible: rfacets.includes("dnase"),
+      value: row => ZRender.real(row.dnase_zscore),
+      hideHeader: rfacets.includes("dnase"),
       width: "7%",
     },
     {
       header: "promoter",
       headerRender: x => tz("H3K4me3", cts),
-      value: row => row.promoter_zscore,
-      render: row => ZRender.real(row.promoter_zscore),
-      visible: rfacets.includes("promoter"),
+      value: row => ZRender.real(row.promoter_zscore),
+      hideHeader: rfacets.includes("promoter"),
       width: "7%",
     },
     {
       header: "enhancer",
       headerRender: x => tz("H3K27ac", cts),
-      value: row => row.enhancer_zscore,
-      render: row => ZRender.real(row.enhancer_zscore),
-      visible: rfacets.includes("enhancer"),
+      value: row => ZRender.real(row.enhancer_zscore),
+      hideHeader: rfacets.includes("enhancer"),
       width: "7%",
     },
     {
       header: "ctcf",
       headerRender: x => tz("CTCF", cts),
-      value: row => row.ctcf_zscore,
-      render: row => ZRender.real(row.ctcf_zscore),
-      visible: rfacets.includes("ctcf"),
+      value: row => ZRender.real(row.ctcf_zscore),
+      hideHeader: rfacets.includes("ctcf"),
       width: "7%",
     },
     {
@@ -150,8 +146,7 @@ export const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
     },
     {
       headerRender: x => (<span>genome<br />browsers</span>),
-      value: x => null,
-      className: "browser",
+      value: x => 'browser',
       targets: -1,
       orderable: false,
       render: row => ZRender.browser_buttons(["UCSC"]),
@@ -159,7 +154,4 @@ export const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
   ];
 };
 
-
 export default TableColumns;
-
-export const table_order = ["dnase_zscore", false];

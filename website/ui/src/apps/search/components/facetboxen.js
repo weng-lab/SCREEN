@@ -129,23 +129,23 @@ const biosamplesBox = ({ cellType, actions, globals }) => {
   let box = (
     <LongListFacet
       title={""}
+      key={"biosample selection table"}
       data={globals.cellTypeInfoArr.map((x) => ({
         ...x,
         tissue: x.tissue || getTissue(x.name),
       }))}
       cols={[
-        { title: "cell type", data: "name" },
-        { title: "tissue", data: "tissue" },
+        { header: "cell type", value: x => x.name },
+        { header: "tissue", value: x => x.tissue },
         {
-          title: "",
-          data: "cellTypeName",
+          header: "",
+          value: x => x.cellTypeName,
           className: "dcc",
-          render: Render.assayIcon(globals),
+          render: x => Render.assayIcon(globals)(x.cellTypeName),
           orderable: false,
-        },
-        { title: "synonyms", data: "synonyms", visible: false },
+        }
       ]}
-      order={[]}
+      sortColumn={0}
       buttonsOff={true}
       selection={cellType}
       friendlySelectionLookup={make_ct_friendly(globals)}

@@ -227,13 +227,13 @@ export const geLink = (assembly, gene, uuid) =>
 export const deLink = (assembly, gene, uuid) =>
   "/deApp/?" + toParams({ assembly, gene, uuid });
 
-export const geDeButton = (assembly, accession, uuid, state) => (d) => {
+export const geDeButton = (assembly, accession, uuid, state) => (d, i) => {
   const _d = d.replace(/\./g, "%2e");
   const ge = (
     <a
       href={geLink(assembly, _d, uuid)}
       target={"_blank"}
-      key={[accession, d, "ge", state]}
+      key={[accession, i, "ge", state]}
     >
       {d}
     </a>
@@ -245,7 +245,7 @@ export const geDeButton = (assembly, accession, uuid, state) => (d) => {
     <a
       href={deLink(assembly, _d, uuid)}
       target={"_blank"}
-      key={[accession, d, "de", "state"]}
+      key={[accession, i, "de", state]}
       style={{ paddingLeft: "4px" }}
     >
       &Delta;
