@@ -8,7 +8,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "flow": "flow"
+    "flow": "flow",
+    "lint": "eslint src/**/*.js src/**/*.jsx"
   },
   "homepage": "https://screen.encodeproject.org",
   "dependencies": {
@@ -39,11 +40,12 @@
     "react-modal": "^3.13.1",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "react-zoom-pan-pinch": "^1.6.1",
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
+    "ts-ztable": "^2.0.0",
     "web-vitals": "^1.0.1"
   },
   "browserslist": {
@@ -59,6 +61,10 @@
     ]
   },
   "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "prettier": "2.3.0"
   }
 }

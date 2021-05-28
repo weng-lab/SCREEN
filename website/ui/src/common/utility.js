@@ -120,7 +120,7 @@ export const isCart = () => {
 
 function intersperse(arr, sep) {
   // from https://stackoverflow.com/a/23619085
-  if (0 === arr.length) {
+  if (arr  === undefined || 0 === arr.length) {
     return [];
   }
   return arr.slice(1).reduce(

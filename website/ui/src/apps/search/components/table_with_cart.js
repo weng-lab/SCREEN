@@ -5,8 +5,8 @@
 
 import React from "react";
 import downloadjs from "downloadjs";
+import { List, Segment } from "semantic-ui-react";
 
-import Ztable from "../../../common/components/ztable/ztable";
 import Legend from "./legend";
 import * as ApiClient from "../../../common/api_client";
 
@@ -16,7 +16,9 @@ import loading from "../../../common/components/loading";
 
 import { doToggle, isCart } from "../../../common/utility";
 import GenomeBrowser from "../../../common/components/genomebrowser/components/genomebrowser";
-import { List, Segment } from "semantic-ui-react";
+
+import Ztable from "../../../common/components/ztable/ztable";
+import { DataTable } from 'ts-ztable';
 
 class TableWithCart extends React.Component {
   state = {
@@ -412,6 +414,17 @@ class TableWithCart extends React.Component {
 
         {gb}
 
+        <DataTable
+                    key="table_with_cart"
+                    columns={TableColumns(this.props, ctCol)}
+                    rows={data}
+                    sortColumn={0}
+                    searchable
+                    itemsPerPage={10}
+                />
+
+
+{/*         
         <Ztable
           data={data}
           sortCol={table_order}
@@ -423,7 +436,7 @@ class TableWithCart extends React.Component {
           bLengthChange={true}
           key={this.props.cellType}
           noTotal={true}
-        />
+        /> */}
       </div>
     );
   }
@@ -437,9 +450,17 @@ class TableWithCart extends React.Component {
       data[i].in_cart = cas.has(data[i].info.accession);
     }
 
+    let ctCol = null;
+    if (this.props.cellType) {
+      ctCol = this.props.make_ct_friendly(this.props.cellType);
+    }
+
     return (
       <div style={{ width: "100%" }} className={"mainSearchTable"}>
         {loading(this.props)}
+
+
+
         {this.table(data, actions)}
         {this.tableFooter(data)}
 

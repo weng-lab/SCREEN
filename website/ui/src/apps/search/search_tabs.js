@@ -41,8 +41,6 @@ class SearchTabs extends React.Component {
       const showCREurl = this.props.active_cre ? this.props.active_cre.accession : '';
       const showCREtitle = this.props.active_cre ? this.props.active_cre.accession : 'cCRE';
 
-      console.log(this.props);
-
       let resultsTitle = showCart ? "cCREs in Cart" : Render.tabTitle(["cCRE", "Search Results"]);
 
         return (

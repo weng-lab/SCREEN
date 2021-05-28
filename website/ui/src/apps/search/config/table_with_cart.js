@@ -39,16 +39,16 @@ const vistalink = (id) => (
   </a>
 );
 
-const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
-  let accHelp = (
+export const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
+  const accHelp = () => (
     <span>
       accession
       <br />
       {ZHelpTooltip(globals, "CellTypeTableAccessionCol")}
     </span>
-  );
+  )
 
-  let sctHelp = (
+  const sctHelp = () => (
     <span>
       {cts}
       <br />
@@ -56,7 +56,7 @@ const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
     </span>
   );
 
-  let geneHelp = (
+  const geneHelp = () => (
     <span>
       nearest genes:
       <br />
@@ -82,110 +82,83 @@ const TableColumns = ({ globals, assembly, rfacets, uuid }, cts) => {
 
   return [
     {
-      title: accHelp,
-      data: "info",
-      sortDataF: (d) => ZRender.accSorter(d),
-      render: ZRender.creTableAccession(globals),
+      header: "accession",
+      headerRender: row => accHelp(),
+      value: row => row.info,
+      render: row => ZRender.creTableAccession(globals)(row.info),
     },
     {
-      title: sctHelp,
-      data: "ctspecifc",
-      visible: cts,
-      sortDataF: (d) => ZRender.sctSorter(d),
-      render: ZRender.creTableCellTypeSpecific(globals),
-      name: "sctv",
-      width: "12%",
-    },
-    {
-      title: tz("DNase", cts),
-      data: "dnase_zscore",
+      header: "dnase",
+      headerRender: x => tz("DNase", cts),
+      value: row => row.dnase_zscore,
+      render: row => ZRender.real(row.dnase_zscore),
       visible: rfacets.includes("dnase"),
-      render: ZRender.real,
-      name: "dnase",
       width: "7%",
     },
     {
-      title: tz("H3K4me3", cts),
-      data: "promoter_zscore",
+      header: "promoter",
+      headerRender: x => tz("H3K4me3", cts),
+      value: row => row.promoter_zscore,
+      render: row => ZRender.real(row.promoter_zscore),
       visible: rfacets.includes("promoter"),
-      render: ZRender.real,
-      name: "promoter",
       width: "7%",
     },
     {
-      title: tz("H3K27ac", cts),
-      data: "enhancer_zscore",
+      header: "enhancer",
+      headerRender: x => tz("H3K27ac", cts),
+      value: row => row.enhancer_zscore,
+      render: row => ZRender.real(row.enhancer_zscore),
       visible: rfacets.includes("enhancer"),
-      render: ZRender.real,
-      name: "enhancer",
       width: "7%",
     },
     {
-      title: tz("CTCF", cts),
-      data: "ctcf_zscore",
+      header: "ctcf",
+      headerRender: x => tz("CTCF", cts),
+      value: row => row.ctcf_zscore,
+      render: row => ZRender.real(row.ctcf_zscore),
       visible: rfacets.includes("ctcf"),
-      render: ZRender.real,
-      name: "ctcf",
       width: "7%",
     },
     {
-      title: "chr",
-      data: "chrom",
+      header: "chr",
+      value: x => x.chrom,
     },
     {
-      title: "start",
-      data: "start",
-      render: ZRender.numWithCommas,
+      header: "start",
+      value: x => x.start,
+      render: row => ZRender.numWithCommas(row.start),
     },
     {
-      title: "length",
-      data: "len",
-      render: ZRender.numWithCommas,
+      header: "length",
+      value: row => row.len,
+      render: row => ZRender.numWithCommas(row.len),
     },
     {
-      title: (
-        <span>
-          experimental
-          <br />
-          evidence
-        </span>
-      ),
-      data: "vistaids",
-      render: vistalinks,
-      className: "experimental",
-      visible: false,
-    },
-    {
-      title: geneHelp,
-      data: "genesallpc",
+      header: "genes",
+      headerRender: x => geneHelp(),
+      value: x => x.genesallpc,
       className: "geneexp",
-      render: ZRender.geneDeLinks(assembly, uuid),
+      render: row => ZRender.geneDeLinks(assembly, uuid)(row.genesallpc),
       orderable: false,
     },
     {
-      title: "cart",
-      data: "in_cart",
+      header: "cart",
+      value: x => x.in_cart,
       className: "cart",
       render: (d) => ZRender.cart_img(d, false),
       orderable: false,
     },
     {
-      title: (
-        <span>
-          genome
-          <br />
-          browsers
-        </span>
-      ),
-      data: null,
+      headerRender: x => (<span>genome<br />browsers</span>),
+      value: x => null,
       className: "browser",
       targets: -1,
       orderable: false,
-      defaultContent: ZRender.browser_buttons(["UCSC"]),
-      //, "Ensembl"
+      render: row => ZRender.browser_buttons(["UCSC"]),
     },
   ];
 };
+
 
 export default TableColumns;
 

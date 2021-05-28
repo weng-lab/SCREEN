@@ -227,13 +227,13 @@ export const geLink = (assembly, gene, uuid) =>
 export const deLink = (assembly, gene, uuid) =>
   "/deApp/?" + toParams({ assembly, gene, uuid });
 
-export const geDeButton = (assembly, accession, uuid) => (d) => {
+export const geDeButton = (assembly, accession, uuid, state) => (d) => {
   const _d = d.replace(/\./g, "%2e");
   const ge = (
     <a
       href={geLink(assembly, _d, uuid)}
       target={"_blank"}
-      key={[accession, d, "ge"]}
+      key={[accession, d, "ge", state]}
     >
       {d}
     </a>
@@ -245,7 +245,7 @@ export const geDeButton = (assembly, accession, uuid) => (d) => {
     <a
       href={deLink(assembly, _d, uuid)}
       target={"_blank"}
-      key={[accession, d, "de"]}
+      key={[accession, d, "de", "state"]}
       style={{ paddingLeft: "4px" }}
     >
       &Delta;
@@ -254,14 +254,10 @@ export const geDeButton = (assembly, accession, uuid) => (d) => {
   return [ge, de];
 };
 
-export const geneDeLinks = (assembly, uuid) => (genesallpc) => {
-  const accession = genesallpc.accession;
-  const all = commajoin(
-    genesallpc.all.map(geDeButton(assembly, accession, uuid))
-  );
-  const pc = commajoin(
-    genesallpc.pc.map(geDeButton(assembly, accession, uuid))
-  );
+export const geneDeLinks = (assembly, uuid) => (r) => {
+  const accession = r.accession;
+  const all = commajoin(r.all.map(geDeButton(assembly, accession, uuid, "all")));
+  const pc = commajoin(r.pc.map(geDeButton(assembly, accession, uuid, "pc")));
   return ["pc: ", pc, <br key={accession} />, "all: ", all];
 };
 
@@ -655,14 +651,14 @@ export const creTableAccessionProx = (cre) => {
   return cre.isproximal ? popup("Proximal", "P") : popup("Distal", "D");
 };
 
-export const creTableAccession = (globals) => (cre, type, full, meta) => {
+export const creTableAccession = (globals) => (row) => {
   return (
     <div>
-      {popup("Click for cCRE details", cre.accession)}
+      {popup("Click for cCRE details", row.accession)}
       <br />
-      {popup("Concordant", concordantStar(cre.concordant))}&nbsp;
-      {creTableAccessionProx(cre)}&nbsp;
-      {creTableAccessionBoxen(globals, cre)}
+      {popup("Concordant", concordantStar(row.concordant))}&nbsp;
+      {creTableAccessionProx(row)}&nbsp;
+      {creTableAccessionBoxen(globals, row)}
     </div>
   );
 };
