@@ -22,6 +22,7 @@
     "enumify": "^2.0.0",
     "graphql": "^15.5.0",
     "history": "^5.0.0",
+    "immer": "^9.0.2",
     "jshashes": "^1.0.8",
     "jszlib": "^0.0.1",
     "jubilant-carnival": "^0.4.0",
