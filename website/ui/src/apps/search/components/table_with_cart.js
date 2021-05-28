@@ -17,7 +17,6 @@ import loading from "../../../common/components/loading";
 import { doToggle, isCart } from "../../../common/utility";
 import GenomeBrowser from "../../../common/components/genomebrowser/components/genomebrowser";
 
-import Ztable from "../../../common/components/ztable/ztable";
 import { DataTable } from 'ts-ztable';
 
 class TableWithCart extends React.Component {
@@ -399,7 +398,8 @@ class TableWithCart extends React.Component {
         ref={"searchTable"}
         style={{ display: this.props.isFetching ? "none" : "block" }}
       >
-        <Segment style={{ backgroundColor: "rgb(255, 165, 136)" }}>
+        {/* <Segment style={{ backgroundColor: "rgb(255, 165, 136)" }}> */}
+        <Segment>
           <List>
             {tooMany}
             {failMsg}
@@ -450,17 +450,9 @@ class TableWithCart extends React.Component {
       data[i].in_cart = cas.has(data[i].info.accession);
     }
 
-    let ctCol = null;
-    if (this.props.cellType) {
-      ctCol = this.props.make_ct_friendly(this.props.cellType);
-    }
-
     return (
       <div style={{ width: "100%" }} className={"mainSearchTable"}>
         {loading(this.props)}
-
-
-
         {this.table(data, actions)}
         {this.tableFooter(data)}
 
