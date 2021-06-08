@@ -11,7 +11,7 @@ import { CSVLink } from 'react-csv';
 
 import HelpIcon from '../../../common/components/help_icon';
 
-import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
+import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable, ChromHMMTables,
         TfIntersectionTable, OrthologTable, FantomCatTable, FunctionalValidationTable,
 	CistromeIntersectionTable, GroundLevelTables} from './details_tables';
 
@@ -172,6 +172,15 @@ class NearbyGenomicTab extends ReTabBase{
     }
 }
 
+class ChromHMMTab extends ReTabBase{
+    constructor(props) {
+	super(props, "chromhmm");
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, ChromHMMTables(globals, assembly), 1);
+        }
+    }
+}
+
 class FunctionalValidationTab extends ReTabBase{
     constructor(props) {
 	super(props, "functionalValidation");
@@ -306,6 +315,7 @@ const DetailsTabInfo = (assembly) => {
         ortholog: {title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
 	functionalValidation: { title: Render.tabTitle([ "Functional", "Data" ]), enabled: true, f: FunctionalValidationTab },
+	chromhmm: { title: Render.tabTitle([ "ChromHMM", "States" ]), enabled: assembly === "mm10", f: ChromHMMTab },
 	/* groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
 		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"}, */
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),

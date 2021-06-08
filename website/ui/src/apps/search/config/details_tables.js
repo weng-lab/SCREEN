@@ -25,6 +25,19 @@ const _vistalink = id => (
       target="_blank">{id}</a>
 );
 
+export const ChromHMMTables = (globals, assembly) => ({
+    chromhmm: {
+	title: "ChromHMM states",
+	helpkey: "",
+	cols: [
+	    { title: "Tissue", data: "tissue", className: "dt-right" },
+	    { title: "State", data: "state", className: "dt-right" },
+	    { title: "State Start", data: "cdStart", render: Render.integer },
+	    { title: "State End", data: "cdEnd", render: Render.integer }
+	]
+    }
+});
+
 export const TopTissuesTables = (globals, assembly) => ({
     iranks: {
 	title: "Cell type agnostic classification",

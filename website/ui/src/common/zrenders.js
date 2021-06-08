@@ -192,7 +192,8 @@ export const dccLinkCtGroupExpIDs = (accs) => {
 }
 
 export const dccLinkCtGroup = (globals, ctn) => {
-    const accs = globals.byCellType[ctn].map((info) => (info.expID));
+    if (!globals.byCellType[ctn]) ctn = ctn.replace(/_male_/g, "_tissue_male_").replace(/_female_/g, "_tissue_female_");
+    const accs = globals.byCellType[ctn] ? globals.byCellType[ctn].map((info) => (info.expID)) : [];
     const q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
     const img = dccImg();
@@ -200,7 +201,8 @@ export const dccLinkCtGroup = (globals, ctn) => {
 }
 
 export const dccLinkCtGroupCus = (globals, ctn, content) => {
-    const accs = globals.byCellType[ctn].map((info) => (info.expID));
+    if (!globals.byCellType[ctn]) ctn = ctn.replace(/_male_/g, "_tissue_male_").replace(/_female_/g, "_tissue_female_");
+    const accs = globals.byCellType[ctn] ? globals.byCellType[ctn].map((info) => (info.expID)) : [];
     const q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
     return <a target="_blank" href={url}>{content}</a>;
@@ -277,7 +279,8 @@ export const searchLink = (data, uuid) => (approved_symbol) => {
 export const assayIcon = (globals) => (ctn) => {
     let colors = globals.colors.cREs;
 
-    let assays = globals.byCellType[ctn].map((a) => (a.assay));
+    if (!globals.byCellType[ctn]) ctn = ctn.replace(/_male_/g, "_tissue_male_").replace(/_female_/g, "_tissue_female_");
+    let assays = globals.byCellType[ctn] ? globals.byCellType[ctn].map((a) => (a.assay)) : [];
     assays.sort();
     let w = 12;
     let fw = 2 * w + 4;
