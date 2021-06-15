@@ -5,18 +5,18 @@
 
 import React from 'react';
 import Modal from 'react-modal';
+import { Menu } from 'semantic-ui-react';
+import 'semantic-ui-css/semantic.min.css';
 
-import * as Render from '../../../common/zrenders';
 import Ztable from '../../../common/components/ztable/ztable';
-import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
-import * as ApiClient from '../../../common/api_client';
 
 import HumanSVG from './human';
 import MouseSVG from './mouse';
 import Download from './download';
-import RightArrow from './rightarrow';
 import SearchIcon from './search';
+import { QuickStart } from './QuickStart';
+import { MatrixPage } from './Matrices';
 
 const dccLink = fileID => {
     const url = "https://api.wenglab.org/screen_v13/fdownloads/Seven-Group/" + fileID;
@@ -79,7 +79,7 @@ class TabFiles extends React.Component {
     constructor(props) {
 	super(props);
         this.key = "files"
-	this.state = { isFetching: false, isError: false };
+	this.state = { isFetching: false, isError: false, page: 0 };
     }
 
     componentDidMount(){
@@ -107,10 +107,16 @@ class TabFiles extends React.Component {
     }
 
     doRenderWrapper(){
-	console.log(this.state.data);
 	    return (
 		<div>
-		  <div className="row">
+			<Menu secondary>
+				<Menu.Item onClick={() => this.setState({ page: 0 })} active={this.state.page === 0}>Quick Start</Menu.Item>
+				<Menu.Item onClick={() => this.setState({ page: 1 })} active={this.state.page === 1}>Detailed Elements</Menu.Item>
+				<Menu.Item onClick={() => this.setState({ page: 2 })} active={this.state.page === 2}>Data Matrices</Menu.Item>
+			</Menu>
+			{ this.state.page === 0 ? <QuickStart /> : this.state.page === 1 ? (
+				<React.Fragment>
+				<div className="row">
 		    <div className="col-md-6">
 		        <HumanSVG text="926,535 cCREs" />
 		    </div>
@@ -270,7 +276,9 @@ class TabFiles extends React.Component {
 			    </div>
 		        )}
 		    </Modal>
-		</div>    
+			</React.Fragment>
+			) : <MatrixPage />} 
+			</div>   
 	    );
     }
 
