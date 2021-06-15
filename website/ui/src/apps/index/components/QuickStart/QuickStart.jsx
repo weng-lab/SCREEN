@@ -145,13 +145,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.6em" }}>Promoters <Popup content={PROMOTER_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ border: "2px solid #ff0000", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ border: "2px solid #ff0000", width: "65%" }} href="http://gcp.wenglab.org/cCREs/GRCh38-PLS.bed" download>
                             Download all human promoters (hg38)
                         </Button><br />
                         <SearchBox results={h3k4me3H || []} description={x => x.h3k4me3 || ""} color="#ff0000" title="promoters" dl={x => x.includes("PLS")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ border: "2px solid #ff0000", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ border: "2px solid #ff0000", width: "65%" }} href="http://gcp.wenglab.org/cCREs/mm10-ELS.bed" download>
                             Download all mouse promoters (mm10)
                         </Button><br />
                         <SearchBox results={h3k4me3M || []} description={x => x.h3k4me3 || ""} color="#ff0000" title="promoters" dl={x => x.includes("PLS")} />
@@ -162,13 +162,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.6em" }}>Enhancers <Popup content={ENHANCER_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ border: "2px solid #ffcd00", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ border: "2px solid #ffcd00", width: "65%" }} href="http://gcp.wenglab.org/cCREs/GRCh38-ELS.bed" download>
                             Download all human enhancers (hg38)
                         </Button><br />
                         <SearchBox results={h3k27acH || []} description={x => x.h3k27ac || ""} color="#ffcd00" title="enhancers" dl={x => x.includes("ELS")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ border: "2px solid #ffcd00", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ border: "2px solid #ffcd00", width: "65%" }} href="http://gcp.wenglab.org/cCREs/mm10-ELS.bed" download>
                             Download all mouse enhancers (mm10)
                         </Button><br />
                         <SearchBox results={h3k27acM || []} description={x => x.h3k27ac || ""} color="#ffcd00" title="enhancers" dl={x => x.includes("ELS")} />
@@ -179,13 +179,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.6em" }}>CTCF-bound <Popup content={CTCF_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ border: "2px solid #00b0d0", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ border: "2px solid #00b0d0", width: "65%" }} href="http://gcp.wenglab.org/cCREs/GRCh38-CTCF.bed" download>
                             Download all human CTCF-bound cCREs (hg38)
                         </Button><br />
                         <SearchBox results={ctcfH || []} description={x => x.ctcf || ""} color="#00b0d0" title="CTCF-bound cCREs" dl={x => x.includes("CTCF")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ border: "2px solid #00b0d0", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ border: "2px solid #00b0d0", width: "65%" }} href="http://gcp.wenglab.org/cCREs/mm10-CTCF.bed" download>
                             Download all mouse CTCF-bound cCREs (mm10)
                         </Button><br />
                         <SearchBox results={ctcfM || []} description={x => x.ctcf || ""} color="#00b0d0" title="CTCF-bound cCREs" dl={x => x.includes("CTCF")} />
