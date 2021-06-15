@@ -18,6 +18,13 @@ query q($assembly: String!, $assay: [String!], $a: String!) {
 }
 `;
 
+const ASSAY_MAP = {
+    "dnase": "DNase",
+    "h3k4me3": "H3K4me3",
+    "h3k27ac": "H3K27ac",
+    "ctcf": "CTCF"
+};
+
 const COLUMNS = [{
     header: "Experiment Accession",
     value: x => x.experimentAccession
@@ -156,13 +163,13 @@ const MatrixPage = () => {
                             <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
                             <Divider style={{ borderTop: "1px solid #000" }} />
                             <div style={{ marginTop: "2.3em" }} />
-                            <Button size="large" style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
+                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V2.txt`} download style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
                                 <Icon name="download" /> Fold-change signal matrix
                             </Button>
-                            <Button size="large" style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
+                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
                                 <Icon name="download" /> Quantile normalized signal matrix
                             </Button>
-                            <Button size="large" style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
+                            <Button size="large" download href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V2.txt`} style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
                                 <Icon name="download" /> Z-scored signal matrix
                             </Button>
                             { biosamples.length > 0 ? (
