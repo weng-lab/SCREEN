@@ -110,9 +110,9 @@ const QuickStart = () => {
     const h3k4me3H = useMemo( () => (data && data.human && data.human.biosamples || []).filter(x => x.h3k4me3 !== null), [ data ]);
     const h3k27acH = useMemo( () => (data && data.human && data.human.biosamples || []).filter(x => x.h3k27ac !== null), [ data ]);
     const ctcfH = useMemo( () => (data && data.human && data.human.biosamples || []).filter(x => x.ctcf !== null), [ data ]);
-    const h3k4me3M = useMemo( () => (data && data.human && data.human.biosamples || []).filter(x => x.h3k4me3 !== null), [ data ]);
-    const h3k27acM = useMemo( () => (data && data.human && data.human.biosamples || []).filter(x => x.h3k27ac !== null), [ data ]);
-    const ctcfM = useMemo( () => (data && data.human && data.human.biosamples || []).filter(x => x.ctcf !== null), [ data ]);
+    const h3k4me3M = useMemo( () => (data && data.mouse && data.mouse.biosamples || []).filter(x => x.h3k4me3 !== null), [ data ]);
+    const h3k27acM = useMemo( () => (data && data.mouse && data.mouse.biosamples || []).filter(x => x.h3k27ac !== null), [ data ]);
+    const ctcfM = useMemo( () => (data && data.mouse && data.mouse.biosamples || []).filter(x => x.ctcf !== null), [ data ]);
 
     return loading ? <Loader active>Loading...</Loader> : (
         <Container style={{ width: "100%" }}>
