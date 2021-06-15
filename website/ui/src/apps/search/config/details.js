@@ -3,7 +3,7 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Ztable from '../../../common/components/ztable/ztable';
 import * as ApiClient from '../../../common/api_client';
@@ -23,6 +23,9 @@ import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
 import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
+import { GraphQLImportanceTrack } from 'bpnet-ui';
+import { RulerTrack, DenseBigBed, EmptyTrack } from 'umms-gb';
+import { Loader } from 'semantic-ui-react';
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
@@ -271,6 +274,78 @@ class GroundLevelTab extends ReTabBase {
     }
 }
 
+const DATA_QUERY = `
+query q($requests: [BigRequest!]!) {
+    bigRequests(requests: $requests) {
+        data
+    }
+}
+`;
+
+const TFMotifTab = props => {
+    const [ data, setData ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
+    useEffect( () => {
+        fetch("https://ga.staging.wenglab.org/graphql", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ "query": DATA_QUERY, variables: { requests: [{
+                url: "gs://gcp.wenglab.org/all-conserved-motifs.merged.bigBed",
+                chr1: props.active_cre.chrom,
+                start: props.active_cre.start,
+                chr2: props.active_cre.chrom,
+                end: props.active_cre.start + props.active_cre.len
+            }]} })
+        }).then(x => x.json()).then(x => {
+            setData(x.data.bigRequests[0].data);
+            setLoading(false);
+        });
+    }, []);
+    return loading ? <Loader active>Loading...</Loader> : (
+        <svg width="100%" viewBox="0 0 1000 600">
+            <RulerTrack
+                width={1000}
+                height={30}
+                domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+            />
+            <EmptyTrack
+                width={1000}
+                height={30}
+                text="TF Motif Occurrences"
+                transform="translate(0,40)"
+                id=""
+            />
+            <DenseBigBed
+                domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+                width={1000}
+                height={20}
+                transform="translate(0,70)"
+                data={data}
+            />
+            <EmptyTrack
+                width={1000}
+                height={30}
+                text="Sequence Scaled by PhyloP 100-way"
+                transform="translate(0,110)"
+                id=""
+            />
+            <g transform="translate(0,140)">
+                <GraphQLImportanceTrack
+                    width={1000}
+                    height={100}
+                    endpoint="http://ga.staging.wenglab.org"
+                    signalURL="gs://gcp.wenglab.org/hg38.phyloP100way.bigWig"
+                    sequenceURL="gs://gcp.wenglab.org/hg38.2bit"
+                    coordinates={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+                />
+            </g>
+        </svg>
+    );
+};
+
 const DetailsTabInfo = (assembly) => {
     return {
         topTissues : {title: Render.tabTitle(["In Specific", "Biosamples"]),
@@ -279,6 +354,8 @@ const DetailsTabInfo = (assembly) => {
                         enabled: true, f: NearbyGenomicTab},
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
+        tfIntersection: {title: Render.tabTitle(["TF Motifs and", "Sequence Features"]),
+                        enabled: true, f: props => <TFMotifTab key={props.active_cre.accession} {...props} />},
 	/* cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
                                enabled: assembly === "mm10" || assembly === "GRCh38", f: CistromeIntersectionTab}, */
 	fantom_cat: {title: Render.tabTitle(["FANTOM", "Intersection"]),
