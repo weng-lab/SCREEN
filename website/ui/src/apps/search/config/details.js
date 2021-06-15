@@ -16,9 +16,9 @@ import { CSVLink } from 'react-csv';
 
 import HelpIcon from '../../../common/components/help_icon';
 
-import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
-        TfIntersectionTable, OrthologTable, FantomCatTable,
-	GroundLevelTables} from './details_tables';
+import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable, ChromHMMTables,
+        TfIntersectionTable, OrthologTable, FantomCatTable, FunctionalValidationTable,
+	CistromeIntersectionTable, GroundLevelTables} from './details_tables';
 
 import loading from '../../../common/components/loading';
 
@@ -176,6 +176,24 @@ class NearbyGenomicTab extends ReTabBase{
 	super(props, "nearbyGenomic");
         this.doRender = (globals, assembly, data) => {
             return tabEles(globals, data, NearbyGenomicTable(globals, assembly), 3);
+        }
+    }
+}
+
+class ChromHMMTab extends ReTabBase{
+    constructor(props) {
+	super(props, "chromhmm");
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, ChromHMMTables(globals, assembly), 1);
+        }
+    }
+}
+
+class FunctionalValidationTab extends ReTabBase{
+    constructor(props) {
+	super(props, "functionalValidation");
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, { "functional_validation": data["functional_validation"], "starr": data["starr"]["results"] }, FunctionalValidationTable(globals, assembly, data["starr"]["reads"] < 10.0 ? "No STARR-seq peaks were identified at this cCRE, but local read depth is insufficient to be confident in a true negative." : "No STARR-seq peaks were identified at this cCRE."), 2);
         }
     }
 }
@@ -367,6 +385,8 @@ const DetailsTabInfo = (assembly) => {
                   f: RampageTab},
         ortholog: {title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]),
 	           enabled: true, f: OrthologTab},
+	functionalValidation: { title: Render.tabTitle([ "Functional", "Data" ]), enabled: true, f: FunctionalValidationTab },
+	chromhmm: { title: Render.tabTitle([ "ChromHMM", "States" ]), enabled: assembly === "mm10", f: ChromHMMTab },
 	/* groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
 		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"}, */
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
