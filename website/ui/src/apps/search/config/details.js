@@ -185,7 +185,7 @@ class FunctionalValidationTab extends ReTabBase{
     constructor(props) {
 	super(props, "functionalValidation");
         this.doRender = (globals, assembly, data) => {
-            return tabEles(globals, data, FunctionalValidationTable(globals, assembly), 1);
+            return tabEles(globals, { "functional_validation": data["functional_validation"], "starr": data["starr"]["results"] }, FunctionalValidationTable(globals, assembly, data["starr"]["reads"] < 10.0 ? "No STARR-seq peaks were identified at this cCRE, but local read depth is insufficient to be confident in a true negative." : "No STARR-seq peaks were identified at this cCRE."), 2);
         }
     }
 }

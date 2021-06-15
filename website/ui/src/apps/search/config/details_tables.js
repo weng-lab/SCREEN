@@ -31,7 +31,7 @@ export const ChromHMMTables = (globals, assembly) => ({
 	helpkey: "",
 	cols: [
 	    { title: "Tissue", data: "tissue", className: "dt-right" },
-	    { title: "State", data: "state", className: "dt-right" },
+	    { title: "State", data: "state", className: "dt-right", render: d => <span style={{ fontWeight: "bold", color: d.split("_")[1] }}>{d.split("_")[0]}</span> },
 	    { title: "State Start", data: "cdStart", render: Render.integer },
 	    { title: "State End", data: "cdEnd", render: Render.integer }
 	]
@@ -505,10 +505,10 @@ export const LinkedGenesTable = (globals, assembly) => ({
     }
 });
 
-export const FunctionalValidationTable = (globals, assembly) => ({
-    "functional_validation": {
-	title: "Functional Validation",
-	emptyText: "No functional validation data matches this cCRE",
+export const FunctionalValidationTable = (globals, assembly, emptyText) => ({
+    "vista": {
+	title: "VISTA enhancer intersection",
+	emptyText: "This region has not been tested by VISTA.",
 	cols: [{ title: "biosample(s)", data: "tissues", render: d => d.join(", ")  },
 	       { title: "assay", data: "cCRE", render: _ => "transgenic reporter" },
        	       { title: "start", data: "start", render: Render.integer },
@@ -516,6 +516,14 @@ export const FunctionalValidationTable = (globals, assembly) => ({
 	       { title: "overlap", data: "overlap", render: x => Render.integer(x) + " bp" },
 	       { title: "lab", data: "cCRE", render: _ => "Penacchio" },
 	       { title: "VISTA ID", data: "accession"}],
+    },
+    "starr": {
+	title: "Whole-genome STARR-seq",
+	emptyText: emptyText,
+	cols: [{ title: "biosample(s)", data: "chr", render: d => "K562" },
+	       { title: "peak chromosome", data: "chr" },
+	       { title: "peak start", data: "start", render: Render.integer },
+	       { title: "peak end", data: "end", render: Render.integer }]
     }
 });
 
