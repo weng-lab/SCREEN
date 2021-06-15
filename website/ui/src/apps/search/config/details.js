@@ -354,7 +354,7 @@ const TFMotifTab = props => {
                 <GraphQLImportanceTrack
                     width={1000}
                     height={100}
-                    endpoint="http://ga.staging.wenglab.org"
+                    endpoint="https://ga.staging.wenglab.org"
                     signalURL="gs://gcp.wenglab.org/hg38.phyloP100way.bigWig"
                     sequenceURL="gs://gcp.wenglab.org/hg38.2bit"
                     coordinates={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
@@ -372,7 +372,7 @@ const DetailsTabInfo = (assembly) => {
                         enabled: true, f: NearbyGenomicTab},
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
-        tfIntersection: {title: Render.tabTitle(["TF Motifs and", "Sequence Features"]),
+        tfIntersectionA: {title: Render.tabTitle(["TF Motifs and", "Sequence Features"]),
                         enabled: true, f: props => <TFMotifTab key={props.active_cre.accession} {...props} />},
 	/* cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
                                enabled: assembly === "mm10" || assembly === "GRCh38", f: CistromeIntersectionTab}, */
