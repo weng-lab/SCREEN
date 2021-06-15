@@ -18,7 +18,6 @@
 						"downloadjs": "^1.4.7",
 						"enumify": "^1.0.4",
 						"flow-bin": "^0.57.3",
-						"graphql": "^15.5.0",
 						"jquery": "^3.5.0",
 						"jshashes": "^1.0.7",
 						"jszlib": "dasmoth/jszlib",
