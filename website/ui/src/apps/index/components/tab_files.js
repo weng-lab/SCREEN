@@ -4,8 +4,7 @@
  */
 
 import React from 'react';
-import Modal from 'react-modal';
-import { Menu } from 'semantic-ui-react';
+import { Menu, Modal } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
 import Ztable from '../../../common/components/ztable/ztable';
@@ -109,7 +108,7 @@ class TabFiles extends React.Component {
     doRenderWrapper(){
 	    return (
 		<div>
-			<Menu secondary>
+			<Menu secondary style={{ fontSize: "1.1em" }}>
 				<Menu.Item onClick={() => this.setState({ page: 0 })} active={this.state.page === 0}>Quick Start</Menu.Item>
 				<Menu.Item onClick={() => this.setState({ page: 1 })} active={this.state.page === 1}>Detailed Elements</Menu.Item>
 				<Menu.Item onClick={() => this.setState({ page: 2 })} active={this.state.page === 2}>Data Matrices</Menu.Item>
@@ -248,7 +247,7 @@ class TabFiles extends React.Component {
 			    </div>
 			    </div>
 		    )}
-		    <Modal isOpen={!!this.state.mmodal} onRequestClose={ () => { this.setState({ mmodal: null }); }}>
+		    <Modal open={!!this.state.mmodal} onClose={ () => { this.setState({ mmodal: null }); }}>
 		    { this.state.mmodal && (
 			<div>
 			    <h2>{TITLES[this.state.mmodal.type](this.state.mmodal.species)}</h2>
@@ -262,7 +261,7 @@ class TabFiles extends React.Component {
 			    </div>
 		        )}
 		</Modal>
-		    <Modal isOpen={!!this.state.hmodal} onRequestClose={ () => { this.setState({ hmodal: null }); }}>
+		    <Modal open={!!this.state.hmodal} onClose={ () => { this.setState({ hmodal: null }); }}>
 		    { this.state.hmodal && (
 			<div>
 			    <h2>{TITLES[this.state.hmodal.type](this.state.hmodal.species)}</h2>

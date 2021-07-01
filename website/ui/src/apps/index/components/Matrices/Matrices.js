@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Container, Divider, Grid, Header, Icon, Message, Modal, Loader } from 'semantic-ui-react';
 import { Chart, Scatter } from 'jubilant-carnival';
 import HumanHeader from '../HumanHeader';
-import MouseHeader from '../MouseHeader';
+import { InverseMouseHeader } from '../MouseHeader';
 import { DataTable } from 'ts-ztable';
 
 const UMAP_QUERY = `
@@ -102,101 +102,68 @@ const MatrixPage = () => {
     const [ modalOpen, setModalOpen ] = useState(false);
     return (
         <Container>
+            <Modal open={modalOpen} onClose={() => setModalOpen(false)} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
+                <Modal.Header style={{ fontSize: "2em" }}>Selected Biosamples</Modal.Header>
+                <Modal.Content style={{ fontSize: "1.2em"}}>
+                    <DataTable rows={biosamples} columns={COLUMNS} itemsPerPage={8} />
+                </Modal.Content>
+                <Modal.Actions><Button style={{ fontSize: "1.3em" }} onClick={() => setModalOpen(false)}>OK</Button></Modal.Actions>
+            </Modal>
             <Grid>
-                <Grid.Column width={6}>
-                    <HumanHeader reCount="926,535 cCREs" ctCount="839 cell types" />
+                <Grid.Column width={5}>
+                    <HumanHeader reCount="1,063,878 cCREs" ctCount="1,518 cell types" width={900} />
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("dnase"); }}
-                        style={{ border: "2px solid #06da93", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         DNase
                     </Button>
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("h3k4me3"); }}
-                        style={{ border: "2px solid #ff0000", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         H3K4me3
                     </Button>
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("h3k27ac"); }}
-                        style={{ border: "2px solid #ffcd00", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         H3K27ac
                     </Button>
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("ctcf"); }}
-                        style={{ border: "2px solid #00b0d0", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         CTCF
                     </Button>
                     <div style={{ marginTop: "3em" }} />
-                    <MouseHeader reCount="339,815 cCREs" ctCount="157 cell types" />
+                    <InverseMouseHeader reCount="313,838 cCREs" ctCount="169 cell types" width={900} />
                     <Button
                         onClick={() => { setAssembly("mm10"); setAssay("dnase"); }}
-                        style={{ border: "2px solid #06da93", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         DNase
                     </Button>
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("h3k4me3"); }}
-                        style={{ border: "2px solid #ff0000", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         H3K4me3
                     </Button>
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("h3k27ac"); }}
-                        style={{ border: "2px solid #ffcd00", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         H3K27ac
                     </Button>
                     <Button
                         onClick={() => { setAssembly("grch38"); setAssay("ctcf"); }}
-                        style={{ border: "2px solid #00b0d0", marginBottom: "0.2em", width: "65%" }}
+                        style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", fontWeight: "bold", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         CTCF
                     </Button>
                 </Grid.Column>
-                <Grid.Column width={4}>
-                    { loading && assay !== "" && <Loader active>Loading...</Loader> }
-                    { assay && !loading && data ? (
-                        <React.Fragment>
-                            <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
-                            <Divider style={{ borderTop: "1px solid #000" }} />
-                            <div style={{ marginTop: "2.3em" }} />
-                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V2.txt`} download style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
-                                <Icon name="download" /> Fold-change signal matrix
-                            </Button>
-                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
-                                <Icon name="download" /> Quantile normalized signal matrix
-                            </Button>
-                            <Button size="large" download href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V2.txt`} style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
-                                <Icon name="download" /> Z-scored signal matrix
-                            </Button>
-                            { biosamples.length > 0 ? (
-                                <React.Fragment>
-                                    <Divider style={{ borderTop: "1px solid #000" }} />
-                                    <Header as="h3">
-                                        {biosamples.length.toLocaleString()} experiments selected <Icon name="eye" onClick={() => setModalOpen(true)} />
-                                    </Header>
-                                    <Button size="medium" style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
-                                        <Icon name="download" /> cCREs with average Z-score &gt;1.64 across these experiments
-                                    </Button>
-                                    <Button size="medium" style={{ border: "2px solid #000000", marginBottom: "0.2em", width: "90%" }}>
-                                        <Icon name="download" /> cCREs ranked by specificity score for this experiment group
-                                    </Button>
-                                    <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-                                        <Modal.Header>Selected Biosamples</Modal.Header>
-                                        <Modal.Content>
-                                            <DataTable rows={biosamples} columns={COLUMNS} itemsPerPage={8} />
-                                        </Modal.Content>
-                                        <Modal.Actions><Button onClick={() => setModalOpen(false)}>OK</Button></Modal.Actions>
-                                    </Modal>
-                                </React.Fragment>
-                            ) : null}
-                        </React.Fragment>
-                    ) : null}
-                </Grid.Column>
-                <Grid.Column width={6}>
+                <Grid.Column width={7}>
                     { assay && data ? (
                         <React.Fragment>
                             <Header style={{ marginLeft: "1em" }} as="h3">{umapHeader(assay, assembly)}</Header>
@@ -207,10 +174,10 @@ const MatrixPage = () => {
                             <Chart
                                 domain={{ x: { start: xMin, end: xMax }, y: { start: yMin, end: yMax } }}
                                 innerSize={{ width: 1000, height: 1000 }}
-                                xAxisProps={{ ticks: fiveRange(xMin, xMax), title: "UMAP-1" }}
-                                yAxisProps={{ ticks: fiveRange(yMin, yMax), title: "UMAP-2" }}
+                                xAxisProps={{ ticks: fiveRange(xMin, xMax), title: "UMAP-1", fontSize: "50" }}
+                                yAxisProps={{ ticks: fiveRange(yMin, yMax), title: "UMAP-2", fontSize: "50" }}
                                 scatterData={[ scatterData ]}
-                                plotAreaProps={{ onSelectionEnd: c => setBiosamples(fData.filter(xx => inRange(c, xx.umap_coordinates))) }}
+                                plotAreaProps={{ onFreeformSelectionEnd: (_, c) => { console.log(c); setBiosamples(c[0].map(x => fData[x])) }, freeformSelection: true }}
                             >
                                 <Scatter
                                     data={scatterData} pointStyle={{ r: 3 }}
@@ -261,6 +228,39 @@ const MatrixPage = () => {
                                     </text>
                                 )}
                             </Chart>
+                        </React.Fragment>
+                    ) : null}
+                </Grid.Column>
+                <Grid.Column width={4}>
+                    { loading && assay !== "" && <Loader active>Loading...</Loader> }
+                    { assay && !loading && data ? (
+                        <React.Fragment>
+                            <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
+                            <Divider style={{ borderTop: "1px solid #000" }} />
+                            <div style={{ marginTop: "2.3em" }} />
+                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V2.txt`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                <Icon name="download" /> Fold-change signal matrix
+                            </Button>
+                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ backgroundColor: "#88aa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                <Icon name="download" /> Quantile normalized signal matrix
+                            </Button>
+                            <Button size="large" download href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V2.txt`} style={{ backgroundColor: "#8888aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                <Icon name="download" /> Z-scored signal matrix
+                            </Button>
+                            { biosamples.length > 0 ? (
+                                <React.Fragment>
+                                    <Divider style={{ borderTop: "1px solid #000" }} />
+                                    <Header as="h3">
+                                        {biosamples.length.toLocaleString()} experiments selected <Icon name="eye" onClick={() => setModalOpen(true)} />
+                                    </Header>
+                                    <Button size="medium" style={{ backgroundColor: "#aa88aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                        <Icon name="download" /> cCREs with average Z-score &gt;1.64 across these experiments
+                                    </Button>
+                                    <Button size="medium" style={{ backgroundColor: "#aaaa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                        <Icon name="download" /> cCREs ranked by specificity score for this experiment group
+                                    </Button>
+                                </React.Fragment>
+                            ) : null}
                         </React.Fragment>
                     ) : null}
                 </Grid.Column>

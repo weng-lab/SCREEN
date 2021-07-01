@@ -23,6 +23,7 @@
     "jshashes": "^1.0.7",
     "jszlib": "dasmoth/jszlib",
     "jubilant-carnival": "^0.4.0",
+    "queryz": "^0.0.3",
     "react": "^16.0.0",
     "react-autosuggest": "^9.3.2",
     "react-bootstrap": "^0.31.2",

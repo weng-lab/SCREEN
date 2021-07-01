@@ -19,7 +19,7 @@ class IndexPage extends React.Component {
     return (
       <div id="footer">
         <center>
-          &copy; 2016-2020 Weng Lab @ UMass Med, ENCODE Data Analysis Center
+          &copy; 2016-{(new Date()).getFullYear()} Weng Lab @ UMass Med, ENCODE Data Analysis Center
         </center>
       </div>);
     }
