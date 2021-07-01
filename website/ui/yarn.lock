@@ -7073,6 +7073,11 @@ jubilant-carnival@^0.4.0:
   resolved "https://registry.yarnpkg.com/jubilant-carnival/-/jubilant-carnival-0.4.0.tgz#16d8022f85f8937e1d7e87e22cd97db4d6489e12"
   integrity sha512-Awndr/YB5xNZ/d73tzOYj/cLEL4YxGWTMkEYBxZ/CRu9w3ArrFW6Rdz/jscp7ZkXBsxTwQEeDozF8ZV81eqTSg==
 
+jubilant-carnival@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/jubilant-carnival/-/jubilant-carnival-0.4.1.tgz#d459e5f9f8dd8cba1e6c8d08df4ec5aec535d823"
+  integrity sha512-J+u1mMB/g+FbWZZYPnjHDkePfhLfRucdBspf/ySaaCBVu9AbMB+6CI8vM9pkSXw6ZvnPLPlmzAJN6j5c6DPpbg==
+
 keyboard-key@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/keyboard-key/-/keyboard-key-1.1.0.tgz#6f2e8e37fa11475bb1f1d65d5174f1b35653f5b7"

@@ -169,7 +169,7 @@ const MatrixPage = () => {
                             <Header style={{ marginLeft: "1em" }} as="h3">{umapHeader(assay, assembly)}</Header>
                             <Divider style={{ borderTop: "1px solid #000" }} />
                             <div style={{ marginTop: "-0.5em" }} />
-                            <Message info>Click a point or shift, click, and drag to select experiments.</Message>
+                            <Message info>Hold shift and draw a lasso to select experiments.</Message>
                             <div style={{ marginTop: "-1.5em" }} />
                             <Chart
                                 domain={{ x: { start: xMin, end: xMax }, y: { start: yMin, end: yMax } }}
