@@ -3,7 +3,7 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import Ztable from '../../../common/components/ztable/ztable';
 import * as ApiClient from '../../../common/api_client';
@@ -18,14 +18,16 @@ import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable, ChromHMMTables,
         TfIntersectionTable, OrthologTable, FantomCatTable, FunctionalValidationTable,
-	CistromeIntersectionTable, GroundLevelTables} from './details_tables';
+	CistromeIntersectionTable, GroundLevelTables } from './details_tables';
 
 import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
 import { GraphQLImportanceTrack } from 'bpnet-ui';
-import { RulerTrack, DenseBigBed, EmptyTrack } from 'umms-gb';
-import { Loader } from 'semantic-ui-react';
+import { RulerTrack, DenseBigBed, EmptyTrack, GraphQLTranscriptTrack, StackedTracks, SquishTranscriptTrack } from 'umms-gb';
+import { Loader, Menu } from 'semantic-ui-react';
+import { associateBy, groupBy } from "queryz";
+import { linearTransform } from 'jubilant-carnival';
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
@@ -180,11 +182,142 @@ class NearbyGenomicTab extends ReTabBase{
     }
 }
 
+const TISSUE_ORDER = [
+    "forebrain",
+    "midbrain",
+    "hindbrain",
+    "neural tube",
+    "heart",
+    "liver",
+    "lung",
+    "kidney",
+    "stomach",
+    "intestine",
+    "limb",
+    "embryonic facial prominence"
+];
+
+const COLOR_ORDER = [
+    "#95c79f",
+    "#6ab368",
+    "#3f834e",
+    "#183c12",
+    "#cf2786",
+    "#e3272e",
+    "#7b5026",
+    "#dbc0f7",
+    "#ab76ea",
+    "#7658a2",
+    "#3854cd",
+    "#a8bef7"
+];
+
+const TISSUE_ORDER_MAP = ( () => {
+    const r = {};
+    TISSUE_ORDER.forEach( (x, i) => { r[x] = i; });
+    return r;
+})();
+
+const ChromHMMView = props => {
+    const [ page, setPage ] = useState(0);
+    const grouped = useMemo( () => groupBy(props.data.chromhmm[1] || [], x => x.tissue, x => x), [ props ]);
+    const tissues = useMemo( () => [ ...new Set((props.data.chromhmm[1] || []).map(x => x.tissue)) ].sort( (a, b) => {
+        const aa = a.split(" ");
+        const bb = b.split(" ");
+        return TISSUE_ORDER_MAP[aa.slice(0, aa.length - 1).join(" ")] - TISSUE_ORDER_MAP[bb.slice(0, bb.length - 1).join(" ")] + aa[aa.length - 1].localeCompare(bb[bb.length - 1]) * 0.1
+    }), [ props ]);
+    const tissueCounts = useMemo( () => {
+        const c = {};
+        tissues.forEach( x => {
+            const t = x.split(" ").slice(0, x.split(" ").length - 1).join(" ");
+            c[t] = c[t] ? c[t] + 1 : 1;
+        });
+        return c;
+    }, [ tissues ]);
+    const states = useMemo( () => [ ...new Set((props.data.chromhmm[1] || []).map(x => x.name)) ].sort(), [ props ]);
+    const colormap = useMemo( () => associateBy((props.data.chromhmm[1] || []), x => x.name, x => x.color), [ props ]);
+    const tissueOffsets = useMemo( () => TISSUE_ORDER.reduce((v, c) => [ ...v, v[v.length - 1] + 6 * tissueCounts[c] ], [ 33 ]), [ tissues, tissueCounts ]);
+    const range = useMemo( () => props.data.chromhmm[1] ? ({ start: Math.min(...props.data.chromhmm[1].map(x => x.cdStart)), end: Math.max(...props.data.chromhmm[1].map(x => x.cdEnd)) }) : ({ start: 1, end: 2 }), [ props.data ]);
+    const l = linearTransform(range, { start: 0, end: 1000 });
+    const [ transcriptHeight, setTranscriptHeight ] = useState(0);
+
+    return (
+        <>
+            <Menu pointing secondary>
+                <Menu.Item active={page === 0} onClick={() => setPage(0)}>Table View</Menu.Item>
+                <Menu.Item active={page === 1} onClick={() => setPage(1)}>Browser View</Menu.Item>
+            </Menu>
+            { page === 0 ? (
+                props.data.chromhmm[0] && tabEles(props.globals, { "chromhmm": props.data.chromhmm[0] }, ChromHMMTables(props.globals, props.assembly), 1)
+            ) : (
+                <>
+                    <svg width="100%" viewBox="0 0 1250 60">
+                        { states.map( (s, i) => (
+                            <g transform={`translate(${250 + 75 * (i % 9)},${i >= 9 ? 30 : 0})`}>
+                                <rect y={5} height={15} width={15} fill={colormap.get(s)} />
+                                <text x={20} y={17} fontSize="12px" color={colormap.get(s)}>{s}</text>
+                            </g>
+                        ))}
+                    </svg>
+                    <svg width="100%" viewBox="0 0 1250 600">
+                        {TISSUE_ORDER.map( (t, i) => (
+                            <g transform={`translate(0,${tissueOffsets[i] + transcriptHeight})`}>
+                                <text y={tissueCounts[t] * 6 / 2 + 3} x={188} textAnchor="end" fontSize="14px">{t}</text>
+                                <line y1={0} y2={tissueCounts[t] * 6} x1={196} x2={196} stroke={COLOR_ORDER[i]} strokeWidth={6} />
+                            </g>
+                        ))}
+                        <g transform="translate(250,0)">
+                            <StackedTracks onHeightChanged={x => setTranscriptHeight(x - 30)}>
+                                <RulerTrack
+                                    width={1000}
+                                    height={30}
+                                    domain={{ chromosome: props.active_cre.chrom, start: range.start, end: range.end }}
+                                />
+                                <EmptyTrack height={10} width={1000} transform="" id="" />
+                                <GraphQLTranscriptTrack
+                                    assembly="mm10"
+                                    endpoint="https://ga.staging.wenglab.org/graphql"
+                                    id=""
+                                    transform=""
+                                    domain={{ ...range, chromosome: props.active_cre.chrom }}
+                                >
+                                    <SquishTranscriptTrack
+                                        rowHeight={15}
+                                        width={1000}
+                                        domain={range}
+                                        id=""
+                                        transform=""
+                                    />
+                                </GraphQLTranscriptTrack>
+                                <EmptyTrack height={10} width={1000} transform="" id="" />
+                                <StackedTracks>
+                                    { tissues.map((t, i) => (
+                                        <g transform={`translate(0,${i * 6})`} key={i}>
+                                            <DenseBigBed
+                                                domain={range}
+                                                data={grouped.get(t)}
+                                                width={1000}
+                                                height={10}
+                                                key={i}
+                                            />
+                                        </g>
+                                    ))}
+                                </StackedTracks>
+                            </StackedTracks>
+                            <rect fill="#0000ff" fillOpacity={0.5} y={25} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={470 + transcriptHeight} />
+                        </g>
+                    </svg>
+                </>
+            )}
+        </>
+    );
+}
+
 class ChromHMMTab extends ReTabBase{
     constructor(props) {
-	super(props, "chromhmm");
+	    super(props, "chromhmm");
         this.doRender = (globals, assembly, data) => {
-            return tabEles(globals, data, ChromHMMTables(globals, assembly), 1);
+            return <ChromHMMView globals={globals} assembly={assembly} data={data} active_cre={props.active_cre} />;
         }
     }
 }
