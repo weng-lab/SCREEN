@@ -244,8 +244,8 @@ const ChromHMMView = props => {
     return (
         <>
             <Menu pointing secondary>
-                <Menu.Item active={page === 0} onClick={() => setPage(0)}>Table View</Menu.Item>
-                <Menu.Item active={page === 1} onClick={() => setPage(1)}>Browser View</Menu.Item>
+                <Menu.Item active={page === 0} onClick={() => setPage(0)} style={{ fontSize: "1.2em" }}>Table View</Menu.Item>
+                <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>Browser View</Menu.Item>
             </Menu>
             { page === 0 ? (
                 props.data.chromhmm[0] && tabEles(props.globals, { "chromhmm": props.data.chromhmm[0] }, ChromHMMTables(props.globals, props.assembly), 1)
