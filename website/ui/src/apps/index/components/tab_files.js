@@ -247,33 +247,29 @@ class TabFiles extends React.Component {
 			    </div>
 			    </div>
 		    )}
-		    <Modal open={!!this.state.mmodal} onClose={ () => { this.setState({ mmodal: null }); }}>
-		    { this.state.mmodal && (
-			<div>
-			    <h2>{TITLES[this.state.mmodal.type](this.state.mmodal.species)}</h2>
-			    <div className="alert alert-warning">
-			    <Info />
-			    &nbsp;These files contain the complete set of mouse cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
-			    In cell types with DNase-seq data available, cCREs inactive in the given cell type are labeled as "Low-DNase". In cell types without DNase-seq available, elements are
-			    labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.
-			    </div>
-			    <Ztable sortCol={[ "tissue", true ]} cols={CtsTableColumns} data={this.state.mmodal.d.map( k => ({ ...this.state.data.mouse[k], celltype: k.replace(/_/g, " "), tissue: this.state.data.mouse[k].tissue[0] || "" }) )} />
-			    </div>
-		        )}
+		    <Modal open={!!this.state.mmodal} onClose={ () => { this.setState({ mmodal: null }); }} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
+			    <Modal.Header style={{ fontSize: "2em" }}>{this.state.mmodal && TITLES[this.state.mmodal.type](this.state.mmodal.species)}</Modal.Header>
+				<Modal.Content style={{ fontSize: "1.2em" }}>
+					<div className="alert alert-warning">
+					<Info />
+					&nbsp;These files contain the complete set of mouse cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
+					In cell types with DNase-seq data available, cCREs inactive in the given cell type are labeled as "Low-DNase". In cell types without DNase-seq available, elements are
+					labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.
+					</div>
+					<Ztable sortCol={[ "tissue", true ]} cols={CtsTableColumns} data={this.state.mmodal ? this.state.mmodal.d.map( k => ({ ...this.state.data.mouse[k], celltype: k.replace(/_/g, " "), tissue: this.state.data.mouse[k].tissue[0] || "" }) ) : []} />
+				</Modal.Content>
 		</Modal>
 		    <Modal open={!!this.state.hmodal} onClose={ () => { this.setState({ hmodal: null }); }}>
-		    { this.state.hmodal && (
-			<div>
-			    <h2>{TITLES[this.state.hmodal.type](this.state.hmodal.species)}</h2>
-			    <div className="alert alert-warning">
-			    <Info />
-			    &nbsp;These files contain the complete set of human cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
-			    In cell types with DNase-seq data available, cCREs inactive in the given cell type are labeled as "Low-DNase". In cell types without DNase-seq available, elements are
-			    labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.
-			    </div>
-			    <Ztable sortCol={[ "tissue", true ]} cols={CtsTableColumns} data={this.state.hmodal.d.map( k => ({ ...this.state.data.human[k], celltype: k.replace(/_/g, " "), tissue: this.state.data.human[k].tissue[0] || "" }) )} />
-			    </div>
-		        )}
+			    <Modal.Header style={{ fontSize: "2em" }}>{this.state.hmodal && TITLES[this.state.hmodal.type](this.state.hmodal.species)}</Modal.Header>
+				<Modal.Content style={{ fontSize: "1.2em" }}>
+					<div className="alert alert-warning">
+					<Info />
+					&nbsp;These files contain the complete set of human cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
+					In cell types with DNase-seq data available, cCREs inactive in the given cell type are labeled as "Low-DNase". In cell types without DNase-seq available, elements are
+					labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.
+					</div>
+					<Ztable sortCol={[ "tissue", true ]} cols={CtsTableColumns} data={this.state.hmodal ? this.state.hmodal.d.map( k => ({ ...this.state.data.human[k], celltype: k.replace(/_/g, " "), tissue: this.state.data.human[k].tissue[0] || "" }) ) : []} />
+				</Modal.Content>
 		    </Modal>
 			</React.Fragment>
 			) : <MatrixPage />} 
