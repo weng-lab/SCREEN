@@ -315,12 +315,14 @@ const ChromHMMView = props => {
                                         </g>
                                     ))}
                                 </StackedTracks>
-                            </StackedTracks>
-                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} width={7} height={7} x={l(props.active_cre.start) - 50} y={35} />
+                            </StackedTracks>                            
                             <text x={l(props.active_cre.start) - 38} y={42} style={{ fontSize: "11px" }}>{props.active_cre.accession}</text>
-                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={48} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={420 + transcriptHeight} />
+                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={48} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={400 + transcriptHeight} />
                         </g>
                     </svg>
+                    <p><strong>Cite this data:</strong></p>
+                    <p>van der Velde et. al. 2021. "Annotation of chromatin states in 66 complete mouse epigenomes during development." <em>Communications Biology</em> 4, 239 (2021).</p>
+                    <p><a href="https://doi.org/10.1038/s42003-021-01756-4">https://doi.org/10.1038/s42003-021-01756-4</a></p>
                 </>
             )}
         </>
