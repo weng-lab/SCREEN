@@ -273,7 +273,7 @@ const ChromHMMView = props => {
                     <svg width="100%" viewBox="0 0 1250 600">
                         {TISSUE_ORDER.map( (t, i) => (
                             <g transform={`translate(0,${tissueOffsets[i] + transcriptHeight})`}>
-                                <text y={tissueCounts[t] * 6 / 2 - 2} x={188} textAnchor="end" fontSize="14px">{t}</text>
+                                <text y={tissueCounts[t] * 6 / 2} x={188} textAnchor="end" fontSize="14px">{t}</text>
                                 <text y={tissueCounts[t] * 6 / 2 + 10} x={188} textAnchor="end" fontSize="9px">({[ ...new Set(timepoints.get(t)) ].sort().join(", ")})</text>
                                 <line y1={0} y2={tissueCounts[t] * 6} x1={196} x2={196} stroke={COLOR_ORDER[i]} strokeWidth={6} />
                             </g>
