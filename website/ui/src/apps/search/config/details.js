@@ -274,7 +274,7 @@ const ChromHMMView = props => {
                         {TISSUE_ORDER.map( (t, i) => (
                             <g transform={`translate(0,${tissueOffsets[i] + transcriptHeight})`}>
                                 <text y={tissueCounts[t] * 6 / 2 - 7} x={188} textAnchor="end" fontSize="14px">{t}</text>
-                                <text y={tissueCounts[t] * 6 / 2 + 5} x={188} textAnchor="end" fontSize="9px">({timepoints.get(t).join(", ")})</text>
+                                <text y={tissueCounts[t] * 6 / 2 + 5} x={188} textAnchor="end" fontSize="9px">({[ ...new Set(timepoints.get(t)) ].sort().join(", ")})</text>
                                 <line y1={0} y2={tissueCounts[t] * 6} x1={196} x2={196} stroke={COLOR_ORDER[i]} strokeWidth={6} />
                             </g>
                         ))}
@@ -316,9 +316,9 @@ const ChromHMMView = props => {
                                     ))}
                                 </StackedTracks>
                             </StackedTracks>
-                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} width={7} height={7} x={l(props.active_cre.start) - 50} y={22} />
-                            <text x={l(props.active_cre.start) - 38} y={22}>{props.active_cre.accession}</text>
-                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={37} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={420 + transcriptHeight} />
+                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} width={7} height={7} x={l(props.active_cre.start) - 50} y={35} />
+                            <text x={l(props.active_cre.start) - 38} y={42} style={{ fontSize: "11px" }}>{props.active_cre.accession}</text>
+                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={48} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={420 + transcriptHeight} />
                         </g>
                     </svg>
                 </>

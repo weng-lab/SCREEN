@@ -13,6 +13,7 @@ query q($assembly: String!, $assay: [String!], $a: String!) {
             name
             ontology
             sampleType
+            lifeStage
             umap_coordinates(assay: $a)
             experimentAccession(assay: $a)
         }
@@ -204,19 +205,19 @@ const MatrixPage = () => {
                         DNase
                     </Button>
                     <Button
-                        onClick={() => { setAssembly("grch38"); setAssay("h3k4me3"); }}
+                        onClick={() => { setAssembly("mm10"); setAssay("h3k4me3"); }}
                         style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         H3K4me3
                     </Button>
                     <Button
-                        onClick={() => { setAssembly("grch38"); setAssay("h3k27ac"); }}
+                        onClick={() => { setAssembly("mm10"); setAssay("h3k27ac"); }}
                         style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         H3K27ac
                     </Button>
                     <Button
-                        onClick={() => { setAssembly("grch38"); setAssay("ctcf"); }}
+                        onClick={() => { setAssembly("mm10"); setAssay("ctcf"); }}
                         style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", fontWeight: "bold", borderRadius: "6px", marginBottom: "0.2em", width: "65%" }}
                     >
                         CTCF
