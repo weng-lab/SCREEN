@@ -136,9 +136,9 @@ const MatrixPage = () => {
     const [ scMap, scc ] = useMemo( () => colorMap(data && data.ccREBiosampleQuery && data.ccREBiosampleQuery.biosamples.filter(x => x.umap_coordinates).map(x => x.sampleType) || []), [ data ]);
     const [ oMap, occ ] = useMemo( () => colorMap(data && data.ccREBiosampleQuery && data.ccREBiosampleQuery.biosamples.filter(x => x.umap_coordinates).map(x => x.ontology) || []), [ data ]);
     const xMin = useMemo( () => bounds ? bounds.x.start : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[0])) || [ 0 ])), true), [ fData, bounds ]);
-    const yMin = useMemo( () => bounds ? bounds.y.start : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ])), true), [ fData, bounds ]);
+    const yMin = useMemo( () => bounds ? bounds.y.end : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ])), true), [ fData, bounds ]);
     const xMax = useMemo( () => bounds ? bounds.x.end : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[0])) || [ 0 ]))), [ fData, bounds ]);
-    const yMax = useMemo( () => bounds ? bounds.y.end : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ]))), [ fData, bounds ]);
+    const yMax = useMemo( () => bounds ? bounds.y.start : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ]))), [ fData, bounds ]);
     const scatterData = useMemo( () => (fData && fData.map(x => ({
         x: x.umap_coordinates[0],
         y: x.umap_coordinates[1],
