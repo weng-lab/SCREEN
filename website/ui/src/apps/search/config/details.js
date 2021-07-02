@@ -218,14 +218,25 @@ const TISSUE_ORDER_MAP = ( () => {
     return r;
 })();
 
+const COLOR_CCRE_MAP = {
+    dELS: "#ffcd00",
+    PLS: "#ff0000",
+    pELS: "#ffa700"
+};
+
 const ChromHMMView = props => {
-    const [ page, setPage ] = useState(0);
+    const [ page, setPage ] = useState(1);
     const grouped = useMemo( () => groupBy(props.data.chromhmm[1] || [], x => x.tissue, x => x), [ props ]);
     const tissues = useMemo( () => [ ...new Set((props.data.chromhmm[1] || []).map(x => x.tissue)) ].sort( (a, b) => {
         const aa = a.split(" ");
         const bb = b.split(" ");
         return TISSUE_ORDER_MAP[aa.slice(0, aa.length - 1).join(" ")] - TISSUE_ORDER_MAP[bb.slice(0, bb.length - 1).join(" ")] + aa[aa.length - 1].localeCompare(bb[bb.length - 1]) * 0.1
     }), [ props ]);
+    const timepoints = useMemo( () => groupBy(
+        props.data.chromhmm[1] || [],
+        x => x.tissue.split(" ").slice(0, x.tissue.split(" ").length - 1).join(" "),
+        x => x.tissue.split(" ")[x.tissue.split(" ").length - 1]
+    ), [ props.data ]);
     const tissueCounts = useMemo( () => {
         const c = {};
         tissues.forEach( x => {
@@ -244,8 +255,8 @@ const ChromHMMView = props => {
     return (
         <>
             <Menu pointing secondary>
-                <Menu.Item active={page === 0} onClick={() => setPage(0)} style={{ fontSize: "1.2em" }}>Table View</Menu.Item>
                 <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>Browser View</Menu.Item>
+                <Menu.Item active={page === 0} onClick={() => setPage(0)} style={{ fontSize: "1.2em" }}>Table View</Menu.Item>
             </Menu>
             { page === 0 ? (
                 props.data.chromhmm[0] && tabEles(props.globals, { "chromhmm": props.data.chromhmm[0] }, ChromHMMTables(props.globals, props.assembly), 1)
@@ -262,7 +273,8 @@ const ChromHMMView = props => {
                     <svg width="100%" viewBox="0 0 1250 600">
                         {TISSUE_ORDER.map( (t, i) => (
                             <g transform={`translate(0,${tissueOffsets[i] + transcriptHeight})`}>
-                                <text y={tissueCounts[t] * 6 / 2 + 3} x={188} textAnchor="end" fontSize="14px">{t}</text>
+                                <text y={tissueCounts[t] * 6 / 2 - 7} x={188} textAnchor="end" fontSize="14px">{t}</text>
+                                <text y={tissueCounts[t] * 6 / 2 + 5} x={188} textAnchor="end" fontSize="9px">({timepoints.get(t).join(", ")})</text>
                                 <line y1={0} y2={tissueCounts[t] * 6} x1={196} x2={196} stroke={COLOR_ORDER[i]} strokeWidth={6} />
                             </g>
                         ))}
@@ -273,7 +285,7 @@ const ChromHMMView = props => {
                                     height={30}
                                     domain={{ chromosome: props.active_cre.chrom, start: range.start, end: range.end }}
                                 />
-                                <EmptyTrack height={10} width={1000} transform="" id="" />
+                                <EmptyTrack height={20} width={1000} transform="" id="" />
                                 <GraphQLTranscriptTrack
                                     assembly="mm10"
                                     endpoint="https://ga.staging.wenglab.org/graphql"
@@ -304,7 +316,9 @@ const ChromHMMView = props => {
                                     ))}
                                 </StackedTracks>
                             </StackedTracks>
-                            <rect fill="#0000ff" fillOpacity={0.5} y={25} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={470 + transcriptHeight} />
+                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} width={7} height={7} x={l(props.active_cre.start) - 50} y={22} />
+                            <text x={l(props.active_cre.start) - 38} y={22}>{props.active_cre.accession}</text>
+                            <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={37} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={420 + transcriptHeight} />
                         </g>
                     </svg>
                 </>
@@ -317,7 +331,7 @@ class ChromHMMTab extends ReTabBase{
     constructor(props) {
 	    super(props, "chromhmm");
         this.doRender = (globals, assembly, data) => {
-            return <ChromHMMView globals={globals} assembly={assembly} data={data} active_cre={props.active_cre} />;
+            return <ChromHMMView globals={globals} assembly={assembly} data={data} active_cre={props.active_cre} key={props.active_cre.accession} />;
         }
     }
 }
