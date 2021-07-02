@@ -22,7 +22,7 @@
     "jquery": "^3.5.0",
     "jshashes": "^1.0.7",
     "jszlib": "dasmoth/jszlib",
-    "jubilant-carnival": "^0.4.1",
+    "jubilant-carnival": "^0.5.1",
     "queryz": "^0.0.3",
     "react": "^16.0.0",
     "react-autosuggest": "^9.3.2",

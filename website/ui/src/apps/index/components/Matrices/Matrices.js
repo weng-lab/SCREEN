@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { associateBy } from 'queryz';
-import { Button, Container, Divider, Grid, Header, Icon, Message, Modal, Loader, Search } from 'semantic-ui-react';
-import { Chart, Scatter, Legend } from 'jubilant-carnival';
+import { Button, Container, Divider, Grid, Header, Icon, Modal, Loader, Search } from 'semantic-ui-react';
+import { Chart, Scatter, Legend, Annotation } from 'jubilant-carnival';
 import HumanHeader from '../HumanHeader';
 import { InverseMouseHeader } from '../MouseHeader';
 import { DataTable } from 'ts-ztable';
@@ -47,6 +47,12 @@ function nearest5(x, low) {
 function fiveRange(min, max) {
     const r = [];
     for (let i = min; i <= max; i += 5) r.push(i);
+    return r;
+}
+
+function oneRange(min, max) {
+    const r = [];
+    for (let i = min; i <= max; ++i) r.push(i);
     return r;
 }
 
@@ -97,6 +103,28 @@ const SearchBox = props => {
     );
 };
 
+const ToggleableLegend = props => {
+    const [ selected, setSelected ] = useState(props.entries.map(x => ({ ...x, oColor: x.color, selected: true })));
+    const onClick = useCallback( x => {
+        x = props.entries[x];
+        const ns = [ ...selected ];
+        ns.forEach(xx => { if (xx.title === x) {
+            xx.selected = !xx.selected;
+            xx.color = xx.selected ? xx.oColor : "#aaaaaa"
+        } });
+        setSelected(ns);
+        props.onChange && props.onChange(new Set(ns.map(x => x.title)));
+    });
+    return (
+        <Legend
+            title={props.title}
+            entries={props.entries}
+            onEntryClick={onClick}
+            size={props.size}
+        />
+    );
+}
+
 const MatrixPage = () => {
 
     const [ loading, setLoading ] = useState(false);
@@ -108,6 +136,7 @@ const MatrixPage = () => {
     const [ selectMode, setSelectMode ] = useState("select");
     const [ bounds, setBounds ] = useState(undefined);
     const [ searched, setSearched ] = useState(undefined);
+    const [ modalShown, setModalShown ] = useState(false);
 
     useEffect( () => {
         assembly !== "" && assay !== "" && fetch("https://ga.staging.wenglab.org/graphql", {
@@ -130,15 +159,16 @@ const MatrixPage = () => {
 
     const [ tooltip, setTooltip ] = useState(-1);
     const [ biosamples, setBiosamples ] = useState([]);
+    const [ tSelected, setTSelected ] = useState(new Set([]));
     const fData = useMemo( () => data && data.ccREBiosampleQuery && data.ccREBiosampleQuery.biosamples.filter(x => x.umap_coordinates).filter(x => (
-        lifeStage === "all" || lifeStage === x.lifeStage
+        (lifeStage === "all" || lifeStage === x.lifeStage) && (tSelected.size === 0 || tSelected.has(x[colorBy]))
     )), [ data, lifeStage ]);
     const [ scMap, scc ] = useMemo( () => colorMap(data && data.ccREBiosampleQuery && data.ccREBiosampleQuery.biosamples.filter(x => x.umap_coordinates).map(x => x.sampleType) || []), [ data ]);
     const [ oMap, occ ] = useMemo( () => colorMap(data && data.ccREBiosampleQuery && data.ccREBiosampleQuery.biosamples.filter(x => x.umap_coordinates).map(x => x.ontology) || []), [ data ]);
-    const xMin = useMemo( () => bounds ? bounds.x.start : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[0])) || [ 0 ])), true), [ fData, bounds ]);
-    const yMin = useMemo( () => bounds ? bounds.y.end : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ])), true), [ fData, bounds ]);
-    const xMax = useMemo( () => bounds ? bounds.x.end : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[0])) || [ 0 ]))), [ fData, bounds ]);
-    const yMax = useMemo( () => bounds ? bounds.y.start : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ]))), [ fData, bounds ]);
+    const xMin = useMemo( () => bounds ? Math.floor(bounds.x.start) : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[0])) || [ 0 ])), true), [ fData, bounds ]);
+    const yMin = useMemo( () => bounds ? Math.ceil(bounds.y.end) : nearest5(Math.min(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ])), true), [ fData, bounds ]);
+    const xMax = useMemo( () => bounds ? Math.ceil(bounds.x.end) : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[0])) || [ 0 ]))), [ fData, bounds ]);
+    const yMax = useMemo( () => bounds ? Math.floor(bounds.y.start) : nearest5(Math.max(...((fData && fData.map(x => x.umap_coordinates[1])) || [ 0 ]))), [ fData, bounds ]);
     const scatterData = useMemo( () => (fData && fData.map(x => ({
         x: x.umap_coordinates[0],
         y: x.umap_coordinates[1],
@@ -148,8 +178,6 @@ const MatrixPage = () => {
             fillOpacity: searched === undefined || x.experimentAccession === searched.experimentAccession ? 1 : 0.2
         }
     }))) || [], [ fData, scMap, colorBy, searched ]);
-    const ttWidth = (xMax - xMin) * 0.9;
-    const ttHeight = (yMax - yMin) / 5;
     const [ modalOpen, setModalOpen ] = useState(false);
     const [ legendEntries, height ] = useMemo( () => {
         const g = colorBy === "sampleType" ? scMap : oMap;
@@ -159,9 +187,15 @@ const MatrixPage = () => {
             Object.keys(g).length * 50
         ];
     }, [ scMap, oMap, colorBy ] );
+    const hasMatrix = assembly === "mm10" || assay === "H3K4me3";
 
     return (
         <Container>
+            <Modal open={modalShown} onClose={() => setModalOpen(false)} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
+                <Modal.Header style={{ fontSize: "2em" }}>Not yet available</Modal.Header>
+                <Modal.Content style={{ fontSize: "1.2em" }}>This feature is still being developed.</Modal.Content>
+                <Modal.Actions style={{ fontSize: "1.2em" }}><Button onClick={() => setModalShown(false)}>OK</Button></Modal.Actions>
+            </Modal>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
                 <Modal.Header style={{ fontSize: "2em" }}>Selected Biosamples</Modal.Header>
                 <Modal.Content style={{ fontSize: "1.2em"}}>
@@ -258,8 +292,8 @@ const MatrixPage = () => {
                             <Chart
                                 domain={{ x: { start: xMin, end: xMax }, y: { start: yMin, end: yMax } }}
                                 innerSize={{ width: 1000, height: 1000 }}
-                                xAxisProps={{ ticks: fiveRange(xMin, xMax), title: "UMAP-1", fontSize: "50" }}
-                                yAxisProps={{ ticks: fiveRange(yMin, yMax), title: "UMAP-2", fontSize: "50" }}
+                                xAxisProps={{ ticks: (bounds ? oneRange : fiveRange)(xMin, xMax), title: "UMAP-1", fontSize: "40" }}
+                                yAxisProps={{ ticks: (bounds ? oneRange : fiveRange)(yMin, yMax), title: "UMAP-2", fontSize: "40" }}
                                 scatterData={[ scatterData ]}
                                 plotAreaProps={{
                                     onFreeformSelectionEnd: (_, c) => setBiosamples(c[0].map(x => fData[x])),
@@ -269,59 +303,56 @@ const MatrixPage = () => {
                             >
                                 <Scatter
                                     data={scatterData}
-                                    pointStyle={{ r: 3 }}
+                                    pointStyle={{ r: bounds ? 6 : 4 }}
                                     onPointMouseOver={setTooltip}
                                     onPointMouseOut={() => setTooltip(-1)}
                                     onPointClick={i => setBiosamples([ fData[i] ])}
                                 />
                                 { tooltip !== -1 && (
-                                    <rect
-                                        x={yMin + (yMax - yMin) * 0.03}
-                                        y={fData[tooltip].umap_coordinates[1] - ttHeight * 0.1}
-                                        width={ttWidth}
-                                        height={ttHeight * 0.65}
-                                        strokeWidth={(xMax - xMin) / 150.0}
-                                        stroke="#000000"
-                                        fill="#ffffffdd"
-                                    />
-                                )}
-                                { tooltip !== -1 && (
-                                    <rect
-                                        x={yMin + (yMax - yMin) * 0.05}
-                                        y={fData[tooltip].umap_coordinates[1] - ttHeight * 0.2}
-                                        width={ttWidth * 0.04}
-                                        height={ttWidth * 0.04}
-                                        strokeWidth={(xMax - xMin) / 600.0}
-                                        stroke="#000000"
-                                        fill="#00b0d0"
-                                    />
-                                )}
-                                { tooltip !== -1 && (
-                                    <text
-                                        x={yMin + (yMax - yMin) * 0.1}
-                                        y={fData[tooltip].umap_coordinates[1] - ttHeight * 0.35}
-                                        fontSize={(yMax - yMin) * 0.03}
-                                        fontWeight="bold"
-                                    >
-                                        {fData[tooltip].name.replace(/_/g, " ").slice(0, 55)}
-                                        {fData[tooltip].name.length > 55 ? "..." : ""}
-                                    </text>
-                                )}
-                                { tooltip !== -1 && (
-                                    <text
-                                        x={yMin + (yMax - yMin) * 0.1}
-                                        y={fData[tooltip].umap_coordinates[1] - ttHeight * 0.55}
-                                        fontSize={(yMax - yMin) * 0.03}
-                                    >
-                                        {fData[tooltip].experimentAccession} · click for more information
-                                    </text>
+                                    <Annotation notScaled notTranslated>
+                                        <rect
+                                            x={35}
+                                            y={100}
+                                            width={740}
+                                            height={120}
+                                            strokeWidth={2}
+                                            stroke="#000000"
+                                            fill="#ffffffdd"
+                                        />
+                                        <rect
+                                            x={55}
+                                            y={120}
+                                            width={740 * 0.04}
+                                            height={740 * 0.04}
+                                            strokeWidth={1}
+                                            stroke="#000000"
+                                            fill="#00b0d0"
+                                        />
+                                        <text
+                                            x={100}
+                                            y={140}
+                                            fontSize="26px"
+                                            fontWeight="bold"
+                                        >
+                                            {fData[tooltip].name.replace(/_/g, " ").slice(0, 45)}
+                                            {fData[tooltip].name.length > 45 ? "..." : ""}
+                                        </text>
+                                        <text
+                                            x={55}
+                                            y={185}
+                                            fontSize="24px"
+                                        >
+                                            {fData[tooltip].experimentAccession} · click for associated downloads
+                                        </text>
+                                    </Annotation>
                                 )}
                             </Chart><br />
                             <svg viewBox={`0 0 1000 ${height}`}>
-                                <Legend
+                                <ToggleableLegend
                                     title=""
                                     entries={legendEntries}
                                     size={{ width: 1000, height }}
+                                    onChange={setTSelected}
                                 />
                             </svg>
                         </React.Fragment>
@@ -334,13 +365,13 @@ const MatrixPage = () => {
                             <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
                             <Divider style={{ borderTop: "1px solid #000" }} />
                             <div style={{ marginTop: "0.8em" }} />
-                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V2.txt`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                            <Button size="large" href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V2.txt`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Fold-change signal matrix
                             </Button>
-                            <Button size="large" href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ backgroundColor: "#88aa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                            <Button size="large" href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ backgroundColor: "#88aa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Quantile normalized signal matrix
                             </Button>
-                            <Button size="large" download href={`http://gcp.wenglab.org/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V2.txt`} style={{ backgroundColor: "#8888aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                            <Button size="large" download href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V2.txt`} style={{ backgroundColor: "#8888aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Z-scored signal matrix
                             </Button>
                             { biosamples.length > 0 ? (
@@ -349,10 +380,10 @@ const MatrixPage = () => {
                                     <Header as="h3">
                                         {biosamples.length.toLocaleString()} experiments selected <Icon name="eye" onClick={() => setModalOpen(true)} />
                                     </Header>
-                                    <Button size="medium" style={{ backgroundColor: "#aa88aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                    <Button size="medium" style={{ backgroundColor: "#aa88aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(true)}>
                                         <Icon name="download" /> cCREs with average Z-score &gt;1.64 across these experiments
                                     </Button>
-                                    <Button size="medium" style={{ backgroundColor: "#aaaa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }}>
+                                    <Button size="medium" style={{ backgroundColor: "#aaaa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(true)}>
                                         <Icon name="download" /> cCREs ranked by specificity score for this experiment group
                                     </Button>
                                 </React.Fragment>

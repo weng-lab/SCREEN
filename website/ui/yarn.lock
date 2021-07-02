@@ -7073,10 +7073,10 @@ jubilant-carnival@^0.4.0:
   resolved "https://registry.yarnpkg.com/jubilant-carnival/-/jubilant-carnival-0.4.0.tgz#16d8022f85f8937e1d7e87e22cd97db4d6489e12"
   integrity sha512-Awndr/YB5xNZ/d73tzOYj/cLEL4YxGWTMkEYBxZ/CRu9w3ArrFW6Rdz/jscp7ZkXBsxTwQEeDozF8ZV81eqTSg==
 
-jubilant-carnival@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/jubilant-carnival/-/jubilant-carnival-0.4.1.tgz#d459e5f9f8dd8cba1e6c8d08df4ec5aec535d823"
-  integrity sha512-J+u1mMB/g+FbWZZYPnjHDkePfhLfRucdBspf/ySaaCBVu9AbMB+6CI8vM9pkSXw6ZvnPLPlmzAJN6j5c6DPpbg==
+jubilant-carnival@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/jubilant-carnival/-/jubilant-carnival-0.5.1.tgz#cf9020f7b5ed5515159fa4fed33fde963eef5cf0"
+  integrity sha512-QF2DB+2rPEAKUEukAV38boJzq4du4o6YWtVFlv3YHl/bhaRHU1pa+d7T6NTcw5zksNt0T4cJoC7WOfjxGK7T6Q==
 
 keyboard-key@^1.1.0:
   version "1.1.0"
@@ -11624,10 +11624,10 @@ umap-js@^1.3.3:
   dependencies:
     ml-levenberg-marquardt "^2.0.0"
 
-umms-gb@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/umms-gb/-/umms-gb-3.4.1.tgz#65a46a2b5dd44cfdf3c6055fc0cda2323b377347"
-  integrity sha512-H0zTl5+UXqdTX6MZA3tlYgyvbkvRrUCnahClIrKS7kqhkbyoKMVNQoF2sZLzfQP//v6nECx22HplCfqDUwWzmg==
+umms-gb@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/umms-gb/-/umms-gb-3.5.1.tgz#876394ee69d730699124916c66552630ae769f93"
+  integrity sha512-WJVisJ8WVl/l7aeaif/Qgbp+EQGpzE8oA+CffHIpZ+fDOKvxRC4EjAyTHdgLb/Mis14cmYVZ59nFn8XHPnWu3A==
   dependencies:
     "@types/uuid" "^8.0.0"
     bigwig-reader "^1.3.1"

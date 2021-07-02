@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Button, Container, Grid, Icon, Search, Loader, Popup, Input, Modal } from 'semantic-ui-react';
 import { associateBy } from "queryz";
 import HumanHeader from '../HumanHeader';
@@ -72,7 +72,7 @@ const SearchBox = props => {
     }, [ downloading ]);
     return (
         <React.Fragment>
-            { downloading !== "" && <Modal open={true}><Modal.Content>Querying cCREs. This may take 30-60 seconds...</Modal.Content></Modal> }
+            { downloading !== "" && <Modal open style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}><Modal.Header style={{ fontSize: "2em" }}>Fetching cCREs...</Modal.Header><Modal.Content style={{ fontSize: "1.2em" }}>This may take 30-60 seconds.</Modal.Content></Modal> }
             <div style={{ width: "72%", marginLeft: "5.5em", marginBottom: "0.5em" }}>
                 <Search
                     input={{ fluid: true }}
@@ -96,6 +96,7 @@ const SearchBox = props => {
 const QuickStart = () => {
     
     const [ loading, setLoading ] = useState(true);
+    const [ modalShown, setModalShown ] = useState(false);
     const [ data, setData ] = useState({});
     useEffect( () => {
         loading && fetch("https://ga.staging.wenglab.org/graphql", {
@@ -120,6 +121,11 @@ const QuickStart = () => {
 
     return loading ? <Loader active>Loading...</Loader> : (
         <Container style={{ width: "100%" }}>
+            <Modal open={modalShown} onClose={() => setModalShown(false)} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
+                <Modal.Header style={{ fontSize: "2em" }}>Not yet available</Modal.Header>
+                <Modal.Content style={{ fontSize: "1.2em" }}>This feature is still being developed.</Modal.Content>
+                <Modal.Actions style={{ fontSize: "1.2em" }}><Button onClick={() => setModalShown(false)}>OK</Button></Modal.Actions>
+            </Modal>
             <Grid divided="vertically" style={{ marginTop: "1em" }}>
                 <Grid.Row style={{ padding: "0px" }}>
                     <Grid.Column width={3} />
@@ -133,12 +139,12 @@ const QuickStart = () => {
                 <Grid.Row style={{ paddingTop: "1.0em" }}>
                     <Grid.Column width={2} />
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", width: "65%" }}>
+                        <Button size="large" href="https://api.wenglab.org/screen_v13/fdownloads/V3/GRCh38-cCREs.bed" download style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", width: "65%" }}>
                             Download all human cCREs (hg38)
                         </Button>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" href="http://gcp.wenglab.org/mm10-ccREs.bed" download style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", width: "65%" }}>
+                        <Button size="large" href="https://api.wenglab.org/screen_v13/fdownloads/V3/mm10-ccREs.bed" download style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", width: "65%" }}>
                             Download all mouse cCREs (mm10)
                         </Button>
                     </Grid.Column>
@@ -148,13 +154,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.1em" }}>Promoters <Popup content={PROMOTER_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/cCREs/GRCh38-PLS.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/GRCh38-PLS.bed" download>
                             Download all human promoters (hg38)
                         </Button><br />
                         <SearchBox results={h3k4me3H || []} description={x => x.h3k4me3 || ""} color="#ff0000" title="promoters" dl={x => x.includes("PLS")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/cCREs/mm10-ELS.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-ELS.bed" download>
                             Download all mouse promoters (mm10)
                         </Button><br />
                         <SearchBox results={h3k4me3M || []} description={x => x.h3k4me3 || ""} color="#ff0000" title="promoters" dl={x => x.includes("PLS")} />
@@ -165,13 +171,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.1em" }}>Enhancers <Popup content={ENHANCER_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/cCREs/GRCh38-ELS.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/GRCh38-ELS.bed" download>
                             Download all human enhancers (hg38)
                         </Button><br />
                         <SearchBox results={h3k27acH || []} description={x => x.h3k27ac || ""} color="#ffcd00" title="enhancers" dl={x => x.includes("ELS")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/cCREs/mm10-ELS.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#ffcd00", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-ELS.bed" download>
                             Download all mouse enhancers (mm10)
                         </Button><br />
                         <SearchBox results={h3k27acM || []} description={x => x.h3k27ac || ""} color="#ffcd00" title="enhancers" dl={x => x.includes("ELS")} />
@@ -182,13 +188,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.1em" }}>CTCF bound <Popup content={CTCF_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/cCREs/GRCh38-CTCF.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/GRCh38-CTCF.bed" download>
                             Download all human CTCF-bound cCREs (hg38)
                         </Button><br />
                         <SearchBox results={ctcfH || []} description={x => x.ctcf || ""} color="#00b0d0" title="CTCF-bound cCREs" dl={x => x.includes("CTCF")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/cCREs/mm10-CTCF.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#00b0d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-CTCF.bed" download>
                             Download all mouse CTCF-bound cCREs (mm10)
                         </Button><br />
                         <SearchBox results={ctcfM || []} description={x => x.ctcf || ""} color="#00b0d0" title="CTCF-bound cCREs" dl={x => x.includes("CTCF")} />
@@ -199,13 +205,13 @@ const QuickStart = () => {
                         <br /><span style={{ fontSize: "1.1em" }}>Gene Links <Popup content={LINK_MESSAGE} trigger={<Icon name="info circle" />} /></span>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#b000d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#b000d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} onClick={() => setModalShown(true)}>
                             Download all human cCRE-gene links (hg38)
                         </Button><br />
                         <Input style={{ width: "65%", marginTop: "0.4em" }} icon="search" placeholder="Search for a biosample..." />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#b000d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="http://gcp.wenglab.org/GRCh38-ccREs.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#b000d0", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} onClick={() => setModalShown(true)}>
                             Download all mouse cCRE-gene links (mm10)
                         </Button><br />
                         <Input style={{ width: "65%", marginTop: "0.4em" }} icon="search" placeholder="Search for a biosample..." />
