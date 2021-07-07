@@ -129,9 +129,9 @@ const FunctionalValidationView = props => {
                 <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>Browser View</Menu.Item>
                 <Menu.Item active={page === 0} onClick={() => setPage(0)} style={{ fontSize: "1.2em" }}>Table View</Menu.Item>
             </Menu>
-            <Modal open={selecting} onClose={() => setSelecting(false)}>
+            <Modal open={selecting} onClose={() => setSelecting(false)} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
                 <Modal.Header style={{ fontSize: "2em" }}>Select Experiments</Modal.Header>
-                <Modal.Content>
+                <Modal.Content style={{ fontSize: "1.2em" }}>
                     <DataTable
                         columns={c}
                         rows={selected}
