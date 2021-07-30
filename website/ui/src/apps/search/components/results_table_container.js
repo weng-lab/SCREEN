@@ -3,19 +3,199 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React from 'react';
+import React, { useRef, useMemo, useState, useCallback } from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from '@apollo/client';
 
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
+import DefaultTracks, { tracks } from './DefaultTracks';
+import BiosampleTracks from './BiosampleTracks';
+import CytobandView from './Cytobands';
+
+import { useHistory } from 'react-router-dom';
+import { Loader } from 'semantic-ui-react';
+import { EmptyTrack, GenomeBrowser, PackTranscriptTrack, RulerTrack, UCSCControls } from 'umms-gb';
 
 import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin, toParams, isCart } from '../../../common/utility';
+import { associateBy } from 'queryz';
+import { Menu } from 'semantic-ui-react';
+
+export const CCRE_FIELDS = gql`
+fragment CCREFields on CCRE {
+    accession
+    coordinates {
+        chromosome
+        start
+        end
+    }
+    rDHS
+    group
+    dnaseZ: maxZ(assay: "dnase")
+    h3k4me3Z: maxZ(assay: "h3k4me3")
+    h3k27acZ: maxZ(assay: "h3k27ac")
+    ctcfZ: maxZ(assay: "ctcf")
+}
+`;
+
+const QUERY = gql`
+${CCRE_FIELDS}
+query q($chromosome: String, $start: Int, $end: Int, $assembly: String!, $name: [String]) {
+  gene(chromosome: $chromosome, start: $start, end: $end, assembly: $assembly) {
+    name
+    strand
+    transcripts {
+      name
+      strand
+      exons {
+          coordinates {
+              chromosome
+              start
+              end
+          }
+      }
+      coordinates {
+        chromosome
+        start
+        end
+      }
+    }
+  }
+  queriedGene: gene(name: $name, assembly: $assembly) {
+    transcripts {
+      associated_ccres_pls {
+        intersecting_ccres {
+          ...CCREFields
+        }
+      }
+    }
+  }
+  queriedTranscript: transcript(name: $name, assembly: $assembly) {
+    associated_ccres_pls {
+      intersecting_ccres {
+        ...CCREFields
+      }
+    }
+  }
+  ccREBiosampleQuery(assembly: $assembly) {
+	biosamples {
+	  name
+	  dnase: experimentAccession(assay: "DNase")
+	  h3k4me3: experimentAccession(assay: "H3K4me3")
+	  h3k27ac: experimentAccession(assay: "H3K27ac")
+	  ctcf: experimentAccession(assay: "CTCF")
+	  dnase_signal: fileAccession(assay: "DNase")
+	  h3k4me3_signal: fileAccession(assay: "H3K4me3")
+	  h3k27ac_signal: fileAccession(assay: "H3K27ac")
+	  ctcf_signal: fileAccession(assay: "CTCF")
+	}
+  }
+}
+`;
+
+export function expandCoordinates(coordinates, l = 20000) {
+    return {
+        chromosome: coordinates.chromosome,
+        start: coordinates.start - l < 0 ? 0 : coordinates.start - l,
+        end: coordinates.end + l
+    };
+}
+
+function capRange(range) {
+	if (range.end - range.start > 1000000) {
+		const m = Math.floor((range.end + range.start) / 2);
+		return { start: m - 500000, end: m + 500000 };
+	}
+	return range;
+}
+
+const Browser = props => {
+	const [ highlight, setHighlight ] = useState(null);
+	// const history = useHistory();
+	const expandedCoordinates = useMemo( () => expandCoordinates(props.coordinates), [ props.coordinates ]);
+	const [ eCoordinates, setECoordinates ] = useState(expandedCoordinates);
+	const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
+	const { data, loading } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client });
+	const groupedBiosamples = useMemo( () => associateBy(data && data.ccREBiosampleQuery ? data.ccREBiosampleQuery.biosamples : [], x => x.name, x => x), [ data ]);
+    const groupedTranscripts = useMemo( () => data && data.gene && data.gene.map(
+        x => ({
+            ...x,
+            transcripts: x.transcripts.map(xx => ({ ...xx, color: (props.resolvedTranscript ? xx : x).name === props.gene ? "#880000" : "#aaaaaa" }))
+        })
+    ), [ data, props ]);
+    const svgRef = useRef(null);
+	const l = useCallback(c => (c - eCoordinates.start) * 1400 / (eCoordinates.end - eCoordinates.start), [ eCoordinates ]);
+	return loading ? <Loader active>Loading...</Loader> : (
+		<ApolloProvider client={client}>
+			<CytobandView
+				innerWidth={1000}
+				height={15}
+				chromosome={props.coordinates.chromosome}
+				assembly="GRCh38"
+				position={props.coordinates}
+			/>
+			<div style={{ marginTop: "1em", marginBottom: "0.75em", textAlign: "center" }}>
+				<UCSCControls
+					domain={eCoordinates}
+					onDomainChanged={x => setECoordinates({ chromosome: props.coordinates.chromosome, ...capRange(x) })}
+				/>
+			</div>
+			<GenomeBrowser
+				svgRef={svgRef}
+				domain={eCoordinates}
+				innerWidth={1400}
+				width="100%"
+				noMargin
+				onDomainChanged={x => setECoordinates({ chromosome: props.coordinates.chromosome, ...x })}
+			>
+				{ highlight && (
+					<rect fill="#8ec7d1" fillOpacity={0.5} height={1000} x={l(highlight.start)} width={l(highlight.end) - l(highlight.start)} />
+				)}
+				<RulerTrack
+					domain={eCoordinates}
+					width={1400}
+					height={50}
+				/>
+				<EmptyTrack height={30} width={1400} />
+				<PackTranscriptTrack
+					rowHeight={20}
+					width={1400}
+					domain={eCoordinates}
+					id="innergencode"
+					data={groupedTranscripts}
+				/>
+				<EmptyTrack height={20} width={1400} />
+				<DefaultTracks
+					tracks={tracks("grch38", eCoordinates)}
+					domain={eCoordinates}
+					cCREHighlight={props.coordinates}
+					cCREHighlights={new Set([])} // props.facetState.gene_overlap.modes.find(x => x === "PROMOTER") ? associatedPromoters.map(x => x.accession) : [])}
+					svgRef={svgRef}
+					assembly="grch38"
+					oncCREClicked={x => props.g.get(x) && props.actions.showReDetail(props.g.get(x))}
+					oncCREMousedOver={x => x && setHighlight(x)}
+					oncCREMousedOut={() => setHighlight(null)}
+					actions={props.actions}
+				/>
+				{ props.cellType && (
+					<BiosampleTracks
+						biosample={groupedBiosamples.get(props.cellType)}
+						domain={eCoordinates}
+						oncCREClicked={x => props.g.get(x) && props.actions.showReDetail(props.g.get(x))}
+						oncCREMousedOver={x => x && setHighlight(x)}
+						oncCREMousedOut={() => setHighlight(null)}
+					/>
+				)}
+			</GenomeBrowser>
+		</ApolloProvider>
+	);
+}
 
 class ResultsTableContainer extends React.Component {
     state = { cres: [], rfacets: [], total: 0, cts: null,
-              isFetching: true, isError: false,
+              isFetching: true, isError: false, page: 0,
               jq : null}
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -176,10 +356,26 @@ class ResultsTableContainer extends React.Component {
 	    }
 	}
 
+	const grouped = associateBy(cresWithChecks, x => x.info.accession, x => ({ ...x, ...x.info }));
 	return (
 	    <div>
-	    {interpBox}
-		<TableWithCart
+			<Menu secondary pointing style={{ fontSize: "1em", marginTop: "0.5em" }}>
+				<Menu.Item active={this.state.page !== 1} onClick={() => this.setState({ page: 0 })}>Genome Browser View</Menu.Item>
+				<Menu.Item active={this.state.page === 1} onClick={() => this.setState({ page: 1 })}>Table View</Menu.Item>
+			</Menu>
+			<div style={{ height: "0.5em" }} />
+			{ this.state.page === 0 ? (
+				<Browser
+					coordinates={{ chromosome: this.props.coord_chrom, start: this.props.coord_start, end: this.props.coord_end }}
+					cellType={this.props.cellType}
+					actions={this.props.actions}
+					g={grouped}
+					gene={this.props.search && this.props.search.parsedQuery && this.props.search.parsedQuery.genes[0] && this.props.search.parsedQuery.genes[0].approved_symbol}
+				/>
+			) : (
+				<React.Fragment>
+					{interpBox}
+							<TableWithCart
 		    uuid={this.props.uuid}
 		    assembly={this.props.assembly}
                     actions={this.props.actions}
@@ -198,6 +394,8 @@ class ResultsTableContainer extends React.Component {
 		    gb_cres={this.props.gb_cres}
 		    chrom = {this.props.coord_chrom}
 		/>
+				</React.Fragment>
+			)}
 	    </div>);
     }
 }
