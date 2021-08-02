@@ -44,13 +44,19 @@ function nearest5(x, low) {
     return Math.ceil(x) + (x > 0 ? Math.ceil(x) % 5 : 5 + (Math.ceil(x) % 5));
 }
 
-function fiveRange(min, max) {
+export function fiveRange(min, max) {
     const r = [];
     for (let i = min; i <= max; i += 5) r.push(i);
     return r;
 }
 
-function oneRange(min, max) {
+export function tenRange(min, max) {
+    const r = [];
+    for (let i = min; i <= max; i += 10) r.push(i);
+    return r;
+}
+
+export function oneRange(min, max) {
     const r = [];
     for (let i = min; i <= max; ++i) r.push(i);
     return r;
@@ -74,7 +80,7 @@ function spacedColors(n) {
     return r;
 }
 
-function colorMap(strings) {
+export function colorMap(strings) {
     const c = {};
     strings.forEach(x => c[x] = c[x] ? c[x] + 1 : 1);
     strings = [ ...new Set(strings) ];

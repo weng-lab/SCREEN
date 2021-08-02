@@ -11,6 +11,7 @@ import GeneExp from './apps/geneexp/main';
 import De from './apps/de/main';
 import Gwas from './apps/gwas/main';
 import IndexPage from './apps/index/main';
+import { LDR } from './apps/index/components/LDR/LDR';
 import { v4 as uuidv4 } from 'uuid';
 import Loadable from 'react-loadable';
 
@@ -75,6 +76,11 @@ const LoadableGwas = Loadable({
     loading: Loading
 });
 
+const LoadableLDR = Loadable({
+    loader: () => import('./apps/index/components/LDR/LDR'),
+    loading: Loading
+});
+
 ReactDOM.render((
     <Router history={h} createElement={addUuid} >
 	<Route path={"/"} component={LoadableIndex} />
@@ -86,5 +92,6 @@ ReactDOM.render((
 	<Route path={"/geApp/"} component={LoadableGeneExp} />
 	<Route path={"/deApp/"} component={LoadableDe} />
 	<Route path={"/gwasApp/"} component={LoadableGwas} />
+	<Route path="/ldr/" component={LoadableLDR} />
     </Router>
 ), document.getElementById('root'));
