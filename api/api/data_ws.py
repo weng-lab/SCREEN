@@ -35,37 +35,50 @@ from pg_global import GlobalPG
 from pg_fantomcat import PGFantomCat
 from pg_home import PGHome
 
+STARR_URLS = [
+    "https://encode-public.s3.amazonaws.com/2020/04/22/0b5b6206-b2d0-4b74-80c6-009ca0d38fbc/ENCFF273BHD.bigBed",
+    "https://encode-public.s3.amazonaws.com/2020/04/22/ed0cbf12-9748-4cc1-b19f-c02bf64b5722/ENCFF902UEX.bigWig"
+]
+
 COLORS = """255,0,0
 255,69,0
-255,69,0
 0,128,0
-0,128,0
+63,154,80
 255,223,0
-255,255,128
 255,255,128
 205,92,92
 189,183,107
 189,183,107
-138,43,226
+170,223,7
+137,55,223
+151,80,227
 75,0,130
 128,128,128
-220,220,220""".split("\n")
+220,220,220
+220,220,220
+220,220,220
+220,220,220
+170,170,170""".split("\n")
 
-STATES = """active_TSS
-flanking_active_TSS_1
-flanking_active_TSS_2
-transcription_1
-transcription_2
-strong_enhancer
-weak_enhancer_1
-weak_enhancer_2
-bivalent_TSS
-posed_enhancer_1
-posed_enhancer_2
-facultative_heterochromatin
-constitutive_heterochromatin
+STATES = """active_tss
+flanking_active_tss
+transcription
+weak_transcription
+enhancer
+weak_enhancer
+bivalent_tss
+poised_enhancer
+primed_enhancer
+genic_enhancer
+polycomb_repressed
+polycomb_repressed_weak
+heterochromatin
 quiescent_gene
-quiescent""".replace("_", " ").split("\n")
+quiescent
+quiescent2
+quiescent3
+quiescent4
+UNKNOWN""".replace("_", " ").split("\n")
 
 COLOR_MAP = { "rgb(%s)" % x: STATES[i] for i, x in enumerate(COLORS) }
 
@@ -140,11 +153,17 @@ def url(tissue):
     tissue = tissue.split()
     tissue[-1] = tissue[-1].replace("e", "")
     tissue = " ".join(tissue)
-    return "http://gcp.wenglab.org/V3-chromHMM/%s_mouse-cCRE-V3_ChromHMM_state.bigBed" % tissue.replace(" ", "_")
+    return "http://gcp.wenglab.org/V3-chromHMM/%s_mouse-cCRE-V3_ChromHMM_state.bed.bigBed" % tissue.replace(" ", "_")
+
+def wurl(tissue):
+    tissue = tissue.split()
+    tissue[-1] = tissue[-1].replace("e", "")
+    tissue = " ".join(tissue)
+    return "http://gcp.wenglab.org/chromHMMall/%s_mm10_18_posterior.bigBed" % tissue.replace(" ", "_")    
 
 def states(c, s, e):
     def formatr(x, t):
-        x["state"] = COLOR_MAP[x["color"]]
+        x["state"] = COLOR_MAP[x["color"]] + "_" + x["color"]
         x["tissue"] = t.replace("e0", "p0")
         return x
     def flatten(r):
@@ -153,14 +172,21 @@ def states(c, s, e):
             rr += x
         return rr
     br = [{ "url": url(tissue), "chr1": c, "start": s, "end": e, "chr2": c } for tissue in TISSUES ]
+    er = [{ "url": wurl(tissue), "chr1": c, "start": s - 50000, "end": e + 50000, "chr2": c } for tissue in TISSUES ]
     results = requests.post("https://ga.staging.wenglab.org/graphql", json = {
-"query": """  query q($requests: [BigRequest!]!) {
+"query": """  query q($requests: [BigRequest!]!, $erequests: [BigRequest!]!) {
     bigRequests(requests: $requests) {
       data
     }
+    expanded: bigRequests(requests: $erequests) {
+      data
+    }
   }
-""", "variables": { "requests": br } }).json()["data"]["bigRequests"]
-    return flatten([ [ formatr(x, tissue) for x in results[i]["data"] ] for i, tissue in enumerate(TISSUES) ])
+""", "variables": { "requests": br, "erequests": er } }).json()["data"]
+    return (
+        flatten([ [ formatr(x, tissue) for x in results["bigRequests"][i]["data"] ] for i, tissue in enumerate(TISSUES) ]),
+        flatten([ [ formatr(x, tissue) for x in results["expanded"][i]["data"] ] for i, tissue in enumerate(TISSUES) ])
+    )
 
 class DataWebServiceWrapper:
     def __init__(self, args, pw, cacheW, staticDir):
@@ -238,7 +264,8 @@ class DataWebService():
 
     def _chromhmm(self, j, accession):
         coord = self._coord(accession)
-        return { accession: { "chromhmm": states(coord.chrom, coord.start, coord.end) } }
+        s = states(coord.chrom, coord.start, coord.end)
+        return { accession: { "chromhmm": [ s[0], s[1] ] } }
     
     def _ortholog(self, j, accession):
         if j["assembly"] != "mm10":
@@ -494,6 +521,10 @@ class DataWebService():
         return {accession: ranks}
 
     def _re_detail_functionalValidation(self, j, accession):
+        coord = self._coord(accession)
+        c = coord.chrom
+        s = coord.start
+        e = coord.end
         def format_result(x):
             return {
                 "cCRE": x[u'cCRE'],
@@ -504,9 +535,14 @@ class DataWebService():
                 "tissues": x[u'tissues'],
                 "overlap": x[u'overlap']
             }
-        return { accession: { "functional_validation": [ format_result(x) for x in requests.post("https://factorbook.api.wenglab.org/graphql", json = {
+        def regionaverage(values):
+            total = 0
+            for x in values:
+                total += x["value"] * (x["end"] - x["start"])
+            return float(total) / (e - s)
+        jx = requests.post("https://factorbook.api.wenglab.org/graphql", json = {
             "query": """
-               query q($cCRE: [String!]) {
+               query q($cCRE: [String!], $requests: [BigRequest!]!) {
                  vistaQuery(assembly: "grch38", cCRE: $cCRE, active: true) {
                    cCRE
                    accession
@@ -515,10 +551,19 @@ class DataWebService():
                    overlap
                    coordinates { chromosome, start, end }
                  }
-                }
+                 bigRequests(requests: $requests) {
+                   data
+                 }
+               }
             """,
-            "variables": { "assembly": self.assembly, "cCRE": accession }
-        }).json()[u'data'][u'vistaQuery'] ] } }
+            "variables": { "assembly": self.assembly, "cCRE": accession, "requests": [{ "url": x, "chr1": c, "start": s, "end": e, "chr2": c } for x in STARR_URLS ] }
+        })
+        try:
+            j = jx.json()
+        except:
+            print(jx.text, file = sys.stderr)
+            j = { "data": { "vistaQuery": [], "bigRequests": [{ "data": [] }, { "data": [] }] } }
+        return { accession: { "vista": [ format_result(x) for x in j['data']['vistaQuery'] ], "starr": { "reads": regionaverage(j["data"]["bigRequests"][1]["data"]), "results": j["data"]["bigRequests"][0]["data"] } } }
 
     def fantom_cat(self, j, accession):
         def process(key):
