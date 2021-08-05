@@ -14,9 +14,8 @@ import DefaultTracks, { tracks } from './DefaultTracks';
 import BiosampleTracks from './BiosampleTracks';
 import CytobandView from './Cytobands';
 
-import { useHistory } from 'react-router-dom';
 import { Loader } from 'semantic-ui-react';
-import { EmptyTrack, GenomeBrowser, PackTranscriptTrack, RulerTrack, UCSCControls } from 'umms-gb';
+import { EmptyTrack, GenomeBrowser, PackTranscriptTrack, SquishTranscriptTrack, RulerTrack, UCSCControls } from 'umms-gb';
 
 import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin, toParams, isCart } from '../../../common/utility';
@@ -40,7 +39,7 @@ fragment CCREFields on CCRE {
 }
 `;
 
-const QUERY = gql`
+export const QUERY = gql`
 ${CCRE_FIELDS}
 query q($chromosome: String, $start: Int, $end: Int, $assembly: String!, $name: [String]) {
   gene(chromosome: $chromosome, start: $start, end: $end, assembly: $assembly) {
@@ -103,7 +102,7 @@ export function expandCoordinates(coordinates, l = 20000) {
     };
 }
 
-function capRange(range) {
+export function capRange(range) {
 	if (range.end - range.start > 1000000) {
 		const m = Math.floor((range.end + range.start) / 2);
 		return { start: m - 500000, end: m + 500000 };
@@ -117,7 +116,7 @@ const Browser = props => {
 	const expandedCoordinates = useMemo( () => expandCoordinates(props.coordinates), [ props.coordinates ]);
 	const [ eCoordinates, setECoordinates ] = useState(expandedCoordinates);
 	const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
-	const { data, loading } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client });
+	const { data, loading } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: props.assembly.toLocaleLowerCase(), name: props.gene || "undefined" }, client });
 	const groupedBiosamples = useMemo( () => associateBy(data && data.ccREBiosampleQuery ? data.ccREBiosampleQuery.biosamples : [], x => x.name, x => x), [ data ]);
     const groupedTranscripts = useMemo( () => data && data.gene && data.gene.map(
         x => ({
@@ -133,7 +132,7 @@ const Browser = props => {
 				innerWidth={1000}
 				height={15}
 				chromosome={props.coordinates.chromosome}
-				assembly="GRCh38"
+				assembly={props.assembly}
 				position={props.coordinates}
 			/>
 			<div style={{ marginTop: "1em", marginBottom: "0.75em", textAlign: "center" }}>
@@ -143,6 +142,7 @@ const Browser = props => {
 				/>
 			</div>
 			<GenomeBrowser
+				key={props.cellType}
 				svgRef={svgRef}
 				domain={eCoordinates}
 				innerWidth={1400}
@@ -156,38 +156,49 @@ const Browser = props => {
 				<RulerTrack
 					domain={eCoordinates}
 					width={1400}
-					height={50}
+					height={30}
 				/>
 				<EmptyTrack height={30} width={1400} />
-				<PackTranscriptTrack
-					rowHeight={20}
-					width={1400}
-					domain={eCoordinates}
-					id="innergencode"
-					data={groupedTranscripts}
-				/>
-				<EmptyTrack height={20} width={1400} />
-				<DefaultTracks
-					tracks={tracks("grch38", eCoordinates)}
-					domain={eCoordinates}
-					cCREHighlight={props.coordinates}
-					cCREHighlights={new Set([])} // props.facetState.gene_overlap.modes.find(x => x === "PROMOTER") ? associatedPromoters.map(x => x.accession) : [])}
-					svgRef={svgRef}
-					assembly="grch38"
-					oncCREClicked={x => props.g.get(x) && props.actions.showReDetail(props.g.get(x))}
-					oncCREMousedOver={x => x && setHighlight(x)}
-					oncCREMousedOut={() => setHighlight(null)}
-					actions={props.actions}
-				/>
-				{ props.cellType && (
+				{ eCoordinates.end - eCoordinates.start >= 5000000 ? (
+					<SquishTranscriptTrack
+						rowHeight={20}
+						width={1400}
+						domain={eCoordinates}
+						id="innergencode"
+						data={groupedTranscripts}
+					/>
+				) : (
+					<PackTranscriptTrack
+						rowHeight={20}
+						width={1400}
+						domain={eCoordinates}
+						id="innergencode"
+						data={groupedTranscripts}
+					/>
+				)}
+				{ props.cellType && props.assembly !== "mm10" && (
 					<BiosampleTracks
 						biosample={groupedBiosamples.get(props.cellType)}
 						domain={eCoordinates}
 						oncCREClicked={x => props.g.get(x) && props.actions.showReDetail(props.g.get(x))}
 						oncCREMousedOver={x => x && setHighlight(x)}
 						oncCREMousedOut={() => setHighlight(null)}
+						assembly={props.assembly}
 					/>
 				)}
+				<EmptyTrack height={20} width={1400} />
+				<DefaultTracks
+					tracks={tracks(props.assembly.toLocaleLowerCase(), eCoordinates)}
+					domain={eCoordinates}
+					cCREHighlight={props.coordinates}
+					cCREHighlights={new Set([])} // props.facetState.gene_overlap.modes.find(x => x === "PROMOTER") ? associatedPromoters.map(x => x.accession) : [])}
+					svgRef={svgRef}
+					assembly={props.assembly.toLocaleLowerCase()}
+					oncCREClicked={x => props.g.get(x) && props.actions.showReDetail(props.g.get(x))}
+					oncCREMousedOver={x => x && setHighlight(x)}
+					oncCREMousedOut={() => setHighlight(null)}
+					actions={props.actions}
+				/>
 			</GenomeBrowser>
 		</ApolloProvider>
 	);
@@ -356,6 +367,7 @@ class ResultsTableContainer extends React.Component {
 	    }
 	}
 
+	console.log(this.props, this.state);
 	const grouped = associateBy(cresWithChecks, x => x.info.accession, x => ({ ...x, ...x.info }));
 	return (
 	    <div>
@@ -366,11 +378,12 @@ class ResultsTableContainer extends React.Component {
 			<div style={{ height: "0.5em" }} />
 			{ this.state.page === 0 ? (
 				<Browser
-					coordinates={{ chromosome: this.props.coord_chrom, start: this.props.coord_start, end: this.props.coord_end }}
+					coordinates={{ chromosome: this.props.coord_chrom || this.state.cres[0].coord_chrom, start: this.props.coord_start || this.state.cres[0].coord_start, end: this.props.coord_end || this.state.cres[0].coord_end }}
 					cellType={this.props.cellType}
 					actions={this.props.actions}
 					g={grouped}
 					gene={this.props.search && this.props.search.parsedQuery && this.props.search.parsedQuery.genes[0] && this.props.search.parsedQuery.genes[0].approved_symbol}
+					assembly={this.props.assembly}
 				/>
 			) : (
 				<React.Fragment>
