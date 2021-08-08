@@ -56,7 +56,7 @@ const DefaultTracks = props => {
                 width={1400}
                 transform=""
                 id=""
-                text="All cCREs colored by group (matching query) or colored gray (not matching query)"
+                text="All cCREs colored by group"
             />
             <DenseBigBed
                 width={1400}

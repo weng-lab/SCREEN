@@ -159,7 +159,7 @@ const Browser = props => {
 					height={30}
 				/>
 				<EmptyTrack height={30} width={1400} />
-				{ eCoordinates.end - eCoordinates.start >= 5000000 ? (
+				{ eCoordinates.end - eCoordinates.start >= 500000 ? (
 					<SquishTranscriptTrack
 						rowHeight={20}
 						width={1400}
@@ -190,7 +190,7 @@ const Browser = props => {
 				<DefaultTracks
 					tracks={tracks(props.assembly.toLocaleLowerCase(), eCoordinates)}
 					domain={eCoordinates}
-					cCREHighlight={props.coordinates}
+					cCREHighlight={eCoordinates}
 					cCREHighlights={new Set([])} // props.facetState.gene_overlap.modes.find(x => x === "PROMOTER") ? associatedPromoters.map(x => x.accession) : [])}
 					svgRef={svgRef}
 					assembly={props.assembly.toLocaleLowerCase()}
