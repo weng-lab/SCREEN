@@ -525,10 +525,11 @@ export const FunctionalValidationTable = (globals, assembly, emptyText) => ({
     "starr": {
 	title: "Whole-genome STARR-seq",
 	emptyText: emptyText,
-	cols: [{ title: "biosample(s)", data: "chr", render: d => "K562" },
+	cols: [{ title: "biosample(s)", data: "cellType" },
 	       { title: "peak chromosome", data: "chr" },
 	       { title: "peak start", data: "start", render: Render.integer },
-	       { title: "peak end", data: "end", render: Render.integer }]
+	       { title: "peak end", data: "end", render: Render.integer },
+		{ title: "experiment accession", data: "experiment", render: d => <a href={`https://www.encodeproject.org/experiments/${d}`} target="_blank">{d}</a> } ]
     }
 });
 

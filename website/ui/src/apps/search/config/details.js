@@ -26,14 +26,15 @@ import loading from '../../../common/components/loading';
 import * as Render from '../../../common/zrenders';
 import { GraphQLImportanceTrack } from 'bpnet-ui';
 import { WrappedRulerTrack, DenseBigBed, EmptyTrack, WrappedTrack, GraphQLTranscriptTrack, GraphQLTrackSet, StackedTracks, WrappedSquishTranscriptTrack, RulerTrack, SquishTranscriptTrack, WrappedFullBigWig, WrappedDenseBigBed, UCSCControls, GenomeBrowser, PackTranscriptTrack } from 'umms-gb';
-import { Loader, Menu, Checkbox, Modal, Button, Icon } from 'semantic-ui-react';
+import { Loader, Menu, Checkbox, Modal, Button, Icon, Message } from 'semantic-ui-react';
 import { associateBy, groupBy } from "queryz";
 import { linearTransform } from 'jubilant-carnival';
 import { DataTable } from "ts-ztable";
 import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from '@apollo/client';
 import { capRange, expandCoordinates, QUERY } from '../components/results_table_container';
 import CytobandView from '../components/Cytobands';
-import DefaultTracks, { ENTEXTracks, etracks, tracks } from '../components/DefaultTracks';
+import { ENTEXTracks, etracks } from '../components/DefaultTracks';
+import { Header } from 'react-bootstrap/lib/Modal';
 
 const DATASETS = {
     "Kevin White": [{"biosample_summary": "HCT116 genetically modified using transient transfection", "accession": "ENCSR064KUD", "replicates": 2}, {"biosample_summary": "K562 genetically modified using transient transfection", "accession": "ENCSR858MPS", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR316NSE", "replicates": 1}, {"biosample_summary": "MCF-7 genetically modified using transient transfection", "accession": "ENCSR547SBZ", "replicates": 2}, {"biosample_summary": "A549 genetically modified using transient transfection", "accession": "ENCSR895FDL", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR002ZDU", "replicates": 1}, {"biosample_summary": "SH-SY5Y genetically modified using transient transfection", "accession": "ENCSR983SZZ", "replicates": 2}, {"biosample_summary": "HepG2 genetically modified using transient transfection", "accession": "ENCSR135NXN", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR024WBS", "replicates": 1}],
@@ -60,8 +61,12 @@ const COLUMNS = t => [{
     value: x => x.lab
 }];
 
-const vv = [ ...DATASETS["Kevin White"].map(x => ({ ...x, lab: "Kevin White", selected: x.accession === "ENCSR135NXN" })), ...DATASETS["Tim Reddy"].map(x => ({ ...x, lab: "Tim Reddy", selected: x.accession === "ENCSR135NXN" })) ];
-const v = vv.filter(x => FILES[x.accession].peaks.length > 0);
+const B_COLOR_MAP = { "SH-SY5Y": "#000088", "A549": "#880000", "MCF-7": "#008800", "HepG2": "#880033", "HCT116": "#008833" };
+
+function getSelectedDefault(acc, ct) {
+    const vv = [ ...DATASETS["Kevin White"].map(x => ({ ...x, lab: "Kevin White", selected: acc.has(x.accession) || (ct && x.biosample_summary.includes(ct)) })), ...DATASETS["Tim Reddy"].map(x => ({ ...x, lab: "Tim Reddy", selected: acc.has(x.accession) || (ct && x.biosample_summary.includes(ct)) })) ];
+    return vv.filter(x => FILES[x.accession].peaks.length > 0);
+}
 
 const TrackSet = props => {
     const unique_replicates = useMemo(() => new Set(props.peaks.map(x => x.r[0])), [ props ]);
@@ -84,7 +89,7 @@ const TrackSet = props => {
                             height={30}
                             domain={props.position}
                             id="rDHS"
-                            color="#000000"
+                            color={B_COLOR_MAP[props.title.split(" ")[0]]}
                         />
                         <WrappedFullBigWig
                             title=""
@@ -93,7 +98,6 @@ const TrackSet = props => {
                             height={60}
                             domain={props.position}
                             id="rDHS"
-                            color="#000000"
                         />
                     </GraphQLTrackSet>
                 ) : (
@@ -105,7 +109,7 @@ const TrackSet = props => {
                             height={30}
                             domain={props.position}
                             id="rDHS"
-                            color="#000000"
+                            color={B_COLOR_MAP[props.title.split(" ")[0]]}
                         />
                     </GraphQLTrackSet>
                 )
@@ -114,20 +118,55 @@ const TrackSet = props => {
     );
 };
 
+const FVTable = props => (
+    tabEles(props.globals, { "functional_validation": props.data, "starr": props.ddata }, FunctionalValidationTable(props.globals, props.assembly, props.data["starr"]["reads"] < 10.0 ? "No STARR-seq peaks were identified at this cCRE, but local read depth is insufficient to be confident in a true negative." : "No STARR-seq peaks were identified at this cCRE."), 2)
+);
+
 const FunctionalValidationView = props => {
+
     const [ page, setPage ] = useState(1);
-    const [ selected, setSelected ] = useState(v);
+    const [ selected, setSelected ] = useState(null);
     const toggle = useCallback( xx => {
         const r = [ ...selected ];
         r.forEach( (x, i) => { if (x.accession === xx) r[i] = { ...x, selected: !x.selected }} );
+        console.log(r, selected);
         setSelected(r);
     }, [ selected ]);
-    const c = useMemo(() => COLUMNS(toggle), [ toggle ]);
+    const [ data, setData ] = useState(null);
+    const c = useMemo(() => COLUMNS(toggle), [ toggle, selected ]);
     const [ selecting, setSelecting ] = useState(false);
     const [ transcriptHeight, setTranscriptHeight ] = useState(0);
     const range = useMemo( () => props.active_cre ? ({ start: props.active_cre.start - 100000, end: props.active_cre.start + props.active_cre.len + 100000, chromosome: props.active_cre.chrom }) : ({ start: 1, end: 2 }), [ props ]);
     const l = linearTransform(range, { start: 0, end: 1000 });
-    return (
+
+    const unique_replicates = useMemo(() => Object.keys(FILES).map(x => [ x, FILES[x].peaks ]).filter(x => x[1].length >= 1).map(x => [ x[0], x[1][0].url ]), []);
+    const cts = useMemo( () => Object.keys(DATASETS).flatMap(x => DATASETS[x]), []);
+    const ctmap = useMemo( () => associateBy(cts, x => x.accession, x => x.biosample_summary), []);
+    const tracks = useMemo( () => [ ...unique_replicates ].sort().map( x => ({
+        chr1: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len, chr2: props.active_cre.chrom, url: x[1], preRenderedWidth: props.preRenderedWidth 
+    }) ), [ unique_replicates ]);
+    const cellTypes = useMemo( () => [ ...unique_replicates ].sort().map(x => [ x[0], ctmap.get(x[0]) ]), [ unique_replicates, ctmap ]);
+    const tdomain = useMemo( () => ({ ...range, chromosome: props.active_cre.chrom }), [ props, range ]);
+    useEffect(() => { fetch("https://ga.staging.wenglab.org/graphql", { body: JSON.stringify({ query: `
+    query q($tracks: [BigRequest!]!) {
+        bigRequests(requests: $tracks) {
+            data
+        }
+    }
+    `, variables: { tracks } }), headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    method: "POST" }).then(x => x.json()).then(x => {
+        setData(x.data.bigRequests.flatMap((xx, j) => xx.data.map(xxx => ({
+            ...xxx,
+            experiment: cellTypes[j][0],
+            cellType: cellTypes[j][1].replace(/genetically modified using transient transfection/g, "")
+        }))));
+        setSelected(getSelectedDefault(new Set( x.data.bigRequests.map((x, j) => [ x, cellTypes[j][0] ]).filter(x => x[0].data.length > 0).map(x => x[1]) ), props.cellType));
+    }) }, [ cellTypes, tracks ]);
+
+    return !selected || !data ? <Loader active>Loading...</Loader> : (
         <>
             <Menu pointing secondary>
                 <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>Browser View</Menu.Item>
@@ -145,13 +184,27 @@ const FunctionalValidationView = props => {
                 <Modal.Actions><Button onClick={() => setSelecting(false)}>OK</Button></Modal.Actions>
             </Modal>
             { page === 0 ? (
-                props.data && tabEles(props.globals, { "functional_validation": props.data, "starr": props.data["starr"]["results"] }, FunctionalValidationTable(props.globals, props.assembly, props.data["starr"]["reads"] < 10.0 ? "No STARR-seq peaks were identified at this cCRE, but local read depth is insufficient to be confident in a true negative." : "No STARR-seq peaks were identified at this cCRE."), 2)
+                <FVTable
+                    globals={props.globals}
+                    data={props.data}
+                    assembly={props.assembly}
+                    active_cre={props.active_cre}
+                    ddata={data}
+                />
             ) : (
                 <>
-                    <Button onClick={() => setSelecting(true)}>Select Experiments</Button><br />
-                    <svg width="100%" viewBox="0 0 1000 600">
+                    <Message info>
+                        <strong>By default, this view shows tracks matching your search, including:</strong><br />
+                        <ul>
+                            <li>Tracks with peaks intersecting the searched cCRE</li>
+                            <li>Tracks matching the biosample you have selected using the cell type facet at left</li>
+                        </ul>
+                        To select additional datasets, use the button below.
+                    </Message>
+                    <Button size="large" onClick={() => setSelecting(true)}><Icon name="chart area" /> Select Experiments</Button><br /><br />
+                    <svg width="100%" viewBox="0 0 1000 2000">
                         <g transform="translate(0,0)">
-                            <StackedTracks onHeightChanged={x => setTranscriptHeight(x - 30)}>]                                
+                            <StackedTracks onHeightChanged={x => setTranscriptHeight(x - 30)}>
                                 <WrappedRulerTrack
                                     width={1000}
                                     height={30}
@@ -163,7 +216,7 @@ const FunctionalValidationView = props => {
                                     endpoint="https://ga.staging.wenglab.org/graphql"
                                     id=""
                                     transform=""
-                                    domain={{ ...range, chromosome: props.active_cre.chrom }}
+                                    domain={tdomain}
                                 >
                                     <WrappedSquishTranscriptTrack
                                         title="GENCODE genes"
@@ -177,6 +230,7 @@ const FunctionalValidationView = props => {
                                 </GraphQLTranscriptTrack>
                                 { selected.filter(x => x.selected).map(x => (
                                     <TrackSet
+                                        key={x.accession}
                                         position={range}
                                         preRenderedWidth={850}
                                         peaks={FILES[x.accession].peaks}
@@ -336,7 +390,7 @@ class FunctionalValidationTab extends ReTabBase{
         this.doRender = (globals, assembly, data) => {
             return (
                 <div style={{ marginTop: "1em" }}>
-                    <FunctionalValidationView data={data} globals={globals} assembly={assembly} active_cre={props.active_cre} />
+                    <FunctionalValidationView cellType={props.cellType} data={data} globals={globals} assembly={assembly} active_cre={props.active_cre} />
                 </div>
             );
         }
