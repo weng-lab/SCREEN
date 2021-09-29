@@ -119,7 +119,12 @@ const TrackSet = props => {
 };
 
 const FVTable = props => (
-    tabEles(props.globals, { "functional_validation": props.data, "starr": props.ddata }, FunctionalValidationTable(props.globals, props.assembly, props.data["starr"]["reads"] < 10.0 ? "No STARR-seq peaks were identified at this cCRE, but local read depth is insufficient to be confident in a true negative." : "No STARR-seq peaks were identified at this cCRE."), 2)
+    tabEles(
+        props.globals,
+        { "functional_validation": props.data, "starr": props.ddata, "mpra": props.mc[1], "crispr": props.mc[0] },
+        FunctionalValidationTable(props.globals, props.assembly, props.data["starr"]["reads"] < 10.0 ? "No STARR-seq peaks were identified at this cCRE, but local read depth is insufficient to be confident in a true negative." : "No STARR-seq peaks were identified at this cCRE."),
+        2
+    )
 );
 
 const FunctionalValidationView = props => {
@@ -129,7 +134,6 @@ const FunctionalValidationView = props => {
     const toggle = useCallback( xx => {
         const r = [ ...selected ];
         r.forEach( (x, i) => { if (x.accession === xx) r[i] = { ...x, selected: !x.selected }} );
-        console.log(r, selected);
         setSelected(r);
     }, [ selected ]);
     const [ data, setData ] = useState(null);
@@ -138,11 +142,12 @@ const FunctionalValidationView = props => {
     const [ transcriptHeight, setTranscriptHeight ] = useState(0);
     const range = useMemo( () => props.active_cre ? ({ start: props.active_cre.start - 100000, end: props.active_cre.start + props.active_cre.len + 100000, chromosome: props.active_cre.chrom }) : ({ start: 1, end: 2 }), [ props ]);
     const l = linearTransform(range, { start: 0, end: 1000 });
+    const [ mc, setMC ] = useState(null); 
 
     const unique_replicates = useMemo(() => Object.keys(FILES).map(x => [ x, FILES[x].peaks ]).filter(x => x[1].length >= 1).map(x => [ x[0], x[1][0].url ]), []);
     const cts = useMemo( () => Object.keys(DATASETS).flatMap(x => DATASETS[x]), []);
     const ctmap = useMemo( () => associateBy(cts, x => x.accession, x => x.biosample_summary), []);
-    const tracks = useMemo( () => [ ...unique_replicates ].sort().map( x => ({
+    const tracks = useMemo( () => [ ...[ ...unique_replicates ].sort(), [ "CRISPR", "gs://gcp.wenglab.org/screen-fc/GRCh38.CRISPR-gRNA-Overlap.bigBed" ], [ "MPRA", "gs://gcp.wenglab.org/screen-fc/GRCh38.MPRA-Overlap.bigBed" ] ].map( x => ({
         chr1: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len, chr2: props.active_cre.chrom, url: x[1], preRenderedWidth: props.preRenderedWidth 
     }) ), [ unique_replicates ]);
     const cellTypes = useMemo( () => [ ...unique_replicates ].sort().map(x => [ x[0], ctmap.get(x[0]) ]), [ unique_replicates, ctmap ]);
@@ -157,7 +162,16 @@ const FunctionalValidationView = props => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-    method: "POST" }).then(x => x.json()).then(x => {
+    method: "POST" }).then(x => x.json()).then(xx => {
+        const x = { data: { bigRequests: xx.data.bigRequests.slice(0, xx.data.bigRequests.length - 2) } };
+        setMC([
+            xx.data.bigRequests[xx.data.bigRequests.length - 2].data
+                .map(x => x.name.replace(/_proliferation/g, " proliferation").split("_"))
+                .map(x => ({ gRNA: x[0], quantification: x[1], exp: x[2], ct: x[3], perturbation: x[4], readout: x[5] })),
+            xx.data.bigRequests[xx.data.bigRequests.length - 1].data
+                .map(x => [ x.name.includes("_+_") ? "+" : "-", ...x.name.replace(/not_active/g, "not active").split(/_[\+\-]_/g)[1].split("_"), x.name.split("_")[0] ])
+                .map(x => ({ strand: x[0], logfc: x[1], input: x[2], output: x[3], fdr: x[4], active: x[5], exp: x[6], ct: x[7], id: x[8] }))
+        ]);
         setData(x.data.bigRequests.flatMap((xx, j) => xx.data.map(xxx => ({
             ...xxx,
             experiment: cellTypes[j][0],
@@ -190,6 +204,7 @@ const FunctionalValidationView = props => {
                     assembly={props.assembly}
                     active_cre={props.active_cre}
                     ddata={data}
+                    mc={mc}
                 />
             ) : (
                 <>

@@ -530,7 +530,30 @@ export const FunctionalValidationTable = (globals, assembly, emptyText) => ({
 	       { title: "peak start", data: "start", render: Render.integer },
 	       { title: "peak end", data: "end", render: Render.integer },
 		{ title: "experiment accession", data: "experiment", render: d => <a href={`https://www.encodeproject.org/experiments/${d}`} target="_blank">{d}</a> } ]
-    }
+    },
+	"crispr": {
+		title: "CRISPR perturbation",
+		emptyText: "This region has not been tested by CRISPR perturbation.",
+		cols: [{ title: "experiment", data: "exp" },
+		{ title: "cell type", data: "ct" },
+		{ title: "gRNA ID", data: "gRNA" },
+		{ title: "quantification", data: "quantification" },
+		{ title: "perturbation", data: "perturbation" },
+		{ title: "readout", data: "readout" }]
+	},
+	"mpra": {
+		title: "MPRA",
+		emptyText: "This region has not been tested by MPRA.",
+		cols: [{ title: "experiment", data: "exp" },
+		{ title: "cell type", data: "ct" },
+		{ title: "region name", data: "id" },
+		{ title: "strand", data: "strand" },
+		{ title: "log2 fold enrichment", data: "logfc" },
+		{ title: "input", data: "input" },
+		{ title: "output", data: "output" },
+		{ title: "-log10 FDR", data: "fdr", render: d => d === "-1" ? "--" : d },
+		{ title: "active?", data: "active" }]
+	}
 });
 
 export const GroundLevelTables = (globals, assembly) => ({
