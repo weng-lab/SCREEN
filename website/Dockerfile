@@ -1,6 +1,6 @@
 # multi-stage build
 
-FROM node:8.9.4
+FROM node:14-alpine
 
 RUN mkdir -p /app/
 COPY ui /app
