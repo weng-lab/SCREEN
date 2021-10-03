@@ -1,4 +1,4 @@
-name: Build and Push Service
+name: Build and Push UI
 
 on:
   create:
@@ -15,8 +15,8 @@ env:
 
 jobs:
         
-  setup-build-publish-service:
-    name: Setup, Build, Publish Service
+  setup-build-publish-ui:
+    name: Setup, Build, Publish UI
     runs-on: ubuntu-latest
     steps:
 
