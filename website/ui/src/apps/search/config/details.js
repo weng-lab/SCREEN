@@ -166,7 +166,7 @@ const FunctionalValidationView = props => {
         const x = { data: { bigRequests: xx.data.bigRequests.slice(0, xx.data.bigRequests.length - 2) } };
         setMC([
             xx.data.bigRequests[xx.data.bigRequests.length - 2].data
-                .map(x => x.name.replace(/_proliferation/g, " proliferation").split("_"))
+                .map(x => x.name.split("_"))
                 .map(x => ({ gRNA: x[0], quantification: x[1], exp: x[2], ct: x[3], perturbation: x[4], readout: x[5] })),
             xx.data.bigRequests[xx.data.bigRequests.length - 1].data
                 .map(x => [ x.name.includes("_+_") ? "+" : "-", ...x.name.replace(/not_active/g, "not active").split(/_[\+\-]_/g)[1].split("_"), x.name.split("_")[0] ])
