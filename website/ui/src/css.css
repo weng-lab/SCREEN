@@ -132,7 +132,6 @@ div.result_row_selected {
 }
 
 .grow {
-    /* http://stackoverflow.com/questions/27441404/text-div-expand-on-hover-with-css */
     height: 30px;
     transition: height 0.5s;
     -webkit-transition: height 0.5s;
@@ -649,10 +648,8 @@ div.dataTables_wrapper div.dataTables_paginate {
   bottom: 30px; /* 40 cos(45) = 28 with an additional 2px margin*/
   left: -25px; /*Because it looked good, but there is probably a mathematical link here as well*/
   display: inline-block;
-  // width: 100%;
   width: 85px; /* 80 / cos(45) - 40 cos (45) = 85 where 80 is the height of the cell, 40 the width of the cell and 45 the transform angle*/
   text-align: left;
-  // white-space: nowrap; /*whether to display in one line or not*/
 }
 
 table-sort::after {

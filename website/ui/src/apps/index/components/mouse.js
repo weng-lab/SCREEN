@@ -7,7 +7,7 @@ const MouseSVG = ({ text }) => (
         </g>
         <line x1="0" x2="1000" y1="102" y2="102" strokeWidth="2.5" stroke="#888888" />
         <text x="970" y="80" color="" style={{ fontSize: "60px", textAnchor: "end" }}>Mouse</text>
-	<text x="970" y="140" style={{ fontSize: "28px", textAnchor: "end" }} fill="#555555">{text} • 157 cell types</text>
+	<text x="970" y="140" style={{ fontSize: "28px", textAnchor: "end" }} fill="#555555">{text} • 169 cell types</text>
     </svg>
 );
 export default MouseSVG;

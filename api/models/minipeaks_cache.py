@@ -9,9 +9,9 @@ import sys
 import os
 import json
 
-from cassandra.cluster import Cluster
-from cassandra.query import BatchStatement, dict_factory
-from cassandra import ConsistencyLevel
+#from cassandra.cluster import Cluster
+#from cassandra.query import BatchStatement, dict_factory
+#from cassandra import ConsistencyLevel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from config import Config

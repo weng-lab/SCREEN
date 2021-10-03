@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: screen-beta-ui-deployment
+  labels:
+    app: screen-beta-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: screen-beta-ui
+  template:
+    metadata:
+      labels:
+        app: screen-beta-ui
+    spec:
+      containers:
+      - name: screen-beta-ui
+        image: gcr.io/devenv-215523/screen-ui:${SERVICE_VERSION}
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: screen-beta-ui-service
+  labels:
+    app: screen-beta-ui
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: screen-beta-ui
+---
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: screen-beta-ui-cert
+spec:
+  domains:
+    - screen-beta.wenglab.org
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: screen-beta-ui-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "screen-beta-external-ip"
+    kubernetes.io/ingress.allow-http: "true"
+    networking.gke.io/managed-certificates: "screen-beta-ui-cert"
+spec:
+  backend:
+    serviceName: screen-beta-ui-service
+    servicePort: 80

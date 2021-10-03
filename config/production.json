@@ -1,7 +1,7 @@
 {
     "RE": {
 	"version": 13,
-	"db_host": "pg_screen_v13",
+	"db_host": "pg_beta_screen",
 	"db_usr": "postgres",
 	"db_port": 5432,
 	"db": "screen_v13",
@@ -31,7 +31,7 @@
 	"grch38bed": "/bed_intersect/grch38.sorted.bed"
     },
     "UI": {
-	"apiServer": "https://api.wenglab.org/screen_v13",
+	"apiServer": "https://api.wenglab.org/beta_screen",
 	"minipeakServer": "https://api.wenglab.org/screen_v13/dataws/re_detail/",
 	"bed_intersect": "https://api.wenglab.org/screen_v13/postws/lines",
 	"staticServer": "/assets",

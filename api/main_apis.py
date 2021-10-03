@@ -106,6 +106,10 @@ class Apis():
         return self.dataWS.process(j, args, kwargs)
 
     @cherrypy.expose
+    def download7(self, *args):
+        return requests.get("http://gcp.wenglab.org/Seven-Group/%s" % args[-1]).text
+    
+    @cherrypy.expose
     def fdownloads(self, *args, **kwargs):
         cherrypy.response.headers["Content-Disposition"] = "attachment; filename=\"%s\"" % (args[-1])
         return requests.get("http://gcp.wenglab.org/%s" % ('/'.join(args))).text
