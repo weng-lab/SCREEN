@@ -12,6 +12,9 @@ import os
 import sys
 import uuid
 import requests
+import numpy
+import json
+import gzip
 
 from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
@@ -42,6 +45,28 @@ class Apis():
         self.args = args
         self.cache = cache
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def motif_conservation(self, *args, **kwargs):
+        try:
+            return [ float(x) for x in numpy.frombuffer(requests.get("http://gcp.wenglab.org/factorbook-download/" + '/'.join(args), stream = True).content) ]
+        except:
+            return {}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def dnase_aggregate(self, *args, **kwargs):
+        try:
+            return json.loads(gzip.decompress(requests.get("http://gcp.wenglab.org/factorbook-download/" + '/'.join(args), headers = { 'accept-encoding': 'gzip' }).content))
+        except:
+            return {}
+        
+    @cherrypy.expose
+    def factorbook_downloads(self, *args, **kwargs):
+        cherrypy.response.headers["Content-Disposition"] = "attachment; filename=\"%s\"" % (args[-1])
+        cherrypy.response.headers["Content-Type"] = "application/gzip"
+        return requests.get("http://gcp.wenglab.org/factorbook-download/" + '/'.join(args), stream = True).content
+        
     @cherrypy.expose
     def hubs(self, *args, **kwargs):
         return requests.get("http://gcp.wenglab.org/hubs/" + '/'.join(args)).text
