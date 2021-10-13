@@ -40,6 +40,11 @@ STARR_URLS = [
     "https://encode-public.s3.amazonaws.com/2020/04/22/ed0cbf12-9748-4cc1-b19f-c02bf64b5722/ENCFF902UEX.bigWig"
 ]
 
+FC_URLS = [
+    "http://gcp.wenglab.org/factorbook-downloads/GRCh38.CRISPR-gRNA-Overlap.bigBed",
+    "http://gcp.wenglab.org/factorbook-downloads/GRCh38.MPRA-Overlap.bigBed"
+]
+
 COLORS = """255,0,0
 255,69,0
 0,128,0
@@ -556,14 +561,14 @@ class DataWebService():
                  }
                }
             """,
-            "variables": { "assembly": self.assembly, "cCRE": accession, "requests": [{ "url": x, "chr1": c, "start": s, "end": e, "chr2": c } for x in STARR_URLS ] }
+            "variables": { "assembly": self.assembly, "cCRE": accession, "requests": [{ "url": x, "chr1": c, "start": s, "end": e, "chr2": c } for x in STARR_URLS + FC_URLS ] }
         })
         try:
             j = jx.json()
         except:
             print(jx.text, file = sys.stderr)
-            j = { "data": { "vistaQuery": [], "bigRequests": [{ "data": [] }, { "data": [] }] } }
-        return { accession: { "vista": [ format_result(x) for x in j['data']['vistaQuery'] ], "starr": { "reads": regionaverage(j["data"]["bigRequests"][1]["data"]), "results": j["data"]["bigRequests"][0]["data"] } } }
+            j = { "data": { "vistaQuery": [], "bigRequests": [{ "data": [] }, { "data": [] }, { "data": [] }, { "data": [] }] } }
+        return { accession: { "vista": [ format_result(x) for x in j['data']['vistaQuery'] ], "starr": { "reads": regionaverage(j["data"]["bigRequests"][1]["data"]), "results": j["data"]["bigRequests"][0]["data"] }, "mpra": j["data"]["bigRequests"][3]["data"], "CRISPR": j["data"]["bigRequests"][2]["data"] } }
 
     def fantom_cat(self, j, accession):
         def process(key):
