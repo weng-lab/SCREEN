@@ -185,3 +185,7 @@ class Apis():
     # @cherrypy.config(**{'tools.cors.on': True})
     def globalData(self, ver, assembly):
         return self.global_data.static(assembly, ver)
+
+    @cherrypy.expose
+    def healthz(self):
+        return "ok"

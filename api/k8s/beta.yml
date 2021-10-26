@@ -5,7 +5,7 @@ metadata:
   labels:
     app: screen-beta-api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: screen-beta-api
@@ -30,20 +30,25 @@ spec:
               secretKeyRef:
                 name: screen-v13-db-credentials
                 key: password
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: screen-v13-db-credentials
+                key: password
           - name: POSTGRES_DB
             value: "screen__v13"
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         readinessProbe:
           httpGet:
             path: /healthz
-            port: 3000
+            port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 512Mi
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.11
         command: ["/cloud_sql_proxy",
@@ -56,6 +61,10 @@ spec:
           - name: service-account-key
             mountPath: /secrets/cloudsql
             readOnly: true
+      volumes:
+        - name: service-account-key
+          secret:
+            secretName: service-account-key
 ---
 apiVersion: v1
 kind: Service
@@ -68,7 +77,7 @@ spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 3000
+    targetPort: 80
   selector:
     app: screen-beta-api
 ---
