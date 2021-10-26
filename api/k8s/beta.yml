@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: screen-beta-api-deployment
+  labels:
+    app: screen-beta-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: screen-beta-api
+  template:
+    metadata:
+      labels:
+        app: screen-beta-api
+    spec:
+      containers:
+      - name: screen-beta-api
+        image: gcr.io/devenv-215523/screen-api:${SERVICE_VERSION}
+        env:
+          - name: POSTGRES_SCHEMA
+            value: "${DB_SCHEMA}"
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: screen-v13-db-credentials
+                key: username
+          - name: POSTGRES_PASS
+            valueFrom:
+              secretKeyRef:
+                name: screen-v13-db-credentials
+                key: password
+          - name: POSTGRES_DB
+            value: "screen__v13"
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/cloud_sql_proxy",
+                  "-instances=devenv-215523:us-east1:screen-v13-db=tcp:5432",
+                  "-credential_file=/secrets/cloudsql/staging-service-account.json"]
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: service-account-key
+            mountPath: /secrets/cloudsql
+            readOnly: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: screen-beta-api-service
+  labels:
+    app: screen-beta-api
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: screen-beta-api
+---
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: screen-beta-api-cert
+spec:
+  domains:
+    - screen-beta-api.wenglab.org
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: screen-beta-api-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "screen-beta-api-external-ip"
+    kubernetes.io/ingress.allow-http: "true"
+    networking.gke.io/managed-certificates: "screen-beta-api-cert"
+spec:
+  backend:
+    serviceName: screen-beta-api-service
+    servicePort: 80

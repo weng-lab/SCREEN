@@ -1,10 +1,10 @@
 {
     "RE": {
 	"version": 13,
-	"db_host": "pg_beta_screen",
-	"db_usr": "postgres",
+	"db_host": "localhost",
+	"db_usr": "db-user",
 	"db_port": 5432,
-	"db": "screen_v13",
+	"db": "screen__v13",
 	"assemblies": [
 	    "GRCh38",
 	    "mm10"
