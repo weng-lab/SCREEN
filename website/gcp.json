@@ -31,8 +31,8 @@
 	"grch38bed": "/bed_intersect/grch38.sorted.bed"
     },
     "UI": {
-	"apiServer": "http://screen-beta-api.wenglab.org",
-	"minipeakServer": "http://screen-beta-api.wenglab.org/dataws/re_detail/",
+	"apiServer": "https://screen-beta-api.wenglab.org",
+	"minipeakServer": "https://screen-beta-api.wenglab.org/dataws/re_detail/",
 	"bed_intersect": "https://screen-beta-api.wenglab.org/postws/lines",
 	"staticServer": "/assets",
 	"overrides": {
