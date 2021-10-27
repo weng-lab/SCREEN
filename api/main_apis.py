@@ -7,6 +7,7 @@
 
 
 import cherrypy
+import cherrypy_cors
 import jinja2
 import os
 import sys
@@ -102,6 +103,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def cart(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.cartWS.process(j, args, kwargs)
 
@@ -110,6 +114,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def searchws(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.searchWS.process(j, args, kwargs)
 
@@ -118,6 +125,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def postws(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.postWS.process(j, args, kwargs)
 
@@ -127,6 +137,9 @@ class Apis():
     @cherrypy.tools.json_out()
     def dataws(self, *args, **kwargs):
         # print(cherrypy.request)
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.dataWS.process(j, args, kwargs)
 
@@ -145,6 +158,9 @@ class Apis():
     @cherrypy.tools.json_out()
     def gbws(self, *args, **kwargs):
         # print(cherrypy.request)
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.gbWS.process(j, args, kwargs)
 
@@ -154,6 +170,9 @@ class Apis():
     @cherrypy.tools.json_out()
     def autows(self, *args, **kwargs):
         # print(cherrypy.request)
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.autoWS.process(j, args, kwargs)
 
@@ -162,6 +181,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def gews(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.geWS.process(j, args, kwargs)
 
@@ -170,6 +192,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def dews(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.deWS.process(j, args, kwargs)
 
@@ -178,6 +203,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def gwasws(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.gwasWS.process(j, args, kwargs)
 

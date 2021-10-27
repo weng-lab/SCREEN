@@ -45,7 +45,7 @@ ARG VERSION="2.29.1"
 COPY --from=0 "/root/build/bedtools2/bedtools2_$VERSION-1_amd64.deb" /root/
 RUN dpkg -i "/root/bedtools2_$VERSION-1_amd64.deb" && rm "/root/bedtools2_$VERSION-1_amd64.deb"
 
-RUN pip3 install cherrypy requests python-dateutil jinja2 psycopg2-binary natsort grequests gevent
+RUN pip3 install cherrypy cherrypy_cors requests python-dateutil jinja2 psycopg2-binary natsort grequests gevent
 
 # for debugging
 RUN apt update && apt dist-upgrade -y && \

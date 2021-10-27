@@ -53,6 +53,8 @@ class WebServerConfig:
     def getRootConfig(self):
         return {
             '/': {
+                'tools.response_headers.on': True,
+                'tools.response_headers.headers': [('Access-Control-Allow-Origin', Config.uiURL)]
             },
             '/assets': {
                 'tools.staticdir.on': True,

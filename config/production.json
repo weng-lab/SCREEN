@@ -1,5 +1,6 @@
 {
     "RE": {
+	"ui_url": "https://screen-beta.wenglab.org",
 	"version": 13,
 	"db_host": "localhost",
 	"db_usr": "db-user",
