@@ -68,7 +68,7 @@ class PGsearch(object):
         FROM {tn} 
         INNER JOIN {ttn} ON {ttn}.accession = {tn}.accession
         """.format(tn = self.assembly + "_cre_all",
-                   ttn = self.assembly + "_ccres_toptier"))
+                   ttn = self.assembly + "_cre_all"))
         return [{"accession": e[0],
                  "chrom": e[1],
                  "start": e[2],
@@ -198,7 +198,7 @@ WHERE chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
 """.format(cols=','.join(cols),
            tn=tableName,
-           ttn = self.assembly + "_ccres_toptier")
+           ttn = self.assembly + "_cre_all")
 
         if isProximalOrDistal is not None:
             q += """
@@ -239,7 +239,7 @@ AND isProximal is {isProx}
         AND abs(%s - start) < 100000
         ORDER BY 2
         """.format(cre=self.assembly + "_cre_all",
-                   ttn = self.assembly + "_ccres_toptier",
+                   ttn = self.assembly + "_cre_all",
                    ti=self.assembly + "_tads_info",
                    tads=self.assembly + "_tads"),
                                 (start, chrom, accession, start))

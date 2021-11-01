@@ -55,7 +55,7 @@ class PGcreTable(object):
 
         self.ctSpecifc = {}
         self.fields = [
-            "maxZ",
+            "cre.maxZ",
             "cre.chrom", "cre.start",
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
@@ -170,11 +170,11 @@ class PGcreTable(object):
         INNER JOIN {ttn} ON {ttn}.accession = cre.accession
         LEFT JOIN {vtn} ON {vtn}.accession = cre.accession
         {whereClause}
-        ORDER BY maxz DESC
+        ORDER BY cre.maxZ DESC
         LIMIT 1000) r
         """.format(fields=fields, tn=self.tableName,
                    vtn = self.assembly + "_vista",
-                   ttn = self.assembly + "_ccres_toptier",
+                   ttn = self.assembly + "_cre_all",
                    whereClause=whereClause))
 
         r = rows[0][0]
@@ -287,7 +287,7 @@ INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 with DELIMITER E'\t'
 """.format(fields=fields,
            tn=self.tableName,
-           ttn = self.assembly + "_ccres_toptier",
+           ttn = self.assembly + "_cre_all",
            whereClause=whereClause)
 
         self.pw.copy_expert("_cre_table_bed", q, fnp)
@@ -309,7 +309,7 @@ INNER JOIN {ttn} ON {ttn}.accession = cre.accession
 ) r
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(tn=self.tableName, ttn = self.assembly + "_ccres_toptier",
+""".format(tn=self.tableName, ttn = self.assembly + "_cre_all",
            whereClause=whereClause)
         
         sf = io.StringIO()
