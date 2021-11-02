@@ -125,11 +125,11 @@ class Autocompleter extends React.Component {
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
                         onClick={this.searchGRCh38.bind(this)} role={"button"}>
-			Search Human<br /><small>(GRCh38)</small>
+			Search Human<br /><small>(GRCh38, Registry V3)</small>
 		</a>&nbsp;
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
                         onClick={this.searchmm10.bind(this)} role={"button"}>
-			Search Mouse<br /><small>(mm10)</small>
+			Search Mouse<br /><small>(mm10, Registry V3)</small>
 		    </a>		
  		<br />
 		<em><strong>Pressing enter in the search box searches GRCh38. To search mm10, click the button above.</strong></em>

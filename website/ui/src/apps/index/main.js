@@ -13,6 +13,7 @@ import MainTabs from './components/maintabs'
 import reducers from './reducers'
 import initialState from './config/initial_state'
 import {PageTitle} from '../../common/utility'
+import { Icon } from 'semantic-ui-react'
 
 class IndexPage extends React.Component {
   footer() {
@@ -32,6 +33,9 @@ class IndexPage extends React.Component {
               <div id={"mainTitle"}>
                 {"SCREEN: Search Candidate cis-Regulatory Elements by ENCODE"}
               </div>
+              <h4 style={{ textAlign: "center", marginTop: "-0.2em" }}>
+                Registry of cCREs V3 <a href="/index/cversions" title="click for more information"><Icon name="info circle" /></a>
+              </h4>
             </div>
           </div>
         </div>);
@@ -53,11 +57,9 @@ class IndexPage extends React.Component {
           return (
             <Provider store={store}>
               <div>
-		  {PageTitle()}
-
                 {this.title()}
                 <MainTabs
-	          uuid={this.props.uuid}
+	                uuid={this.props.uuid}
                   mainDivId={"mainTabs"}
                   tabUlClass={"nav-pills"}/>
                 {this.footer()}
