@@ -41,7 +41,6 @@ class IndexPage extends React.Component {
         </div>);
       }
 
-
       render() {
         let tab = null;
         if("tab" in this.props.params){
@@ -53,11 +52,10 @@ class IndexPage extends React.Component {
           applyMiddleware(
             thunkMiddleware,
           ));
-
           return (
             <Provider store={store}>
               <div>
-                {this.title()}
+                {tab === null && this.title()}
                 <MainTabs
 	                uuid={this.props.uuid}
                   mainDivId={"mainTabs"}

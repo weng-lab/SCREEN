@@ -25,7 +25,8 @@ class NavBarApp extends React.Component {
 		    <Navbar.Brand>
 			<a href={'/'}>
 			    SCREEN
-			</a>
+			</a>&nbsp;
+			<a href="https://screen.wenglab.org/index/cversions">Registry V3</a>
 		    </Navbar.Brand>
 		</Navbar.Header>
 		<Nav>

@@ -123,9 +123,9 @@ export const toParams = (d) => (
     Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&'))    
 
 export const PageTitle = () => {
-    return (
+    return null /* (
         <div style={{ textAlign: "center" }}>
             <h1>SCREEN: Search Candidate Regulatory Elements by ENCODE</h1>
         <h3>Registry of cCREs V3</h3>
-    </div>);
+    </div>) */ ;
 }
