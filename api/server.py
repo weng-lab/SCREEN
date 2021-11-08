@@ -54,7 +54,10 @@ class WebServerConfig:
         return {
             '/': {
                 'tools.response_headers.on': True,
-                'tools.response_headers.headers': [('Access-Control-Allow-Origin', Config.uiURL)]
+                'tools.response_headers.headers': [
+                    ('Access-Control-Allow-Origin', Config.uiURL),
+                    ('Access-Control-Allow-Origin', "https://screen.wenglab.org")
+                ]
             },
             '/assets': {
                 'tools.staticdir.on': True,

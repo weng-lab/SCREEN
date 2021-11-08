@@ -51,7 +51,7 @@ metadata:
   name: screen-beta-ui-cert
 spec:
   domains:
-    - screen-beta.wenglab.org
+    - screen.wenglab.org
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
