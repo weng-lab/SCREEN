@@ -19,14 +19,14 @@ import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable, ChromHMMTables,
         TfIntersectionTable, OrthologTable, FantomCatTable,
-	CistromeIntersectionTable, GroundLevelTables, FunctionalValidationTable } from './details_tables';
+	GroundLevelTables, FunctionalValidationTable } from './details_tables';
 
 import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
 import { GraphQLImportanceTrack } from 'bpnet-ui';
 import { WrappedRulerTrack, DenseBigBed, EmptyTrack, WrappedTrack, GraphQLTranscriptTrack, GraphQLTrackSet, StackedTracks, WrappedSquishTranscriptTrack, RulerTrack, SquishTranscriptTrack, WrappedFullBigWig, WrappedDenseBigBed, UCSCControls, GenomeBrowser, PackTranscriptTrack } from 'umms-gb';
-import { Loader, Menu, Checkbox, Modal, Button, Icon, Message } from 'semantic-ui-react';
+import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from 'semantic-ui-react';
 import { associateBy, groupBy } from "queryz";
 import { linearTransform } from 'jubilant-carnival';
 import { DataTable } from "ts-ztable";
@@ -34,7 +34,6 @@ import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from '@apo
 import { capRange, expandCoordinates, QUERY } from '../components/results_table_container';
 import CytobandView from '../components/Cytobands';
 import { ENTEXTracks, etracks } from '../components/DefaultTracks';
-import { Header } from 'react-bootstrap/lib/Modal';
 
 const DATASETS = {
     "Kevin White": [{"biosample_summary": "HCT116 genetically modified using transient transfection", "accession": "ENCSR064KUD", "replicates": 2}, {"biosample_summary": "K562 genetically modified using transient transfection", "accession": "ENCSR858MPS", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR316NSE", "replicates": 1}, {"biosample_summary": "MCF-7 genetically modified using transient transfection", "accession": "ENCSR547SBZ", "replicates": 2}, {"biosample_summary": "A549 genetically modified using transient transfection", "accession": "ENCSR895FDL", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR002ZDU", "replicates": 1}, {"biosample_summary": "SH-SY5Y genetically modified using transient transfection", "accession": "ENCSR983SZZ", "replicates": 2}, {"biosample_summary": "HepG2 genetically modified using transient transfection", "accession": "ENCSR135NXN", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR024WBS", "replicates": 1}],
@@ -473,8 +472,8 @@ const COLOR_CCRE_MAP = {
 };
 
 const ENTEX_QUERY = gql`
-query q($accession: [String!]) {
-    cCREQuery (assembly: "GRCh38", accession: $accession) {
+query q($accession: [String!], $chr: String!, $start: Int!, $end: Int!) {
+    cCREQuery(assembly: "GRCh38", accession: $accession) {
       gtex_decorations {
         ctcf_bound
         state
@@ -483,8 +482,31 @@ query q($accession: [String!]) {
         tissue
       }
     }
+    bigRequests(requests: [{ url: "gs://gcp.wenglab.org/SCREEN/cCREs_default_AS.bigBed", chr1: $chr, chr2: $chr, start: $start, end: $end }]) {
+        data
+    }
 }
 `;
+
+const ENTEX_AS_COLUMNS = [{
+    header: "donor",
+    value: x => x.donor
+}, {
+    header: "tissue",
+    value: x => x.tissue
+}, {
+    header: "assay",
+    value: x => x.assay
+}, {
+    header: "count, haplotype 1",
+    value: x => x.hap1_count
+}, {
+    header: "count, haplotype 2",
+    value: x => x.hap2_count
+}, {
+    header: "p-value",
+    value: x => x.p < 0.001 ? x.p.toExponential(3) : x.p.toFixed(3)
+}];
 
 const ENTEX_COLUMNS = [{
     header: "tissue",
@@ -548,6 +570,10 @@ const EBrowser = props => {
 				onDomainChanged={x => setECoordinates({ chromosome: props.coordinates.chromosome, ...x })}
                 onHeightChanged={x => setTranscriptHeight(x - 30)}
 			>
+                <g>
+                    <text x={l(props.active_cre.start) - 38} y={42} style={{ fontSize: "11px" }}>{props.active_cre.accession}</text>
+                    <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={48} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={1000 + transcriptHeight} />
+                </g>
 				{ highlight && (
 					<rect fill="#8ec7d1" fillOpacity={0.5} height={1000} x={l(highlight.start)} width={l(highlight.end) - l(highlight.start)} />
 				)}
@@ -588,8 +614,6 @@ const EBrowser = props => {
 					oncCREMousedOut={() => setHighlight(null)}
 					actions={props.actions}
 				/>
-                <text x={l(props.active_cre.start) - 38} y={42} style={{ fontSize: "11px" }}>{props.active_cre.accession}</text>
-                <rect fill={COLOR_CCRE_MAP[props.active_cre.pct] || "#0000ff"} fillOpacity={0.5} y={48} x={l(props.active_cre.start)} width={l(props.active_cre.start + props.active_cre.len) - l(props.active_cre.start)} height={400 + transcriptHeight} />
 			</GenomeBrowser>
 		</ApolloProvider>
 	);
@@ -608,28 +632,69 @@ function ggfirst(data) {
 const ENTEXView = props => {
     const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
     const [ page, setPage ] = useState(1);
-    const { data, loading } = useQuery(ENTEX_QUERY, { variables: { accession: props.active_cre.accession }, client });
-    const tissues = useMemo( () => data && [ ...new Set(data.cCREQuery[0].gtex_decorations.map(x => x.tissue)) ].slice(0, 10), [ data ] );
+    const { data, loading } = useQuery(ENTEX_QUERY, { variables: { accession: props.active_cre.accession, chr: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }, client });
+    const tissues = useMemo( () => data && [ ...new Set(data.cCREQuery[0].gtex_decorations.map(x => x.tissue)) ], [ data ] );
     const rtissues = useMemo( () => tissues && tissues.length !== 0 ? tissues : [ "spleen", "thyroid", "sigmoid colon" ]);
     const gfirst = useMemo( () => tissues && [ "H3K4me3", "H3K4me1", "H3K27ac", "H3K27me3" ].flatMap( m => rtissues.map( t => {
         const k = Object.keys(ENTEX).filter(x => ENTEX[x] && ENTEX[x].biosample && ENTEX[x].target === m && ENTEX[x].biosample.startsWith(t.replace(/_/g, " ")));
         return k.length === 0 ? undefined : ENTEX[k];
     })).filter(x => !!x), [ rtissues ]);
     const eCoordinates = useMemo( () => props.active_cre && ({ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }), [ props ]);
+    const formattedAS = useMemo( () => data && data.bigRequests[0].data.map(x => ({
+        hap1_count: +x.name.split('$')[1],
+        hap2_count: +x.name.split('$')[2],
+        hap1_allele_ratio: +x.name.split('$')[3],
+        experiment: x.name.split('$')[4],
+        donor: x.name.split('$')[5],
+        tissue: x.name.split('$')[6].replace(/_/g, " "),
+        assay: x.name.split('$')[7].replace(/_/g, " "),
+        p: +x.name.split('$')[8].replace(/_/g, " "),
+        significant: x.name.split('$')[9] === '1'
+    })), [ data ]);
     return loading ? <Loader active>Loading...</Loader> : (
         <>
             <Menu pointing secondary>
-                <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>Table View</Menu.Item>
+                <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>States by Tissue</Menu.Item>
+                <Menu.Item active={page === 2} onClick={() => setPage(2)} style={{ fontSize: "1.2em" }}>Allele-Specific Activity</Menu.Item>
                 <Menu.Item active={page === 0} onClick={() => setPage(0)} style={{ fontSize: "1.2em" }}>Browser View</Menu.Item>
             </Menu>
             { page === 1 ? (
-                <DataTable
-                    columns={ENTEX_COLUMNS}
-                    rows={ggfirst(data.cCREQuery[0].gtex_decorations)}
-                    searchable
-                    itemsPerPage={8}
-                    sortDescending
-                />
+                <>
+                    <Header as="h2">EN-TEx State Decorations</Header>
+                    <DataTable
+                        key="t"
+                        columns={ENTEX_COLUMNS}
+                        rows={ggfirst(data.cCREQuery[0].gtex_decorations)}
+                        searchable
+                        itemsPerPage={8}
+                        sortDescending
+                    />
+                </>
+            ) : page === 2 ? (
+                <>
+                    <Header as="h2">Significant Allele-Specific Events</Header>
+                    <DataTable
+                        key="as"
+                        columns={ENTEX_AS_COLUMNS}
+                        rows={formattedAS.filter(x => x.significant)}
+                        searchable
+                        sortColumn={5}
+                        itemsPerPage={8}
+                        sortDescending
+                        emptyText="no significant allele-specific events detected at this cCRE"
+                    />
+                    <Header as="h2">Non-Significant Allele-Specific Events</Header>
+                    <DataTable
+                        key="as1"
+                        columns={ENTEX_AS_COLUMNS}
+                        rows={formattedAS.filter(x => !x.significant)}
+                        searchable
+                        itemsPerPage={8}
+                        sortColumn={5}
+                        sortDescending
+                        emptyText="no non-significant allele-specific events detected at this cCRE"
+                    />
+                </>
             ) : (
                 <EBrowser
 					coordinates={eCoordinates}

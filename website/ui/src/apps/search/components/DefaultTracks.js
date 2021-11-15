@@ -204,7 +204,7 @@ export const ENTEXTracks = props => {
                 onMouseOver={x => props.oncCREMousedOver && x.name && props.oncCREMousedOver(cCRECoordinateMap.get(x.name))}
                 onMouseOut={props.oncCREMousedOut}
             />
-            { data.bigRequests.map( (t, i) => (
+            { data.bigRequests.slice(1).map( (t, i) => (
                 <LabeledBigWig
                     offset={70 + i * 75}
                     width={1400}
