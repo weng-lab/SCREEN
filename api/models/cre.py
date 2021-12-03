@@ -70,11 +70,11 @@ class CRE:
         ret.sort(key=lambda g: g["distance"])
         return ret
 
-    def nearbyPcGenes(self):
+    def nearbyPcGenes(self, chromosome = None):
         coord = self.coord()
         if not self.genesAll or not self.genesPC:
             self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
-                                                                 coord.chrom)
+                                                                 chromosome if chromosome is not None else coord.chrom)
         ret = []
         for g in self.genesPC:
             ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2],

@@ -55,9 +55,7 @@ class WebServerConfig:
             '/': {
                 'tools.response_headers.on': True,
                 'tools.response_headers.headers': [
-                    ('Access-Control-Allow-Origin', Config.uiURL),
-                    ('Access-Control-Allow-Origin', "https://screen.wenglab.org"),
-                    ('Access-Control-Allow-Origin', "https://screen.encodeproject.org")
+                    ('Access-Control-Allow-Origin', '*')
                 ]
             },
             '/assets': {

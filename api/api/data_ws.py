@@ -738,7 +738,7 @@ peakDataset(species: $species) {
 
     def _re_detail_rampage(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        nearbyGenes = cre.nearbyPcGenes()
+        nearbyGenes = self._re_detail_nearbyGenomic(self, accession)[accession]["nearby_genes"]
         nearest = min(nearbyGenes, key=lambda x: x["distance"])
         rampage = Rampage(self.assembly, self.pgSearch, self.cache)
         ret = rampage.getByGene(nearest)

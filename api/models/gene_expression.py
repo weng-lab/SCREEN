@@ -124,7 +124,7 @@ class GeneExpression:
         a = """
         SELECT chrom, start, stop
         FROM {assembly}_gene_info
-        WHERE approved_symbol = %(gene)s
+        WHERE approved_symbol = %(gene)s OR info->>'symbol' = %(gene)s
         """.format(assembly=self.assembly)
         grows = self.pw.fetchall("doComputeHorBars", a, {"gene": gene})
 

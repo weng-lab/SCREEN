@@ -217,3 +217,8 @@ class Apis():
     @cherrypy.expose
     def healthz(self):
         return "ok"
+
+    @cherrypy.expose
+    def img(self, *args):
+        cherrypy.response.headers["Content-Type"] = "image/png"
+        return requests.get("http://gcp.wenglab.org/%s" % ('/'.join(args))).content

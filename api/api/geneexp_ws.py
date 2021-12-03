@@ -82,11 +82,11 @@ class GeneExpWebService(object):
         r = {"assembly": self.assembly,
              "gene": gene}
         for assay_name in ["total RNA-seq", "polyA RNA-seq", "all"]:
-            single = cge.computeHorBars(name, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
-            mean = cge.computeHorBarsMean(name, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
+            single = cge.computeHorBars(gene, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
+            mean = cge.computeHorBarsMean(gene, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
             itemsByRID = cge.itemsByRID
             r[assay_name] = {"assembly": self.assembly,
-                             "gene": name,
+                             "gene": gene,
                              "strand": strand,
                              "ensemblid_ver": gi.ensemblid_ver,
                              "coords": {"chrom": gi.chrom,

@@ -135,7 +135,7 @@ class PGsearch(object):
 
     def _getGenes(self, accession, chrom, allOrPc):
         rows = self.pw.fetchall("_getGenes", """
-        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, 
+        SELECT gi.info->>'symbol' AS approved_symbol, g.distance, gi.ensemblid_ver, 
         gi.chrom, gi.start, gi.stop
         FROM
         (SELECT UNNEST(gene_{allOrPc}_id) geneid,
@@ -159,8 +159,9 @@ class PGsearch(object):
         WHERE approved_symbol = %s
         OR ensemblid = %s
         OR ensemblid_ver = %s
+        OR info->>'symbol' = %s
         """.format(gtn=self.assembly + "_gene_info"),
-                                          (gene, gene, gene))
+                                          (gene, gene, gene, gene))
         return r
 
     def intersectingSnps(self, accession, coord, halfWindow):
@@ -405,13 +406,14 @@ AND isProximal is {isProx}
             ensemblid = gene.split('.')[0]
 
         r = self.pw.fetchone("cre_pos", """
-        SELECT chrom, start, stop, approved_symbol, ensemblid_ver FROM {tn}
+        SELECT chrom, start, stop, info->>'symbol' AS approved_symbol, ensemblid_ver FROM {tn}
         WHERE chrom != ''
         AND (approved_symbol = %s
         OR ensemblid = %s
-        OR ensemblid_ver = %s)
+        OR ensemblid_ver = %s
+        OR info->>'symbol' = %s)
         """.format(tn=self.assembly + "_gene_info"),
-                             (gene, ensemblid, gene))
+                             (gene, ensemblid, gene, gene))
         if not r:
             print("ERROR: missing", gene)
             return None, None
@@ -518,7 +520,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
 
     def genemap(self):
         rows = self.pw.fetchall("pg::genemap", """
-        SELECT ensemblid, approved_symbol, strand
+        SELECT ensemblid, info->>'symbol' AS approved_symbol, strand
         FROM {tn}
         WHERE strand != ''
         """.format(tn=self.assembly + "_gene_info"))
@@ -526,7 +528,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
         toStrand = {r[0]: r[2] for r in rows}
 
         rows = self.pw.fetchall("pg::genemap", """
-        SELECT ensemblid_ver, approved_symbol, strand
+        SELECT ensemblid_ver, info->>'symbol' AS approved_symbol, strand
         FROM {tn}
         WHERE strand != ''
         """.format(tn=self.assembly + "_gene_info"))
@@ -593,9 +595,9 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
         rows = self.pw.fetchallAsDict("rampageByGene", """
         SELECT *
         FROM {tn}
-        WHERE ensemblid_ver = %s
+        WHERE ensemblid_ver ILIKE %s || '%%'
         """.format(tn=self.assembly + "_rampage"),
-                                      (ensemblid_ver, ))
+                                      (ensemblid_ver.split('.')[0], ))
 
         ret = []
         for r in rows:
@@ -624,7 +626,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
         r = self.pw.fetchone("rampageEnsemblID", """
         SELECT ensemblid_ver 
         FROM {assembly}_gene_info
-        WHERE approved_symbol = %(gene)s
+        WHERE approved_symbol = %(gene)s OR info->>'symbol' = %(gene)s
         """.format(assembly=self.assembly),
                              {"gene": gene})
         return r[0]
@@ -639,7 +641,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
 
     def geneIDsToApprovedSymbol(self):
         rows = self.pw.fetchall("geneIDsToApprovedSymbol", """
-        SELECT geneid, approved_symbol
+        SELECT geneid, info->>'symbol' AS approved_symbol
         FROM {gtn}
         ORDER BY 1
         """.format(gtn=self.assembly + "_gene_info"))
@@ -647,7 +649,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
 
     def genePGIDsToApprovedSymbol(self):
         rows = self.pw.fetchall("geneIDsToApprovedSymbol", """
-        SELECT id, approved_symbol
+        SELECT id, info->>'symbol' AS approved_symbol
         FROM {gtn}
         ORDER BY 1
         """.format(gtn=self.assembly + "_gene_info"))
