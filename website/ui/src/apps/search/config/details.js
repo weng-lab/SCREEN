@@ -5,6 +5,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { MOTIFS } from '../../../common/all-motifs';
 import { ENTEX } from './entex';
 import Ztable from '../../../common/components/ztable/ztable';
 import * as ApiClient from '../../../common/api_client';
@@ -25,7 +26,7 @@ import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
 import { GraphQLImportanceTrack } from 'bpnet-ui';
-import { WrappedRulerTrack, DenseBigBed, EmptyTrack, WrappedTrack, GraphQLTranscriptTrack, GraphQLTrackSet, StackedTracks, WrappedSquishTranscriptTrack, RulerTrack, SquishTranscriptTrack, WrappedFullBigWig, WrappedDenseBigBed, UCSCControls, GenomeBrowser, PackTranscriptTrack } from 'umms-gb';
+import { WrappedRulerTrack, DenseBigBed, EmptyTrack, WrappedTrack, GraphQLTranscriptTrack, GraphQLTrackSet, StackedTracks, WrappedSquishTranscriptTrack, RulerTrack, SquishTranscriptTrack, WrappedFullBigWig, WrappedDenseBigBed, UCSCControls, GenomeBrowser, PackTranscriptTrack, SquishBigBed } from 'umms-gb';
 import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from 'semantic-ui-react';
 import { associateBy, groupBy } from "queryz";
 import { linearTransform } from 'jubilant-carnival';
@@ -34,6 +35,7 @@ import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from '@apo
 import { capRange, expandCoordinates, QUERY } from '../components/results_table_container';
 import CytobandView from '../components/Cytobands';
 import { ENTEXTracks, etracks } from '../components/DefaultTracks';
+import { DNALogo } from 'logots-react';
 
 const DATASETS = {
     "Kevin White": [{"biosample_summary": "HCT116 genetically modified using transient transfection", "accession": "ENCSR064KUD", "replicates": 2}, {"biosample_summary": "K562 genetically modified using transient transfection", "accession": "ENCSR858MPS", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR316NSE", "replicates": 1}, {"biosample_summary": "MCF-7 genetically modified using transient transfection", "accession": "ENCSR547SBZ", "replicates": 2}, {"biosample_summary": "A549 genetically modified using transient transfection", "accession": "ENCSR895FDL", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR002ZDU", "replicates": 1}, {"biosample_summary": "SH-SY5Y genetically modified using transient transfection", "accession": "ENCSR983SZZ", "replicates": 2}, {"biosample_summary": "HepG2 genetically modified using transient transfection", "accession": "ENCSR135NXN", "replicates": 2}, {"biosample_summary": "DNA cloning sample", "accession": "ENCSR024WBS", "replicates": 1}],
@@ -351,14 +353,14 @@ class ReTabBase extends React.Component{
 	}
     }
 
-    loadCRE = ({assembly, cre_accession_detail}) => {
+    loadCRE = ({assembly, cre_accession_detail, active_cre}) => {
 	if(!this.loadData){
 	    return;
 	}
         if(!cre_accession_detail || cre_accession_detail in this.state){
             return;
         }
-        var q = {assembly, "accession" : cre_accession_detail};
+        var q = {assembly, "accession" : cre_accession_detail, "chromosome": active_cre.chrom };
         var jq = JSON.stringify(q);
 	if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -529,6 +531,19 @@ const ENTEX_COLUMNS = [{
     value: x => x.allele_specific,
     render: x => x.allele_specific ? "yes" : "no"
 }];
+
+const MotifTooltip = props => {
+    const rc = x => [ ...x ].map(xx => [ ...xx ].reverse()).reverse();
+    return (
+        <div style={{ border: "1px solid", borderColor: "#000000", backgroundColor: "#ffffff", padding: "5px" }}>
+            <Header as="h2">{props.rectname.split("$")[2]}</Header>
+            <DNALogo
+                ppm={props.rectname.split("$")[1] === '-' ? rc(MOTIFS[props.rectname.split("$")[2]]) : MOTIFS[props.rectname.split("$")[2]]}
+                width={MOTIFS[props.rectname.split("$")[2]].length * 10}
+            />
+        </div>
+    );
+}
 
 const EBrowser = props => {
 	const [ highlight, setHighlight ] = useState(null);
@@ -926,6 +941,8 @@ query q($requests: [BigRequest!]!) {
 const TFMotifTab = props => {
     const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(true);
+    const [ mousedOver, setMousedOver ] = useState(null);
+    const svgRef = useRef(null);
     useEffect( () => {
         fetch("https://ga.staging.wenglab.org/graphql", {
             method: "POST",
@@ -934,46 +951,65 @@ const TFMotifTab = props => {
                 'Accept': 'application/json',
             },
             body: JSON.stringify({ "query": DATA_QUERY, variables: { requests: [{
-                url: "gs://gcp.wenglab.org/all-conserved-motifs.merged.bigBed",
+                url: "gs://gcp.wenglab.org/SCREEN/all-sites.sorted.formatted.bigBed",
                 chr1: props.active_cre.chrom,
                 start: props.active_cre.start,
                 chr2: props.active_cre.chrom,
                 end: props.active_cre.start + props.active_cre.len
             }]} })
         }).then(x => x.json()).then(x => {
-            setData(x.data.bigRequests[0].data);
+            setData(x.data.bigRequests[0].data.filter(x => x.name.split("$")[3] === 'True'));
             setLoading(false);
         });
     }, []);
     return loading ? <Loader active>Loading...</Loader> : (
-        <svg width="100%" viewBox="0 0 1000 600">
+        <GenomeBrowser innerWidth={1000} svgRef={svgRef}>
             <RulerTrack
                 width={1000}
                 height={30}
                 domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
             />
+            <GraphQLTranscriptTrack
+                assembly={props.assembly}
+                endpoint="https://ga.staging.wenglab.org/graphql"
+                id=""
+                transform=""
+                domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+            >
+                <SquishTranscriptTrack
+                    title="GENCODE genes"
+                    rowHeight={15}
+                    titleSize={10}
+                    width={1000}
+                    domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+                    id=""
+                    transform=""
+                />
+            </GraphQLTranscriptTrack>
             <EmptyTrack
                 width={1000}
-                height={30}
+                height={20}
                 text="TF Motif Occurrences"
-                transform="translate(0,40)"
                 id=""
             />
-            <DenseBigBed
+            <SquishBigBed
+                svgRef={svgRef}
                 domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
                 width={1000}
-                height={20}
-                transform="translate(0,70)"
+                rowHeight={12}
                 data={data}
+                tooltipContent={MotifTooltip}
+                onMouseOver={setMousedOver}
+                onMouseOut={() => setMousedOver(null)}
+                onClick={x => window.open(`https://factorbook.org/tf/human/${x.rectname.split("$")[2]}/motif`, "_blank")}
             />
             <EmptyTrack
                 width={1000}
                 height={30}
                 text="Sequence Scaled by PhyloP 100-way"
-                transform="translate(0,110)"
                 id=""
             />
-            <g transform="translate(0,140)">
+            <g>
                 <GraphQLImportanceTrack
                     width={1000}
                     height={100}
@@ -983,7 +1019,17 @@ const TFMotifTab = props => {
                     coordinates={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
                 />
             </g>
-        </svg>
+            { mousedOver && (
+                <rect
+                    y={0}
+                    x={mousedOver.start}
+                    height={500}
+                    width={mousedOver.end - mousedOver.start}
+                    fill="#297eb3"
+                    fillOpacity={0.5}
+                />
+            )}
+        </GenomeBrowser>
     );
 };
 
