@@ -42,7 +42,7 @@ const TabCCREVersions = () => tabPanelize(
         <strong>Mouse cell and tissue types covered</strong>: 157<br /><br />
         <h4><u>Registry V1</u></h4>
         <strong>Release date</strong>: 2016<br />
-        <strong>URL</strong>: <a href="https://screen-v2.wenglab.org/">screen-v1.wenglab.org</a><br />
+        <strong>URL</strong>: <a href="https://screen-v10.wenglab.org/">screen-v1.wenglab.org</a><br />
         <strong>Human Genome assembly</strong>: hg19<br />
         <strong>Human cCRE count</strong>: 1,661,868<br />
         <strong>Human cell and tissue types covered</strong>: 622<br />
