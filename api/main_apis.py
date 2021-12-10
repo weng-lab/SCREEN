@@ -70,6 +70,9 @@ class Apis():
         
     @cherrypy.expose
     def hubs(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         return requests.get("http://gcp.wenglab.org/hubs/" + '/'.join(args)).text
         
     @cherrypy.expose
@@ -82,12 +85,18 @@ class Apis():
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.trackhub.ucsc_trackhub_url(j, j["uuid"] if "uuid" in j else str(uuid.uuid4()))
 
@@ -95,6 +104,9 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url_snp(self, *args, **kwargs):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy_cors.preflight(allowed_methods = [ 'POST' ])
+            return
         j = cherrypy.request.json
         return self.trackhub.ucsc_trackhub_url_snp(j, j["uuid"] if "uuid" in j else str(uuid.uuid4()))
 
