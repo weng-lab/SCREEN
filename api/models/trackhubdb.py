@@ -145,7 +145,7 @@ class BigWigTrack(object):
 
     def _init(self):
         p = OrderedDict()
-        p["track"] = Helpers.sanitize(self.expID + '_' + self.fileID)
+        p["track"] = Helpers.sanitize(str(self.expID) + '_' + str(self.fileID))
         p["parent"] = self.parent
         p["bigDataUrl"] = self._url()
         p["visibility"] = Helpers.viz("full", self.active)
@@ -326,6 +326,7 @@ trackDb\t{assemblya}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
 
         cache = self.cacheW[self.assembly if self.assembly != "hg38" else "GRCh38"]
         for expInfo in cache.datasets.byCellType[ct]:
+            if expInfo["expID"] is None or expInfo["fileID"] is None: continue
             tt = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
                             expInfo["assay"], superTrackName, True, ct)
             t = tt.lines(self.priority)

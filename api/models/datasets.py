@@ -37,7 +37,7 @@ class Datasets:
                     dnase: experimentAccession(assay: "DNase")                                                                                                                                       
                     h3k4me3: experimentAccession(assay: "H3K4me3")                                                                                                                                   
                     h3k27ac: experimentAccession(assay: "H3K27ac")                                                                                                                                   
-                    ctcf: experimentAccession(assay: "CTCF")                                                                                                                                                            }                                                                                                                                                                                 
+                    ctcf: experimentAccession(assay: "CTCF")                                                                                                                                                            }
                 }
             }""", "variables": { "assembly": assembly.lower() }
         }).json()["data"]["ccREBiosampleQuery"]["biosamples"]
@@ -55,7 +55,7 @@ class Datasets:
                 "synonyms": None,
                 "tissue": x["ontology"],
                 "value": x["name"]
-            } for a in [ "CTCF", "H3K4me3", "H3K27ac", "DNase" ] if x[a.lower()] is not None ]
+            } for a in [ "CTCF", "H3K4me3", "H3K27ac", "DNase" ] if x[a.lower()] is not None and x[a.lower() + "File"] is not None ]
 
         # used by trees
         self.biosampleTypeToCellTypes = {}
