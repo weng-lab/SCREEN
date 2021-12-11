@@ -32,7 +32,7 @@ class Datasets:
                     sampleType
                     dnaseFile: fileAccession(assay: "DNase")
                     h3k4me3File: fileAccession(assay: "H3K4me3")
-                    h3k27acFile: fileAccession(assay: "DNase")
+                    h3k27acFile: fileAccession(assay: "H3K27ac")
                     ctcfFile: fileAccession(assay: "CTCF")
                     dnase: experimentAccession(assay: "DNase")                                                                                                                                       
                     h3k4me3: experimentAccession(assay: "H3K4me3")                                                                                                                                   
