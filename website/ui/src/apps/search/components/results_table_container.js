@@ -14,7 +14,7 @@ import DefaultTracks, { tracks } from './DefaultTracks';
 import BiosampleTracks from './BiosampleTracks';
 import CytobandView from './Cytobands';
 
-import { Loader } from 'semantic-ui-react';
+import { Icon, Loader, Message } from 'semantic-ui-react';
 import { EmptyTrack, GenomeBrowser, PackTranscriptTrack, SquishTranscriptTrack, RulerTrack, UCSCControls } from 'umms-gb';
 
 import TableWithCart from './table_with_cart';
@@ -353,60 +353,68 @@ class ResultsTableContainer extends React.Component {
 
 	const interp = this.props.interpretation;
 	let interpBox = "";
-	if(interp){
+	if (interp) {
 	    let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
-	    let interpGene = interp.hasOwnProperty("gene") ?
-			     this.doInterpGene(interp["gene"]) : "";
-	    if(interp.hasOwnProperty("msg") || interp.hasOwnProperty("gene")){
-		interpBox = (
-		    <div className="interpretation panel"
-		    style={{backgroundColor: "#ffa588", marginBottom: "0px"}}>
-		        {interpMsb}
-		        {interpGene}
-	            </div>);
-	    }
+	    let interpGene = interp.hasOwnProperty("gene") ? this.doInterpGene(interp["gene"]) : "";
+	    if (interp.hasOwnProperty("msg") || interp.hasOwnProperty("gene"))
+			interpBox = (
+				<div
+					className="interpretation panel"
+					style={{backgroundColor: "#ffa588", marginBottom: "0px"}}
+				>
+					{interpMsb}
+					{interpGene}
+				</div>
+			);
 	}
 
-	console.log(this.props, this.state);
 	const grouped = associateBy(cresWithChecks, x => x.info.accession, x => ({ ...x, ...x.info }));
 	return (
 	    <div>
 			<Menu secondary pointing style={{ fontSize: "1em", marginTop: "0.5em" }}>
-				<Menu.Item active={this.state.page !== 1} onClick={() => this.setState({ page: 0 })}>Genome Browser View</Menu.Item>
+				{ this.props.coord_chrom && <Menu.Item active={this.state.page !== 1} onClick={() => this.setState({ page: 0 })}>Genome Browser View</Menu.Item> }
 				<Menu.Item active={this.state.page === 1} onClick={() => this.setState({ page: 1 })}>Table View</Menu.Item>
 			</Menu>
 			<div style={{ height: "0.5em" }} />
-			{ this.state.page === 0 ? (
-				<Browser
-					coordinates={{ chromosome: this.props.coord_chrom || this.state.cres[0].coord_chrom, start: this.props.coord_start || this.state.cres[0].coord_start, end: this.props.coord_end || this.state.cres[0].coord_end }}
-					cellType={this.props.cellType}
-					actions={this.props.actions}
-					g={grouped}
-					gene={this.props.search && this.props.search.parsedQuery && this.props.search.parsedQuery.genes[0] && this.props.search.parsedQuery.genes[0].approved_symbol}
-					assembly={this.props.assembly}
-				/>
+			{ this.state.page === 0 && this.props.coord_chrom ? (
+				this.state.cres[0] ? (
+					<Browser
+						coordinates={{ chromosome: this.props.coord_chrom || this.state.cres[0].coord_chrom, start: this.props.coord_start || this.state.cres[0].coord_start, end: this.props.coord_end || this.state.cres[0].coord_end }}
+						cellType={this.props.cellType}
+						actions={this.props.actions}
+						g={grouped}
+						gene={this.props.search && this.props.search.parsedQuery && this.props.search.parsedQuery.genes[0] && this.props.search.parsedQuery.genes[0].approved_symbol}
+						assembly={this.props.assembly}
+					/>
+				) : null
 			) : (
 				<React.Fragment>
 					{interpBox}
-							<TableWithCart
-		    uuid={this.props.uuid}
-		    assembly={this.props.assembly}
-                    actions={this.props.actions}
-		    cellType={this.props.cellType}
-                    data={cresWithChecks}
-                    total={this.state.total}
-                    cart_accessions={this.props.cart_accessions}
-                    isFetching={this.state.isFetching}
-		    jq={this.state.jq}
-		    rfacets={this.state.rfacets}
-                    cts={this.state.cts}
-	            hasct={this.props.cellType}
-		    globals={this.props.globals}
-	            make_ct_friendly={ct =>
-			this.props.globals.byCellType[ct][0]["name"]}
-		    gb_cres={this.props.gb_cres}
-		    chrom = {this.props.coord_chrom}
-		/>
+					{ this.state.cres && this.state.cres.length === 0 && this.props.accessions && this.props.accessions.length === 1 && (
+						<Message error>
+							<Icon name="warning" /><strong>Don't see the result you're looking for?</strong><br />
+							The accession you searched may be from a previous Registry version. Check <a href={`https://screen-v2.wenglab.org/search/?q=${this.props.accessions[0]}&assembly=${this.props.assembly}&uuid=${this.props.uuid}`}>here</a>.
+						</Message>
+					)}
+					<TableWithCart
+						uuid={this.props.uuid}
+						assembly={this.props.assembly}
+						actions={this.props.actions}
+						cellType={this.props.cellType}
+						data={cresWithChecks}
+						total={this.state.total}
+						cart_accessions={this.props.cart_accessions}
+						isFetching={this.state.isFetching}
+						jq={this.state.jq}
+						rfacets={this.state.rfacets}
+						cts={this.state.cts}
+						hasct={this.props.cellType}
+						globals={this.props.globals}
+						make_ct_friendly={ct =>
+						this.props.globals.byCellType[ct][0]["name"]}
+						gb_cres={this.props.gb_cres}
+						chrom = {this.props.coord_chrom}
+					/>
 				</React.Fragment>
 			)}
 	    </div>);
