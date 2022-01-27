@@ -605,7 +605,7 @@ class DataWebService():
                   end
                 }
               }
-             }""", "variables": { "assembly": self.assembly, "accession": accession }}).json()["data"]["cCREQuery"][0]["coordinates"]
+             }""", "variables": { "assembly": self.assembly, "accession": accession.upper() }}).json()["data"]["cCREQuery"][0]["coordinates"]
         class Coord:
             def __init__(self, rr):
                 self.chrom = rr["chromosome"]

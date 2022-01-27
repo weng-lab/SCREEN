@@ -367,24 +367,25 @@ class ResultsTableContainer extends React.Component {
 	    }
 	}
 
-	console.log(this.props, this.state);
 	const grouped = associateBy(cresWithChecks, x => x.info.accession, x => ({ ...x, ...x.info }));
 	return (
 	    <div>
 			<Menu secondary pointing style={{ fontSize: "1em", marginTop: "0.5em" }}>
-				<Menu.Item active={this.state.page !== 1} onClick={() => this.setState({ page: 0 })}>Genome Browser View</Menu.Item>
+				{ this.props.coord_chrom && <Menu.Item active={this.state.page !== 1} onClick={() => this.setState({ page: 0 })}>Genome Browser View</Menu.Item> }
 				<Menu.Item active={this.state.page === 1} onClick={() => this.setState({ page: 1 })}>Table View</Menu.Item>
 			</Menu>
 			<div style={{ height: "0.5em" }} />
-			{ this.state.page === 0 ? (
-				<Browser
-					coordinates={{ chromosome: this.props.coord_chrom || this.state.cres[0].coord_chrom, start: this.props.coord_start || this.state.cres[0].coord_start, end: this.props.coord_end || this.state.cres[0].coord_end }}
-					cellType={this.props.cellType}
-					actions={this.props.actions}
-					g={grouped}
-					gene={this.props.search && this.props.search.parsedQuery && this.props.search.parsedQuery.genes[0] && this.props.search.parsedQuery.genes[0].approved_symbol}
-					assembly={this.props.assembly}
-				/>
+			{ this.state.page === 0 && this.props.coord_chrom ? (
+				this.state.cres[0] ? (
+					<Browser
+						coordinates={{ chromosome: this.props.coord_chrom || this.state.cres[0].coord_chrom, start: this.props.coord_start || this.state.cres[0].coord_start, end: this.props.coord_end || this.state.cres[0].coord_end }}
+						cellType={this.props.cellType}
+						actions={this.props.actions}
+						g={grouped}
+						gene={this.props.search && this.props.search.parsedQuery && this.props.search.parsedQuery.genes[0] && this.props.search.parsedQuery.genes[0].approved_symbol}
+						assembly={this.props.assembly}
+					/>
+				) : null
 			) : (
 				<React.Fragment>
 					{interpBox}
