@@ -338,7 +338,6 @@ class ResultsTableContainer extends React.Component {
     }
 
     render() {
-		console.log("!!");
 	if("results" !== this.props.maintabs_active){
             return false;
         }
@@ -370,7 +369,6 @@ class ResultsTableContainer extends React.Component {
 	}
 
 	const grouped = associateBy(cresWithChecks, x => x.info.accession, x => ({ ...x, ...x.info }));
-	console.log(this.state.cres, this.props.accessions);
 	return (
 	    <div>
 			<Menu secondary pointing style={{ fontSize: "1em", marginTop: "0.5em" }}>
