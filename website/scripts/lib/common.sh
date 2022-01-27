@@ -1,0 +1,5 @@
+#!/bin/bash
+GCR_PROJECT_ID=devenv-215523
+DOCKER_IMAGE_NAME=screen-ui
+KUBE_DEPLOYMENT_NAME=screen-ui-deployment
+KUBE_DEPLOYMENT_CONTAINER_NAME=screen-ui
