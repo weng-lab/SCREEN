@@ -32,8 +32,8 @@ const LDRView = props => {
 
     // group samples by tissue, then sort by enrichment
     const groupedSamples = useMemo( () => data ? [
-        groupBy(data.ccREBiosampleQuery.biosamples.filter(x => x.ldr_enrichment !== null && x.lifeStage === "adult"), x => x.ontology, x => x),
-        groupBy(data.ccREBiosampleQuery.biosamples.filter(x => x.ldr_enrichment !== null && x.lifeStage === "embryonic"), x => x.ontology, x => x)
+        groupBy(data.ccREBiosampleQuery.biosamples.filter(x => x.ldr_enrichment !== null && x.ldr_enrichment.length > 0 && x.lifeStage === "adult"), x => x.ontology, x => x),
+        groupBy(data.ccREBiosampleQuery.biosamples.filter(x => x.ldr_enrichment !== null && x.ldr_enrichment.length > 0 && x.lifeStage === "embryonic"), x => x.ontology, x => x)
     ] : [], [ data ]);
     const sortedGroups = useMemo( () => groupedSamples.map(
         x => new Map([ ...x.keys() ].map(k => [ k, x.get(k).sort((a, b) => a.ldr_enrichment.enrichment - b.ldr_enrichment.enrichment) ]))
