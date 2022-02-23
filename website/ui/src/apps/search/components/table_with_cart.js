@@ -6,6 +6,7 @@
 import React from 'react';
 import downloadjs from 'downloadjs';
 
+import { downloadBlob } from '../../index/components/QuickStart/QuickStart';
 import Ztable from '../../../common/components/ztable/ztable';
 import Legend from './legend';
 import * as ApiClient from '../../../common/api_client';
@@ -17,6 +18,31 @@ import loading from '../../../common/components/loading';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 
+const query = `
+query q($accessions: [String!], $assembly: String!) {
+	zScoreMap: ccREBiosampleQuery(assembly: $assembly) {
+	  biosamples {
+		name
+		dnaseAccession: experimentAccession(assay: "dnase")
+		h3k4me3Accession: experimentAccession(assay: "h3k4me3")
+		h3k27acAccession: experimentAccession(assay: "h3k27ac")
+		ctcfAccession: experimentAccession(assay: "ctcf")
+	  }
+	}
+	cCREQuery(accession: $accessions, assembly: $assembly) {
+	  accession
+	  coordinates {
+		chromosome
+		start
+		end
+	  }
+	  zScores {
+		score
+		experiment
+	  }
+	}
+  }
+`;
 
 class TableWithCart extends React.Component {
     state = {minrange:0,
@@ -148,22 +174,20 @@ class TableWithCart extends React.Component {
 
     downloadJSON() {
 	const jq = this.props.jq;
-	ApiClient.getByPost(jq,
-			    "/dataws/json_download",
-			    (got) => {
-				if("error" in got){
-				    console.log(got["error"]);
-				    //$("#errMsg").text(got["err"]);
-				    //$("#errBox").show()
-				    return true;
-				}
-                                const urlBase = got["url"];
-                                const url = ApiClient.Servers(urlBase);
-			        return downloadjs(url);
-			    },
-			    (msg) => {
-				console.log("error getting bed download", msg);
-			    });
+	fetch("https://ga.staging.wenglab.org/graphql", {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			query, variables: {
+				accessions: this.props.data.map(x => x.info.accession),
+				assembly: this.props.assembly.toLocaleLowerCase()
+			}
+		})
+	}).then(x => x.text()).then(x => {
+		downloadBlob(new Blob([ x ]), "test.json");
+	});
     }
 
     totalText(data){
