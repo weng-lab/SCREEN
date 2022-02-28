@@ -22,6 +22,12 @@ const dccLink = fileID => {
     return fileDownload(url, fileID, fileID);
 }
 
+const sgroupLink = x => {
+	if (!x) return null;
+	const url = `https://api.wenglab.org/screen_v13/fdownloads/Registry-V3/Signal-Files/${x[0]}-${x[1]}.txt`;
+	return fileDownload(url, "", "");
+}
+
 const check = value => value ? (
 	<span className="glyphicon glyphicon-check" style={{ fontSize: "1.2em", verticalAlign: "middle" }} />
 ) : null;
@@ -61,13 +67,13 @@ const CtsTableColumns = ([
 	{
 	    title: "Cell Type", data: "celltype"
 	}, {
-            title: "DNase", data: "dnase", render: check
+            title: "DNase", data: "dnase", render: sgroupLink
 	}, {
-            title: "H3K4me3", data: "h3k4me3", render: check
+            title: "H3K4me3", data: "h3k4me3", render: sgroupLink
 	}, {
-            title: "H3K27ac", data: "h3k27ac", render: check
+            title: "H3K27ac", data: "h3k27ac", render: sgroupLink
 	}, {
-            title: "CTCF", data: "ctcf", render: check
+            title: "CTCF", data: "ctcf", render: sgroupLink
 	}, {
             title: "Download", data: "file", className: "dt-body-center dt-head-center ",
 	    render: dccLink
@@ -98,7 +104,7 @@ class TabFiles extends React.Component {
     }
 
     loadFiles(nextProps){
-	fetch("https://" + window.location.hostname + "/biosample-metadata.json")
+	fetch(window.location.href + "biosample-metadata.json")
 	    .then( response => response.json())
 	    .then( data => {
                 this.setState({ data });
@@ -120,7 +126,7 @@ class TabFiles extends React.Component {
 		        <HumanSVG text="926,535 cCREs" />
 		    </div>
 		    <div className="col-md-6">
-                        <MouseSVG text="339,815 cCREs" />
+				<MouseSVG text="339,815 cCREs" />
 		    </div>
 		    </div>
 		    <div className="row" style={{ paddingTop: "1.0em" }}>
@@ -252,9 +258,11 @@ class TabFiles extends React.Component {
 				<Modal.Content style={{ fontSize: "1.2em" }}>
 					<div className="alert alert-warning">
 					<Info />
-					&nbsp;These files contain the complete set of mouse cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
+					&nbsp;The rightmost "download" column files contain the complete set of mouse cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
 					In cell types with DNase-seq data available, cCREs inactive in the given cell type are labeled as "Low-DNase". In cell types without DNase-seq available, elements are
-					labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.
+					labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.<br /><br />
+					Files in the other columns contain rDHSs with associated Z-scores (second column) for the corresponding epigenetic mark. Use the complete set of human cCREs, which may be downloaded from this page,
+					to match cCREs to rDHSs.
 					</div>
 					<Ztable sortCol={[ "tissue", true ]} cols={CtsTableColumns} data={this.state.mmodal ? this.state.mmodal.d.map( k => ({ ...this.state.data.mouse[k], celltype: k.replace(/_/g, " "), tissue: this.state.data.mouse[k].tissue[0] || "" }) ) : []} />
 				</Modal.Content>
@@ -264,9 +272,11 @@ class TabFiles extends React.Component {
 				<Modal.Content style={{ fontSize: "1.2em" }}>
 					<div className="alert alert-warning">
 					<Info />
-					&nbsp;These files contain the complete set of human cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
+					&nbsp;The rightmost "download" column files contain the complete set of human cCREs with their activity annotated in the given cell type. The cCRE category is in the second to last column.
 					In cell types with DNase-seq data available, cCREs inactive in the given cell type are labeled as "Low-DNase". In cell types without DNase-seq available, elements are
-					labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.
+					labeled as "Unclassified" if they do not have signal for any of the available epigenetic marks.<br /><br />
+					Files in the other columns contain rDHSs with associated Z-scores (second column) for the corresponding epigenetic mark. Use the complete set of human cCREs, which may be downloaded from this page,
+					to match cCREs to rDHSs.
 					</div>
 					<Ztable sortCol={[ "tissue", true ]} cols={CtsTableColumns} data={this.state.hmodal ? this.state.hmodal.d.map( k => ({ ...this.state.data.human[k], celltype: k.replace(/_/g, " "), tissue: this.state.data.human[k].tissue[0] || "" }) ) : []} />
 				</Modal.Content>
