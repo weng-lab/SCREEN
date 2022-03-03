@@ -8,6 +8,7 @@
 import os
 import sys
 import json
+import requests
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
@@ -92,6 +93,10 @@ class CachedObjects:
             self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset="cistrome")
         if self.assembly == "mm10":
             self.groups = { r[0]: r[1] for r in self.pw.fetchall("groups", "SELECT accession, cgroup FROM mm10_ccre_groups") }
+            r = requests.get("http://gcp.wenglab.org/mm10-ccREs.bed").text
+            self.groups.update({ x.split()[-2]: x.strip().split()[-1] for x in r.split("\n") if len(x.split()) >= 2 })
+            r = requests.get("http://gcp.wenglab.org/Registry-V3/mm10-cCREs.bed").text
+            self.groups.update({ x.split()[-2]: x.strip().split()[-1] for x in r.split("\n") if len(x.split()) >= 2 })
 
         # self.creBigBeds = self.pgSearch.creBigBeds()
         self.creBigBeds = {}

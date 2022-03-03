@@ -29,7 +29,7 @@ const cellTypesBox1 = ({globals, ct1, actions}) => {
 			buttonsOff={true}
 			selection={ct1}
 			friendlySelectionLookup={(value) => {
-				return globals.byCellType[value][0]["name"]; }}
+				return globals.byCellType[value.replace(/[\/]/g, "-")] ? globals.byCellType[value.replace(/[\/]/g, "-")][0]["name"] : value.replace(/_/g, " "); }}
 			onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
@@ -43,7 +43,7 @@ const cellTypesBox2 = ({globals, ct2, actions}) => {
 			buttonsOff={true}
 			selection={ct2}
 			friendlySelectionLookup={(value) => {
-				return globals.byCellType[value][0]["name"]; }}
+				return globals.byCellType[value.replace(/[\/]/g, "-")] ? globals.byCellType[value.replace(/[\/]/g, "-")][0]["name"] : value.replace(/_/g, " "); }}
 			onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }

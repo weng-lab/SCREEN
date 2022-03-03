@@ -21,8 +21,8 @@ class DePlot extends React.Component {
     }
 
     render() {
-        let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
-        let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
+        let ct1 = this.props.globals.byCellType[this.props.ct1] ? this.props.globals.byCellType[this.props.ct1][0]["name"] : this.props.ct1;
+        let ct2 = this.props.globals.byCellType[this.props.ct2] ? this.props.globals.byCellType[this.props.ct2][0]["name"] : this.props.ct2;
         let geneName1 = this.props.data.nearbyDEs.names[0];
         let geneName2 = this.props.data.nearbyDEs.names[1];
 
@@ -37,9 +37,9 @@ class DePlot extends React.Component {
 			<tr>
                             <td><span className={"deGene"}>{geneName1}</span></td>
                             <td>
-				<span className={"deCT"}>{ct1}</span>
+				<span className={"deCT"}>{ct1.replace(/_/g, " ")}</span>
 				<span className={"deVS"}>{" vs "}</span>
-				<span className={"deCT"}>{ct2}</span>
+				<span className={"deCT"}>{ct2.replace(/_/g, " ")}</span>
                             </td>
 			</tr>
 			<tr>
@@ -66,8 +66,8 @@ class DePlot extends React.Component {
         let chart = this.refs.chart;
 	$(chart).empty();
 
-        let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
-        let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
+        const ct1 = this.props.globals.byCellType[this.props.ct1] ? this.props.globals.byCellType[this.props.ct1][0]["name"] : this.props.ct1;
+        const ct2 = this.props.globals.byCellType[this.props.ct2] ? this.props.globals.byCellType[this.props.ct2][0]["name"] : this.props.ct2;
 
 	let margin = {top: 20, right: 20, bottom: 800, left: 40};
         let width = 1000 - margin.left - margin.right;
@@ -166,23 +166,23 @@ class DePlot extends React.Component {
 	    .append("text")
 	    .attr("class", "label")
 	    .style("text-anchor", "end")
-	    .text('\u25c4' + ct1);
+	    .text('\u25c4' + ct1.replace(/_/g, " "));
 	svg.append("g")
 	    .attr("transform", "translate(-30," + y(0.2) + ") rotate(-90)")
 	    .append("text")
 	    .attr("class", "label")
-	    .text(ct2 + '\u25ba');
+	    .text(ct2.replace(/_/g, " ") + '\u25ba');
 	svg.append("g")
 	    .attr("transform", "translate(" + (width + 36) + "," + y(-0.2) + ") rotate(-90)")
 	    .append("text")
 	    .attr("class", "label")
 	    .style("text-anchor", "end")
-	    .text('\u25c4' + ct1);
+	    .text('\u25c4' + ct1.replace(/_/g, " "));
 	svg.append("g")
 	    .attr("transform", "translate(" + (width + 36) + "," + y(0.2) + ") rotate(-90)")
 	    .append("text")
 	    .attr("class", "label")
-	    .text(ct2 + '\u25ba');
+	    .text(ct2.replace(/_/g, " ") + '\u25ba');
         svg.append("g")
            .attr("class", "y axis")
            .attr("transform", "translate(" + width + " ,0)")

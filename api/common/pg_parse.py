@@ -78,6 +78,7 @@ LIMIT 50
         if rows:
             r = rows[0]
         if r:
+            if r[9] is None: r = tuple([ x if i != 9 else r[0] for i, x in enumerate(r) ])
             if isclose(1, r[7]):  # similarity
                 return [GeneParse(self.assembly, r, s, usetss, tssDist)]
         return [] # [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]

@@ -193,7 +193,7 @@ const MatrixPage = () => {
             Object.keys(g).length * 50
         ];
     }, [ scMap, oMap, colorBy ] );
-    const hasMatrix = assembly === "mm10" || assay === "H3K4me3";
+    const hasMatrix = assembly === "mm10" || assay === "H3K4me3" || (assembly.toLocaleLowerCase() === "grch38" && assay.toLocaleLowerCase() == "dnase");
 
     return (
         <Container>
@@ -377,7 +377,7 @@ const MatrixPage = () => {
                             <Button size="large" href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ backgroundColor: "#88aa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Quantile normalized signal matrix
                             </Button>
-                            <Button size="large" download href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V2.txt`} style={{ backgroundColor: "#8888aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
+                            <Button size="large" download href={!hasMatrix ? undefined : `https://screen-beta-api.wenglab.org/fdownloads/Registry-V3/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}-${ASSAY_MAP[assay]}.tar.gz`} style={{ backgroundColor: "#8888aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Z-scored signal matrix
                             </Button>
                             { biosamples.length > 0 ? (
