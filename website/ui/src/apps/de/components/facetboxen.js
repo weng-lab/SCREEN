@@ -20,33 +20,31 @@ const cols = [{ title: "cell type", data: "name",
 	      { title: "tissue", data: "tissue",
 		className: "dt-right" }];
 
-const cellTypesBox1 = ({globals, ct1, actions}) => {
-    return panelize("Cell type 1",
-                    <LongListFacet
-			title={""}
-			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
-			cols={cols}
-			buttonsOff={true}
-			selection={ct1}
-			friendlySelectionLookup={(value) => {
-				return globals.byCellType[value.replace(/[\/]/g, "-")] ? globals.byCellType[value.replace(/[\/]/g, "-")][0]["name"] : value.replace(/_/g, " "); }}
-			onTdClick={(value) => { actions.setCt1(value) }}
-                    />);
-}
+const cellTypesBox1 = ({ globals, ct1, actions }) => panelize(
+    "Cell type 1",
+    <LongListFacet
+        title={""}
+        data={globals.cellTypeInfoArr.filter(x => (x.biosample_summary.includes("embryo") && !x.biosample_summary.includes("embryo tissue embryo") && !x.biosample_summary.includes("129 liver")))}
+        cols={cols}
+        buttonsOff={true}
+        selection={ct1}
+        friendlySelectionLookup={value => globals.byCellType[value.replace(/[\/]/g, "-")] ? globals.byCellType[value.replace(/[\/]/g, "-")][0]["name"] : value.replace(/_/g, " ")}
+        onTdClick={(value) => { actions.setCt1(value) }}
+    />
+);
 
-const cellTypesBox2 = ({globals, ct2, actions}) => {
-    return panelize("Cell type 2",
-                    <LongListFacet
-			title={""}
-			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
-			cols={cols}
-			buttonsOff={true}
-			selection={ct2}
-			friendlySelectionLookup={(value) => {
-				return globals.byCellType[value.replace(/[\/]/g, "-")] ? globals.byCellType[value.replace(/[\/]/g, "-")][0]["name"] : value.replace(/_/g, " "); }}
-			onTdClick={(value) => { actions.setCt2(value) }}
-                    />);
-}
+const cellTypesBox2 = ({globals, ct2, actions}) => panelize(
+    "Cell type 2",
+    <LongListFacet
+        title={""}
+        data={globals.cellTypeInfoArr.filter(x => (x.biosample_summary.includes("embryo") && !x.biosample_summary.includes("embryo tissue embryo") && !x.biosample_summary.includes("129 liver")))}
+        cols={cols}
+        buttonsOff={true}
+        selection={ct2}
+        friendlySelectionLookup={value => globals.byCellType[value.replace(/[\/]/g, "-")] ? globals.byCellType[value.replace(/[\/]/g, "-")][0]["name"] : value.replace(/_/g, " ")}
+        onTdClick={(value) => { actions.setCt2(value) }}
+    />
+);
 
 const creBox = ({globals, assembly, des, ct1, ct2, actions}) => {
     if(!des || !ct1 || !ct2){
