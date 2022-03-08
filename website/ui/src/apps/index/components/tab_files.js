@@ -16,6 +16,7 @@ import Download from './download';
 import SearchIcon from './search';
 import { QuickStart } from './QuickStart';
 import { MatrixPage } from './Matrices';
+import { ENTExDownloadPage } from './ENTEx';
 
 const dccLink = fileID => {
     const url = "https://api.wenglab.org/screen_v13/fdownloads/Registry-V3/Seven-Group/" + fileID;
@@ -118,8 +119,9 @@ class TabFiles extends React.Component {
 				<Menu.Item onClick={() => this.setState({ page: 0 })} active={this.state.page === 0}>Quick Start</Menu.Item>
 				<Menu.Item onClick={() => this.setState({ page: 1 })} active={this.state.page === 1}>Detailed Elements</Menu.Item>
 				<Menu.Item onClick={() => this.setState({ page: 2 })} active={this.state.page === 2}>Data Matrices</Menu.Item>
+				<Menu.Item onClick={() => this.setState({ page: 3 })} active={this.state.page === 3}>EN-TEx Decorations (human only)</Menu.Item>
 			</Menu>
-			{ this.state.page === 0 ? <QuickStart /> : this.state.page === 1 ? (
+			{ this.state.page === 0 ? <QuickStart /> : this.state.page === 3 ? <ENTExDownloadPage /> : this.state.page === 1 ? (
 				<React.Fragment>
 				<div className="row">
 		    <div className="col-md-6">
