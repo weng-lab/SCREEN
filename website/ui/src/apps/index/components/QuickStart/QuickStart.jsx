@@ -160,7 +160,7 @@ const QuickStart = () => {
                         <SearchBox results={h3k4me3H || []} description={x => x.h3k4me3 || ""} color="#ff0000" title="promoters" dl={x => x.includes("PLS")} />
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-ELS.bed" download>
+                        <Button size="large" style={{ backgroundColor: "#ff0000", fontSize: "1.02em", borderRadius: "6px", width: "65%" }} href="https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-PLS.bed" download>
                             Download mouse candidate promoters (mm10)
                         </Button><br />
                         <SearchBox results={h3k4me3M || []} description={x => x.h3k4me3 || ""} color="#ff0000" title="promoters" dl={x => x.includes("PLS")} />
