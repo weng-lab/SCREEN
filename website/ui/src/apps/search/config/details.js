@@ -26,7 +26,7 @@ import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
 import { GraphQLImportanceTrack } from 'bpnet-ui';
-import { WrappedRulerTrack, DenseBigBed, EmptyTrack, WrappedTrack, GraphQLTranscriptTrack, GraphQLTrackSet, StackedTracks, WrappedSquishTranscriptTrack, RulerTrack, SquishTranscriptTrack, WrappedFullBigWig, WrappedDenseBigBed, UCSCControls, GenomeBrowser, PackTranscriptTrack, SquishBigBed } from 'umms-gb';
+import { WrappedRulerTrack, DenseBigBed, EmptyTrack, WrappedTrack, GraphQLTranscriptTrack, GraphQLTrackSet, StackedTracks, WrappedSquishTranscriptTrack, RulerTrack, SquishTranscriptTrack, WrappedFullBigWig, WrappedDenseBigBed, UCSCControls, GenomeBrowser, PackTranscriptTrack, SquishBigBed, FullBigWig } from 'umms-gb';
 import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from 'semantic-ui-react';
 import { associateBy, groupBy } from "queryz";
 import { linearTransform } from 'jubilant-carnival';
@@ -942,7 +942,21 @@ const TFMotifTab = props => {
     const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(true);
     const [ mousedOver, setMousedOver ] = useState(null);
+    const [ editable, setEditable ] = useState(false);
+    const [ signal, setSignal ] = useState([ "gs://gcp.wenglab.org/hg38.phyloP100way.bigWig" ]);
+    const [ modalShown, setModalShown ] = useState(false);
+    const [ signalToAdd, setSignalToAdd ] = useState("");
+    const [ coordinates, setCoordinates ] = useState({ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len });
     const svgRef = useRef(null);
+    const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
+    const tracks = useMemo(() => signal.map(url => ({
+        chr1: coordinates.chromosome,
+        start: coordinates.start,
+        end: coordinates.end,
+        chr2: coordinates.chromosome,
+        url,
+        preRenderedWidth: 1400
+    }), [ coordinates ]));
     useEffect( () => {
         fetch("https://ga.staging.wenglab.org/graphql", {
             method: "POST",
@@ -963,74 +977,133 @@ const TFMotifTab = props => {
         });
     }, []);
     return loading ? <Loader active>Loading...</Loader> : (
-        <GenomeBrowser innerWidth={1000} svgRef={svgRef}>
-            <RulerTrack
-                width={1000}
-                height={30}
-                domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
-            />
-            <GraphQLTranscriptTrack
-                assembly={props.assembly}
-                endpoint="https://ga.staging.wenglab.org/graphql"
-                id=""
-                transform=""
-                domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
-            >
-                <SquishTranscriptTrack
-                    title="GENCODE genes"
-                    rowHeight={15}
-                    titleSize={10}
+        <>
+            <ApolloProvider client={client}>
+                <CytobandView
+                    innerWidth={1000}
+                    height={15}
+                    chromosome={coordinates.chromosome}
+                    assembly="GRCh38"
+                    position={coordinates}
+                />
+            </ApolloProvider>
+			<div style={{ marginTop: "1em", marginBottom: "0.75em", textAlign: "center" }}>
+				<UCSCControls
+					domain={coordinates}
+					onDomainChanged={x => setCoordinates({ chromosome: coordinates.chromosome, ...capRange(x) })}
+				/>
+			</div>
+            <GenomeBrowser innerWidth={1000} svgRef={svgRef} domain={coordinates} onDomainChanged={setCoordinates} noMargin>
+                <WrappedRulerTrack
                     width={1000}
-                    domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+                    height={30}
+                    domain={coordinates}
+                />
+                <GraphQLTranscriptTrack
+                    assembly={props.assembly}
+                    endpoint="https://ga.staging.wenglab.org/graphql"
                     id=""
                     transform=""
+                    domain={coordinates}
+                >
+                    <SquishTranscriptTrack
+                        title="GENCODE genes"
+                        rowHeight={15}
+                        titleSize={10}
+                        width={1000}
+                        domain={coordinates}
+                        id=""
+                        transform=""
+                    />
+                </GraphQLTranscriptTrack>
+                <EmptyTrack
+                    width={1000}
+                    height={20}
+                    text="TF Motif Occurrences"
+                    id=""
                 />
-            </GraphQLTranscriptTrack>
-            <EmptyTrack
-                width={1000}
-                height={20}
-                text="TF Motif Occurrences"
-                id=""
-            />
-            <SquishBigBed
-                svgRef={svgRef}
-                domain={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
-                width={1000}
-                rowHeight={12}
-                data={data}
-                tooltipContent={MotifTooltip}
-                onMouseOver={setMousedOver}
-                onMouseOut={() => setMousedOver(null)}
-                onClick={x => window.open(`https://factorbook.org/tf/human/${x.rectname.split("$")[2]}/motif`, "_blank")}
-            />
+                <SquishBigBed
+                    svgRef={svgRef}
+                    domain={coordinates}
+                    width={1000}
+                    rowHeight={12}
+                    data={data}
+                    tooltipContent={MotifTooltip}
+                    onMouseOver={setMousedOver}
+                    onMouseOut={() => setMousedOver(null)}
+                    onClick={x => window.open(`https://factorbook.org/tf/human/${x.rectname.split("$")[2]}/motif`, "_blank")}
+                />
+                { signal.map((url, i) => (
+                    <StackedImportance key={`${coordinates.chromosome}:${coordinates.start}-${coordinates.end}-${i}`} url={url} i={i} setEditable={setEditable} coordinates={coordinates} tracks={tracks} />
+                ))}
+                { mousedOver && (
+                    <rect
+                        y={0}
+                        x={mousedOver.start}
+                        height={500}
+                        width={mousedOver.end - mousedOver.start}
+                        fill="#297eb3"
+                        fillOpacity={0.5}
+                    />
+                )}
+                <Modal open={modalShown}>
+                    <Modal.Header>Add an importance track</Modal.Header>
+                    <Modal.Content>
+                        <strong>URL</strong>: <input type="text" onChange={e => setSignalToAdd(e.target.value)} />
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button onClick={() => { setModalShown(false); setSignalToAdd(""); }}>Cancel</Button>&nbsp;
+                        <Button onClick={() => { setModalShown(false); setSignalToAdd(""); setSignal([ ...signal, signalToAdd ]) }}>OK</Button>
+                    </Modal.Actions>
+                </Modal>
+            </GenomeBrowser>
+            { editable && <Button onClick={() => setModalShown(true)}>Add Importance Track</Button> }
+        </>
+    );
+};
+
+const StackedImportance = ({ url, i, onHeightChanged, setEditable, coordinates, tracks }) => {
+    useEffect( () => { onHeightChanged && onHeightChanged(160); }, [] );
+    return coordinates ? (
+        <StackedTracks key={`${url}_${i}`} height={160}>
+            <rect fill="#ffffff" height={30} width={1000} onClick={() => setEditable(true)} />
             <EmptyTrack
                 width={1000}
                 height={30}
-                text="Sequence Scaled by PhyloP 100-way"
+                text={`Sequence Importance (${url})`}
                 id=""
+                onClick={() => setEditable(true)}
             />
-            <g>
+            { coordinates.end - coordinates.start < 5000 ? (
                 <GraphQLImportanceTrack
                     width={1000}
                     height={100}
                     endpoint="https://ga.staging.wenglab.org"
-                    signalURL="gs://gcp.wenglab.org/hg38.phyloP100way.bigWig"
+                    signalURL={url}
                     sequenceURL="gs://gcp.wenglab.org/hg38.2bit"
-                    coordinates={{ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }}
+                    coordinates={coordinates}
+                    key={`${coordinates.chromosome}:${coordinates.start}-${coordinates.end}-${url}`}
                 />
-            </g>
-            { mousedOver && (
-                <rect
-                    y={0}
-                    x={mousedOver.start}
-                    height={500}
-                    width={mousedOver.end - mousedOver.start}
-                    fill="#297eb3"
-                    fillOpacity={0.5}
-                />
+            ) : (
+                <GraphQLTrackSet
+                    tracks={[ tracks[i] ]}
+                    width={1000}
+                    height={100}
+                    endpoint="https://ga.staging.wenglab.org/graphql"
+                    noMargin
+                >
+                    <FullBigWig
+                        title=""
+                        width={1000}
+                        height={100}
+                        domain={coordinates}
+                        id={i}
+                        noMargin
+                    />
+                </GraphQLTrackSet>
             )}
-        </GenomeBrowser>
-    );
+        </StackedTracks>
+    ) : null;
 };
 
 const DetailsTabInfo = (assembly) => {

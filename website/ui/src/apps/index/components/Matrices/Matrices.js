@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { associateBy } from 'queryz';
-import { Button, Container, Divider, Grid, Header, Icon, Modal, Loader, Search } from 'semantic-ui-react';
+import { Button, Container, Divider, Grid, Header, Icon, Modal, Loader, Search, Message } from 'semantic-ui-react';
 import { Chart, Scatter, Legend, Annotation } from 'jubilant-carnival';
 import HumanHeader from '../HumanHeader';
 import { InverseMouseHeader } from '../MouseHeader';
@@ -193,7 +193,7 @@ const MatrixPage = () => {
             Object.keys(g).length * 50
         ];
     }, [ scMap, oMap, colorBy ] );
-    const hasMatrix = assembly === "mm10" || assay === "H3K4me3" || (assembly.toLocaleLowerCase() === "grch38" && assay.toLocaleLowerCase() == "dnase");
+    const hasMatrix = true; // assembly === "mm10" || assay === "H3K4me3" || (assembly.toLocaleLowerCase() === "grch38" && assay.toLocaleLowerCase() == "dnase");
 
     return (
         <Container>
@@ -371,15 +371,13 @@ const MatrixPage = () => {
                             <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
                             <Divider style={{ borderTop: "1px solid #000" }} />
                             <div style={{ marginTop: "0.8em" }} />
-                            <Button size="large" href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V2.txt`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
+                            <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Fold-change signal matrix
                             </Button>
-                            <Button size="large" href={!hasMatrix ? undefined : `https://api.wenglab.org/screen_v13/fdownloads/cCREs/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC-quantileNor.rDHS-V2.txt`} download style={{ backgroundColor: "#88aa88", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
-                                <Icon name="download" /> Quantile normalized signal matrix
+                            <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
+                                <Icon name="download" /> Z-score matrix
                             </Button>
-                            <Button size="large" download href={!hasMatrix ? undefined : `https://screen-beta-api.wenglab.org/fdownloads/Registry-V3/matrices/${assembly === "mm10" ? "mm10" : "GRCh38"}-${ASSAY_MAP[assay]}.tar.gz`} style={{ backgroundColor: "#8888aa", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
-                                <Icon name="download" /> Z-scored signal matrix
-                            </Button>
+                            <Message info>Files may be up to 20 GB in size.</Message>
                             { biosamples.length > 0 ? (
                                 <React.Fragment>
                                     <Divider style={{ borderTop: "1px solid #000" }} />

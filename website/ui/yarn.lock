@@ -2319,10 +2319,10 @@ bootstrap@3:
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.4.1.tgz#c3a347d419e289ad11f4033e3c4132b87c081d72"
   integrity sha512-yN5oZVmRCwe5aKwzRj6736nSmKDX7pLYwsXiCj/EYmo16hODaBiT4En5btW/jhBF/seV+XMx3aYwukYC3A49DA==
 
-bpnet-ui@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/bpnet-ui/-/bpnet-ui-0.1.1.tgz#9bda533d8962f2e5183a7cbcdd3e2362261b91aa"
-  integrity sha512-i1XhZRKKGqVqAP0q0txVASiOx5Iq9f4jE+TQjMPrTaHu5w2ZxIkJmZj2Own3NPF5Be+3hMI0Eye+DfjAn6wGbg==
+bpnet-ui@^0.2.9:
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/bpnet-ui/-/bpnet-ui-0.2.9.tgz#58564c4a4956207d25176560bd175af742fc9ebe"
+  integrity sha512-LyPbcGDw8u0hk+SNBu2OnJMi3Vuf1l4ihOhafxfmNyatpK2Jqzf++0ldaJZ7zFnTNgU+k7VSQH92wT25Qnx7tw==
   dependencies:
     beautiful-react-hooks "^0.35.0"
     jubilant-carnival "^0.4.0"
@@ -11533,10 +11533,10 @@ umap-js@^1.3.3:
   dependencies:
     ml-levenberg-marquardt "^2.0.0"
 
-umms-gb@^3.5.1:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/umms-gb/-/umms-gb-3.6.3.tgz#68923b1512d853cbbf8092bb8b9e6820cfaa14f4"
-  integrity sha512-8GPYKeH+knyNq2JtVJVAKpj3FQkK6cWob1Rd7PLrddZ6r2DNUgkDGFtFT60jjiGpnF+l5O9bRJV+lXzEwQ744Q==
+umms-gb@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/umms-gb/-/umms-gb-3.8.2.tgz#c7ec107685420f0bab6a80625f754e50c9d36f54"
+  integrity sha512-IKH5Q4cQDybELapgTv9iVCZNiA3AZYjssdcO4Iye50ehSiPhuELMD2uOziXtrKqeHxCClCTgbUA9nKQJFy6+Xg==
   dependencies:
     "@types/uuid" "^8.0.0"
     bigwig-reader "^1.3.1"

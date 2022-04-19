@@ -144,7 +144,7 @@ const QuickStart = () => {
                         </Button>
                     </Grid.Column>
                     <Grid.Column width={7} style={{ textAlign: "center" }}>
-                        <Button size="large" href="https://api.wenglab.org/screen_v13/fdownloads/V3/mm10-ccREs.bed" download style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", width: "65%" }}>
+                        <Button size="large" href="https://api.wenglab.org/screen_v13/fdownloads/V3/mm10-cCREs.bed" download style={{ backgroundColor: "#06da93", fontSize: "1.02em", borderRadius: "6px", width: "65%" }}>
                             Download all mouse cCREs (mm10)
                         </Button>
                     </Grid.Column>
