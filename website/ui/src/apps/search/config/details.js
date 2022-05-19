@@ -655,7 +655,7 @@ const ENTEXView = props => {
         return k.length === 0 ? undefined : ENTEX[k];
     })).filter(x => !!x), [ rtissues ]);
     const eCoordinates = useMemo( () => props.active_cre && ({ chromosome: props.active_cre.chrom, start: props.active_cre.start, end: props.active_cre.start + props.active_cre.len }), [ props ]);
-    const formattedAS = useMemo( () => data && data.bigRequests[0].data.map(x => ({
+    const formattedAS = useMemo( () => data && data.bigRequests[0].data ? data.bigRequests[0].data.map(x => ({
         hap1_count: +x.name.split('$')[1],
         hap2_count: +x.name.split('$')[2],
         hap1_allele_ratio: +x.name.split('$')[3],
@@ -665,7 +665,7 @@ const ENTEXView = props => {
         assay: x.name.split('$')[7].replace(/_/g, " "),
         p: +x.name.split('$')[8].replace(/_/g, " "),
         significant: x.name.split('$')[9] === '1'
-    })), [ data ]);
+    })) : [], [ data ]);
     return loading ? <Loader active>Loading...</Loader> : (
         <>
             <Menu pointing secondary>
@@ -994,7 +994,7 @@ const TFMotifTab = props => {
 				/>
 			</div>
             <GenomeBrowser innerWidth={1000} svgRef={svgRef} domain={coordinates} onDomainChanged={setCoordinates} noMargin>
-                <WrappedRulerTrack
+                <RulerTrack
                     width={1000}
                     height={30}
                     domain={coordinates}

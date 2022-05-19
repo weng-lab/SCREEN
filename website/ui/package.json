@@ -1,6 +1,6 @@
 {
   "name": "SCREENui",
-  "version": "11.5.16",
+  "version": "11.5.17",
   "license": "ISC",
   "main": "index.js",
   "scripts": {
