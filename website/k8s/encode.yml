@@ -45,7 +45,7 @@ spec:
   selector:
     app: screen-encodeproject-ui
 ---
-apiVersion: networking.gke.io/v1beta2
+apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: screen-encodeproject-ui-cert
@@ -53,7 +53,7 @@ spec:
   domains:
     - screen.encodeproject.org
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: screen-encodeproject-ui-ingress
@@ -62,6 +62,8 @@ metadata:
     kubernetes.io/ingress.allow-http: "true"
     networking.gke.io/managed-certificates: "screen-encodeproject-ui-cert"
 spec:
-  backend:
-    serviceName: screen-encodeproject-ui-service
-    servicePort: 80
+  defaultBackend:
+    service:
+      name: screen-encodeproject-ui-service
+      port:
+        number: 80
