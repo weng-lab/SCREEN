@@ -69,7 +69,7 @@ export const dnase_z_score = (d) => (d === -11.0 || d === '--' || d === undefine
 export const h3k4me3_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#ff0000" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
 export const h3k27ac_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#ffcd00" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
 export const ctcf_z_score = (d) => (d === -11.0 || d === '--' || d === undefined ? "--" : (d > 1.64 ? <strong><span style={{ color: "#00b0f0" }}>{d.toFixed(2)}</span></strong> : d.toFixed(2)));
-export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
+export const cell_type = (globals) => (ct) => (globals.byCellType[ct] && globals.byCellType[ct][0] ? globals.byCellType[ct][0]["name"] : "");
 
 export const support = (support) => (
     ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ?

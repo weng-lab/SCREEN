@@ -371,8 +371,8 @@ const MatrixPage = () => {
                             <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
                             <Divider style={{ borderTop: "1px solid #000" }} />
                             <div style={{ marginTop: "0.8em" }} />
-                            <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-FC.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
-                                <Icon name="download" /> Fold-change signal matrix
+                            <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-${assay === "dnase" ? "RDN" : "FC"}.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
+                                <Icon name="download" /> {assay === "dnase" ? "Read-Depth Normalized" : "Fold-change"} signal matrix
                             </Button>
                             <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Z-score matrix
