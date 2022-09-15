@@ -24,7 +24,7 @@ class SearchPageInner extends React.Component {
   render() {
     let store = createStore(main_reducers,
       initialState(this.props.search,
-		   this.props.globals),
+		   this.props.globals, this.props.root),
         applyMiddleware(
           thunkMiddleware,
         ));
@@ -32,6 +32,7 @@ class SearchPageInner extends React.Component {
         const assembly = this.props.search.parsedQuery.assembly;
         let mainTabs = (<MainTabs
           globals={this.props.globals}
+          root={this.props.root}
           search={this.props.search} />);
 
           let drawMain = () => {

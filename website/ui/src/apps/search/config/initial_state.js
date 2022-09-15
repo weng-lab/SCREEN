@@ -6,9 +6,9 @@
 import MainTabInfo from './maintabs.js'
 import {isCart} from '../../../common/utility'
 
-const initialState = (search, globals) => {
+const initialState = (search, globals, root) => {
     let pmaintab = null;
-    let psubtab = null;
+    let psubtab = null;        
     if("maintab" in search){
 	pmaintab = search.maintab;
         if("subtab" in search){

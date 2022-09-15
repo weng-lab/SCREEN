@@ -244,6 +244,12 @@ class ResultsTableContainer extends React.Component {
 					       cts: r["cts"],
 				      	       rfacets: r["rfacets"],
 					       jq, isFetching: false, isError: false});
+				if (this.props.root.params.maintab && r["cres"] && r["cres"].length === 1) {
+					this.props.actions.selectcre(r["cres"][0]);
+					let cre = {...r["cres"][0], ...r["cres"][0].info};
+					this.props.actions.showReDetail(cre);
+					if (this.props.root.params.subtab) this.props.actions.setReDetailTab(this.props.root.params.subtab);
+				}
 				setrfacets(r["rfacets"])},
 			    (msg) => {
 				console.log("err loading cres for table");

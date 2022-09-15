@@ -87,6 +87,7 @@ class AppPageBase extends React.Component {
 		<div>
 		    {React.createElement(this.innerClass, {uuid,
 							   search: this.state.search,
+							   root: this.props,
 							   globals: this.state.globals})}
 		</div>);
 	}

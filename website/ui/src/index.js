@@ -86,9 +86,9 @@ ReactDOM.render((
 	<Route path={"/"} component={LoadableIndex} />
 	<Route path={"/downloads"} render={ () => <Redirect to="/index/files" /> } />
 	<Route path={"/index/:tab"} component={LoadableIndex} />
-	<Route path={"/search(.*)"} component={LoadableSearch} />
-	<Route path={"/search/:maintab(.*)"} component={LoadableSearch} />
 	<Route path={"/search/:maintab/:subtab(.*)"} component={LoadableSearch} />
+	<Route path={"/search/:maintab(.*)"} component={LoadableSearch} />
+	<Route path={"/search(.*)"} component={LoadableSearch} />
 	<Route path={"/geApp/"} component={LoadableGeneExp} />
 	<Route path={"/deApp/"} component={LoadableDe} />
 	<Route path={"/gwasApp/"} component={LoadableGwas} />

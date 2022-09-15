@@ -44,7 +44,7 @@ class DetailsContainer extends React.Component {
 
         // TODO: avoid multiple re-renders?
         // console.log(this.props);
-        let cre = this.props.active_cre;
+        let cre = this.props.active_cre || this.props.search.parsedQuery.accessions[0];
 	
 	return (
             <div className="container" style={{width: "100%"}}>
