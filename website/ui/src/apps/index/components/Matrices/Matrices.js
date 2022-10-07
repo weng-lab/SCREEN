@@ -5,6 +5,7 @@ import { Chart, Scatter, Legend, Annotation } from 'jubilant-carnival';
 import HumanHeader from '../HumanHeader';
 import { InverseMouseHeader } from '../MouseHeader';
 import { DataTable } from 'ts-ztable';
+import { useGetDownloadFileUrl } from '../utils';
 
 const UMAP_QUERY = `
 query q($assembly: String!, $assay: [String!], $a: String!) {
@@ -143,7 +144,48 @@ const MatrixPage = () => {
     const [ bounds, setBounds ] = useState(undefined);
     const [ searched, setSearched ] = useState(undefined);
     const [ modalShown, setModalShown ] = useState(false);
-
+    const [ signalMatrixUrl, setSignalMatrixUrl] = useState('')
+    const [ zScoreMatrixUrl, setZScoreMatrixUrl] = useState('')
+    //signal matrix url 
+    useEffect(()=> {
+        if(assay!="")
+        {
+            let primaryurl = `https://downloads.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-${assay === "dnase" ? "RDN" : "FC"}.rDHS-V3.txt.gz`
+            let secondaryurl = `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-${assay === "dnase" ? "RDN" : "FC"}.rDHS-V3.txt.gz`
+            fetch(primaryurl, { method: "HEAD" }).then((res) => {
+                if (res.status!==200) {
+                    setSignalMatrixUrl(secondaryurl)
+                } else {
+                    setSignalMatrixUrl(primaryurl)
+                }
+            }).catch((e)=>{    
+                setSignalMatrixUrl(secondaryurl)
+            })
+        }
+        
+    },
+    [assay,assembly]);
+    
+    //zscore matrix url
+    useEffect(()=> {
+        if(assay!=""){
+            let primaryurl = `https://downloads.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V3.txt.gz`
+            let secondaryurl = `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V3.txt.gz`
+            
+            fetch(primaryurl, { method: "HEAD" }).then((res) => {
+                if (res.status!==200) {
+                    setZScoreMatrixUrl(secondaryurl)
+                } else {
+                    setZScoreMatrixUrl(primaryurl)
+                }
+            }).catch((e)=>{    
+                setZScoreMatrixUrl(secondaryurl)
+            })
+        }
+        
+    },
+    [assay,assembly]);
+    
     useEffect( () => {
         assembly !== "" && assay !== "" && fetch("https://ga.staging.wenglab.org/graphql", {
             method: "POST",
@@ -194,7 +236,7 @@ const MatrixPage = () => {
         ];
     }, [ scMap, oMap, colorBy ] );
     const hasMatrix = true; // assembly === "mm10" || assay === "H3K4me3" || (assembly.toLocaleLowerCase() === "grch38" && assay.toLocaleLowerCase() == "dnase");
-
+    
     return (
         <Container>
             <Modal open={modalShown} onClose={() => setModalOpen(false)} style={{ height: "auto", top: "auto", left: "auto", right: "auto", bottom: "auto" }}>
@@ -371,10 +413,10 @@ const MatrixPage = () => {
                             <Header as="h3">{umapHeader(assay, assembly, "Downloads")}</Header>
                             <Divider style={{ borderTop: "1px solid #000" }} />
                             <div style={{ marginTop: "0.8em" }} />
-                            <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-${assay === "dnase" ? "RDN" : "FC"}.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
+                            <Button size="large" href={!hasMatrix ? undefined : signalMatrixUrl} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> {assay === "dnase" ? "Read-Depth Normalized" : "Fold-change"} signal matrix
                             </Button>
-                            <Button size="large" href={!hasMatrix ? undefined : `https://storage.googleapis.com/gcp.wenglab.org/cCREs/matrices/all/${assembly === "mm10" ? "mm10" : "GRCh38"}.${ASSAY_MAP[assay]}-zscore.rDHS-V3.txt.gz`} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
+                            <Button size="large" href={!hasMatrix ? undefined : zScoreMatrixUrl} download style={{ backgroundColor: "#aa8888", borderRadius: "6px", marginBottom: "0.2em", width: "90%" }} onClick={() => setModalShown(!hasMatrix)}>
                                 <Icon name="download" /> Z-score matrix
                             </Button>
                             <Message info>Files may be up to 20 GB in size.</Message>

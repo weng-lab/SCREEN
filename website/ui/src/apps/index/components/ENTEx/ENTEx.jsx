@@ -1,10 +1,13 @@
 import React from 'react';
 import { Button, Container, Icon, Message, Header, Divider } from 'semantic-ui-react';
+import { useGetDownloadFileUrl } from '../utils';
 
-const ENTExDownloadPage = () => (
+const ENTExDownloadPage = () => {
+const entexUrl = useGetDownloadFileUrl("https://downloads.wenglab.org/cCRE_decoration.matrix.1.gz","https://storage.googleapis.com/gcp.wenglab.org/cCRE_decoration.matrix.1.gz")
+ return (
     <Container style={{ width: "100%" }}>
         <Header as="h1">EN-TEx cCRE Decoration Matrix</Header>
-        <Button size="huge" href="https://storage.googleapis.com/gcp.wenglab.org/cCRE_decoration.matrix.1.gz">
+        <Button size="huge" href={entexUrl}>
             <Icon name="download" /> Download (gzip compressed, 21M)
         </Button>
         <Message info>
@@ -14,5 +17,5 @@ const ENTExDownloadPage = () => (
         </Message>
         For more details, see the <a href="http://entex.encodeproject.org/">EN-TEx Data Portal</a>.
     </Container>
-);
+)};
 export default ENTExDownloadPage;
