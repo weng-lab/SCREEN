@@ -1,0 +1,1 @@
+CREATE INDEX grch38_ground_level_versions_index ON grch38_ground_level_versions(version);

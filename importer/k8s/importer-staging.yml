@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-screen-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: screen-importer
+        image: gcr.io/devenv-215523/screen-importer:${IMPORTER_VERSION}
+        imagePullPolicy: Always
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            sleep 2s
+            trap "touch /tmp/pod/terminated" EXIT
+            java -jar /app/screen-importer.jar
+        env:
+          - name: VERSIONING_GS_DIR
+            value: "wenglab-data-common:screenversioning/data"                            
+          - name: DB_SCHEMA
+            value: "${DB_SCHEMA}"
+          - name: DB_URL
+            value: "jdbc:postgresql://127.0.0.1:5432/screen__v13"          
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: screen-v13-db-credentials
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: screen-v13-db-credentials
+                key: password
+        volumeMounts:
+          - name: tmp-pod
+            mountPath: /tmp/pod
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            /cloud_sql_proxy -instances=devenv-215523:us-east1:screen-v13-db=tcp:5432 -credential_file=/secrets/cloudsql/staging-service-account.json & CHILD_PID=$!
+            (while true; do if [[ -f "/tmp/pod/terminated" ]]; then kill $CHILD_PID; echo "Killed $CHILD_PID because the main container terminated."; fi; sleep 1; done) &
+            wait $CHILD_PID
+            if [[ -f "/tmp/pod/terminated" ]]; then exit 0; echo "Job completed. Exiting..."; fi
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: service-account-key
+            mountPath: /secrets/cloudsql
+            readOnly: true
+          - name: tmp-pod
+            mountPath: /tmp/pod
+            readOnly: true
+      volumes:
+        - name: service-account-key
+          secret:
+            secretName: service-account-key
+        - name: tmp-pod
+          emptyDir: {}
+      restartPolicy: Never

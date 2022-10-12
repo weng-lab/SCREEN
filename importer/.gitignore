@@ -1,0 +1,31 @@
+*~
+\#*\#
+
+# Python
+*.pyc
+
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
+.DS_Store
+
+# intellij build dir
+**/out
+
+# command line build dir
+**/build
+
+# Intellij project files
+**/.idea
+*.iml
+
+# Eclipse project files
+.classpath
+.project
+
+.gradle/
+
+node_modules
+
+*/dist
