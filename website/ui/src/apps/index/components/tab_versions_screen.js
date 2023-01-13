@@ -9,7 +9,8 @@ import { Tabs, Tab } from "react-bootstrap";
 
 import Ztable from "../../../common/components/ztable/ztable";
 import loading from "../../../common/components/loading";
-import * as ApiClient from "../../../common/api_client";
+
+import { ApolloClient, gql, InMemoryCache, useQuery } from '@apollo/client';
 
 const CtsTableColumns = () => {
   const dccLink = (assay, accs) => {
@@ -57,6 +58,24 @@ const CtsTableColumns = () => {
   ];
 };
 
+const query = gql`
+  query {
+    groundLevelVersionsQuery {
+      version
+      biosamples {
+        biosample
+        assays {
+          assay
+          experiments
+        }
+      }
+    }
+    bigRequests(requests: [{ url: "gs://gcp.wenglab.org/SCREEN/ground_level_versions" }]) {
+      data
+    }
+  }
+`;
+
 class TabDataScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -72,52 +91,51 @@ class TabDataScreen extends React.Component {
   }
 
   loadFiles(nextProps) {
-    if ("files" in this.state) {
+    const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
+    const { loading, error, data } = useQuery(query, { client });
+    
+    if ("files" in this.state) return;
+    if (this.state.isFetching) return;
+    if (loading) {
+      console.log("Loading...");
       return;
     }
-    if (this.state.isFetching) {
-      return;
-    }
+
     this.setState({ isFetching: true });
-    // const jq = JSON.stringify({ assembly: "GRCh38" });
-    ApiClient.getByPost(
-      "/dataws/ground_level_versions",
-      (r) => {
-        let totals = {};
-        let versions = {};
 
-        for (let x of r) {
-          let biosamples = {};
-          for (let b of x.biosamples) {
-            let assays = {};
-            for (let a of b.assays) {
-              assays[a] = a.experiments;
-              if (totals[x.version] === undefined)
-                totals[x.version] = a.experiments.length;
-              else totals[x.version] += a.experiments.length;
-            }
-            biosamples[b] = assays;
+    if (error) {
+      console.log("Error!");
+      console.log(`${error.message}`);
+      this.setState({ isFetching: false, isError: true });
+    }
+    else {
+      let totals = {};    // total experiments for each version { version: number of experiments }
+      let versions = {};  // dict of versions { version: biosample: assay: [ experiments ] }
+      for (let x of data) {
+        let biosamples = {};    // biosamples
+        for (let b of x.biosamples) {
+          let assays = {};          // assays
+          for (let a of b.assays) {
+            assays[a] = a.experiments;  // experiments
+            if (totals[x.version] === undefined) totals[x.version] = a.experiments.length;
+            else totals[x.version] += a.experiments.length;
           }
-          versions[x.version] = biosamples;
+          biosamples[b] = assays;
         }
-
-        let versionIDs = Object.keys(versions);
-
-        this.setState({
-          versions,
-          selectedVersion: 0,
-          versionIDs,
-          totals,
-          isFetching: false,
-          isError: false,
-        });
-      },
-      (err) => {
-        console.log("err loading files");
-        console.log(err);
-        this.setState({ isFetching: false, isError: true });
+        versions[x.version] = biosamples;
       }
-    );
+
+      let versionIDs = Object.keys(versions);
+
+      this.setState({
+        versions,
+        selectedVersion: 0,
+        versionIDs,
+        totals,
+        isFetching: false,
+        isError: false,
+      });
+    }
   }
 
   render() {
