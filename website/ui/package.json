@@ -4,14 +4,21 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow"
   },
   "homepage": "https://screen.encodeproject.org",
-  "devDependencies": {},
+  "babel": {
+    "plugins": [
+      "transform-class-properties"
+    ]
+  },
+  "devDependencies": {
+    "typescript": "4.1.3"
+  },
   "dependencies": {
     "@apollo/client": "^3.3.21",
     "bootstrap": "3",
@@ -43,7 +50,7 @@
     "react-router-bootstrap": "^0.24.2",
     "react-router-dom": "^5.2.0",
     "react-router-redux": "^4.0.8",
-    "react-scripts": "2.0.5",
+    "react-scripts": "3.4.4",
     "recharts": "^1.0.0-alpha.3",
     "redux": "^3.7.1",
     "redux-logger": "^2.6.1",
