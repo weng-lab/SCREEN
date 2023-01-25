@@ -3,12 +3,12 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 
+import { Loader } from 'semantic-ui-react';
 import { Tabs, Tab } from "react-bootstrap";
 
 import Ztable from "../../../common/components/ztable/ztable";
-import loading from "../../../common/components/loading";
 
 import { ApolloClient, gql, InMemoryCache, useQuery } from '@apollo/client';
 
@@ -70,96 +70,64 @@ const query = gql`
         }
       }
     }
-    bigRequests(requests: [{ url: "gs://gcp.wenglab.org/SCREEN/ground_level_versions" }]) {
-      data
-    }
   }
 `;
 
-class TabDataScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { isFetching: false, isError: false };
+function TabDataScreen() {
+  const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
+  const { loading, error, data } = useQuery(query, { client });
+
+  if (loading) {
+    console.log("Loading...");
+    return <Loader active>Loading...</Loader>;
   }
 
-  componentDidMount() {
-    this.loadFiles(this.props);
+  if (error) {
+    console.log("Error!");
+    console.log(`${error.message}`);
+    return <div>error.message</div>;
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.loadFiles(nextProps);
-  }
+  let totals = {};    // total experiments for each version { version: number of experiments }
+  let versions = {};  // dict of versions { version: biosample: assay: [ experiments ] }
+  let versionIDs = [] // IDs of each version
 
-  loadFiles(nextProps) {
-    const client = useMemo( () => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [] );
-    const { loading, error, data } = useQuery(query, { client });
-    
-    if ("files" in this.state) return;
-    if (this.state.isFetching) return;
-    if (loading) {
-      console.log("Loading...");
-      return;
-    }
-
-    this.setState({ isFetching: true });
-
-    if (error) {
-      console.log("Error!");
-      console.log(`${error.message}`);
-      this.setState({ isFetching: false, isError: true });
-    }
-    else {
-      let totals = {};    // total experiments for each version { version: number of experiments }
-      let versions = {};  // dict of versions { version: biosample: assay: [ experiments ] }
-      for (let x of data) {
-        let biosamples = {};    // biosamples
-        for (let b of x.biosamples) {
-          let assays = {};          // assays
-          for (let a of b.assays) {
-            assays[a] = a.experiments;  // experiments
-            if (totals[x.version] === undefined) totals[x.version] = a.experiments.length;
-            else totals[x.version] += a.experiments.length;
-          }
-          biosamples[b] = assays;
-        }
-        versions[x.version] = biosamples;
+  for (let x of data.groundLevelVersionsQuery) {
+    for (let b of x.biosamples) {
+      let assays = {};          // assays
+      for (let a of b.assays) {
+        assays[a.assay] = a.experiments;  // experiments
+        if (totals[x.version] === undefined) totals[x.version] = a.experiments.length;
+        else totals[x.version] += a.experiments.length;
       }
-
-      let versionIDs = Object.keys(versions);
-
-      this.setState({
-        versions,
-        selectedVersion: 0,
-        versionIDs,
-        totals,
-        isFetching: false,
-        isError: false,
-      });
+      let biosamples = {
+        biosample_term_name: b.biosample,
+        experiments: assays
+      }
+      if (versions[x.version] === undefined) versions[x.version] = [biosamples];
+      else versions[x.version].push(biosamples);
     }
+    versionIDs.push(x.version)
   }
 
-  render() {
-    if (this.state.versions && this.state.versionIDs)
-      return (
-        <div>
-          <Tabs defaultActiveKey={1} id="tabset">
-            {this.state.versionIDs.map((id, i) => (
-              <Tab title={id} key={id} eventKey={i}>
-                <h3>
-                  ENCODE and Roadmap Experiments constituting ground level
-                  version {id} ({this.state.totals[id].toLocaleString()} total)
-                </h3>
-                <Ztable
-                  data={this.state.versions[id]}
-                  cols={CtsTableColumns()}
-                />
-              </Tab>
-            ))}
-          </Tabs>
-        </div>
-      );
-    return loading({ ...this.state });
-  }
-}
+  return (
+    <div>
+      <Tabs defaultActiveKey={1} id="tabset">
+        {versionIDs.map((id, i) => (
+          <Tab title={id} key={id} eventKey={i}>
+            <h3>
+              ENCODE and Roadmap Experiments constituting ground level
+              version {id} ({totals[id].toLocaleString()} total)
+            </h3>
+            <Ztable 
+              data={versions[id]} 
+              cols={CtsTableColumns()} 
+            />
+          </Tab>
+        ))}
+      </Tabs>
+    </div>
+  );
+};
 
 export default TabDataScreen;
