@@ -43,8 +43,8 @@ export default function TabDataScreen() {
     { client }
   );
 
-  if (loading) LoadingMessage();
-  if (error) ErrorMessage(error);
+  if (loading) return LoadingMessage();
+  if (error) return ErrorMessage(error);
 
   return VersionView(data.groundLevelVersionsQuery);
 }
