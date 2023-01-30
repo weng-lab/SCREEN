@@ -5,9 +5,10 @@
 
 import React, { useMemo } from "react";
 
-import { Loader, Message } from "semantic-ui-react";
+import { Message } from "semantic-ui-react";
 import { Tabs, Tab } from "react-bootstrap";
 
+import loading from '../../../common/components/loading';
 import Ztable from "../../../common/components/ztable/ztable";
 
 import { ApolloClient, ApolloError, gql, InMemoryCache, useQuery } from "@apollo/client";
@@ -102,7 +103,7 @@ const CtsTableColumns = () => {
   const dccLink = (assay, accs) => {
     const url = (acc) => "https://www.encodeproject.org/experiments/" + acc;
     return (
-      <p>
+      <p key={assay}>
         <strong>{assay}</strong>:&nbsp;
         {accs.map((acc, i) => (
           <span key={acc}>
@@ -148,7 +149,7 @@ const CtsTableColumns = () => {
  */
 const LoadingMessage = () => {
   console.log("Loading...");
-  return <Loader active>Loading...</Loader>;
+  return loading({isFetching: true, isError: false})
 };
 
 /**
