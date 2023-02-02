@@ -3,21 +3,22 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback, useRef, useEffect, useState } from "react";
 
 import { Message } from "semantic-ui-react";
 import { Tabs, Tab } from "react-bootstrap";
+import { tabPanelize } from '../../../common/utility';
 
 import loading from '../../../common/components/loading';
 import Ztable from "../../../common/components/ztable/ztable";
 
-import { ApolloClient, ApolloError, gql, InMemoryCache, useQuery } from "@apollo/client";
+import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client";
 
 /**
  * This file and function queries for versions tab data and returns the rendered display
  * @returns versions tab
  */
-export default function TabDataScreen() {
+const TabDataScreen = () => {
   const client = useMemo(
     () =>
       new ApolloClient({
@@ -26,6 +27,7 @@ export default function TabDataScreen() {
       }),
     []
   );
+
   const { loading, error, data } = useQuery(
     gql`
       query {
@@ -44,60 +46,19 @@ export default function TabDataScreen() {
     { client }
   );
 
-  if (loading) return LoadingMessage();
-  if (error) return ErrorMessage(error);
-
-  return VersionView(data.groundLevelVersionsQuery);
+  return ( 
+    loading ? LoadingMessage() : 
+    error ? ErrorMessage(error) : (
+      <div>
+        <VersionView data={data} />
+      </div>
+    )
+  );
 }
 
 /**
- * Organize and render data from query
- * @param {dictionary} data groundLevelVersionsQuery
- * @returns display of versions tab
- */
-const VersionView = (data) => {
-  let totals = {}; // total experiments for each version { version: number of experiments }
-  let versions = {}; // dict of versions { version: [ { biosample: { assay: [ experiments ] } ] }
-  let versionIDs = []; // IDs of each version
-
-  for (let x of data) {
-    versions[x.version] = [];
-    totals[x.version] = 0;
-    versionIDs.push(x.version);
-    for (let b of x.biosamples) {
-      let assays = {};
-      for (let a of b.assays) {
-        assays[a.assay] = a.experiments;
-        totals[x.version] += a.experiments.length;
-      }
-      // Ztable uses a list of objects for each version
-      versions[x.version].push({
-        biosample_term_name: b.biosample,
-        experiments: assays,
-      });
-    }
-  }
-
-  return (
-    <div>
-      <Tabs defaultActiveKey={1} id="tabset">
-        {versionIDs.map((id, i) => (
-          <Tab title={id} key={id} eventKey={i}>
-            <h3>
-              ENCODE and Roadmap Experiments constituting ground level version
-              {id} ({totals[id].toLocaleString()} total)
-            </h3>
-            <Ztable data={versions[id]} cols={CtsTableColumns()} />
-          </Tab>
-        ))}
-      </Tabs>
-    </div>
-  );
-};
-
-/**
  * links experiment accessions to their encode url and renders the columns
- * @returns rendered columns for the Ztable
+ * @returns columns for Ztable
  */
 const CtsTableColumns = () => {
   const dccLink = (assay, accs) => {
@@ -129,6 +90,14 @@ const CtsTableColumns = () => {
   const dccLinks = (experiments) =>
     Object.keys(experiments).map((assay) => dccLink(assay, experiments[assay]));
 
+  const tmp = (assays) => {
+    let table = {}
+    for (let x of assays){
+      table[x.assay] = dccLink(x.assay, x.experiments)
+    }
+    return table;
+  }
+
   return [
     {
       title: "Biosample",
@@ -138,6 +107,7 @@ const CtsTableColumns = () => {
     {
       title: "Experiments",
       data: "experiments",
+      // render: tmp,
       render: dccLinks,
     },
   ];
@@ -167,3 +137,78 @@ const ErrorMessage = (error) => {
     </Message>
   );
 };
+
+/**
+ * Organize and render data from query
+ * @param {any} data groundLevelVersionsQuery
+ * @returns rendered display of versions tab
+ */
+class VersionView extends React.Component {
+  constructor (props) {
+    super(props);
+    this.totals = {}; // total experiments for each version { version: number of experiments }
+    this.versions = {}; // dict of versions { version: [ { biosample: { assay: [ experiments ] } ] }
+    this.versionIDs = []; // IDs of each version
+
+    for (let x of this.props.data.groundLevelVersionsQuery) {
+      this.versions[x.version] = [];
+      this.totals[x.version] = 0;
+      this.versionIDs.push(x.version);
+      for (let b of x.biosamples) {
+        let assays = {};
+        for (let a of b.assays) {
+          assays[a.assay] = a.experiments;
+          this.totals[x.version] += a.experiments.length;
+        }
+        // Ztable uses a list of objects for each version
+        this.versions[x.version].push({
+          biosample_term_name: b.biosample,
+          experiments: assays,
+          // experiments: b.assays,
+        });
+      }
+    }
+  }
+
+  render(){
+    return (
+      <div>
+        <Tabs defaultActiveKey={1} id="tabset">
+          {this.versionIDs.map((id, i) => (
+            <Tab title={id} key={id} eventKey={i}>
+              <h3>
+                ENCODE and Roadmap Experiments constituting ground level version {id} ({this.totals[id].toLocaleString()} total)
+              </h3>
+              <Ztable 
+                data={this.versions[id]} 
+                cols={CtsTableColumns()} 
+              />            
+            </Tab>
+          ))}
+        </Tabs>
+      </div>
+    );
+  }
+};
+
+class TabVersions extends React.Component {
+  key = "versions";
+
+  shouldComponentUpdate(nextProps, nextState) {
+      return this.key === nextProps.maintabs_active;
+  }
+
+  render() {
+    if(this.key !== this.props.maintabs_active)
+      return false;
+    return (
+      tabPanelize(
+        <div>
+          <TabDataScreen />
+        </div>
+      )
+    );
+  }
+}
+
+export default TabVersions;

@@ -7,7 +7,7 @@ import TabMain from '../components/tab_main';
 import TabAbout from '../components/tab_about';
 import TabTutorial, { TabUCSC } from '../components/tab_tutorial';
 import TabQuery from '../components/tab_query';
-import TabVersions from '../components/tab_versions';
+import TabVersions from '../components/tab_versions_screen';
 
 import TabFiles from '../components/tab_files';
 import React from 'react';
