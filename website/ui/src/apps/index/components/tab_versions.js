@@ -161,8 +161,8 @@ class VersionView extends React.Component {
     Object.keys(this.collection).forEach((version) => {
       Object.keys(this.collection[version]).forEach((biosample) => {
         this.versions[version].push({
-          biosample_term_name: biosample.
-            substring(
+          biosample_term_name: biosample
+            .substring(
               0,
               biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length)
             .replace(/b'/g, "")

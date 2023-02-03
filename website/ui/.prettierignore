@@ -2,3 +2,5 @@
 ./yarn.lock
 ./tmp
 ./cache
+./yarn-error.log
+./dist
