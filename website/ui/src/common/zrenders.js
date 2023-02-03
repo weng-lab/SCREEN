@@ -11,13 +11,13 @@ import * as ApiClient from './api_client';
 import * as Urls from './urls';
 
 export const relink = (assembly, uuid) => (v) => (
-    <a href={"/search/?" + toParams({assembly, q: v, uuid})} target="_blank">
+    <a href={"/search/?" + toParams({assembly, q: v, uuid})} target="_blank" rel="noopener noreferrer">
 	{v}
     </a>
 );
 
 export const exrelink = (assembly, uuid) => (v) => (
-    <a href={"http://screen-v10.wenglab.org/search?" + toParams({ assembly, q: v, uuid })} target="_blank">
+    <a href={"http://screen-v10.wenglab.org/search?" + toParams({ assembly, q: v, uuid })} target="_blank" rel="noopener noreferrer">
 	{v}
     </a>
 );
@@ -39,7 +39,7 @@ export const snp_link = (assembly) => (d) => {
     if("mm10" === assembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return <a href={url + "?vdb=variation;v=" + d} target="_blank" key={d}>{d}</a>;
+    return <a href={url + "?vdb=variation;v=" + d} target="_blank" rel="noopener noreferrer" key={d}>{d}</a>;
 }
 
 export const snpLinks = (assembly) => (snps) => ( commajoin(snps.map(snp_link(assembly))) )
@@ -135,12 +135,12 @@ export const deLink = (assembly, gene, uuid) => ("/deApp/?" + toParams({assembly
 
 export const geDeButton = (assembly, accession, uuid) => (d) => {
     const _d = d.replace(/\./g, "%2e");
-    const ge = <a href={geLink(assembly, _d, uuid)} target={"_blank"}
+    const ge = <a href={geLink(assembly, _d, uuid)} target={"_blank"} rel={"noopener noreferrer"}
 	       key={[accession, d, "ge"]}>{d}</a>;
     if("mm10" !== assembly){
         return ge;
     }
-    const de = <a href={deLink(assembly, _d, uuid)} target={"_blank"}
+    const de = <a href={deLink(assembly, _d, uuid)} target={"_blank"} rel={"noopener noreferrer"}
 		  key={[accession, d, "de"]}
 		  style={{paddingLeft: "4px"}}>&Delta;</a>;
     return [ge, de];
@@ -162,13 +162,13 @@ export const dccImg = () => (
 export const dccLink = (expID) => {
     const url = 'https://www.encodeproject.org/experiments/' + expID;
     const img = dccImg();
-    return <a target="_blank" href={url}>{img}</a>;
+    return <a target="_blank" rel="noopener noreferrer" href={url}>{img}</a>;
 }
 
 export const dccLinkFile = (fileID) => {
     const url = 'https://www.encodeproject.org/' + fileID;
     const img = dccImg();
-    return <a target="_blank" href={url}>{img} ({fileID})</a>;
+    return <a target="_blank" rel="noopener noreferrer" href={url}>{img} ({fileID})</a>;
 }
 
 export const gwasLink = (ref) => {
@@ -184,7 +184,7 @@ export const gwasLink = (ref) => {
 	const url = 'https://www.ncbi.nlm.nih.gov/pubmed/' + ref;
 	const img = <img src={ApiClient.StaticUrl("/logo_pubmed.jpg")}
 			 alt="DCC logo" height="20" />;
-	return <a target="_blank" href={url}>{img} (PMID {ref})</a>;
+	return <a target="_blank" rel="noopener noreferrer" href={url}>{img} (PMID {ref})</a>;
     }
     return ref;
 }
@@ -193,7 +193,7 @@ export const dccLinkCtGroupExpIDs = (accs) => {
     let q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
     const img = dccImg();
-    return <a target="_blank" href={url}>{img}</a>;
+    return <a target="_blank" rel="noopener noreferrer" href={url}>{img}</a>;
 }
 
 export const dccLinkCtGroup = (globals, ctn) => {
@@ -202,7 +202,7 @@ export const dccLinkCtGroup = (globals, ctn) => {
     const q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
     const img = dccImg();
-    return <a target="_blank" href={url}>{img}</a>;
+    return <a target="_blank" rel="noopener noreferrer" href={url}>{img}</a>;
 }
 
 export const dccLinkCtGroupCus = (globals, ctn, content) => {
@@ -210,7 +210,7 @@ export const dccLinkCtGroupCus = (globals, ctn, content) => {
     const accs = globals.byCellType[ctn] ? globals.byCellType[ctn].map((info) => (info.expID)) : [];
     const q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
-    return <a target="_blank" href={url}>{content}</a>;
+    return <a target="_blank" rel="noopener noreferrer" href={url}>{content}</a>;
 }
 
 export const dccLinkAndIconSplit = (expAndFileID) => {
@@ -218,18 +218,18 @@ export const dccLinkAndIconSplit = (expAndFileID) => {
     const url = 'https://www.encodeproject.org/experiments/' + expID;
     const img = <img src={ApiClient.StaticUrl("/encode/pennant-encode.png")}
     alt="ENCODE logo" style={{paddingLeft: "10px"}} />;
-    return <a target="_blank" href={url}>{expAndFileID}{img}</a>;
+    return <a target="_blank" rel="noopener noreferrer" href={url}>{expAndFileID}{img}</a>;
 }
 
 export const cistromeLink = (acc) => (
-    <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc} target='_blank'>{acc}</a>);
+    <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc} target="_blank" rel="noopener noreferrer">{acc}</a>);
 
 export const factorbook_link_tf = (assembly) => (d) => {
     const lookup = {"GRCh38": "human",
 		    "hg19": "human",
 		    "mm10": "mouse"};
     const url = "http://www.factorbook.org/tf/" + lookup[assembly] + '/' + d + "/function";
-    return <a href={url} target="_blank">{d}</a>;
+    return <a href={url} target="_blank" rel="noopener noreferrer">{d}</a>;
 }
 
 const factorbook_histones = [
@@ -250,14 +250,14 @@ const factorbook_histones = [
 
 export const factorbook_link_histone = (d) => (
     factorbook_histones.includes(d)
-    ? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d.replace(/F/g, ".") + '</a>'
+    ? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank" rel="noopener noreferrer">' + d.replace(/F/g, ".") + '</a>'
     : d.replace(/F/g, ".")
 );
 
 export const geneLink = (d) => (
     <em key={d}>
 	<a href={Urls.geneCardLink(d)}
-	   target="_blank">{d}</a>
+	   target="_blank" rel="noopener noreferrer">{d}</a>
     </em>);
 
 export const position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);

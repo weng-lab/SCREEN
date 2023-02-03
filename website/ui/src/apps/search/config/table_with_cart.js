@@ -17,7 +17,7 @@ const vistalinks = x => {
 
 const vistalink = id => (
     <a href={'https://enhancer.lbl.gov/cgi-bin/imagedb3.pl?form=presentation&show=1&experiment_id=' + id.substring(2) + '&organism_id=' + (id[0] === 'm' ? '2' : '1')}
-      target="_blank">{id}</a>
+      target="_blank" rel="noopener noreferrer">{id}</a>
 );
 
 const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
