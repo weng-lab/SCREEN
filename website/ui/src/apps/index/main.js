@@ -12,7 +12,7 @@ import MainTabs from './components/maintabs'
 
 import reducers from './reducers'
 import initialState from './config/initial_state'
-import {PageTitle} from '../../common/utility'
+// import {PageTitle} from '../../common/utility' never used
 import { Icon } from 'semantic-ui-react'
 
 class IndexPage extends React.Component {

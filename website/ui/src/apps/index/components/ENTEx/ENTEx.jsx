@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Icon, Message, Header, Divider } from 'semantic-ui-react';
+import { Button, Container, Icon, Message, Header } from 'semantic-ui-react';
 import { useGetDownloadFileUrl } from '../utils';
 
 const ENTExDownloadPage = () => {

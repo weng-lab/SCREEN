@@ -173,7 +173,7 @@ class TableWithCart extends React.Component {
     }
 
     downloadJSON() {
-	const jq = this.props.jq;
+	// const jq = this.props.jq; never used
 	fetch("https://ga.staging.wenglab.org/graphql", {
 		method: 'POST',
 		headers: {
