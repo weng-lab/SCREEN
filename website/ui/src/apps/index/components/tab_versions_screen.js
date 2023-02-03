@@ -3,7 +3,7 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React, { useMemo, useCallback, useRef, useEffect, useState } from "react";
+import React, { useMemo } from "react";
 
 import { Message } from "semantic-ui-react";
 import { Tabs, Tab } from "react-bootstrap";
@@ -12,7 +12,7 @@ import { tabPanelize } from '../../../common/utility';
 import loading from '../../../common/components/loading';
 import Ztable from "../../../common/components/ztable/ztable";
 
-import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client";
+import { ApolloClient, gql, InMemoryCache, useQuery } from "@apollo/client";
 
 /**
  * This file and function queries for versions tab data and returns the rendered display
@@ -33,13 +33,9 @@ const TabDataScreen = () => {
       query {
         groundLevelVersionsQuery {
           version
-          biosamples {
-            biosample
-            assays {
-              assay
-              experiments
-            }
-          }
+          biosample
+          assay
+          accession
         }
       }
     `,
@@ -61,6 +57,28 @@ const TabDataScreen = () => {
  * @returns columns for Ztable
  */
 const CtsTableColumns = () => {
+  const renderBiosample = (biosample) => biosample
+  const renderExperiments = (experiments) => experiments
+  return [
+    {
+      title: "Biosample",
+      data: "biosample_term_name",
+      render: renderBiosample,
+    },
+    {
+      title: "Experiments",
+      data: "experiments",
+      render: renderExperiments,
+    },
+  ];
+};
+
+/**
+ * creates a url from experiment accession and maps them
+ * @param {Map} experiments dict of experiments {assay : [ experiments ]}
+ * @returns map of assays to a list of encode experiment urls
+ */
+const dccLinks = (experiments) => {
   const dccLink = (assay, accs) => {
     const url = (acc) => "https://www.encodeproject.org/experiments/" + acc;
     return (
@@ -77,41 +95,8 @@ const CtsTableColumns = () => {
       </p>
     );
   };
-
-  const renderBiosample = (biosample) =>
-    biosample
-      .substring(
-        0,
-        biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length
-      )
-      .replace(/b'/g, "")
-      .replace(/b"/g, "");
-
-  const dccLinks = (experiments) =>
-    Object.keys(experiments).map((assay) => dccLink(assay, experiments[assay]));
-
-  const tmp = (assays) => {
-    let table = {}
-    for (let x of assays){
-      table[x.assay] = dccLink(x.assay, x.experiments)
-    }
-    return table;
-  }
-
-  return [
-    {
-      title: "Biosample",
-      data: "biosample_term_name",
-      render: renderBiosample,
-    },
-    {
-      title: "Experiments",
-      data: "experiments",
-      // render: tmp,
-      render: dccLinks,
-    },
-  ];
-};
+  return Object.keys(experiments).map((assay) => dccLink(assay, experiments[assay]));
+}
 
 /**
  * Logs and returns loading message
@@ -145,29 +130,50 @@ const ErrorMessage = (error) => {
  */
 class VersionView extends React.Component {
   constructor (props) {
-    super(props);
-    this.totals = {}; // total experiments for each version { version: number of experiments }
-    this.versions = {}; // dict of versions { version: [ { biosample: { assay: [ experiments ] } ] }
-    this.versionIDs = []; // IDs of each version
+    super(props); // check this?
+    this.collection = {}    // version collection { version: { biosample: { assay: [ experiments ] } } }
+    this.totals = {};       // total experiments for each version { version: number of experiments }
+    this.versions = {};     // dict of versions to biosample objects { version: [ { biosample: { assay: [ experiments ] } ] }
+    this.versionIDs = [];   // IDs of each version
 
-    for (let x of this.props.data.groundLevelVersionsQuery) {
-      this.versions[x.version] = [];
-      this.totals[x.version] = 0;
-      this.versionIDs.push(x.version);
-      for (let b of x.biosamples) {
-        let assays = {};
-        for (let a of b.assays) {
-          assays[a.assay] = a.experiments;
-          this.totals[x.version] += a.experiments.length;
-        }
-        // Ztable uses a list of objects for each version
-        this.versions[x.version].push({
-          biosample_term_name: b.biosample,
-          experiments: assays,
-          // experiments: b.assays,
-        });
+    console.log("Constructing...");
+    console.log(performance.now())
+
+    // construct collection from query
+    for (let x of this.props.data.groundLevelVersionsQuery){
+      if (this.collection[x.version] === undefined) {
+        this.versionIDs.push(x.version);
+        this.versions[x.version] = [];
+        this.collection[x.version] = { [x.biosample]: { [x.assay]: [x.accession] } };
       }
+      else if (this.collection[x.version][x.biosample] === undefined) 
+        this.collection[x.version][x.biosample] = { [x.assay]: [x.accession] };
+      else if (this.collection[x.version][x.biosample][x.assay] === undefined) 
+        this.collection[x.version][x.biosample][x.assay] = [x.accession];
+      else this.collection[x.version][x.biosample][x.assay].push(x.accession);
+
+      // count experiments
+      if (this.totals[x.version] === undefined) this.totals[x.version] = 1;
+      else this.totals[x.version] += 1;
     }
+
+    // link experiments to their encode url and make a list of objects for Ztable
+    Object.keys(this.collection).forEach((version) => {
+      Object.keys(this.collection[version]).forEach((biosample) => {
+        this.versions[version].push({
+          biosample_term_name: biosample.
+            substring(
+              0,
+              biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length)
+            .replace(/b'/g, "")
+            .replace(/b"/g, ""),
+          experiments: dccLinks(this.collection[version][biosample])
+        });
+      })
+    });
+    
+    console.log("Done.");
+    console.log(performance.now())
   }
 
   render(){
