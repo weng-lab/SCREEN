@@ -136,9 +136,6 @@ class VersionView extends React.Component {
     this.versions = {};     // dict of versions to biosample objects { version: [ { biosample: { assay: [ experiments ] } ] }
     this.versionIDs = [];   // IDs of each version
 
-    console.log("Constructing...");
-    console.log(performance.now())
-
     // construct collection from query
     for (let x of this.props.data.groundLevelVersionsQuery){
       if (this.collection[x.version] === undefined) {
@@ -171,9 +168,6 @@ class VersionView extends React.Component {
         });
       })
     });
-    
-    console.log("Done.");
-    console.log(performance.now())
   }
 
   render(){
