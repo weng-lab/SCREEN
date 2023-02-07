@@ -3,7 +3,7 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Menu, Modal } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
@@ -43,9 +43,10 @@ const sgroupLink = x => {
 	return <FileDownload primaryurl={primaryurl} secondaryurl={secondaryurl} fn="" fileID=""/>
 }
 
-const check = value => value ? (
-	<span className="glyphicon glyphicon-check" style={{ fontSize: "1.2em", verticalAlign: "middle" }} />
-) : null;
+// never used
+// const check = value => value ? (
+// 	<span className="glyphicon glyphicon-check" style={{ fontSize: "1.2em", verticalAlign: "middle" }} />
+// ) : null;
 
 const Info = () => (
 	<svg class="bi bi-info-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

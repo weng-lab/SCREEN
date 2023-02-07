@@ -18,7 +18,7 @@ import IntersectingAssayHistone from '../components/intersecting_assay_histone';
 
 const fantomcat_link = (d) => (
     <a href={"http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d}
-       target="_blank">{d}</a>
+       target="_blank" rel="noopener noreferrer">{d}</a>
 )
 
 const geneLink_list = (d) => (
@@ -27,7 +27,7 @@ const geneLink_list = (d) => (
 
 const _vistalink = id => (
     <a href={'https://enhancer.lbl.gov/cgi-bin/imagedb3.pl?form=presentation&show=1&experiment_id=' + id.substring(2) + '&organism_id=' + (id[0] === 'm' ? '2' : '1')}
-      target="_blank">{id}</a>
+      target="_blank" rel="noopener noreferrer">{id}</a>
 );
 
 export const ChromHMMTables = (globals, assembly) => ({
@@ -529,7 +529,7 @@ export const FunctionalValidationTable = (globals, assembly, emptyText) => ({
 	       { title: "peak chromosome", data: "chr" },
 	       { title: "peak start", data: "start", render: Render.integer },
 	       { title: "peak end", data: "end", render: Render.integer },
-		{ title: "experiment accession", data: "experiment", render: d => <a href={`https://www.encodeproject.org/experiments/${d}`} target="_blank">{d}</a> } ]
+		{ title: "experiment accession", data: "experiment", render: d => <a href={`https://www.encodeproject.org/experiments/${d}`} target="_blank" rel="noopener noreferrer">{d}</a> } ]
     },
 	"crispr": {
 		title: "CRISPR perturbation",
