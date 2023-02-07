@@ -20,31 +20,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@main
-      with:
-        version: '270.0.0'
-        service_account_email: ${{ secrets.GCP_EMAIL }}
-        service_account_key: ${{ secrets.GCP_KEY }}
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '270.0.0'
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_KEY }}
 
-    # Configure docker to use the gcloud command-line tool as a credential helper
-    - run: |
-        # Set up docker to authenticate
-        # via gcloud command-line tool.
-        gcloud auth configure-docker
-      
-    # Build the Docker image
-    - name: Build
-      run: |        
-        docker build -t image \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" website
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
 
-    # Push the Docker image to Google Container Registry
-    - name: Publish
-      run: |
-        docker tag image "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"${GITHUB_REF/refs\/tags\//}" && \
-        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_REF/refs\/tags\//}
+      # Configure docker to use the gcloud command-line tool as a credential helper
+      - run: |
+          # Set up docker to authenticate
+          # via gcloud command-line tool.
+          gcloud auth configure-docker
+        
+      # Build the Docker image
+      - name: Build
+        run: |        
+          docker build -t image \
+            --build-arg GITHUB_SHA="$GITHUB_SHA" \
+            --build-arg GITHUB_REF="$GITHUB_REF" website
+
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |
+          docker tag image "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"${GITHUB_REF/refs\/tags\//}" && \
+          docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_REF/refs\/tags\//}
