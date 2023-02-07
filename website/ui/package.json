@@ -8,7 +8,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "flow": "flow"
+    "flow": "flow",
+    "prettier": "prettier --write src",
+    "precommit": "yarn pretter"
   },
   "homepage": "https://screen.encodeproject.org",
   "babel": {
@@ -96,7 +98,9 @@
     "printWidth": 140,
     "tabWidth": 2,
     "arrowParens": "always",
-    "bracketSpacing": true
+    "bracketSpacing": true,
+    "singleQuote": false,
+    "semi": false
   },
   "browserslist": [
     ">0.2%",
