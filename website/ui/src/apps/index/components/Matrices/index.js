@@ -1,2 +1,2 @@
-import MatrixPage from './Matrices';
-export { MatrixPage };
+import MatrixPage from "./Matrices"
+export { MatrixPage }

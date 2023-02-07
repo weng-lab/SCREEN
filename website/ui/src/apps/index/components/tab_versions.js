@@ -3,16 +3,16 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo } from "react"
 
-import { Message } from "semantic-ui-react";
-import { Tabs, Tab } from "react-bootstrap";
-import { tabPanelize } from '../../../common/utility';
+import { Message } from "semantic-ui-react"
+import { Tabs, Tab } from "react-bootstrap"
+import { tabPanelize } from "../../../common/utility"
 
-import loading from '../../../common/components/loading';
-import Ztable from "../../../common/components/ztable/ztable";
+import loading from "../../../common/components/loading"
+import Ztable from "../../../common/components/ztable/ztable"
 
-import { ApolloClient, gql, InMemoryCache, useQuery } from "@apollo/client";
+import { ApolloClient, gql, InMemoryCache, useQuery } from "@apollo/client"
 
 /**
  * This file and function queries for versions tab data and returns the rendered display
@@ -26,7 +26,7 @@ const TabDataScreen = () => {
         cache: new InMemoryCache(),
       }),
     []
-  );
+  )
 
   const { loading, error, data } = useQuery(
     gql`
@@ -40,16 +40,17 @@ const TabDataScreen = () => {
       }
     `,
     { client }
-  );
+  )
 
-  return ( 
-    loading ? LoadingMessage() : 
-    error ? ErrorMessage(error) : (
-      <div>
-        <VersionView data={data} />
-      </div>
-    )
-  );
+  return loading ? (
+    LoadingMessage()
+  ) : error ? (
+    ErrorMessage(error)
+  ) : (
+    <div>
+      <VersionView data={data} />
+    </div>
+  )
 }
 
 /**
@@ -70,8 +71,8 @@ const CtsTableColumns = () => {
       data: "experiments",
       render: renderExperiments,
     },
-  ];
-};
+  ]
+}
 
 /**
  * creates a url from experiment accession and maps them
@@ -80,7 +81,7 @@ const CtsTableColumns = () => {
  */
 const dccLinks = (experiments) => {
   const dccLink = (assay, accs) => {
-    const url = (acc) => "https://www.encodeproject.org/experiments/" + acc;
+    const url = (acc) => "https://www.encodeproject.org/experiments/" + acc
     return (
       <p key={assay}>
         <strong>{assay}</strong>:&nbsp;
@@ -93,9 +94,9 @@ const dccLinks = (experiments) => {
           </span>
         ))}
       </p>
-    );
-  };
-  return Object.keys(experiments).map((assay) => dccLink(assay, experiments[assay]));
+    )
+  }
+  return Object.keys(experiments).map((assay) => dccLink(assay, experiments[assay]))
 }
 
 /**
@@ -103,9 +104,9 @@ const dccLinks = (experiments) => {
  * @returns active loader
  */
 const LoadingMessage = () => {
-  console.log("Loading...");
-  return loading({isFetching: true, isError: false})
-};
+  console.log("Loading...")
+  return loading({ isFetching: true, isError: false })
+}
 
 /**
  * Logs and returns error message
@@ -113,15 +114,15 @@ const LoadingMessage = () => {
  * @returns error message
  */
 const ErrorMessage = (error) => {
-  console.log("Error!");
-  console.log(error.message);
+  console.log("Error!")
+  console.log(error.message)
   return (
     <Message negative>
       <Message.Header>Error!</Message.Header>
       <p>There was an error loading this page, try reloading.</p>
     </Message>
-  );
-};
+  )
+}
 
 /**
  * Organize and render data from query
@@ -129,29 +130,28 @@ const ErrorMessage = (error) => {
  * @returns rendered display of versions tab
  */
 class VersionView extends React.Component {
-  constructor (props) {
-    super(props); // check this?
-    this.collection = {}    // version collection { version: { biosample: { assay: [ experiments ] } } }
-    this.totals = {};       // total experiments for each version { version: number of experiments }
-    this.versions = {};     // dict of versions to biosample objects { version: [ { biosample: { assay: [ experiments ] } ] }
-    this.versionIDs = [];   // IDs of each version
+  constructor(props) {
+    super(props) // check this?
+    this.collection = {} // version collection { version: { biosample: { assay: [ experiments ] } } }
+    this.totals = {} // total experiments for each version { version: number of experiments }
+    this.versions = {} // dict of versions to biosample objects { version: [ { biosample: { assay: [ experiments ] } ] }
+    this.versionIDs = [] // IDs of each version
 
     // construct collection from query
-    for (let x of this.props.data.groundLevelVersionsQuery){
+    for (let x of this.props.data.groundLevelVersionsQuery) {
       if (this.collection[x.version] === undefined) {
-        this.versionIDs.push(x.version);
-        this.versions[x.version] = [];
-        this.collection[x.version] = { [x.biosample]: { [x.assay]: [x.accession] } };
-      }
-      else if (this.collection[x.version][x.biosample] === undefined) 
-        this.collection[x.version][x.biosample] = { [x.assay]: [x.accession] };
-      else if (this.collection[x.version][x.biosample][x.assay] === undefined) 
-        this.collection[x.version][x.biosample][x.assay] = [x.accession];
-      else this.collection[x.version][x.biosample][x.assay].push(x.accession);
+        this.versionIDs.push(x.version)
+        this.versions[x.version] = []
+        this.collection[x.version] = { [x.biosample]: { [x.assay]: [x.accession] } }
+      } else if (this.collection[x.version][x.biosample] === undefined)
+        this.collection[x.version][x.biosample] = { [x.assay]: [x.accession] }
+      else if (this.collection[x.version][x.biosample][x.assay] === undefined)
+        this.collection[x.version][x.biosample][x.assay] = [x.accession]
+      else this.collection[x.version][x.biosample][x.assay].push(x.accession)
 
       // count experiments
-      if (this.totals[x.version] === undefined) this.totals[x.version] = 1;
-      else this.totals[x.version] += 1;
+      if (this.totals[x.version] === undefined) this.totals[x.version] = 1
+      else this.totals[x.version] += 1
     }
 
     // link experiments to their encode url and make a list of objects for Ztable
@@ -159,18 +159,16 @@ class VersionView extends React.Component {
       Object.keys(this.collection[version]).forEach((biosample) => {
         this.versions[version].push({
           biosample_term_name: biosample
-            .substring(
-              0,
-              biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length)
+            .substring(0, biosample[biosample.length - 1] === "'" ? biosample.length - 1 : biosample.length)
             .replace(/b'/g, "")
             .replace(/b"/g, ""),
-          experiments: dccLinks(this.collection[version][biosample])
-        });
+          experiments: dccLinks(this.collection[version][biosample]),
+        })
       })
-    });
+    })
   }
 
-  render(){
+  render() {
     return (
       <div>
         <Tabs defaultActiveKey={1} id="tabset">
@@ -179,36 +177,30 @@ class VersionView extends React.Component {
               <h3>
                 ENCODE and Roadmap Experiments constituting ground level version {id} ({this.totals[id].toLocaleString()} total)
               </h3>
-              <Ztable 
-                data={this.versions[id]} 
-                cols={CtsTableColumns()} 
-              />            
+              <Ztable data={this.versions[id]} cols={CtsTableColumns()} />
             </Tab>
           ))}
         </Tabs>
       </div>
-    );
-  }
-};
-
-class TabVersions extends React.Component {
-  key = "versions";
-
-  shouldComponentUpdate(nextProps, nextState) {
-      return this.key === nextProps.maintabs_active;
-  }
-
-  render() {
-    if(this.key !== this.props.maintabs_active)
-      return false;
-    return (
-      tabPanelize(
-        <div>
-          <TabDataScreen />
-        </div>
-      )
-    );
+    )
   }
 }
 
-export default TabVersions;
+class TabVersions extends React.Component {
+  key = "versions"
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.key === nextProps.maintabs_active
+  }
+
+  render() {
+    if (this.key !== this.props.maintabs_active) return false
+    return tabPanelize(
+      <div>
+        <TabDataScreen />
+      </div>
+    )
+  }
+}
+
+export default TabVersions

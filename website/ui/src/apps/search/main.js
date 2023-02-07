@@ -3,85 +3,75 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React from 'react'
-import {createStore, applyMiddleware} from 'redux'
-import {Provider} from 'react-redux'
-import thunkMiddleware from 'redux-thunk'
+import React from "react"
+import { createStore, applyMiddleware } from "redux"
+import { Provider } from "react-redux"
+import thunkMiddleware from "redux-thunk"
 
-import NavBarApp from '../../common/components/navbar_app'
-import SearchBox from '../../common/components/searchbox'
-import FacetBoxen from './components/facetboxen'
-import MainTabs from './components/maintabs'
+import NavBarApp from "../../common/components/navbar_app"
+import SearchBox from "../../common/components/searchbox"
+import FacetBoxen from "./components/facetboxen"
+import MainTabs from "./components/maintabs"
 
-import {isCart, PageTitle} from '../../common/utility'
+import { isCart, PageTitle } from "../../common/utility"
 
-import main_reducers from './reducers/main_reducers'
-import initialState from './config/initial_state'
-import AppPageBase from '../../common/app_page_base'
+import main_reducers from "./reducers/main_reducers"
+import initialState from "./config/initial_state"
+import AppPageBase from "../../common/app_page_base"
 
 class SearchPageInner extends React.Component {
-
   render() {
-    let store = createStore(main_reducers,
-      initialState(this.props.search,
-		   this.props.globals, this.props.root),
-        applyMiddleware(
-          thunkMiddleware,
-        ));
+    let store = createStore(
+      main_reducers,
+      initialState(this.props.search, this.props.globals, this.props.root),
+      applyMiddleware(thunkMiddleware)
+    )
 
-        const assembly = this.props.search.parsedQuery.assembly;
-        let mainTabs = (<MainTabs
-          globals={this.props.globals}
-          root={this.props.root}
-          search={this.props.search} />);
+    const assembly = this.props.search.parsedQuery.assembly
+    let mainTabs = <MainTabs globals={this.props.globals} root={this.props.root} search={this.props.search} />
 
-          let drawMain = () => {
-            if(isCart()){
-              return (
-                <div className="row" style={{width: "100%"}}>
-                <div className="col-md-12" id="tabs-container">
-                {mainTabs}
-                </div>
-                </div>);
-              } else {
-                return (
-                  <div className="row" style={{width: "100%"}}>
-                  <div className="col-md-3 nopadding-right"
-                  id="facets-container">
-                  <FacetBoxen assembly={assembly}
-                  globals={this.props.globals} />
-                  </div>
-                  <div className="col-md-9 nopadding-left"
-                  id="tabs-container">
-                  {mainTabs}
-                  </div>
-                  </div>);
-                }
-              }
+    let drawMain = () => {
+      if (isCart()) {
+        return (
+          <div className="row" style={{ width: "100%" }}>
+            <div className="col-md-12" id="tabs-container">
+              {mainTabs}
+            </div>
+          </div>
+        )
+      } else {
+        return (
+          <div className="row" style={{ width: "100%" }}>
+            <div className="col-md-3 nopadding-right" id="facets-container">
+              <FacetBoxen assembly={assembly} globals={this.props.globals} />
+            </div>
+            <div className="col-md-9 nopadding-left" id="tabs-container">
+              {mainTabs}
+            </div>
+          </div>
+        )
+      }
+    }
 
-              return (
-                <Provider store={store}>
-                <div>
-		      {PageTitle(assembly)}
-                    <NavBarApp assembly={assembly}
-			       uuid={this.props.search.uuid}
-			       show_cartimage={true}
-			       searchbox={SearchBox} />
+    return (
+      <Provider store={store}>
+        <div>
+          {PageTitle(assembly)}
+          <NavBarApp assembly={assembly} uuid={this.props.search.uuid} show_cartimage={true} searchbox={SearchBox} />
 
-                <div className="container" style={{width: "100%"}}>
-                {drawMain()}
-                </div>
+          <div className="container" style={{ width: "100%" }}>
+            {drawMain()}
+          </div>
+        </div>
+      </Provider>
+    )
+  }
+}
 
-                </div>
-                </Provider>
-              );
-            }
-          }
+class SearchPage extends AppPageBase {
+  constructor(props) {
+    super(props, "/searchws/search", SearchPageInner)
+  }
+}
 
-          class SearchPage extends AppPageBase {
-            constructor(props) {
-              super(props, "/searchws/search", SearchPageInner);
-            }
-          }
-
-          export default SearchPage;
+export default SearchPage

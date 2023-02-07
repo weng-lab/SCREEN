@@ -1,2 +1,2 @@
-import QuickStart from './QuickStart';
-export { QuickStart };
+import QuickStart from "./QuickStart"
+export { QuickStart }

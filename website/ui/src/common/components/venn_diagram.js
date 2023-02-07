@@ -3,36 +3,36 @@
  * Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
  */
 
-import React from 'react';
-var $ = require('jquery');
+import React from "react"
+var $ = require("jquery")
 
-import {create_venn_diagram} from '../helpers/venn'
+import { create_venn_diagram } from "../helpers/venn"
 
 class VennDiagram extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
-    constructor(props) {
-	super(props);
+  componentDidUpdate() {
+    super.componentDidUpdate()
+    $(this.refs.container).empty()
+    if (this.props.sets && this.props.sets.length > 0) {
+      create_venn_diagram(this.refs.container, this.props.sets, this.props.overlaps, this.refs.tooltip)
     }
+  }
 
-    componentDidUpdate() {
-	super.componentDidUpdate();
-	$(this.refs.container).empty();
-	if (this.props.sets && this.props.sets.length > 0) {
-	    create_venn_diagram(this.refs.container, this.props.sets, this.props.overlaps, this.refs.tooltip);
-	}
-    }
+  render() {
+    return super.render(
+      <div>
+        <span ref="help_icon" />
+        <div ref="container" style={{ width: this.props.width, height: this.props.height }} />
+        <div ref="tooltip" className="venntooltip" />
+      </div>
+    )
+  }
 
-    render() {
-	return super.render(<div>
-		   <span ref="help_icon" />
-		   <div ref="container" style={{width: this.props.width, height: this.props.height}} />
-		   <div ref="tooltip" className="venntooltip" />
-		</div>);
-    }
-
-    componentDidMount() {
-	super.componentDidMount();
-    }
-
+  componentDidMount() {
+    super.componentDidMount()
+  }
 }
-export default VennDiagram;
+export default VennDiagram
