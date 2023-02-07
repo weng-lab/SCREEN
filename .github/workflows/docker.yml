@@ -1,7 +1,11 @@
 name: Build and Push UI
 
 on:
-  create:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    types: [opened, reopened]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
