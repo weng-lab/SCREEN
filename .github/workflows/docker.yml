@@ -2,8 +2,6 @@ name: Build and Push UI
 
 on:
   create:
-    tags:
-      - v*
 
 # Environment variables available to all jobs and steps in this workflow
 env:
