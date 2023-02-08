@@ -20,6 +20,7 @@ jobs:
     name: Setup, Build, Publish API
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -51,5 +52,5 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |
-          docker tag image "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"${GITHUB_REF/refs\/tags\//}" && \
-          docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_REF/refs\/tags\//}
+          docker tag image "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"${GITHUB_SHA}" && \
+          docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
