@@ -2,8 +2,6 @@
 
 FROM node:14-alpine
 
-RUN gcloud auth login
-
 RUN mkdir -p /app/
 COPY ui /app
 COPY gcp.json /app/config.json
