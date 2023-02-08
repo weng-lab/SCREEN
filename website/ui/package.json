@@ -10,9 +10,14 @@
     "eject": "react-scripts eject",
     "flow": "flow",
     "prettier": "prettier --write src",
-    "prepush": "yarn prettier"
+    "precommit": "lint-staged"
   },
   "homepage": "https://screen.encodeproject.org",
+  "lint-staged": {
+    "linters": {
+      "src": [ "prettier --write", "git add" ]
+    }
+  },
   "babel": {
     "plugins": [
       "transform-class-properties"
@@ -43,6 +48,7 @@
     "@types/react-loadable": "^5.5.0",
     "@types/react-redux": "^4.4.8",
     "@types/react-router": "^3.0.5",
+    "lint-staged": "^13.1.1",
     "precommit": "^1.2.2",
     "prepush": "^3.1.11",
     "prettier": "^2.8.3",
