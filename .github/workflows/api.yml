@@ -52,5 +52,5 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |
-          docker tag image "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"${GITHUB_SHA}" && \
+          docker tag image "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" && \
           docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
