@@ -1,2 +1,2 @@
-import ENTExDownloadPage from './ENTEx';
-export { ENTExDownloadPage };
+import ENTExDownloadPage from "./ENTEx"
+export { ENTExDownloadPage }
