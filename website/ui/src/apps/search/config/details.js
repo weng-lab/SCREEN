@@ -5,8 +5,16 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { MOTIFS } from "../../../common/all-motifs"
-import { ENTEX } from "./entex"
+import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from "semantic-ui-react"
+import { associateBy, groupBy } from "queryz"
+import { linearTransform } from "jubilant-carnival"
+import { DataTable } from "ts-ztable"
+import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client"
+
+import loading from "../../../common/components/loading"
+import HelpIcon from "../../../common/components/help_icon"
+import { LoadingMessage, ErrorMessage } from "../../../common/utility"
+
 import Ztable from "../../../common/components/ztable/ztable"
 import * as ApiClient from "../../../common/api_client"
 
@@ -14,23 +22,13 @@ import GeneExp from "../../geneexp/components/gene_exp"
 import Rampage from "../components/rampage"
 import MiniPeaks from "../components/minipeaks"
 
+import { capRange, expandCoordinates, QUERY } from "../components/results_table_container"
+import CytobandView from "../components/Cytobands"
+import { ENTEXTracks, etracks } from "../components/DefaultTracks"
+import { DNALogo } from "logots-react"
+import { B_COLOR_MAP } from "./colors"
+
 import { CSVLink } from "react-csv"
-
-import HelpIcon from "../../../common/components/help_icon"
-
-import {
-  TopTissuesTables,
-  NearbyGenomicTable,
-  LinkedGenesTable,
-  ChromHMMTables,
-  TfIntersectionTable,
-  OrthologTable,
-  FantomCatTable,
-  // GroundLevelTables, never used
-  FunctionalValidationTable,
-} from "./details_tables"
-
-import loading from "../../../common/components/loading"
 
 import * as Render from "../../../common/zrenders"
 import { GraphQLImportanceTrack } from "bpnet-ui"
@@ -53,17 +51,25 @@ import {
   SquishBigBed,
   FullBigWig,
 } from "umms-gb"
-import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from "semantic-ui-react"
-import { associateBy, groupBy } from "queryz"
-import { linearTransform } from "jubilant-carnival"
-import { DataTable } from "ts-ztable"
-import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client"
-import { capRange, expandCoordinates, QUERY } from "../components/results_table_container"
-import CytobandView from "../components/Cytobands"
-import { ENTEXTracks, etracks } from "../components/DefaultTracks"
-import { DNALogo } from "logots-react"
 
-const DATASETS = {
+import {
+  TopTissuesTables,
+  NearbyGenomicTable,
+  LinkedGenesTable,
+  ChromHMMTables,
+  TfIntersectionTable,
+  OrthologTable,
+  FantomCatTable,
+  // GroundLevelTables, never used
+  FunctionalValidationTable,
+} from "./details_tables"
+
+// these are datasets that need to be moved out of the project
+// import { DATASETS, FILES } from "./data/data"
+import { ENTEX } from "./entex"
+import { MOTIFS } from "../../../common/all-motifs"
+
+export const DATASETS = {
   "Kevin White": [
     { biosample_summary: "HCT116 genetically modified using transient transfection", accession: "ENCSR064KUD", replicates: 2 },
     { biosample_summary: "K562 genetically modified using transient transfection", accession: "ENCSR858MPS", replicates: 2 },
@@ -337,8 +343,6 @@ const COLUMNS = (t) => [
     value: (x) => x.lab,
   },
 ]
-
-const B_COLOR_MAP = { "SH-SY5Y": "#000088", A549: "#880000", "MCF-7": "#008800", HepG2: "#880033", HCT116: "#008833" }
 
 function getSelectedDefault(acc, ct) {
   const vv = [
@@ -762,7 +766,7 @@ function tabEles(globals, data, tables, numCols) {
 
 class ReTabBase extends React.Component {
   constructor(props, key) {
-    //console.log(props);
+    console.log(props);
     super(props)
     this.key = key
     this.loadData = true // inner component will dynamically load its own data
@@ -1491,13 +1495,78 @@ export class RampageTab extends ReTabBase {
   }
 }
 
-class LinkedGenesTab extends ReTabBase {
+// class LinkedGenesTab extends ReTabBase {
+//   constructor(props) {
+//     super(props, "linkedGenes")
+//     console.log(prop)
+//     this.doRender = (globals, assembly, data) => {
+//       console.log("view")
+//       console.log(globals)
+//       console.log(data)
+//       return tabEles(globals, data, LinkedGenesTable(globals, assembly), 1)
+//     }
+//   }
+// }
+
+class LinkedGenesView extends React.Component {
   constructor(props) {
-    super(props, "linkedGenes")
-    this.doRender = (globals, assembly, data) => {
-      return tabEles(globals, data, LinkedGenesTable(globals, assembly), 1)
-    }
+    super(props)
+    this.linked = { linked_genes: props.linkedgenes}
   }
+
+  render() {
+    return tabEles(this.props.globals, this.linked, LinkedGenesTable(this.props.globals, this.props.assembly), 1)
+  }
+}
+
+const LinkedGenesTab = (props) => {
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        uri: "https://ga.staging.wenglab.org/graphql",
+        cache: new InMemoryCache(),
+      }),
+    []
+  )
+
+  const { loading, error, data } = useQuery(
+    gql`
+      query (
+        $assembly: String
+        $accession: [String!]
+      ) {
+        linkedGenesQuery(
+          assembly:  $assembly
+          accession: $accession
+        ) {
+          assembly
+          accession
+          experiment_accession
+          celltype
+          gene
+          assay
+        }
+      }
+    `,
+    {
+      variables: {
+        assembly: props.assembly,
+        accession: "EH38D0372911"
+        // accession: props.active_ccre.accession
+      }, 
+      client 
+    }
+  )
+
+  return loading ? (
+    LoadingMessage()
+  ) : error ? (
+    ErrorMessage(error)
+  ) : (
+    <div>
+      <LinkedGenesView linkedgenes={data.linkedGenesQuery} />
+    </div>
+  )
 }
 
 // never used
@@ -1684,9 +1753,21 @@ const StackedImportance = ({ url, i, onHeightChanged, setEditable, coordinates, 
 
 const DetailsTabInfo = (assembly) => {
   return {
-    topTissues: { title: Render.tabTitle(["In Specific", "Biosamples"]), enabled: true, f: TopTissuesTab },
-    nearbyGenomic: { title: Render.tabTitle(["Nearby", "Genomic Features"]), enabled: true, f: NearbyGenomicTab },
-    tfIntersection: { title: Render.tabTitle(["TF and His-mod", "Intersection"]), enabled: true, f: TfIntersectionTab },
+    topTissues: { 
+      title: Render.tabTitle(["In Specific", "Biosamples"]),
+      enabled: true, 
+      f: TopTissuesTab 
+    },
+    nearbyGenomic: { 
+      title: Render.tabTitle(["Nearby", "Genomic Features"]),
+      enabled: true, 
+      f: NearbyGenomicTab 
+    },
+    tfIntersection: { 
+      title: Render.tabTitle(["TF and His-mod", "Intersection"]),
+      enabled: true, 
+      f: TfIntersectionTab 
+    },
     tfIntersectionA: {
       title: Render.tabTitle(["TF Motifs and", "Sequence Features"]),
       enabled: true,
@@ -1694,16 +1775,35 @@ const DetailsTabInfo = (assembly) => {
     },
     /* cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
                                enabled: assembly === "mm10" || assembly === "GRCh38", f: CistromeIntersectionTab}, */
-    fantom_cat: { title: Render.tabTitle(["FANTOM", "Intersection"]), enabled: assembly === "hg19", f: FantomCatTab },
-    ge: { title: Render.tabTitle(["Associated", "Gene Expression"]), enabled: true, f: GeTab },
-    rampage: { title: Render.tabTitle(["Associated", "RAMPAGE Signal"]), enabled: "mm10" !== assembly, f: RampageTab },
-    ortholog: { title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]), enabled: true, f: OrthologTab },
+    fantom_cat: { 
+      title: Render.tabTitle(["FANTOM", "Intersection"]), 
+      enabled: assembly === "hg19", 
+      f: FantomCatTab },
+    ge: { 
+      title: Render.tabTitle(["Associated", "Gene Expression"]), 
+      enabled: true, 
+      f: GeTab 
+    },
+    rampage: { 
+      title: Render.tabTitle(["Associated", "RAMPAGE Signal"]), 
+      enabled: "mm10" !== assembly, 
+      f: RampageTab 
+    },
+    ortholog: { 
+      title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]), 
+      enabled: true, 
+      f: OrthologTab 
+    },
     functionalValidation: {
       title: Render.tabTitle(["Functional", "Data"]),
       enabled: true,
       f: (props) => <FunctionalValidationTab key={props.active_cre.accession + "_fv"} {...props} />,
     },
-    chromhmm: { title: Render.tabTitle(["ChromHMM", "States"]), enabled: assembly === "mm10", f: ChromHMMTab },
+    chromhmm: { 
+      title: Render.tabTitle(["ChromHMM", "States"]), 
+      enabled: assembly === "mm10", 
+      f: ChromHMMTab 
+    },
     entex: {
       title: Render.tabTitle(["EN-TEx", "States"]),
       enabled: assembly !== "mm10",
@@ -1711,8 +1811,16 @@ const DetailsTabInfo = (assembly) => {
     },
     /* groundLevel: {title: Render.tabTitle(["Ground", "Level"]),
 		      enabled: assembly !== "mm10", f: GroundLevelTab, enabled: assembly !== "mm10"}, */
-    miniPeaks: { title: Render.tabTitle(["Signal", "Profile"]), enabled: true, f: MiniPeaks },
-    linkedGenes: { title: Render.tabTitle(["Linked", "Genes"]), enabled: assembly !== "mm10", f: LinkedGenesTab },
+    miniPeaks: { 
+      title: Render.tabTitle(["Signal", "Profile"]), 
+      enabled: true, 
+      f: MiniPeaks 
+    },
+    linkedGenes: { 
+      title: Render.tabTitle(["Linked", "Genes"]), 
+      enabled: assembly !== "mm10", 
+      f:  (props) => <LinkedGenesTab key={props.active_cre.accession + "_linkedgenes"} {...props} />
+    },
   }
 }
 

@@ -8,6 +8,8 @@
 
 export const friendly_celltype = (c) => c.replace(/_/g, " ").replace(/\\u03bc/g, "\u03bc")
 
+export const B_COLOR_MAP = { "SH-SY5Y": "#000088", A549: "#880000", "MCF-7": "#008800", HepG2: "#880033", HCT116: "#008833" }
+
 export const TissueColors = {
   blood: "#880000",
   "bone marrow": "#AACCAA",

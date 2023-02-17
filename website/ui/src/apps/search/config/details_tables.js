@@ -471,7 +471,11 @@ export const LinkedGenesTable = (globals, assembly) => ({
     title: "Linked Genes",
     emptyText: "No linked genes have been identified for this cCRE using ChIA-PET or eQTL data",
     cols: [
-      { title: "gene", data: "gene", render: Render.geneLink },
+      { 
+        title: "gene", 
+        data: "gene", 
+        render: Render.geneLink 
+      },
       {
         title: "biosample",
         data: "celltype",
@@ -479,10 +483,15 @@ export const LinkedGenesTable = (globals, assembly) => ({
       },
       {
         title: "supporting exp",
-        data: "method",
+        // data: "method",
+        data: "assay",
         //render: Render.support
       },
-      { title: "based on", data: "dccaccession", render: Render.gwasLink },
+      // { 
+      //   title: "based on", 
+      //   data: "dccaccession", 
+      //   render: Render.gwasLink 
+      // },
     ],
   },
 })
