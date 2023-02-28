@@ -1488,14 +1488,125 @@ export class RampageTab extends ReTabBase {
   }
 }
 
-class OrthologTab extends ReTabBase {
+// class OrthologTab extends ReTabBase {
+//   constructor(props) {
+//     super(props, "ortholog")
+//     this.doRender = (globals, assembly, data) => {
+//       return tabEles(globals, data, OrthologTable(globals, assembly, this.props.uuid), 1)
+//     }
+//   }
+// }
+
+class OrthologView extends React.Component {
   constructor(props) {
-    super(props, "ortholog")
-    this.doRender = (globals, assembly, data) => {
-      return tabEles(globals, data, OrthologTable(globals, assembly, this.props.uuid), 1)
+    super(props)
+    this.ortholog = [] // list of ortholog objects [{ accession, chrom, start, end }]
+    console.log(props.ortholog)
+    console.log(props.range)
+
+    for (let i in props.ortholog){
+      this.ortholog.push({
+        accession: props.ortholog[i],
+        chrom: props.range[i].chromosome,
+        start: props.range[i].start,
+        end: props.range[i].end
+      })
     }
   }
+
+  render () {
+    return tabEles(this.props.globals, this.ortholog, OrthologTable(this.props.globals, this.props.assembly, this.props.uuid), 1)
+  }
 }
+
+const OrthologTab = (props) => {
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        uri: "https://ga.staging.wenglab.org/graphql",
+        cache: new InMemoryCache(),
+      }),
+    []
+  )
+
+  const { loading_ortholog, error_ortholog, data_ortholog } = useQuery(
+    gql`
+      query (
+        $assembly: String
+        $accession: String
+      ) {
+        orthologQuery(
+          assembly: $assembly,
+          accession: $accession
+        ) {
+          accession
+          assembly
+          ortholog
+        }
+      }
+    `,
+    {
+      variables: {
+        // assembly: props.assembly,
+        assembly: "GRCh38",
+        accession: "EH38E1630340"
+        // accession: props.active_ccre.accession
+      },
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first',
+      client 
+    }
+  )
+
+  const ortholog = useCallback(() => data_ortholog?.orthologQuery, [ data_ortholog ])
+  const x = data_ortholog?.orthologQuery?.ortholog
+  const opp_assembly = (assembly) => {
+    if (assembly === "GRCh38") return "mm10" 
+    else return "GRCh38"    
+  }
+
+  const { loading_range, error_range, data_range } = useQuery(
+    gql`
+      query (
+        $assembly: String
+        $accession: String
+      ) {
+        cCREQuery(
+          assembly: $assembly,
+          accession: $accession
+        ) {
+          coordinates{
+            chromosome
+            start
+            end
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        assembly: opp_assembly(props.assembly),
+        accession: ["EM10E0487053"]
+        // accession: data_ortholog?.orthologQuery?.ortholog
+        // accession: props.active_ccre.accession
+      },
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first', 
+      client 
+    }
+  )
+
+  return (
+    loading_ortholog || loading_range ? LoadingMessage() : 
+    error_ortholog ? ErrorMessage(error_ortholog) : 
+    !loading_ortholog && error_range ? ErrorMessage(error_range): (
+      <div>
+        <OrthologView ortholog={data_ortholog} range={data_range}/>
+      </div>
+    )
+  )
+}
+
 
 // class LinkedGenesTab extends ReTabBase {
 //   constructor(props) {
