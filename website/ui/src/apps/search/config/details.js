@@ -64,6 +64,8 @@ import {
   FunctionalValidationTable,
 } from "./details_tables"
 
+// import LinkedGenesTab from "../components/tabs/linkedgenes"
+
 // these are datasets that need to be moved out of the project
 // import { DATASETS, FILES } from "./data/data"
 import { ENTEX } from "./entex"
@@ -741,7 +743,7 @@ function tabEle(globals, data, key, table, numCols) {
   )
 }
 
-function tabEles(globals, data, tables, numCols) {
+export function tabEles(globals, data, tables, numCols) {
   var cols = []
   for (var key of Object.keys(tables)) {
     var _data = key in data ? data[key] : []
@@ -766,7 +768,7 @@ function tabEles(globals, data, tables, numCols) {
 
 class ReTabBase extends React.Component {
   constructor(props, key) {
-    console.log(props);
+    // console.log(props);
     super(props)
     this.key = key
     this.loadData = true // inner component will dynamically load its own data
@@ -1440,15 +1442,6 @@ class FantomCatTab extends ReTabBase {
   }
 }
 
-class OrthologTab extends ReTabBase {
-  constructor(props) {
-    super(props, "ortholog")
-    this.doRender = (globals, assembly, data) => {
-      return tabEles(globals, data, OrthologTable(globals, assembly, this.props.uuid), 1)
-    }
-  }
-}
-
 class TfIntersectionTab extends ReTabBase {
   constructor(props) {
     super(props, "tfIntersection")
@@ -1495,6 +1488,15 @@ export class RampageTab extends ReTabBase {
   }
 }
 
+class OrthologTab extends ReTabBase {
+  constructor(props) {
+    super(props, "ortholog")
+    this.doRender = (globals, assembly, data) => {
+      return tabEles(globals, data, OrthologTable(globals, assembly, this.props.uuid), 1)
+    }
+  }
+}
+
 // class LinkedGenesTab extends ReTabBase {
 //   constructor(props) {
 //     super(props, "linkedGenes")
@@ -1512,6 +1514,11 @@ class LinkedGenesView extends React.Component {
   constructor(props) {
     super(props)
     this.linked = { linked_genes: props.linkedgenes}
+    console.log(props.linkedgeneIDs)
+    
+    for (let i in props.linkedgeneIDs){
+      this.linked.linked_genes[i].gene = props.linkedgeneIDs[i].name
+    }
   }
 
   render() {
@@ -1529,7 +1536,7 @@ const LinkedGenesTab = (props) => {
     []
   )
 
-  const { loading, error, data } = useQuery(
+  const { loading: loading_linked, error: error_linked, data: data_linked } = useQuery(
     gql`
       query (
         $assembly: String
@@ -1551,21 +1558,107 @@ const LinkedGenesTab = (props) => {
     {
       variables: {
         assembly: props.assembly,
-        accession: "EH38D0372911"
+        accession: ["EH38D0372911"]
         // accession: props.active_ccre.accession
-      }, 
+      },
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first',       
+      client 
+    }
+  )
+  
+  // if (data_linked && data_linked.linkedGenesQuery)
+  const linkedGenes = useCallback(() => data_linked?.linkedGenesQuery, [ data_linked ])
+
+  const geneIDs = (linkedGenes) => {
+    let geneIDs = []
+    console.log(linkedGenes)
+    for (let i in linkedGenes){
+      geneIDs.push(linkedGenes[i].gene)
+    }
+    console.log(geneIDs)
+    return geneIDs
+  }
+  
+  const { loading: loading_genes, error: error_genes, data: data_genes } = useQuery(
+    gql`
+      query (
+        $assembly: String
+        $id: [String!]
+      ) {
+        gene(
+          assembly:  $assembly
+          id: $id
+        ) {
+          name
+        }
+      }
+    `,
+    {
+      // skip: true,
+      // skip: !linkedGenes,
+      // skip: loading_linked || error_linked,
+      variables: {
+        assembly: props.assembly,
+        // name: geneIDs(linkedGenes)
+        // id: geneIDs(data_linked?.linkedGenesQuery)
+        id: ["ENSG00000154127.10"]
+      },
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first', 
       client 
     }
   )
 
-  return loading ? (
-    LoadingMessage()
-  ) : error ? (
-    ErrorMessage(error)
-  ) : (
-    <div>
-      <LinkedGenesView linkedgenes={data.linkedGenesQuery} />
-    </div>
+  // query (
+  //   $assembly: String = "GRCh38"
+  //   $id: [String!] = ["ENSG00000154127.10"]) {
+  //   gene(
+  //     assembly: $assembly
+  //     id: $id
+  //   ) {
+  //     name
+  //   }
+  // }
+
+  // const { loading: loading_genes, error: error_genes, data: data_genes } = useQuery(
+  //   gql`
+  //     query (
+  //       $assembly: String
+  //       $accession: [String!]
+  //     ) {
+  //       linkedGenesQuery(
+  //         assembly:  $assembly
+  //         accession: $accession
+  //       ) {
+  //         assembly
+  //         accession
+  //         experiment_accession
+  //         celltype
+  //         gene
+  //         assay
+  //       }
+  //     }
+  //   `,
+  //   {
+  //     variables: {
+  //       assembly: props.assembly,
+  //       accession: ["EH38D0372911"]
+  //       // accession: props.active_ccre.accession
+  //     }, 
+  //     client 
+  //   }
+  // )
+
+  return (
+    loading_linked || loading_genes ? LoadingMessage() : 
+    error_linked ? ErrorMessage(error_linked) : 
+    !loading_linked && error_genes ? ErrorMessage(error_genes) :
+    (
+      <div>
+        <LinkedGenesView linkedgenes={data_linked.linkedGenesQuery} linkedgeneIDs={data_genes.gene}/>
+      </div>
+    )
   )
 }
 
@@ -1750,6 +1843,7 @@ const StackedImportance = ({ url, i, onHeightChanged, setEditable, coordinates, 
     </StackedTracks>
   ) : null
 }
+// <GraphQLTrackSet tracks={[tragetLinkedGenes(client).linkedGenesQuerycks[i]]} width={1000} height={100} endpoint="https://ga.staging.wenglab.org/graphql" noMargin>
 
 const DetailsTabInfo = (assembly) => {
   return {
