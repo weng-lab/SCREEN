@@ -1497,28 +1497,34 @@ export class RampageTab extends ReTabBase {
 //   }
 // }
 
+/**
+ * Constructs the table for ortholog tab and renders the table
+ */
 class OrthologView extends React.Component {
   constructor(props) {
     super(props)
     this.ortholog = [] // list of ortholog objects [{ accession, chrom, start, end }]
-    console.log(props.ortholog)
-    console.log(props.range)
 
-    for (let i in props.ortholog){
+    for (let ccre of props.range){
       this.ortholog.push({
-        accession: props.ortholog[i],
-        chrom: props.range[i].chromosome,
-        start: props.range[i].start,
-        end: props.range[i].end
+        accession: ccre.accession,
+        chrom: ccre.coordinates.chromosome,
+        start: ccre.coordinates.start,
+        stop: ccre.coordinates.end
       })
     }
   }
 
   render () {
-    return tabEles(this.props.globals, this.ortholog, OrthologTable(this.props.globals, this.props.assembly, this.props.uuid), 1)
+    return tabEles(this.props.globals, {ortholog: this.ortholog}, OrthologTable(this.props.globals, this.props.assembly, this.props.uuid), 1)
   }
 }
 
+/**
+ * Uses orthologQuery and cCREQuery to construct the Linked cCREs in other assemblies tab
+ * @param {props} 
+ * @returns OrthologView - rendered ortholog tab
+ */
 const OrthologTab = (props) => {
   const client = useMemo(
     () =>
@@ -1529,17 +1535,16 @@ const OrthologTab = (props) => {
     []
   )
 
-  const { loading_ortholog, error_ortholog, data_ortholog } = useQuery(
+  const { loading: loading_ortholog, error: error_ortholog, data: data_ortholog } = useQuery(
     gql`
       query (
-        $assembly: String
-        $accession: String
+        $assembly: String!
+        $accession: String!
       ) {
         orthologQuery(
           assembly: $assembly,
           accession: $accession
         ) {
-          accession
           assembly
           ortholog
         }
@@ -1547,34 +1552,32 @@ const OrthologTab = (props) => {
     `,
     {
       variables: {
-        // assembly: props.assembly,
-        assembly: "GRCh38",
-        accession: "EH38E1630340"
-        // accession: props.active_ccre.accession
+        assembly: props.assembly,
+        // assembly: "GRCh38",
+        // accession: "EH38E1630340"
+        // accession: props.cre_accession_detail
+        accession: props.active_cre.accession
       },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first',
+      // fetchPolicy: 'cache-and-network',
+      // nextFetchPolicy: 'cache-first',
       client 
     }
   )
+  
+  // callback for double query
+  // const ortholog = useCallback(() => data_ortholog?.orthologQuery, [ data_ortholog ])
 
-  const ortholog = useCallback(() => data_ortholog?.orthologQuery, [ data_ortholog ])
-  const x = data_ortholog?.orthologQuery?.ortholog
-  const opp_assembly = (assembly) => {
-    if (assembly === "GRCh38") return "mm10" 
-    else return "GRCh38"    
-  }
-
-  const { loading_range, error_range, data_range } = useQuery(
+  const { loading: loading_range, error: error_range, data: data_range } = useQuery(
     gql`
       query (
-        $assembly: String
-        $accession: String
+        $assembly: String!
+        $accession: [String!]
       ) {
         cCREQuery(
           assembly: $assembly,
           accession: $accession
         ) {
+          accession
           coordinates{
             chromosome
             start
@@ -1585,13 +1588,13 @@ const OrthologTab = (props) => {
     `,
     {
       variables: {
-        assembly: opp_assembly(props.assembly),
-        accession: ["EM10E0487053"]
-        // accession: data_ortholog?.orthologQuery?.ortholog
+        // accession: ["EM10E0487053"],
+        assembly: (data_ortholog?.orthologQuery?.assembly === "mm10" ? "GRCh38" : "mm10"),
+        accession: data_ortholog?.orthologQuery?.ortholog
         // accession: props.active_ccre.accession
       },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first', 
+      // fetchPolicy: 'cache-and-network',
+      // nextFetchPolicy: 'cache-first', 
       client 
     }
   )
@@ -1599,9 +1602,9 @@ const OrthologTab = (props) => {
   return (
     loading_ortholog || loading_range ? LoadingMessage() : 
     error_ortholog ? ErrorMessage(error_ortholog) : 
-    !loading_ortholog && error_range ? ErrorMessage(error_range): (
+    !loading_ortholog && error_range ? ErrorMessage(error_range) : (
       <div>
-        <OrthologView ortholog={data_ortholog} range={data_range}/>
+        <OrthologView range={data_range.cCREQuery}/>
       </div>
     )
   )
@@ -1621,22 +1624,37 @@ const OrthologTab = (props) => {
 //   }
 // }
 
+/**
+ * Constructs the table for Linked Genes tab and renders the table
+ */
 class LinkedGenesView extends React.Component {
   constructor(props) {
     super(props)
-    this.linked = { linked_genes: props.linkedgenes}
-    console.log(props.linkedgeneIDs)
+    this.linked = [] // list of objects to render
+    this.ids = {} // map gene ids to names
+
+    for (let x of props.linkedgeneIDs)
+      this.ids[x.id] = x.name
     
-    for (let i in props.linkedgeneIDs){
-      this.linked.linked_genes[i].gene = props.linkedgeneIDs[i].name
+    for (let x of props.linkedgenes){
+      this.linked.push({
+        gene: this.ids[x.gene],
+        celltype: x.celltype,
+        method: x.assay
+      })
     }
   }
 
   render() {
-    return tabEles(this.props.globals, this.linked, LinkedGenesTable(this.props.globals, this.props.assembly), 1)
+    return tabEles(this.props.globals, {linked_genes: this.linked}, LinkedGenesTable(this.props.globals, this.props.assembly), 1)
   }
 }
 
+/**
+ * Uses linkedgenesQuery and gene query to construct the Linked Genes tab
+ * @param {props}
+ * @returns LinkedGenesView - rendered linked lenes tab
+ */
 const LinkedGenesTab = (props) => {
   const client = useMemo(
     () =>
@@ -1650,7 +1668,7 @@ const LinkedGenesTab = (props) => {
   const { loading: loading_linked, error: error_linked, data: data_linked } = useQuery(
     gql`
       query (
-        $assembly: String
+        $assembly: String!
         $accession: [String!]
       ) {
         linkedGenesQuery(
@@ -1670,96 +1688,50 @@ const LinkedGenesTab = (props) => {
       variables: {
         assembly: props.assembly,
         accession: ["EH38D0372911"]
-        // accession: props.active_ccre.accession
+        // accession: [props.active_ccre.accession] this accession doesnt work
       },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first',       
+      // fetchPolicy: 'cache-and-network',
+      // nextFetchPolicy: 'cache-first',       
       client 
     }
   )
   
-  // if (data_linked && data_linked.linkedGenesQuery)
-  const linkedGenes = useCallback(() => data_linked?.linkedGenesQuery, [ data_linked ])
+  // callback for double query
+  // const linkedGenes = useCallback(() => data_linked?.linkedGenesQuery, [ data_linked ])
 
   const geneIDs = (linkedGenes) => {
     let geneIDs = []
-    console.log(linkedGenes)
     for (let i in linkedGenes){
       geneIDs.push(linkedGenes[i].gene)
     }
-    console.log(geneIDs)
     return geneIDs
   }
   
   const { loading: loading_genes, error: error_genes, data: data_genes } = useQuery(
     gql`
       query (
-        $assembly: String
+        $assembly: String!
         $id: [String!]
       ) {
         gene(
-          assembly:  $assembly
+          assembly: $assembly
           id: $id
         ) {
           name
+          id
         }
       }
     `,
     {
-      // skip: true,
-      // skip: !linkedGenes,
-      // skip: loading_linked || error_linked,
       variables: {
         assembly: props.assembly,
-        // name: geneIDs(linkedGenes)
-        // id: geneIDs(data_linked?.linkedGenesQuery)
-        id: ["ENSG00000154127.10"]
+        id: geneIDs(data_linked?.linkedGenesQuery)
       },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first', 
+      // fetchPolicy: 'cache-and-network',
+      // nextFetchPolicy: 'cache-first', 
       client 
     }
   )
-
-  // query (
-  //   $assembly: String = "GRCh38"
-  //   $id: [String!] = ["ENSG00000154127.10"]) {
-  //   gene(
-  //     assembly: $assembly
-  //     id: $id
-  //   ) {
-  //     name
-  //   }
-  // }
-
-  // const { loading: loading_genes, error: error_genes, data: data_genes } = useQuery(
-  //   gql`
-  //     query (
-  //       $assembly: String
-  //       $accession: [String!]
-  //     ) {
-  //       linkedGenesQuery(
-  //         assembly:  $assembly
-  //         accession: $accession
-  //       ) {
-  //         assembly
-  //         accession
-  //         experiment_accession
-  //         celltype
-  //         gene
-  //         assay
-  //       }
-  //     }
-  //   `,
-  //   {
-  //     variables: {
-  //       assembly: props.assembly,
-  //       accession: ["EH38D0372911"]
-  //       // accession: props.active_ccre.accession
-  //     }, 
-  //     client 
-  //   }
-  // )
 
   return (
     loading_linked || loading_genes ? LoadingMessage() : 
@@ -1772,16 +1744,6 @@ const LinkedGenesTab = (props) => {
     )
   )
 }
-
-// never used
-// class GroundLevelTab extends ReTabBase {
-//   constructor(props) {
-//     super(props, "groundLevel")
-//     this.doRender = (globals, assembly, data) => {
-//       return tabEles(globals, data, GroundLevelTables(globals, assembly), 1)
-//     }
-//   }
-// }
 
 const DATA_QUERY = `
 query q($requests: [BigRequest!]!) {
@@ -1997,7 +1959,7 @@ const DetailsTabInfo = (assembly) => {
     ortholog: { 
       title: Render.tabTitle(["Linked cCREs in", "other Assemblies"]), 
       enabled: true, 
-      f: OrthologTab 
+      f: (props) => <OrthologTab key={props.active_cre.accession + "_ortholog"} {...props} />
     },
     functionalValidation: {
       title: Render.tabTitle(["Functional", "Data"]),
