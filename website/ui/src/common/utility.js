@@ -7,6 +7,9 @@ import React from "react"
 
 import HelpIcon from "./components/help_icon"
 
+import loading from "./components/loading"
+import { Message } from "semantic-ui-react"
+
 export const panelize = (title, facet, helpkey = null, globals = null, headerStyle = {}) => {
   return (
     <div className="panel-group facet">
@@ -157,4 +160,29 @@ export const PageTitle = () => {
             <h1>SCREEN: Search Candidate Regulatory Elements by ENCODE</h1>
         <h3>Registry of cCREs V3</h3>
     </div>) */
+}
+
+/**
+ * Logs and returns loading message
+ * @returns active loader
+ */
+export const LoadingMessage = () => {
+  console.log("Loading...")
+  return loading({ isFetching: true, isError: false })
+}
+
+/**
+ * Logs and returns error message
+ * @param {ApolloError} error
+ * @returns error message
+ */
+export const ErrorMessage = (error) => {
+  console.log("Error!")
+  console.log(error.message)
+  return (
+    <Message negative>
+      <Message.Header>Error!</Message.Header>
+      <p>There was an error loading this page, try reloading.</p>
+    </Message>
+  )
 }
