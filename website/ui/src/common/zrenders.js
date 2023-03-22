@@ -10,14 +10,15 @@ import { toParams, commajoin } from "./utility"
 import * as ApiClient from "./api_client"
 import * as Urls from "./urls"
 
-export const relink = (assembly, uuid) => (v) =>
+//These links are broken need to fix
+export const relink = (assembly, uuid, v) =>
   (
     <a href={"/search/?" + toParams({ assembly, q: v, uuid })} target="_blank" rel="noopener noreferrer">
       {v}
     </a>
   )
 
-export const exrelink = (assembly, uuid) => (v) =>
+export const exrelink = (assembly, uuid, v) =>
   (
     <a href={"http://screen-v10.wenglab.org/search?" + toParams({ assembly, q: v, uuid })} target="_blank" rel="noopener noreferrer">
       {v}
@@ -109,7 +110,8 @@ export const numWithCommas = (x) => {
 
 export const integer = (d) => (d === 1e12 ? "" : numWithCommas(d.toFixed(0)))
 export const real = (d) => d.toFixed(2)
-export const z_score = (d) => (d === -11.0 || d === "--" || d === undefined ? "--" : d.toFixed(2))
+export const z_score = (d) => (
+  d === -11.0 || d === "--" || d === undefined ? "--" : d.toFixed(2))
 export const dnase_z_score = (d) =>
   d === -11.0 || d === "--" || d === undefined ? (
     "--"
@@ -150,7 +152,9 @@ export const ctcf_z_score = (d) =>
   ) : (
     d.toFixed(2)
   )
-export const cell_type = (globals) => (ct) => globals.byCellType[ct] && globals.byCellType[ct][0] ? globals.byCellType[ct][0]["name"] : ""
+export const cell_type = (globals, ct) => {
+  return globals.byCellType[ct] && globals.byCellType[ct][0] ? globals.byCellType[ct][0]["name"] : ""
+}
 
 export const support = (support) => ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ? support.chiapet.length : 0)
 

@@ -5,6 +5,17 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
+import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from "semantic-ui-react"
+import { associateBy, groupBy } from "queryz"
+import { linearTransform } from "jubilant-carnival"
+// import { DataTable } from "ts-ztable"
+import { DataTable } from "mui-ztable"
+import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client"
+
+import loading from "../../../common/components/loading"
+import HelpIcon from "../../../common/components/help_icon"
+import { LoadingMessage, ErrorMessage } from "../../../common/utility"
+
 import { MOTIFS } from "../../../common/all-motifs"
 import { ENTEX } from "./entex"
 import Ztable from "../../../common/components/ztable/ztable"
@@ -15,8 +26,6 @@ import Rampage from "../components/rampage"
 import MiniPeaks from "../components/minipeaks"
 
 import { CSVLink } from "react-csv"
-
-import HelpIcon from "../../../common/components/help_icon"
 
 import {
   TopTissuesTables,
@@ -29,8 +38,6 @@ import {
   // GroundLevelTables, never used
   FunctionalValidationTable,
 } from "./details_tables"
-
-import loading from "../../../common/components/loading"
 
 import * as Render from "../../../common/zrenders"
 import { GraphQLImportanceTrack } from "bpnet-ui"
@@ -53,11 +60,7 @@ import {
   SquishBigBed,
   FullBigWig,
 } from "umms-gb"
-import { Loader, Menu, Checkbox, Modal, Button, Icon, Message, Header } from "semantic-ui-react"
-import { associateBy, groupBy } from "queryz"
-import { linearTransform } from "jubilant-carnival"
-import { DataTable } from "ts-ztable"
-import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client"
+
 import { capRange, expandCoordinates, QUERY } from "../components/results_table_container"
 import CytobandView from "../components/Cytobands"
 import { ENTEXTracks, etracks } from "../components/DefaultTracks"
@@ -701,11 +704,45 @@ function chunkArr(arr, chunk) {
   return temparray
 }
 
-function makeTable(data, key, table) {
-  return React.createElement(Ztable, { data, ...table })
+/*
+Questions:
+- Why is calling ztable broken up into 3 different functions?
+- What are globals and data from doRender?
+- What do bFilter and bLengthChange do? They seem to only be declared but never used?
+
+Notes:
+- For tables with the "typ" prop, I need to figure out a solution there
+*/
+
+//globals and data from doRender,
+//tables is "table(s)" because multiple tables are in a call potentially,
+//numCols is how many tables to put side-by-side. Seems to give space if given more columns than tables
+function tabEles(globals, data, tables, numCols) {
+  //Initialize cols as blank array
+  var cols = []
+  for (var key of Object.keys(tables)) {
+    var _data = key in data ? data[key] : []
+    let table = tables[key]
+    cols.push(tabEle(globals, _data, key, table, numCols))
+  }
+  if (0 === numCols) {
+    return cols
+  }
+  var chunks = chunkArr(cols, numCols)
+  var ret = []
+  for (var i = 0; i < chunks.length; i++) {
+    var chunk = chunks[i]
+    ret.push(
+      <div className="row" key={"chunk" + i}>
+        {chunk}
+      </div>
+    )
+  }
+  return <div>{ret}</div>
 }
 
 function tabEle(globals, data, key, table, numCols) {
+  //helpicon functionality is affected, needs to be changed to using the MUI ztable's titleHoverInfo prop
   let helpicon = table && table.helpkey ? <HelpIcon globals={globals} helpkey={table.helpkey} /> : ""
   if (table && "typ" in table) {
     return (
@@ -737,17 +774,25 @@ function tabEle(globals, data, key, table, numCols) {
   )
 }
 
-function tabEles(globals, data, tables, numCols) {
-  var cols = []
+function makeTable(data, key, table) {
+  return React.createElement(Ztable, { data, ...table })
+}
+
+//tables is a object containing multipe tables
+function newTabEles(globals, data, tables, numCols) {
+  //Initialize cols as blank array
+  var tableConatinerColumns = []
+  //for each table in the tables object
   for (var key of Object.keys(tables)) {
     var _data = key in data ? data[key] : []
     let table = tables[key]
-    cols.push(tabEle(globals, _data, key, table, numCols))
+    tableConatinerColumns.push(newTabEle(globals, _data, key, table, numCols))
   }
   if (0 === numCols) {
-    return cols
+    return tableConatinerColumns
   }
-  var chunks = chunkArr(cols, numCols)
+  //I have no idea wtf this is doing or why. What even are these variable names
+  var chunks = chunkArr(tableConatinerColumns, numCols)
   var ret = []
   for (var i = 0; i < chunks.length; i++) {
     var chunk = chunks[i]
@@ -758,6 +803,46 @@ function tabEles(globals, data, tables, numCols) {
     )
   }
   return <div>{ret}</div>
+}
+
+function newTabEle(globals, data, key, table, numCols) {
+  //helpicon functionality is affected, needs to be changed to using the MUI ztable's titleHoverInfo prop
+  // let helpicon = table && table.helpkey ? <HelpIcon globals={globals} helpkey={table.helpkey} /> : ""
+  //this "typ" stuff is not yet supported. I don't understand what it's doing.
+  if (table && "typ" in table) {
+    console.log("a table with typ was sent down this path - fix it")
+    return (
+      <div className={"col-md-" + 12 / numCols} key={key}>
+        <h4>
+          {/* {table.title} {helpicon} */}
+          {table.title}
+        </h4>
+        {React.createElement(table.typ, { data, table })}
+        <br />
+      </div>
+    )
+  }
+  if (!data || !table) {
+    return <div className={"col-md-" + 12 / numCols} key={key} />
+  }
+  //The below stuff with CSV is not supported but shouldn't be hit initially
+  return (
+    <div className={"col-md-" + 12 / numCols} key={key}>
+      {table.csv ? (
+        <CSVLink data={data} separator={"\t"}>
+          TSV
+        </CSVLink>
+      ) : null}
+      {newMakeTable(data, key, table)}
+      <br />
+    </div>
+  )
+}
+
+function newMakeTable(data, key, table) {
+  var rows = data
+  console.log({ rows, ...table })
+  return React.createElement(DataTable, { rows, ...table })
 }
 
 class ReTabBase extends React.Component {
@@ -863,8 +948,10 @@ class FunctionalValidationTab extends ReTabBase {
 class TopTissuesTab extends ReTabBase {
   constructor(props) {
     super(props, "topTissues")
+    //set a functional prop doRender that calls tabEles. Is this called when set?
+    //what are these params passed? Seems to be set in doRenderWrapper in ReTabBase but I don't understand fully
     this.doRender = (globals, assembly, data) => {
-      return tabEles(globals, data, TopTissuesTables(globals, assembly), 1)
+      return newTabEles(globals, data, TopTissuesTables(globals, assembly), 1)
     }
   }
 }
@@ -1186,8 +1273,9 @@ const ENTEXView = (props) => {
       </Menu>
       {page === 1 ? (
         <>
-          <Header as="h2">EN-TEx State Decorations</Header>
+          {/* <Header as="h2">EN-TEx State Decorations</Header> */}
           <DataTable
+            tableTitle="EN-TEx State Decorations"
             key="t"
             columns={ENTEX_COLUMNS}
             rows={ggfirst(data.cCREQuery[0].gtex_decorations)}
@@ -1440,7 +1528,7 @@ class OrthologTab extends ReTabBase {
   constructor(props) {
     super(props, "ortholog")
     this.doRender = (globals, assembly, data) => {
-      return tabEles(globals, data, OrthologTable(globals, assembly, this.props.uuid), 1)
+      return newTabEles(globals, data, OrthologTable(globals, assembly, this.props.uuid), 1)
     }
   }
 }
@@ -1684,6 +1772,7 @@ const StackedImportance = ({ url, i, onHeightChanged, setEditable, coordinates, 
 
 const DetailsTabInfo = (assembly) => {
   return {
+    //Having the tab names done this way should be changed. Let container handle text overflow instead
     topTissues: { title: Render.tabTitle(["In Specific", "Biosamples"]), enabled: true, f: TopTissuesTab },
     nearbyGenomic: { title: Render.tabTitle(["Nearby", "Genomic Features"]), enabled: true, f: NearbyGenomicTab },
     tfIntersection: { title: Render.tabTitle(["TF and His-mod", "Intersection"]), enabled: true, f: TfIntersectionTab },
