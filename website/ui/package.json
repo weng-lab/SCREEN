@@ -15,7 +15,10 @@
   "homepage": "https://screen.encodeproject.org",
   "lint-staged": {
     "linters": {
-      "src": [ "prettier --write", "git add" ]
+      "src": [
+        "prettier --write",
+        "git add"
+      ]
     }
   },
   "babel": {
@@ -55,7 +58,8 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@apollo/client": "^3.3.21",
+    "@apollo/client": "^3.7.9",
+    "babel": "^6.23.0",
     "bootstrap": "3",
     "bpnet-ui": "^0.2.9",
     "d3": "^4.2.2",
@@ -70,6 +74,7 @@
     "prop-types": "^15.6.0",
     "queryz": "^0.0.3",
     "react": "^16.0.0",
+    "react-apollo-hooks": "0.3.0",
     "react-autosuggest": "^9.3.2",
     "react-bootstrap": "^0.31.2",
     "react-bootstrap-table": "^3.4.1",
