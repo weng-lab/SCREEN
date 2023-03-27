@@ -157,21 +157,21 @@ export const OrthologTable = (globals, assembly, uuid) => ({
     ],
     sortCol: ["start", false],
   },
-  hg19: {
-    title: "homologous cCREs in hg19",
-    paging: false,
-    info: false,
-    bFilter: true,
-    bLengthChange: false,
-    emptyText: "No homologous cCREs have been identified for this cCRE.",
-    cols: [
-      { title: "accession", data: "accession", className: "dt-right", render: Render.exrelink("hg19", uuid) },
-      { title: "chromosome", data: "chrom", className: "dt-right" },
-      { title: "start", data: "start", render: Render.integer },
-      { title: "end", data: "stop", render: Render.integer },
-    ],
-    sortCol: ["start", false],
-  },
+  // hg19: {
+  //   title: "homologous cCREs in hg19",
+  //   paging: false,
+  //   info: false,
+  //   bFilter: true,
+  //   bLengthChange: false,
+  //   emptyText: "No homologous cCREs have been identified for this cCRE.",
+  //   cols: [
+  //     { title: "accession", data: "accession", className: "dt-right", render: Render.exrelink("hg19", uuid) },
+  //     { title: "chromosome", data: "chrom", className: "dt-right" },
+  //     { title: "start", data: "start", render: Render.integer },
+  //     { title: "end", data: "stop", render: Render.integer },
+  //   ],
+  //   sortCol: ["start", false],
+  // },
 })
 
 export const FantomCatTable = (globals, assembly, actions) => ({
@@ -471,7 +471,11 @@ export const LinkedGenesTable = (globals, assembly) => ({
     title: "Linked Genes",
     emptyText: "No linked genes have been identified for this cCRE using ChIA-PET or eQTL data",
     cols: [
-      { title: "gene", data: "gene", render: Render.geneLink },
+      { 
+        title: "gene", 
+        data: "gene", 
+        render: Render.geneLink 
+      },
       {
         title: "biosample",
         data: "celltype",
@@ -482,7 +486,11 @@ export const LinkedGenesTable = (globals, assembly) => ({
         data: "method",
         //render: Render.support
       },
-      { title: "based on", data: "dccaccession", render: Render.gwasLink },
+      // { 
+      //   title: "based on", 
+      //   data: "dccaccession", 
+      //   render: Render.gwasLink 
+      // },
     ],
   },
 })
