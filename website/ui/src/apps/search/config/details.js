@@ -1499,8 +1499,9 @@ const TFMotifTab = (props) => {
         setLoading(false)
       })
   }, [])
-  
-  return loading ? LoadingMessage(loading) : error ? ErrorMessage(error) : (
+  return loading ? (
+    <Loader active>Loading...</Loader>
+  ) : (
     <>
       <ApolloProvider client={client}>
         <CytobandView innerWidth={1000} height={15} chromosome={coordinates.chromosome} assembly="GRCh38" position={coordinates} />
