@@ -64,8 +64,8 @@ import {
   FunctionalValidationTable,
 } from "./details_tables"
 
-// import LinkedGenesTab from "../components/tabs/linkedgenes"
-// import OrthologTab from "../components/tabs/ortholog"
+import LinkedGenesTab from "../components/tabs/linkedgenes"
+import OrthologTab from "../components/tabs/ortholog"
 
 // these are datasets that need to be moved out of the project
 import { MOTIFS } from "../../../common/all-motifs"
@@ -674,6 +674,7 @@ const COLOR_CCRE_MAP = {
   pELS: "#ffa700",
 }
 
+// TODO
 const ENTEX_QUERY = gql`
   query q($accession: [String!], $chr: String!, $start: Int!, $end: Int!) {
     cCREQuery(assembly: "GRCh38", accession: $accession) {
@@ -684,11 +685,6 @@ const ENTEX_QUERY = gql`
         allele_specific
         tissue
       }
-    }
-    bigRequests(
-      requests: [{ url: "gs://gcp.wenglab.org/SCREEN/cCREs_default_AS.bigBed", chr1: $chr, chr2: $chr, start: $start, end: $end }]
-    ) {
-      data
     }
   }
 `
@@ -765,8 +761,8 @@ const EBrowser = (props) => {
   const [highlight, setHighlight] = useState(null)
   const expandedCoordinates = useMemo(() => expandCoordinates(props.coordinates), [props.coordinates])
   const [eCoordinates, setECoordinates] = useState(expandedCoordinates)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
-  const { data, loading } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client })
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ ])
+  const { data, loading, error } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client })
   const groupedTranscripts = useMemo(
     () =>
       data &&
@@ -783,9 +779,8 @@ const EBrowser = (props) => {
   const svgRef = useRef(null)
   const [transcriptHeight, setTranscriptHeight] = useState(0)
   const l = useCallback((c) => ((c - eCoordinates.start) * 1400) / (eCoordinates.end - eCoordinates.start), [eCoordinates])
-  return loading ? (
-    <Loader active>Loading...</Loader>
-  ) : (
+
+  return loading ? LoadingMessage() : error ? ErrorMessage(error) : (
     <ApolloProvider client={client}>
       <CytobandView
         innerWidth={1000}
@@ -867,9 +862,9 @@ function ggfirst(data) {
 }
 
 const ENTEXView = (props) => {
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
-  const [page, setPage] = useState(1)
-  const { data, loading } = useQuery(ENTEX_QUERY, {
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
+  const [ page, setPage ] = useState(1)
+  const { data, loading, error } = useQuery(ENTEX_QUERY, {
     variables: {
       accession: props.active_cre.accession,
       chr: props.active_cre.chrom,
@@ -921,9 +916,8 @@ const ENTEXView = (props) => {
         : [],
     [data]
   )
-  return loading ? (
-    <Loader active>Loading...</Loader>
-  ) : (
+
+  return loading ? LoadingMessage() : error ? ErrorMessage(error) : (
     <>
       <Menu pointing secondary>
         <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>
@@ -1284,7 +1278,7 @@ class OrthologView extends React.Component {
  * @param {props} 
  * @returns OrthologView - rendered ortholog tab
  */
-const OrthologTab = (props) => {
+const OrthologTab1 = (props) => {
   const client = useMemo(
     () =>
       new ApolloClient({
@@ -1370,7 +1364,7 @@ class LinkedGenesView extends React.Component {
  * @param {props}
  * @returns LinkedGenesView - rendered linked lenes tab
  */
-const LinkedGenesTab = (props) => {
+const LinkedGenesTab1 = (props) => {
   const client = useMemo(
     () =>
       new ApolloClient({
@@ -1463,7 +1457,7 @@ const TFMotifTab = (props) => {
     end: props.active_cre.start + props.active_cre.len,
   })
   const svgRef = useRef(null)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
   const tracks = useMemo(() =>
     signal.map(
       (url) => ({
@@ -1505,9 +1499,8 @@ const TFMotifTab = (props) => {
         setLoading(false)
       })
   }, [])
-  return loading ? (
-    <Loader active>Loading...</Loader>
-  ) : (
+  
+  return loading ? LoadingMessage(loading) : error ? ErrorMessage(error) : (
     <>
       <ApolloProvider client={client}>
         <CytobandView innerWidth={1000} height={15} chromosome={coordinates.chromosome} assembly="GRCh38" position={coordinates} />
