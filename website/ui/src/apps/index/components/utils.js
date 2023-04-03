@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 
 export function useGetDownloadFileUrl(primaryurl, secondaryurl) {
   const [url, setUrl] = useState(primaryurl)
