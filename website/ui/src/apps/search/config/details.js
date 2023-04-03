@@ -685,11 +685,6 @@ const ENTEX_QUERY = gql`
         tissue
       }
     }
-    bigRequests(
-      requests: [{ url: "gs://gcp.wenglab.org/SCREEN/cCREs_default_AS.bigBed", chr1: $chr, chr2: $chr, start: $start, end: $end }]
-    ) {
-      data
-    }
   }
 `
 
@@ -867,9 +862,9 @@ function ggfirst(data) {
 }
 
 const ENTEXView = (props) => {
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
   const [page, setPage] = useState(1)
-  const { data, loading } = useQuery(ENTEX_QUERY, {
+  const { data, loading, error } = useQuery(ENTEX_QUERY, {
     variables: {
       accession: props.active_cre.accession,
       chr: props.active_cre.chrom,
@@ -921,9 +916,7 @@ const ENTEXView = (props) => {
         : [],
     [data]
   )
-  return loading ? (
-    <Loader active>Loading...</Loader>
-  ) : (
+  return loading ? <Loader active>Loading...</Loader> : error ? ErrorMessage(error) : (
     <>
       <Menu pointing secondary>
         <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>
