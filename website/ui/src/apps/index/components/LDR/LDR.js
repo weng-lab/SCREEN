@@ -5,6 +5,7 @@ import { Loader, Menu, Checkbox, Grid, Container, Header } from "semantic-ui-rea
 import { DataTable } from "ts-ztable"
 import { colorMap, tenRange } from "../Matrices/Matrices"
 import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client"
+import { LoadingMessage, ErrorMessage } from "../../../../common/utility"
 
 const STUDY_MAP = {
   PASS_ADHD_Demontis2018: "ADHD",
@@ -95,7 +96,7 @@ const QUERY = gql`
 `
 
 const LDRView = (props) => {
-  const { data, loading } = useQuery(QUERY, { variables: { studies: [props.study] } })
+  const { data, loading, error } = useQuery(QUERY, { variables: { studies: [props.study] } })
   const [page, setPage] = useState(0)
   const [tooltip, setTooltip] = useState(-1)
 
@@ -166,7 +167,7 @@ const LDRView = (props) => {
 
   return loading ? (
     <Loader active>Loading...</Loader>
-  ) : (
+  ) : error ? ErrorMessage(error) : (
     <>
       <Menu secondary pointing style={{ fontSize: "1.2em" }}>
         <Menu.Item onClick={() => setPage(0)} active={page === 0}>

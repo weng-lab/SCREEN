@@ -116,8 +116,8 @@ const SearchBox = (props) => {
     [props.results]
   )
   const [search, setSearch] = useState("")
-  const result = useMemo(() => resultMap.get(search) || eMap.get(search), [search, resultMap])
-  useEffect(() => props.onResultSelect(result), [result])
+  const result = useMemo(() => resultMap.get(search) || eMap.get(search), [search, resultMap, eMap])
+  useEffect(() => props.onResultSelect(result), [props, result])
   return (
     <Search
       input={{ fluid: true }}
@@ -150,7 +150,7 @@ const ToggleableLegend = (props) => {
     })
     setSelected(ns)
     props.onChange && props.onChange(new Set(ns.map((x) => x.title)))
-  })
+  }, [props, selected])
   return <Legend title={props.title} entries={props.entries} onEntryClick={onClick} size={props.size} />
 }
 
@@ -250,7 +250,7 @@ const MatrixPage = () => {
       data.ccREBiosampleQuery.biosamples
         .filter((x) => x.umap_coordinates)
         .filter((x) => (lifeStage === "all" || lifeStage === x.lifeStage) && (tSelected.size === 0 || tSelected.has(x[colorBy]))),
-    [data, lifeStage]
+    [data, lifeStage, colorBy, tSelected]
   )
   const [scMap, scc] = useMemo(
     () =>
@@ -302,14 +302,14 @@ const MatrixPage = () => {
           },
         }))) ||
       [],
-    [fData, scMap, colorBy, searched]
+    [fData, scMap, colorBy, searched, oMap]
   )
   const [modalOpen, setModalOpen] = useState(false)
   const [legendEntries, height] = useMemo(() => {
     const g = colorBy === "sampleType" ? scMap : oMap
     const gc = colorBy === "sampleType" ? scc : occ
     return [Object.keys(g).map((x) => ({ label: x, color: g[x], value: `${gc[x]} experiments` })), Object.keys(g).length * 50]
-  }, [scMap, oMap, colorBy])
+  }, [scMap, oMap, colorBy, occ, scc])
   const hasMatrix = true // assembly === "mm10" || assay === "H3K4me3" || (assembly.toLocaleLowerCase() === "grch38" && assay.toLocaleLowerCase() == "dnase");
 
   return (

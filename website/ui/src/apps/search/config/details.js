@@ -64,8 +64,8 @@ import {
   FunctionalValidationTable,
 } from "./details_tables"
 
-// import LinkedGenesTab from "../components/tabs/linkedgenes"
-// import OrthologTab from "../components/tabs/ortholog"
+import LinkedGenesTab from "../components/tabs/linkedgenes"
+import OrthologTab from "../components/tabs/ortholog"
 
 // these are datasets that need to be moved out of the project
 import { MOTIFS } from "../../../common/all-motifs"
@@ -674,6 +674,7 @@ const COLOR_CCRE_MAP = {
   pELS: "#ffa700",
 }
 
+// TODO
 const ENTEX_QUERY = gql`
   query q($accession: [String!], $chr: String!, $start: Int!, $end: Int!) {
     cCREQuery(assembly: "GRCh38", accession: $accession) {
@@ -684,11 +685,6 @@ const ENTEX_QUERY = gql`
         allele_specific
         tissue
       }
-    }
-    bigRequests(
-      requests: [{ url: "gs://gcp.wenglab.org/SCREEN/cCREs_default_AS.bigBed", chr1: $chr, chr2: $chr, start: $start, end: $end }]
-    ) {
-      data
     }
   }
 `
@@ -765,8 +761,8 @@ const EBrowser = (props) => {
   const [highlight, setHighlight] = useState(null)
   const expandedCoordinates = useMemo(() => expandCoordinates(props.coordinates), [props.coordinates])
   const [eCoordinates, setECoordinates] = useState(expandedCoordinates)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
-  const { data, loading } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client })
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ ])
+  const { data, loading, error } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client })
   const groupedTranscripts = useMemo(
     () =>
       data &&
@@ -783,9 +779,8 @@ const EBrowser = (props) => {
   const svgRef = useRef(null)
   const [transcriptHeight, setTranscriptHeight] = useState(0)
   const l = useCallback((c) => ((c - eCoordinates.start) * 1400) / (eCoordinates.end - eCoordinates.start), [eCoordinates])
-  return loading ? (
-    <Loader active>Loading...</Loader>
-  ) : (
+
+  return loading ? LoadingMessage() : error ? ErrorMessage(error) : (
     <ApolloProvider client={client}>
       <CytobandView
         innerWidth={1000}
@@ -867,9 +862,9 @@ function ggfirst(data) {
 }
 
 const ENTEXView = (props) => {
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
-  const [page, setPage] = useState(1)
-  const { data, loading } = useQuery(ENTEX_QUERY, {
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
+  const [ page, setPage ] = useState(1)
+  const { data, loading, error } = useQuery(ENTEX_QUERY, {
     variables: {
       accession: props.active_cre.accession,
       chr: props.active_cre.chrom,
@@ -921,9 +916,8 @@ const ENTEXView = (props) => {
         : [],
     [data]
   )
-  return loading ? (
-    <Loader active>Loading...</Loader>
-  ) : (
+
+  return loading ? LoadingMessage() : error ? ErrorMessage(error) : (
     <>
       <Menu pointing secondary>
         <Menu.Item active={page === 1} onClick={() => setPage(1)} style={{ fontSize: "1.2em" }}>
@@ -1234,213 +1228,6 @@ export class RampageTab extends ReTabBase {
   }
 }
 
-/**
- * REST API query for the ortholog tab
- */
-const ORTHOLOG_QUERY = gql`
-  query (
-    $assembly: String!
-    $accession: String!
-  ) 
-  {
-    orthologQuery(accession:$accession,assembly:$assembly) {
-      assembly
-      accession
-      ortholog {
-        stop
-        start
-        chromosome
-        accession
-      }
-    }
-  }
-`
-
-/**
- * Constructs the table for ortholog tab and renders the table
- */
-class OrthologView extends React.Component {
-  constructor(props) {
-    super(props)
-    this.orthologs = [] // list of ortholog objects [{ accession, chrom, start, end }]
-
-    for (let ccre of props.orthologQuery.ortholog){
-      this.orthologs.push({
-        accession: ccre.accession,
-        chrom: ccre.chromosome,
-        start: ccre.start,
-        stop: ccre.stop
-      })
-    }
-  }
-
-  render () {
-    return tabEles(this.props.globals, {ortholog: this.orthologs}, OrthologTable(this.props.globals, this.props.assembly, this.props.uuid), 1)
-  }
-}
-
-/**
- * Uses orthologQuery and cCREQuery to construct the Linked cCREs in other assemblies tab
- * @param {props} 
- * @returns OrthologView - rendered ortholog tab
- */
-const OrthologTab = (props) => {
-  const client = useMemo(
-    () =>
-      new ApolloClient({
-        uri: "https://factorbook.api.wenglab.org/graphql",
-        cache: new InMemoryCache(),
-      }),
-    [ props.cre_accession_detail ]
-  )
-  
-  const { loading, error, data } = useQuery(ORTHOLOG_QUERY,
-    {
-      variables: {
-        assembly: (props.assembly === "GRCh38" ? "grch38" : "mm10"),
-        accession: props.cre_accession_detail
-      },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first',
-      client
-    }
-  )
-
-  return (
-    loading ? LoadingMessage() : 
-    error ? ErrorMessage(error) :
-    (
-      <div>
-        <OrthologView orthologQuery={data.orthologQuery}/>
-      </div>
-    )
-  )
-}
-
-/**
- * REST API linkgenes query for the linkged 
- */
-const LINKED_GENES = gql`
-  query (
-    $assembly: String!
-    $accession: [String!]
-  ) {
-    linkedGenesQuery(
-      assembly:  $assembly
-      accession: $accession
-    ) {
-      assembly
-      accession
-      experiment_accession
-      celltype
-      gene
-      assay
-    }
-  }
-`
-
-/**
- * Constructs the table for Linked Genes tab and renders the table
- */
-class LinkedGenesView extends React.Component {
-  constructor(props) {
-    super(props)
-    this.linked = [] // list of objects to render
-    this.ids = {} // map gene ids to names
-
-    for (let x of props.linkedgeneIDs)
-      this.ids[x.id] = x.name
-    
-    for (let x of props.linkedgenes){
-      this.linked.push({
-        gene: this.ids[x.gene],
-        celltype: x.celltype,
-        method: x.assay
-      })
-    }
-  }
-
-  render() {
-    return tabEles(this.props.globals, {linked_genes: this.linked}, LinkedGenesTable(this.props.globals, this.props.assembly), 1)
-  }
-}
-
-/**
- * Uses linkedgenesQuery and gene query to construct the Linked Genes tab
- * @param {props}
- * @returns LinkedGenesView - rendered linked lenes tab
- */
-const LinkedGenesTab = (props) => {
-  const client = useMemo(
-    () =>
-      new ApolloClient({
-        uri: "https://ga.staging.wenglab.org/graphql",
-        cache: new InMemoryCache(),
-      }),
-    [ props.cre_accession_detail ]
-  )
-
-  // returns geneids from linked genes query
-  const geneIDs = (linkedGenes) => {
-    let geneIDs = []
-    for (let i in linkedGenes){
-      geneIDs.push(linkedGenes[i].gene)
-    }
-    return geneIDs
-  }
-
-  // linked genes query
-  const { loading: loading_linked, error: error_linked, data: data_linked } = useQuery(LINKED_GENES,
-    {
-      variables: {
-        assembly: props.assembly,
-        accession: [ props.cre_accession_detail ]
-      },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first',       
-      client 
-    }
-  )
-  
-  // gene query
-  const { loading: loading_genes, error: error_genes, data: data_genes } = useQuery(
-    gql`
-      query (
-        $assembly: String!
-        $id: [String!]
-      ) {
-        gene(
-          assembly: $assembly
-          id: $id
-        ) {
-          name
-          id
-        }
-      }
-    `,
-    {
-      variables: {
-        assembly: props.assembly,
-        id: geneIDs(data_linked?.linkedGenesQuery)
-      },
-      fetchPolicy: 'cache-and-network',
-      nextFetchPolicy: 'cache-first', 
-      client 
-    }
-  )
-
-  return (
-    loading_linked || loading_genes ? LoadingMessage() : 
-    error_linked ? ErrorMessage(error_linked) : 
-    !loading_linked && error_genes ? ErrorMessage(error_genes) :
-    (
-      <div>
-        <LinkedGenesView linkedgenes={data_linked.linkedGenesQuery} linkedgeneIDs={data_genes.gene}/>
-      </div>
-    )
-  )
-}
-
 const DATA_QUERY = `
 query q($requests: [BigRequest!]!) {
     bigRequests(requests: $requests) {
@@ -1463,7 +1250,7 @@ const TFMotifTab = (props) => {
     end: props.active_cre.start + props.active_cre.len,
   })
   const svgRef = useRef(null)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
+  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
   const tracks = useMemo(() =>
     signal.map(
       (url) => ({
