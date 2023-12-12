@@ -162,7 +162,7 @@ class TabFiles extends React.Component {
   }
 
   loadFiles(nextProps) {
-    fetch(window.location.href + "biosample-metadata.json")
+    fetch(window.location.origin+window.location.pathname+"biosample-metadata.json")
       .then((response) => response.json())
       .then((data) => {
         this.setState({ data })
