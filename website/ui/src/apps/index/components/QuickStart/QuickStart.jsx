@@ -198,7 +198,7 @@ const QuickStart = () => {
     "https://storage.googleapis.com/gcp.wenglab.org/cCREs/GRCh38-ELS.bed"
   )
   const mm10elsUrl = useGetDownloadFileUrl(
-    "https://downloads.wenglab.org/cCREs/GRCh38-ELS.bed",
+    "https://downloads.wenglab.org/cCREs/mm10-ELS.bed",
     "https://storage.googleapis.com/gcp.wenglab.org/cCREs/mm10-ELS.bed"
   )
 
