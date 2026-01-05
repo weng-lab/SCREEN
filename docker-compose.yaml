@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:10.1
+    container_name: pg_screen_v13
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/psql_password
+    volumes:
+      - /data/screen/pg_screen_v13:/var/lib/postgresql/data
+      - ./postgresql.64gb.conf:/var/lib/postgresql/data/postgresql.conf
+    secrets:
+      - psql_password
+    restart: unless-stopped
+
+  cassandra:
+    image: cassandra:3.11
+    container_name: cassandra_v13
+    cap_add:
+      - SYS_NICE
+    environment:
+      - CASSANDRA_WRITE_REQUEST_TIMEOUT_IN_MS=20000
+    volumes:
+      - /data/screen/cassandra_v13:/var/lib/cassandra
+    restart: unless-stopped
+
+  api:
+    image:  pratth/api_screen_v13:184
+    container_name: api_screen_v13
+    ports:
+      - "8080:80"
+    volumes:
+      - ./pgpass:/root/.pgpass:ro
+      - /data/ScratchScreen:/data
+    depends_on:
+      - db
+      - cassandra
+    restart: unless-stopped
+
+  web:
+    image: pratth/www_screen_v13:174
+    container_name: www_screen_v13
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+secrets:
+  psql_password:
+    file: ./psql_password.txt

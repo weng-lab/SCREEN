@@ -1,17 +1,17 @@
 # multi-stage build
 
-#FROM node:8.16-alpine
-FROM node:12.13-alpine3.9
+FROM node:8.9.4
 
 RUN mkdir -p /app/
-COPY website/ui /app
-COPY config/beta.json /app/config.json
-COPY config/beta.json /app/src/config.json
+COPY website/ui /app/
+COPY config/production.json /app/config.json
+COPY config/production.json /app/src/config.json
 
 WORKDIR /app/
 
 RUN yarn
-RUN yarn build
+ARG publicurl
+RUN PUBLIC_URL=$publicurl yarn build
 
 # for final image
 

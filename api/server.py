@@ -74,6 +74,22 @@ def parse_args():
     return parser.parse_args()
 
 
+def CORS():
+    cherrypy.response.headers["Access-Control-Allow-Origin"] = "https://screen-v2.wenglab.org"
+    cherrypy.response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    cherrypy.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
+    
+    if cherrypy.request.method == 'OPTIONS':
+        # This bypasses the actual 'autows' call entirely
+        handler = cherrypy.request.handler
+        def empty_handler(*args, **kwargs):
+            return ""
+        cherrypy.request.handler = empty_handler
+        cherrypy.response.status = 200
+
+# Register the tool with CherryPy
+cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
+
 def main():
     args = parse_args()
     if args.production:
@@ -84,12 +100,20 @@ def main():
     cow = CachedObjectsWrapper(ps)
 
     wsconfig = WebServerConfig("main", args.production)
-    main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
-    cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
+    main_app = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
 
-    cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                            'server.socket_port': int(args.port),
-                            'tools.encode.text_only': False})
+    # Add the CORS tool to the mount configuration
+    cherrypy.tree.mount(main_app, '/', {
+        '/': {
+            'tools.CORS.on': True
+        }
+    })
+
+    cherrypy.config.update({
+        'server.socket_host': '0.0.0.0',
+        'server.socket_port': int(args.port),
+        'tools.encode.text_only': False
+    })
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development",
