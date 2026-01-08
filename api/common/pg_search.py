@@ -3,9 +3,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2016-2020 Michael Purcaro, Henry Pratt, Jill Moore, Zhiping Weng
 
-
-
-
 import sys
 import os
 from natsort import natsorted
@@ -64,11 +61,9 @@ class PGsearch(object):
         
     def allCREs(self):
         rows = self.pw.fetchall("allCREs", """
-        SELECT {tn}.accession AS accession, chrom, start, stop
-        FROM {tn} 
-        INNER JOIN {ttn} ON {ttn}.accession = {tn}.accession
-        """.format(tn = self.assembly + "_cre_all",
-                   ttn = self.assembly + "_cre_all"))
+        SELECT accession, chrom, start, stop
+        FROM {tn}
+        """.format(tn = self.assembly + "_cre_all"))
         return [{"accession": e[0],
                  "chrom": e[1],
                  "start": e[2],
@@ -190,15 +185,12 @@ class PGsearch(object):
 
     def nearbyCREs(self, coord, halfWindow, cols, isProximalOrDistal):
         c = coord.expanded(halfWindow)
-        
         tableName = self.assembly + "_cre_all"
         q = """
-SELECT {cols} FROM {tn} INNER JOIN {ttn} ON {tn}.accession = {ttn}.accession
+SELECT {cols} FROM {tn}
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
-""".format(cols=','.join(cols),
-           tn=tableName,
-           ttn = self.assembly + "_cre_all")
+""".format(cols=','.join(cols), tn=tableName)
 
         if isProximalOrDistal is not None:
             q += """
@@ -227,8 +219,8 @@ AND isProximal is {isProx}
 
     def cresInTad(self, accession, chrom, start):
         rows = self.pw.fetchall("cresInTad", """
-        SELECT {cre}.accession AS accession, abs(%s - start) AS distance
-        FROM {cre} INNER JOIN {ttn} ON {cre}.accession = {ttn}.accession
+        SELECT accession, abs(%s - start) AS distance
+        FROM {cre}
         WHERE chrom = %s
         AND int4range(start, stop) && int4range(
         (SELECT int4range(min(start), max(stop))
@@ -239,7 +231,6 @@ AND isProximal is {isProx}
         AND abs(%s - start) < 100000
         ORDER BY 2
         """.format(cre=self.assembly + "_cre_all",
-                   ttn = self.assembly + "_cre_all",
                    ti=self.assembly + "_tads_info",
                    tads=self.assembly + "_tads"),
                                 (start, chrom, accession, start))
@@ -269,9 +260,6 @@ AND isProximal is {isProx}
         ret = {}
         for k, v in _map.items():
             ret[k] = [x[1] for x in sorted(v, key=lambda a: a[0])]
-            #print(k, ret[k])
-        #print(ret.keys())
-        # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
         return ret
 
     def _getColsForAccession(self, accession, chrom, cols):
@@ -332,25 +320,14 @@ AND isProximal is {isProx}
                    assembly=self.assembly), acc)
 
         if not r:
-            if 0:
-                print("cre$CRE::mostsimilar WARNING: no results for accession",
-                      acc, " -- returning empty set")
             return []
         
-        whereclause = whereclause(r[0])
+        whereclause_str = whereclause(r[0])
         
-        if len(whereclause.split(" or ")) > 200:
-            if 0:
-                print("cre$CRE::mostsimilar", "NOTICE:", acc,
-                      "is active in too many cell types",
-                      len(whereclause.split(" or ")),
-                      "returning empty set")
+        if len(whereclause_str.split(" or ")) > 200:
             return []
 
-        if not whereclause:
-            if 0:
-                print("cre$CRE::mostsimilar NOTICE:", acc,
-                      "not active in any cell types; returning empty set")
+        if not whereclause_str:
             return []
 
         rows = self.pw.fetchall("pg_search", """
@@ -363,7 +340,7 @@ AND isProximal is {isProx}
         """.format(assay=assay,
                    assembly=self.assembly,
                    threshold=threshold,
-                   whereclause=whereclause), {"r": r})
+                   whereclause=whereclause_str), {"r": r})
 
         return [{"accession": r[0], "chrom": r[2], "start": r[3], "end": r[4]}
                 for r in rows]
@@ -418,7 +395,6 @@ AND isProximal is {isProx}
         return Coord(r[0], r[1], r[2]), (r[3], r[4])
 
     def allDatasets(self):
-        # TODO: fixme!!
         dects = """
 C57BL/6_embryonic_facial_prominence_embryo_11.5_days
 C57BL/6_embryonic_facial_prominence_embryo_12.5_days
@@ -498,7 +474,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
                     "cellTypeName": r[6],
                     "cellTypeDesc": r[7],
                     "name": r[7],
-                    "value": r[6],  # for datatables
+                    "value": r[6],
                     "isde": r[6] in dects,
                     "synonyms": r[8]
                     }
