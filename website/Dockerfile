@@ -19,7 +19,6 @@ FROM nginx:1.13-alpine
 
 RUN mkdir -p /app/
 COPY  --from=0 /app/build /usr/share/nginx/html
-COPY assets /usr/share/nginx/html/assets
 COPY --from=0 /app/nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 3000
