@@ -14,6 +14,7 @@ import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apo
 import loading from "../../../common/components/loading"
 import HelpIcon from "../../../common/components/help_icon"
 import { LoadingMessage, ErrorMessage } from "../../../common/utility"
+import { GRAPHQL_BASE_ENDPOINT, GRAPHQL_ENDPOINT } from "../../../common/graphql"
 
 import Ztable from "../../../common/components/ztable/ztable"
 import * as ApiClient from "../../../common/api_client"
@@ -161,7 +162,7 @@ const TrackSet = (props) => {
             id="main"
             tracks={x}
             transform=""
-            endpoint="https://ga.staging.wenglab.org/graphql"
+            endpoint={GRAPHQL_ENDPOINT}
             width={props.preRenderedWidth}
           >
             <WrappedDenseBigBed
@@ -180,7 +181,7 @@ const TrackSet = (props) => {
             id="main"
             tracks={x}
             transform=""
-            endpoint="https://ga.staging.wenglab.org/graphql"
+            endpoint={GRAPHQL_ENDPOINT}
             width={props.preRenderedWidth}
           >
             <WrappedDenseBigBed
@@ -281,7 +282,7 @@ const FunctionalValidationView = (props) => {
   const cellTypes = useMemo(() => [...unique_replicates].sort().map((x) => [x[0], ctmap.get(x[0])]), [unique_replicates, ctmap])
   const tdomain = useMemo(() => ({ ...range, chromosome: props.active_cre.chrom }), [props, range])
   useEffect(() => {
-    fetch("https://ga.staging.wenglab.org/graphql", {
+    fetch(GRAPHQL_ENDPOINT, {
       body: JSON.stringify({
         query: `
     query q($tracks: [BigRequest!]!) {
@@ -395,7 +396,7 @@ const FunctionalValidationView = (props) => {
                 </WrappedTrack>
                 <GraphQLTranscriptTrack
                   assembly={props.assembly}
-                  endpoint="https://ga.staging.wenglab.org/graphql"
+                  endpoint={GRAPHQL_ENDPOINT}
                   id=""
                   transform=""
                   domain={tdomain}
@@ -761,7 +762,7 @@ const EBrowser = (props) => {
   const [highlight, setHighlight] = useState(null)
   const expandedCoordinates = useMemo(() => expandCoordinates(props.coordinates), [props.coordinates])
   const [eCoordinates, setECoordinates] = useState(expandedCoordinates)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ ])
+  const client = useMemo(() => new ApolloClient({ uri: GRAPHQL_ENDPOINT, cache: new InMemoryCache() }), [ ])
   const { data, loading, error } = useQuery(QUERY, { variables: { ...eCoordinates, assembly: "grch38", name: props.gene || "undefined" }, client })
   const groupedTranscripts = useMemo(
     () =>
@@ -862,7 +863,7 @@ function ggfirst(data) {
 }
 
 const ENTEXView = (props) => {
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
+  const client = useMemo(() => new ApolloClient({ uri: GRAPHQL_ENDPOINT, cache: new InMemoryCache() }), [ props.active_cre ])
   const [ page, setPage ] = useState(1)
   const { data, loading, error } = useQuery(ENTEX_QUERY, {
     variables: {
@@ -1089,7 +1090,7 @@ const ChromHMMView = (props) => {
                 <EmptyTrack height={20} width={1000} transform="" id="" />
                 <GraphQLTranscriptTrack
                   assembly="mm10"
-                  endpoint="https://ga.staging.wenglab.org/graphql"
+                  endpoint={GRAPHQL_ENDPOINT}
                   id=""
                   transform=""
                   domain={{ ...range, chromosome: props.active_cre.chrom }}
@@ -1250,7 +1251,7 @@ const TFMotifTab = (props) => {
     end: props.active_cre.start + props.active_cre.len,
   })
   const svgRef = useRef(null)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [ props.active_cre ])
+  const client = useMemo(() => new ApolloClient({ uri: GRAPHQL_ENDPOINT, cache: new InMemoryCache() }), [ props.active_cre ])
   const tracks = useMemo(() =>
     signal.map(
       (url) => ({
@@ -1265,7 +1266,7 @@ const TFMotifTab = (props) => {
     )
   )
   useEffect(() => {
-    fetch("https://ga.staging.wenglab.org/graphql", {
+    fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1309,7 +1310,7 @@ const TFMotifTab = (props) => {
         <RulerTrack width={1000} height={30} domain={coordinates} />
         <GraphQLTranscriptTrack
           assembly={props.assembly}
-          endpoint="https://ga.staging.wenglab.org/graphql"
+          endpoint={GRAPHQL_ENDPOINT}
           id=""
           transform=""
           domain={coordinates}
@@ -1385,21 +1386,21 @@ const StackedImportance = ({ url, i, onHeightChanged, setEditable, coordinates, 
         <GraphQLImportanceTrack
           width={1000}
           height={100}
-          endpoint="https://ga.staging.wenglab.org"
+          endpoint={GRAPHQL_BASE_ENDPOINT}
           signalURL={url}
           sequenceURL="gs://gcp.wenglab.org/hg38.2bit"
           coordinates={coordinates}
           key={`${coordinates.chromosome}:${coordinates.start}-${coordinates.end}-${url}`}
         />
       ) : (
-        <GraphQLTrackSet tracks={[tracks[i]]} width={1000} height={100} endpoint="https://ga.staging.wenglab.org/graphql" noMargin>
+        <GraphQLTrackSet tracks={[tracks[i]]} width={1000} height={100} endpoint={GRAPHQL_ENDPOINT} noMargin>
           <FullBigWig title="" width={1000} height={100} domain={coordinates} id={i} noMargin />
         </GraphQLTrackSet>
       )}
     </StackedTracks>
   ) : null
 }
-// <GraphQLTrackSet tracks={[tragetLinkedGenes(client).linkedGenesQuerycks[i]]} width={1000} height={100} endpoint="https://ga.staging.wenglab.org/graphql" noMargin>
+// <GraphQLTrackSet tracks={[tragetLinkedGenes(client).linkedGenesQuerycks[i]]} width={1000} height={100} endpoint={GRAPHQL_ENDPOINT} noMargin>
 
 const DetailsTabInfo = (assembly) => {
   return {

@@ -16,6 +16,7 @@ import CytobandView from "./Cytobands"
 
 import { Icon, Loader, Message } from "semantic-ui-react"
 import { EmptyTrack, GenomeBrowser, PackTranscriptTrack, SquishTranscriptTrack, RulerTrack, UCSCControls } from "umms-gb"
+import { GRAPHQL_ENDPOINT } from "../../../common/graphql"
 
 import TableWithCart from "./table_with_cart"
 import { getCommonState, orjoin, toParams, isCart } from "../../../common/utility"
@@ -115,7 +116,7 @@ const Browser = (props) => {
   // const history = useHistory();
   const expandedCoordinates = useMemo(() => expandCoordinates(props.coordinates), [props.coordinates])
   const [eCoordinates, setECoordinates] = useState(expandedCoordinates)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
+  const client = useMemo(() => new ApolloClient({ uri: GRAPHQL_ENDPOINT, cache: new InMemoryCache() }), [])
   const { data, loading } = useQuery(QUERY, {
     variables: { ...eCoordinates, assembly: props.assembly.toLocaleLowerCase(), name: props.gene || "undefined" },
     client,

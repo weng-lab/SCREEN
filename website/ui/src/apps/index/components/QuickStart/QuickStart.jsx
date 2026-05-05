@@ -4,6 +4,7 @@ import { associateBy } from "queryz"
 import HumanHeader from "../HumanHeader"
 import MouseHeader from "../MouseHeader"
 import { useGetDownloadFileUrl } from "../utils"
+import { GRAPHQL_ENDPOINT } from "../../../../common/graphql"
 
 export const sevenGroupURL = (x) => {
   const r = [x.dnase_signal, x.h3k4me3_signal, x.h3k27ac_signal, x.ctcf_signal].filter((x) => !!x)
@@ -153,7 +154,7 @@ const QuickStart = () => {
   const [data, setData] = useState({})
   useEffect(() => {
     loading &&
-      fetch("https://ga.staging.wenglab.org/graphql", {
+      fetch(GRAPHQL_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

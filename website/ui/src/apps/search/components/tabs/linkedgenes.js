@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { ApolloClient, gql, InMemoryCache, useQuery } from "@apollo/client"
 import { LoadingMessage, ErrorMessage } from "../../../../common/utility"
+import { GRAPHQL_ENDPOINT } from "../../../../common/graphql"
 
 import { tabEles } from "../../config/details"
 import { LinkedGenesTable } from "../../config/details_tables"
@@ -89,7 +90,7 @@ const LinkedGenesTab = (props) => {
   const client = useMemo(
     () =>
       new ApolloClient({
-        uri: "https://ga.staging.wenglab.org/graphql",
+        uri: GRAPHQL_ENDPOINT,
         cache: new InMemoryCache(),
       }),
     [ props.cre_accession_detail ]

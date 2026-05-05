@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { ApolloClient, gql, InMemoryCache, useQuery } from "@apollo/client"
 import { LoadingMessage, ErrorMessage } from "../../../../common/utility"
+import { FACTORBOOK_GRAPHQL_ENDPOINT } from "../../../../common/graphql"
 
 import { tabEles } from "../../config/details"
 import { OrthologTable } from "../../config/details_tables"
@@ -11,7 +12,7 @@ import { OrthologTable } from "../../config/details_tables"
 const ORTHOLOG_QUERY = gql`
   query (
     $assembly: String!
-    $accession: String!
+    $accession: [String!]
   ) 
   {
     orthologQuery(accession:$accession,assembly:$assembly) {
@@ -35,7 +36,7 @@ class OrthologView extends React.Component {
     super(props)
     this.orthologs = [] // list of ortholog objects [{ accession, chrom, start, end }]
 
-    for (let ccre of props.orthologQuery.ortholog){
+    for (let ccre of props.orthologQuery[0].ortholog){
       this.orthologs.push({
         accession: ccre.accession,
         chrom: ccre.chromosome,
@@ -59,7 +60,7 @@ const OrthologTab = (props) => {
   const client = useMemo(
     () =>
       new ApolloClient({
-        uri: "https://factorbook.api.wenglab.org/graphql",
+        uri: FACTORBOOK_GRAPHQL_ENDPOINT,
         cache: new InMemoryCache(),
       }),
     [ props.cre_accession_detail ]

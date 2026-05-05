@@ -6,6 +6,7 @@ import { DataTable } from "ts-ztable"
 import { colorMap, tenRange } from "../Matrices/Matrices"
 import { ApolloClient, ApolloProvider, gql, InMemoryCache, useQuery } from "@apollo/client"
 import { LoadingMessage, ErrorMessage } from "../../../../common/utility"
+import { GRAPHQL_ENDPOINT } from "../../../../common/graphql"
 
 const STUDY_MAP = {
   PASS_ADHD_Demontis2018: "ADHD",
@@ -215,7 +216,7 @@ const LDRView = (props) => {
 
 const LDR = () => {
   const [study, setStudy] = useState(null)
-  const client = useMemo(() => new ApolloClient({ uri: "https://ga.staging.wenglab.org/graphql", cache: new InMemoryCache() }), [])
+  const client = useMemo(() => new ApolloClient({ uri: GRAPHQL_ENDPOINT, cache: new InMemoryCache() }), [])
   return (
     <Container style={{ width: "90%" }}>
       <Grid>

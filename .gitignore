@@ -115,3 +115,5 @@ big_tabs
 !/website/ui/.yarn/releases/*.cjs
 /website/ui/public/assets/bundle.js
 /website/ui/public/assets/*.mp4
+.vercel
+.env*.local

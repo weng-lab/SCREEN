@@ -5,6 +5,7 @@ import { Chart, Scatter, Legend, Annotation } from "jubilant-carnival"
 import HumanHeader from "../HumanHeader"
 import { InverseMouseHeader } from "../MouseHeader"
 import { DataTable } from "ts-ztable"
+import { GRAPHQL_ENDPOINT } from "../../../../common/graphql"
 // import { useGetDownloadFileUrl } from "../utils" never used
 
 const UMAP_QUERY = `
@@ -217,7 +218,7 @@ const MatrixPage = () => {
   useEffect(() => {
     assembly !== "" &&
       assay !== "" &&
-      fetch("https://ga.staging.wenglab.org/graphql", {
+      fetch(GRAPHQL_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
