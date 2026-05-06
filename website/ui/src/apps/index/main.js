@@ -36,7 +36,7 @@ class IndexPage extends React.Component {
           marginBottom: "8px"
         }}
       >
-        Visit our updated site using v4 of the Registry of cCREs:{" "}
+        Visit the redesigned SCREEN featuring v4 of the Registry of cCREs:{" "}
         <a
           href="https://screen.wenglab.org"
           target="_blank"
