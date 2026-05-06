@@ -13,6 +13,7 @@ import loading from "../../../common/components/loading"
 import Ztable from "../../../common/components/ztable/ztable"
 
 import { ApolloClient, gql, InMemoryCache, useQuery } from "@apollo/client"
+import { GRAPHQL_ENDPOINT } from "../../../common/graphql"
 
 /**
  * This file and function queries for versions tab data and returns the rendered display
@@ -22,7 +23,7 @@ const TabDataScreen = () => {
   const client = useMemo(
     () =>
       new ApolloClient({
-        uri: "https://ga.staging.wenglab.org/graphql",
+        uri: GRAPHQL_ENDPOINT,
         cache: new InMemoryCache(),
       }),
     []

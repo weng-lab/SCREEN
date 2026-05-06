@@ -3,3 +3,7 @@
 /cache
 prod
 prod.old
+.env
+.env.local
+.env.*.local
+.vercel

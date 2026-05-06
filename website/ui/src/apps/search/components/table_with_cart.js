@@ -17,6 +17,7 @@ import loading from "../../../common/components/loading"
 
 import { doToggle, isCart } from "../../../common/utility"
 import GenomeBrowser from "../../../common/components/genomebrowser/components/genomebrowser"
+import { GRAPHQL_ENDPOINT } from "../../../common/graphql"
 
 const query = `
 query q($accessions: [String!], $assembly: String!) {
@@ -175,7 +176,7 @@ class TableWithCart extends React.Component {
 
   downloadJSON() {
     // const jq = this.props.jq; never used
-    fetch("https://ga.staging.wenglab.org/graphql", {
+    fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
