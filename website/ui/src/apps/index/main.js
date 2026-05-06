@@ -24,6 +24,31 @@ class IndexPage extends React.Component {
     )
   }
 
+  banner() {
+    return (
+      <div
+        style={{
+          backgroundColor: "#1f77b4",
+          color: "#ffffff",
+          padding: "0.75em 1em",
+          textAlign: "center",
+          fontSize: "1.05em",
+          marginBottom: "8px"
+        }}
+      >
+        Visit our updated site using v4 of the Registry of cCREs:{" "}
+        <a
+          href="https://screen.wenglab.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#ffffff", textDecoration: "underline", fontWeight: "bold" }}
+        >
+          screen.wenglab.org <Icon name="external alternate" />
+        </a>
+      </div>
+    )
+  }
+
   title() {
     return (
       <div className={"container-fluid"}>
@@ -52,6 +77,7 @@ class IndexPage extends React.Component {
     return (
       <Provider store={store}>
         <div>
+          {tab === null && this.banner()}
           {tab === null && this.title()}
           <MainTabs uuid={this.props.uuid} mainDivId={"mainTabs"} tabUlClass={"nav-pills"} />
           {this.footer()}
